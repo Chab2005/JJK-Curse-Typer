@@ -1,26 +1,171 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
+/* Design tokens ported from the inline tailwind.config of templates/*.html */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-inverse-primary: #be0037;
+  --color-tertiary: #4cd7f6;
+  --color-inverse-surface: #e5e1e4;
+  --color-background: #131315;
+  --color-secondary-fixed: #e1e0ff;
+  --color-tertiary-container: #007f95;
+  --color-on-error: #690005;
+  --color-primary-fixed: #ffdada;
+  --color-outline: #ac8889;
+  --color-tertiary-fixed-dim: #4cd7f6;
+  --color-surface-container-low: #1c1b1d;
+  --color-outline-variant: #5c3f40;
+  --color-on-tertiary-container: #f5fcff;
+  --color-surface-dim: #131315;
+  --color-on-primary-container: #fffaf9;
+  --color-surface-container-high: #2a2a2c;
+  --color-surface-container-highest: #353437;
+  --color-on-primary: #68001a;
+  --color-on-primary-fixed-variant: #920028;
+  --color-on-secondary: #1000a9;
+  --color-inverse-on-surface: #313032;
+  --color-on-secondary-fixed: #07006c;
+  --color-secondary: #c0c1ff;
+  --color-surface-tint: #ffb3b6;
+  --color-tertiary-fixed: #acedff;
+  --color-surface-bright: #39393b;
+  --color-on-surface-variant: #e5bdbe;
+  --color-secondary-fixed-dim: #c0c1ff;
+  --color-primary-fixed-dim: #ffb3b6;
+  --color-primary-container: #e11d48;
+  --color-on-tertiary-fixed: #001f26;
+  --color-primary: #ffb3b6;
+  --color-on-secondary-fixed-variant: #2f2ebe;
+  --color-error-container: #93000a;
+  --color-on-tertiary: #003640;
+  --color-surface-container: #201f21;
+  --color-on-surface: #e5e1e4;
+  --color-secondary-container: #3131c0;
+  --color-error: #ffb4ab;
+  --color-on-primary-fixed: #40000c;
+  --color-surface: #131315;
+  --color-surface-container-lowest: #0e0e10;
+  --color-on-secondary-container: #b0b2ff;
+  --color-surface-variant: #353437;
+  --color-on-background: #e5e1e4;
+  --color-on-tertiary-fixed-variant: #004e5c;
+  --color-on-error-container: #ffdad6;
+
+  --radius: 0.125rem;
+  --radius-lg: 0.25rem;
+  --radius-xl: 0.5rem;
+  --radius-full: 0.75rem;
+
+  --spacing-space-xs: 0.25rem;
+  --spacing-space-sm: 0.5rem;
+  --spacing-space-md: 1rem;
+  --spacing-space-lg: 1.5rem;
+  --spacing-space-xl: 2.5rem;
+  --spacing-gutter: 1.5rem;
+  --spacing-margin: 2rem;
+
+  --font-occult: var(--font-fondamento), cursive, serif;
+  --font-headline-sm: var(--font-space-grotesk);
+  --font-headline-lg: var(--font-space-grotesk);
+  --font-headline-lg-mobile: var(--font-space-grotesk);
+  --font-display-hero: var(--font-space-grotesk);
+  --font-display-hero-mobile: var(--font-space-grotesk);
+  --font-talisman-tag: var(--font-space-grotesk);
+  --font-hud-metric: var(--font-space-grotesk);
+  --font-typing-stream: var(--font-jetbrains-mono);
+  --font-typing-stream-mobile: var(--font-jetbrains-mono);
+  --font-label-code: var(--font-jetbrains-mono);
+  --font-body-regular: var(--font-jetbrains-mono);
+
+  --text-headline-sm: 20px;
+  --text-headline-sm--line-height: 28px;
+  --text-headline-sm--font-weight: 500;
+  --text-display-hero: 64px;
+  --text-display-hero--line-height: 72px;
+  --text-display-hero--font-weight: 700;
+  --text-talisman-tag: 10px;
+  --text-talisman-tag--line-height: 12px;
+  --text-talisman-tag--font-weight: 700;
+  --text-hud-metric: 48px;
+  --text-hud-metric--line-height: 48px;
+  --text-hud-metric--font-weight: 700;
+  --text-typing-stream: 32px;
+  --text-typing-stream--line-height: 52px;
+  --text-typing-stream--font-weight: 400;
+  --text-display-hero-mobile: 40px;
+  --text-display-hero-mobile--line-height: 48px;
+  --text-display-hero-mobile--font-weight: 700;
+  --text-typing-stream-mobile: 20px;
+  --text-typing-stream-mobile--line-height: 36px;
+  --text-typing-stream-mobile--font-weight: 400;
+  --text-label-code: 12px;
+  --text-label-code--line-height: 16px;
+  --text-label-code--font-weight: 500;
+  --text-body-regular: 15px;
+  --text-body-regular--line-height: 24px;
+  --text-body-regular--font-weight: 400;
+  --text-headline-lg: 32px;
+  --text-headline-lg--line-height: 40px;
+  --text-headline-lg--font-weight: 600;
+  --text-headline-lg-mobile: 26px;
+  --text-headline-lg-mobile--line-height: 34px;
+  --text-headline-lg-mobile--font-weight: 600;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    overscroll-behavior: none;
+  }
+
+  :root,
+  body,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p,
+  a,
+  input,
+  label,
+  select,
+  textarea {
+    font-family: var(--font-occult);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Unlayered on purpose: in the template these beat the font-* utilities */
+span:not(.material-symbols-outlined),
+button:not(.material-symbols-outlined) {
+  font-family: var(--font-occult);
+}
+
+.material-symbols-outlined {
+  font-family: "Material Symbols Outlined" !important;
+  font-weight: normal;
+  font-style: normal;
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-label-code,
+kbd,
+#roomPinInput {
+  font-family: var(--font-jetbrains-mono), monospace !important;
+}
+
+::-webkit-scrollbar {
+  display: none;
 }
