@@ -14,3 +14,6 @@ export const results = pgTable("results", {
   durationSeconds: integer("duration_seconds").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
+
+
+
