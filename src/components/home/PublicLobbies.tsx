@@ -1,15 +1,22 @@
 'use client';
 
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
+
+// Données de démonstration : les libellés sont traduits, le nom du salon est choisi par l'hôte.
+type LobbyMode = { kind: 'sprint'; seconds: number } | { kind: 'words'; count: number };
+type LobbyBadge = { kind: 'seconds'; seconds: number } | { kind: 'words'; count: number } | { kind: 'standard' };
+type LobbyParticipants = { kind: 'exorcists' | 'ready'; current: number; max: number };
+type LobbyStatus = { kind: 'startsIn'; seconds: number } | { kind: 'waitingSquad' } | { kind: 'readyToLaunch' };
 
 interface LobbyItem {
   id: string;
   name: string;
-  type: string;
-  duration: string;
-  participants: string;
-  status: string;
+  mode: LobbyMode;
+  badge: LobbyBadge;
+  participants: LobbyParticipants;
+  status: LobbyStatus;
   statusColor: 'primary' | 'secondary' | 'tertiary';
   joinCode: string;
 }
@@ -18,36 +25,37 @@ const LOBBIES: LobbyItem[] = [
   {
     id: '1',
     name: 'Shinjuku Showdown',
-    type: '60s Sprint',
-    duration: '60s',
-    participants: '7/8 exorcistes',
-    status: 'Départ dans 12s',
+    mode: { kind: 'sprint', seconds: 60 },
+    badge: { kind: 'seconds', seconds: 60 },
+    participants: { kind: 'exorcists', current: 7, max: 8 },
+    status: { kind: 'startsIn', seconds: 12 },
     statusColor: 'primary',
     joinCode: 'SHINJUKU-60',
   },
   {
     id: '2',
     name: 'Sanctuaire Maudit',
-    type: '120 mots',
-    duration: '120 mots',
-    participants: '3/5 prêts',
-    status: 'En attente d\'escouade',
+    mode: { kind: 'words', count: 120 },
+    badge: { kind: 'words', count: 120 },
+    participants: { kind: 'ready', current: 3, max: 5 },
+    status: { kind: 'waitingSquad' },
     statusColor: 'secondary',
     joinCode: 'SANCTUARY-BF',
   },
   {
     id: '3',
     name: 'Novices de Kyoto',
-    type: '30 Mots',
-    duration: 'Standard',
-    participants: '2/4 prêts',
-    status: 'Prêt à lancer',
+    mode: { kind: 'words', count: 30 },
+    badge: { kind: 'standard' },
+    participants: { kind: 'ready', current: 2, max: 4 },
+    status: { kind: 'readyToLaunch' },
     statusColor: 'tertiary',
     joinCode: 'KYOTO-30W',
   },
 ];
 
 export default function PublicLobbies() {
+  const t = useTranslations('PublicLobbies');
   const [activeExorcists, setActiveExorcists] = useState(342);
 
   const handleQuickJoin = (code: string) => {
@@ -71,10 +79,10 @@ export default function PublicLobbies() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-space-xs">
             <span className="material-symbols-outlined text-[20px] text-secondary">meeting_room</span>
-            <span className="font-headline-sm text-headline-sm text-on-surface uppercase">Salons Publics</span>
+            <span className="font-headline-sm text-headline-sm text-on-surface uppercase">{t('title')}</span>
           </div>
           <span className="px-space-xs py-0.5 rounded bg-surface-container-high text-tertiary font-label-code text-talisman-tag uppercase">
-            Ouverts
+            {t('open')}
           </span>
         </div>
 
@@ -89,13 +97,13 @@ export default function PublicLobbies() {
         </div>
 
         <div className="pt-space-xs flex items-center justify-between font-label-code text-talisman-tag text-outline">
-          <span>{activeExorcists} exorcistes en combat</span>
+          <span>{t('activeExorcists', { count: activeExorcists })}</span>
           <button
             onClick={refreshLobbies}
             className="hover:text-on-surface flex items-center gap-1 transition-colors"
           >
             <span className="material-symbols-outlined text-[14px]">sync</span>
-            <span>Rafraîchir</span>
+            <span>{t('refresh')}</span>
           </button>
         </div>
 
@@ -106,7 +114,7 @@ export default function PublicLobbies() {
           <span className="material-symbols-outlined text-[18px] text-primary group-hover:translate-x-0.5 transition-transform">
             explore
           </span>
-          <span>Explorer d&apos;autres salons &amp; arènes</span>
+          <span>{t('explore')}</span>
           <span className="material-symbols-outlined text-[16px] text-outline group-hover:text-primary transition-colors">
             arrow_forward
           </span>
@@ -117,6 +125,8 @@ export default function PublicLobbies() {
 }
 
 function LobbyCard({ lobby, onJoin }: { lobby: LobbyItem; onJoin: () => void }) {
+  const t = useTranslations('PublicLobbies');
+
   const colorMap = {
     primary: 'group-hover:text-primary',
     secondary: 'group-hover:text-secondary',
@@ -148,10 +158,10 @@ function LobbyCard({ lobby, onJoin }: { lobby: LobbyItem; onJoin: () => void }) 
           <h2 className={`font-headline-sm text-headline-sm text-on-surface transition-colors ${colorMap[lobby.statusColor]}`}>
             {lobby.name}
           </h2>
-          <span className="font-label-code text-talisman-tag text-outline">{lobby.type}</span>
+          <span className="font-label-code text-talisman-tag text-outline">{t(`mode.${lobby.mode.kind}`, lobby.mode)}</span>
         </div>
         <span className={`px-space-xs py-0.5 rounded font-label-code text-talisman-tag font-bold ${badgeColorMap[lobby.statusColor]}`}>
-          {lobby.duration}
+          {t(`badge.${lobby.badge.kind}`, lobby.badge)}
         </span>
       </div>
 
@@ -160,14 +170,14 @@ function LobbyCard({ lobby, onJoin }: { lobby: LobbyItem; onJoin: () => void }) 
           <span className={`material-symbols-outlined text-[16px] ${groupIconColorMap[lobby.statusColor]}`}>
             group
           </span>
-          <span>{lobby.participants}</span>
-          <span className="text-primary font-bold">{lobby.status}</span>
+          <span>{t(`participants.${lobby.participants.kind}`, lobby.participants)}</span>
+          <span className="text-primary font-bold">{t(`status.${lobby.status.kind}`, lobby.status)}</span>
         </div>
         <button
           onClick={onJoin}
           className={`px-space-sm py-1 bg-surface-container-highest text-on-surface rounded font-headline-sm text-label-code uppercase transition-colors ${bgColorMap[lobby.statusColor]}`}
         >
-          Rejoindre
+          {t('join')}
         </button>
       </div>
     </div>
