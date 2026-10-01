@@ -16,7 +16,11 @@
     },
     "soundEffects": "Effets Sonores",
     "theme": "Thème Occulte",
-    "profileAlt": "Profil"
+    "profileAlt": "Profil",
+    "menu": {
+      "open": "Ouvrir le menu",
+      "close": "Fermer le menu"
+    }
   },
   "LanguageSwitcher": {
     "label": "Langue"
