@@ -17,6 +17,7 @@ npm run dev               # Next.js dev server on :3000
 npm run build
 npm run lint              # ESLint 9 flat config (next core-web-vitals + typescript)
 npx tsc --noEmit          # typecheck (no script for it)
+npm test                  # Vitest (unit tests, *.test.ts in src/ and messages/)
 
 npm run db:generate       # drizzle-kit: generate SQL migration from src/db/schema.ts into drizzle/
 npm run db:migrate        # apply migrations
@@ -26,7 +27,7 @@ npm run db:studio
 
 `GET /api/health` runs `select 1` against the DB. It's a quick way to check the DB connection.
 
-No test runner is set up yet. The plan calls for Vitest (unit, mainly `src/game/`) and Playwright (E2E, multi-tab races).
+Vitest is set up (`vitest.config.mts`, `@` alias). Playwright (E2E, multi-tab races) is still to do.
 
 ## Stack notes
 
@@ -39,13 +40,19 @@ No test runner is set up yet. The plan calls for Vitest (unit, mainly `src/game/
 
 - **Realtime runs outside Vercel**: PartyKit / PartyServer (Cloudflare Durable Objects) in `party/`. One room per lobby holds authoritative state (countdown, keystroke validation, bots, bonuses, timers via alarms), plus one index room that lists public lobbies. Rooms broadcast an aggregated 5 Hz `tick`. Lobby state is **never** stored in Postgres. At race end the room POSTs signed results to `/api/races/complete`.
 - **Pure, shared game logic in `src/game/`**: reducers (`state + event → new state`) with no I/O, imported by both the client (instant local feedback) and the room (server truth / anti-cheat replay of keystrokes). This is a core course requirement (functional programming). Keep I/O, React and network code out of `src/game/`.
-- Planned libs: `zod` for WS message and form validation, custom DB sessions + `@node-rs/argon2` + `arctic` (Discord/GitHub OAuth, no email stored), `next-intl` (FR/EN), `next-themes`.
+- Planned libs: `zod` for WS message and form validation, custom DB sessions + `@node-rs/argon2` + `arctic` (Discord/GitHub OAuth, no email stored), `next-themes`.
 
 ## UI / design
 
 - `templates/*.html` are static design mockups (Tailwind CDN, French UI copy). Their inline `tailwind.config` defines the design tokens: Material-style colors (`surface`, `on-surface`, `primary-container`…), spacing (`space-sm`, `space-md`, `margin`, `gutter`…) and type scales (`headline-sm`, `display-hero`, `label-code`, `typing-stream`…), using Space Grotesk / JetBrains Mono / Fondamento.
-- `src/components/` are React ports of those mockups and use those token class names, split by page (`home/`) or shared (`layout/`). The tokens are ported into Tailwind 4 `@theme` in `src/app/globals.css`, with fonts loaded via `next/font` in `src/app/layout.tsx`. The home page (`src/app/page.tsx`) is built from `templates/index.html`.
-- UI copy is currently French. FR/EN i18n is a requirement (GEN-3).
+- `src/components/` are React ports of those mockups and use those token class names, split by page (`home/`) or shared (`layout/`). The tokens are ported into Tailwind 4 `@theme` in `src/app/globals.css`, with fonts loaded via `next/font` in `src/app/[locale]/layout.tsx`. The home page (`src/app/[locale]/page.tsx`) is built from `templates/index.html`.
+
+## i18n (GEN-3)
+
+- `next-intl`, locales `en` (default) and `fr`. One domain per locale: English on the root domain (`monkey-type.foo`), French on `fr.monkey-type.foo`. Root domain comes from `NEXT_PUBLIC_ROOT_DOMAIN` (default `monkey-type.foo`; `localhost:3000` in `.env`, so dev uses `http://fr.localhost:3000`). On an unknown host (Vercel preview) the locale falls back to a path prefix (`/fr`).
+- Pages live under `src/app/[locale]/`. UI copy goes in `messages/en.json` and `messages/fr.json` (same keys, checked by `messages/messages.test.ts`); never hardcode copy in components, use `useTranslations` / `getTranslations`.
+- `src/proxy.ts` runs `resolveLocaleRedirect` (pure, `src/i18n/locale-redirect.ts`) before the next-intl middleware: on the root domain it redirects to `fr.` from the `NEXT_LOCALE` cookie or `Accept-Language`; `?lang=xx` (language switcher in the header) stores the choice in that cookie on the root domain.
+- Use `Link`/`usePathname` from `@/i18n/navigation`, not `next/link`, for internal links.
 
 
 ## Code requirement
