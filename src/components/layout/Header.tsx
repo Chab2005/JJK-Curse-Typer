@@ -4,11 +4,20 @@ import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import LanguageSwitcher from './LanguageSwitcher';
+import MobileMenu, { type NavItem } from './MobileMenu';
+import ProfileAvatar from './ProfileAvatar';
 
 export default function Header() {
   const t = useTranslations('Header');
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [darkMode, setDarkMode] = useState(true);
+
+  const navItems: NavItem[] = [
+    { href: '#', label: t('nav.join'), active: true },
+    { href: '#', label: t('nav.multiplayer') },
+    { href: '#', label: t('nav.leaderboard') },
+    { href: '#', label: t('nav.archives') },
+  ];
 
   return (
     <header className="fixed top-0 w-full z-50 bg-surface/90 backdrop-blur-md shadow-[0_1px_8px_rgba(0,0,0,0.4)]">
@@ -32,10 +41,9 @@ export default function Header() {
 
         {/* Navigation */}
         <nav className="hidden lg:flex items-center gap-space-lg">
-          <NavLink href="#" label={t('nav.join')} active />
-          <NavLink href="#" label={t('nav.multiplayer')} />
-          <NavLink href="#" label={t('nav.leaderboard')} />
-          <NavLink href="#" label={t('nav.archives')} />
+          {navItems.map((item) => (
+            <NavLink key={item.label} {...item} />
+          ))}
         </nav>
 
         {/* Right Section */}
@@ -60,12 +68,14 @@ export default function Header() {
 
           {/* Control Buttons */}
           <div className="flex items-center gap-space-sm">
-            <LanguageSwitcher />
+            <div className="hidden lg:flex">
+              <LanguageSwitcher />
+            </div>
 
             <button
               onClick={() => setSoundEnabled(!soundEnabled)}
               title={t('soundEffects')}
-              className="px-space-sm py-space-xs rounded bg-surface-container-low hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-colors flex items-center gap-space-xs font-label-code text-label-code"
+              className="hidden px-space-sm py-space-xs rounded bg-surface-container-low hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-colors items-center gap-space-xs font-label-code text-label-code"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
                 <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
@@ -77,7 +87,7 @@ export default function Header() {
             <button
               onClick={() => setDarkMode(!darkMode)}
               title={t('theme')}
-              className="px-space-sm py-space-xs rounded bg-surface-container-low hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-colors flex items-center gap-space-xs font-label-code text-label-code"
+              className="hidden px-space-sm py-space-xs rounded bg-surface-container-low hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-colors items-center gap-space-xs font-label-code text-label-code"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
                 <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle>
@@ -90,13 +100,11 @@ export default function Header() {
             </button>
 
             {/* Profile */}
-            <div className="relative flex items-center ml-space-xs pl-space-sm">
-              <img
-                alt={t('profileAlt')}
-                className="w-8 h-8 rounded-full object-cover ring-1 ring-primary-container/40"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBwRUKpHIMiAh5rKkR77_VElAQSZAPG_ZqcURZyQLzcziemV5T2nfkw2ZDrdSfzClj_zMPER1rJ1krTt1YQxhiy4BEiQYN3gSjZGddlhHJ5hS883vlqzELsEzoO3ovXuazIyE26QHQbpNPDxpuUNo8kN8fr6KIardUsi3WXsCdeD__gh0bFo3yOOK97XINcrmw1uvwbycdfyVKWQBlEtsPIFa3JZeBL5d5IPUeITrtCRIDp9CkFBIvZ"
-              />
+            <div className="relative hidden lg:flex items-center ml-space-xs pl-space-sm">
+              <ProfileAvatar />
             </div>
+
+            <MobileMenu items={navItems} />
           </div>
         </div>
       </div>
