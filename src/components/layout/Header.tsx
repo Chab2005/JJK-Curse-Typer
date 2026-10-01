@@ -1,9 +1,12 @@
 'use client';
 
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
+import LanguageSwitcher from './LanguageSwitcher';
 
 export default function Header() {
+  const t = useTranslations('Header');
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [darkMode, setDarkMode] = useState(true);
 
@@ -29,10 +32,10 @@ export default function Header() {
 
         {/* Navigation */}
         <nav className="hidden lg:flex items-center gap-space-lg">
-          <NavLink href="#" label="Rejoindre" active />
-          <NavLink href="#" label="Combat Multijoueur" />
-          <NavLink href="#" label="Classement Exorcistes" />
-          <NavLink href="#" label="Archives & Sorts" />
+          <NavLink href="#" label={t('nav.join')} active />
+          <NavLink href="#" label={t('nav.multiplayer')} />
+          <NavLink href="#" label={t('nav.leaderboard')} />
+          <NavLink href="#" label={t('nav.archives')} />
         </nav>
 
         {/* Right Section */}
@@ -41,12 +44,12 @@ export default function Header() {
           <div className="hidden 2xl:flex items-center gap-space-md px-space-md py-space-xs bg-surface-container-low rounded-xl">
             <div className="flex items-center gap-space-xs">
               <span className="font-headline-sm text-label-code text-primary">142</span>
-              <span className="font-label-code text-talisman-tag uppercase text-on-surface-variant">WPM Record</span>
+              <span className="font-label-code text-talisman-tag uppercase text-on-surface-variant">{t('stats.wpmRecord')}</span>
             </div>
             <div className="w-px h-3 bg-surface-container-highest"></div>
             <div className="flex items-center gap-space-xs">
               <span className="font-headline-sm text-label-code text-tertiary">99.4%</span>
-              <span className="font-label-code text-talisman-tag uppercase text-on-surface-variant">Précision</span>
+              <span className="font-label-code text-talisman-tag uppercase text-on-surface-variant">{t('stats.accuracy')}</span>
             </div>
             <div className="w-px h-3 bg-surface-container-highest"></div>
             <div className="flex items-center gap-space-xs">
@@ -57,9 +60,11 @@ export default function Header() {
 
           {/* Control Buttons */}
           <div className="flex items-center gap-space-sm">
+            <LanguageSwitcher />
+
             <button
               onClick={() => setSoundEnabled(!soundEnabled)}
-              title="Effets Sonores"
+              title={t('soundEffects')}
               className="px-space-sm py-space-xs rounded bg-surface-container-low hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-colors flex items-center gap-space-xs font-label-code text-label-code"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
@@ -71,7 +76,7 @@ export default function Header() {
 
             <button
               onClick={() => setDarkMode(!darkMode)}
-              title="Thème Occulte"
+              title={t('theme')}
               className="px-space-sm py-space-xs rounded bg-surface-container-low hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-colors flex items-center gap-space-xs font-label-code text-label-code"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
@@ -87,7 +92,7 @@ export default function Header() {
             {/* Profile */}
             <div className="relative flex items-center ml-space-xs pl-space-sm">
               <img
-                alt="Profile"
+                alt={t('profileAlt')}
                 className="w-8 h-8 rounded-full object-cover ring-1 ring-primary-container/40"
                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuBwRUKpHIMiAh5rKkR77_VElAQSZAPG_ZqcURZyQLzcziemV5T2nfkw2ZDrdSfzClj_zMPER1rJ1krTt1YQxhiy4BEiQYN3gSjZGddlhHJ5hS883vlqzELsEzoO3ovXuazIyE26QHQbpNPDxpuUNo8kN8fr6KIardUsi3WXsCdeD__gh0bFo3yOOK97XINcrmw1uvwbycdfyVKWQBlEtsPIFa3JZeBL5d5IPUeITrtCRIDp9CkFBIvZ"
               />

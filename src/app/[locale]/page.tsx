@@ -3,8 +3,13 @@ import Header from "@/components/layout/Header";
 import Hero from "@/components/home/Hero";
 import JoinForm from "@/components/home/JoinForm";
 import PublicLobbies from "@/components/home/PublicLobbies";
+import type { Locale } from "@/i18n/config";
+import { setRequestLocale } from "next-intl/server";
 
-export default function Home() {
+export default async function Home({ params }: PageProps<"/[locale]">) {
+  const { locale } = await params;
+  setRequestLocale(locale as Locale);
+
   return (
     <>
       <Header />

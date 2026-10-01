@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useState, useEffect } from 'react';
 
 const RANDOM_PSEUDOS = [
@@ -14,6 +15,7 @@ const RANDOM_PSEUDOS = [
 ];
 
 export default function JoinForm() {
+  const t = useTranslations('JoinForm');
   const [roomPin, setRoomPin] = useState('');
   const [exorcistName, setExorcistName] = useState('Megumi_Shadows');
   const [showBanner, setShowBanner] = useState(false);
@@ -54,12 +56,12 @@ export default function JoinForm() {
           <div className="flex items-center gap-space-xs">
             <span className="w-2 h-2 rounded-full bg-primary animate-ping"></span>
             <span className="font-headline-sm text-label-code uppercase tracking-wider text-on-surface-variant">
-              Connexion Arène Directe
+              {t('connection')}
             </span>
           </div>
           <div className="flex items-center gap-1 font-label-code text-talisman-tag text-tertiary">
             <span className="material-symbols-outlined text-[14px]">bolt</span>
-            <span>SERVEUR ACTIF</span>
+            <span>{t('serverActive')}</span>
           </div>
         </div>
 
@@ -72,9 +74,9 @@ export default function JoinForm() {
                 className="font-headline-sm text-label-code uppercase tracking-wider text-on-surface flex items-center gap-space-xs"
               >
                 <span className="material-symbols-outlined text-[16px] text-primary">pin</span>
-                <span>Sceau de Salon // PIN</span>
+                <span>{t('pinLabel')}</span>
               </label>
-              <span className="font-label-code text-talisman-tag text-outline">FORMAT: 6 CARACTÈRES (EX: 884-JJK)</span>
+              <span className="font-label-code text-talisman-tag text-outline">{t('pinFormat')}</span>
             </div>
             <div className="relative flex items-center">
               <input
@@ -91,7 +93,7 @@ export default function JoinForm() {
               <div className="absolute right-space-md flex items-center gap-space-xs pointer-events-none">
                 <span className="w-2.5 h-8 bg-primary animate-pulse rounded"></span>
                 <span className="font-talisman-tag text-talisman-tag text-outline uppercase hidden sm:inline">
-                  CURSEUR VIF
+                  {t('liveCursor')}
                 </span>
               </div>
             </div>
@@ -105,7 +107,7 @@ export default function JoinForm() {
                 className="font-headline-sm text-label-code uppercase tracking-wider text-on-surface flex items-center gap-space-xs"
               >
                 <span className="material-symbols-outlined text-[16px] text-tertiary">badge</span>
-                <span>NOM</span>
+                <span>{t('nameLabel')}</span>
               </label>
               <button
                 onClick={randomizePseudo}
@@ -113,7 +115,7 @@ export default function JoinForm() {
                 className="font-label-code text-talisman-tag text-tertiary hover:text-on-surface transition-colors flex items-center gap-0.5"
               >
                 <span className="material-symbols-outlined text-[14px]">shuffle</span>
-                <span>Aléatoire</span>
+                <span>{t('randomName')}</span>
               </button>
             </div>
             <div className="relative flex items-center">
@@ -145,9 +147,9 @@ export default function JoinForm() {
               <span className="material-symbols-outlined text-[26px] group-hover:rotate-45 transition-transform">
                 swords
               </span>
-              <span>DÉPLOYER LE Domaine (REJOINDRE)</span>
+              <span>{t('submit')}</span>
               <kbd className="hidden sm:inline-flex items-center px-space-xs py-0.5 bg-on-primary-container/20 text-on-primary-container rounded font-label-code text-label-code">
-                Entrée ↵
+                {t('enterKey')}
               </kbd>
             </button>
 
@@ -159,7 +161,7 @@ export default function JoinForm() {
               >
                 <span className="material-symbols-outlined text-[16px] text-primary">add_circle</span>
                 <span className="underline underline-offset-4 decoration-primary/40 group-hover:decoration-primary">
-                  Créer un salon privé avec vos propres textes
+                  {t('createPrivate')}
                 </span>
               </button>
             </div>
@@ -173,14 +175,21 @@ export default function JoinForm() {
               <>
                 <span className="material-symbols-outlined text-primary text-[20px] animate-spin">refresh</span>
                 <p className="font-label-code text-label-code text-on-surface flex-1">
-                  Synchronisation des barrières occultes en cours... Domaine : <span className="text-primary font-bold">{statusPin}</span>
+                  {t.rich('syncing', {
+                    pin: statusPin,
+                    highlight: (chunks) => <span className="text-primary font-bold">{chunks}</span>,
+                  })}
                 </p>
               </>
             ) : (
               <>
                 <span className="material-symbols-outlined text-tertiary text-[20px]">check_circle</span>
                 <p className="font-label-code text-label-code text-on-surface flex-1">
-                  Connexion établie au Domaine <span className="text-tertiary font-bold">{statusPin}</span> ! Téléportation de {exorcistName}...
+                  {t.rich('connected', {
+                    pin: statusPin,
+                    name: exorcistName,
+                    highlight: (chunks) => <span className="text-tertiary font-bold">{chunks}</span>,
+                  })}
                 </p>
               </>
             )}

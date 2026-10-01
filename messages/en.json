@@ -1,0 +1,68 @@
+{
+  "Metadata": {
+    "title": "JJK Type",
+    "description": "Multiplayer typing races in the Jujutsu Kaisen universe."
+  },
+  "Header": {
+    "nav": {
+      "join": "Join",
+      "multiplayer": "Multiplayer Battle",
+      "leaderboard": "Exorcist Rankings",
+      "archives": "Archives & Spells"
+    },
+    "stats": {
+      "wpmRecord": "WPM Record",
+      "accuracy": "Accuracy"
+    },
+    "soundEffects": "Sound Effects",
+    "theme": "Occult Theme",
+    "profileAlt": "Profile"
+  },
+  "LanguageSwitcher": {
+    "label": "Language"
+  },
+  "Hero": {
+    "title": "Enter the <accent>Domain</accent>",
+    "intro": "Enter your squad's secret seal (Game PIN) or join a public showdown in progress."
+  },
+  "JoinForm": {
+    "connection": "Direct Arena Link",
+    "serverActive": "SERVER ONLINE",
+    "pinLabel": "Room Seal // PIN",
+    "pinFormat": "FORMAT: 6 CHARACTERS (E.G. 884-JJK)",
+    "liveCursor": "LIVE CURSOR",
+    "nameLabel": "NAME",
+    "randomName": "Random",
+    "submit": "EXPAND THE Domain (JOIN)",
+    "enterKey": "Enter ↵",
+    "createPrivate": "Create a private room with your own texts",
+    "syncing": "Syncing the occult barriers... Domain: <highlight>{pin}</highlight>",
+    "connected": "Connected to Domain <highlight>{pin}</highlight>! Teleporting {name}..."
+  },
+  "PublicLobbies": {
+    "title": "Public Rooms",
+    "open": "Open",
+    "activeExorcists": "{count} exorcists in battle",
+    "refresh": "Refresh",
+    "explore": "Explore more rooms & arenas",
+    "join": "Join",
+    "mode": {
+      "sprint": "{seconds}s Sprint",
+      "words": "{count} words"
+    },
+    "badge": {
+      "seconds": "{seconds}s",
+      "words": "{count} words",
+      "standard": "Standard"
+    },
+    "participants": {
+      "exorcists": "{current}/{max} exorcists",
+      "ready": "{current}/{max} ready"
+    },
+    "status": {
+      "startsIn": "Starts in {seconds}s",
+      "waitingSquad": "Waiting for squad",
+      "readyToLaunch": "Ready to launch"
+    }
+  }
+}
