@@ -2,7 +2,7 @@ import { blackFlashBolts } from './blackFlashGeometry';
 
 const CYCLE_SECONDS = 3.4;
 // Un éclair sur trois part avec la salve (délai 0, avec le flash du fond) ; les autres crépitent en décalé.
-const BOLTS = blackFlashBolts(40, 1999, CYCLE_SECONDS).map((bolt, i) => (i % 3 === 0 ? { ...bolt, delay: 0 } : bolt));
+const BOLTS = blackFlashBolts(35, 1999, CYCLE_SECONDS).map((bolt, i) => (i % 3 === 0 ? { ...bolt, delay: 0 } : bolt));
 
 // Éclairs noirs à halo cramoisi qui crépitent autour du centre du hero (décor uniquement).
 export default function BlackFlash() {
@@ -16,7 +16,7 @@ export default function BlackFlash() {
       <svg viewBox="-500 -500 1000 1000" className="absolute inset-0 size-full overflow-visible">
         <defs>
           <filter id="black-flash-glow" x="-20%" y="-20%" width="140%" height="140%">
-            <feGaussianBlur stdDeviation="3" />
+            <feGaussianBlur stdDeviation="4" />
           </filter>
         </defs>
         {BOLTS.map((bolt, i) => (
@@ -28,16 +28,16 @@ export default function BlackFlash() {
             strokeLinecap="round"
             strokeLinejoin="round"
           >
-            {/* Aura cramoisie, cœur noir, liseré rose */}
-            <g stroke="#e11d48" strokeWidth="7" filter="url(#black-flash-glow)">
+            {/* Aura cramoisie, cœur noir, liseré noir */}
+            <g stroke="#e11d48" strokeWidth="11" filter="url(#black-flash-glow)">
               <path d={bolt.main} />
-              {bolt.branches.map((d) => <path key={d} d={d} strokeWidth="4.5" />)}
+              {bolt.branches.map((d) => <path key={d} d={d} strokeWidth="7" />)}
             </g>
-            <g stroke="#050505" strokeWidth="2.4">
+            <g stroke="#050505" strokeWidth="3.8">
               <path d={bolt.main} />
-              {bolt.branches.map((d) => <path key={d} d={d} strokeWidth="1.5" />)}
+              {bolt.branches.map((d) => <path key={d} d={d} strokeWidth="2.4" />)}
             </g>
-            <g stroke="#ffb3b6" strokeWidth="0.6" opacity="0.75">
+            <g stroke="#050505" strokeWidth="0.9" opacity="0.75">
               <path d={bolt.main} />
             </g>
           </g>
