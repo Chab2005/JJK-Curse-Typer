@@ -59,6 +59,10 @@ describe('blackFlashBolts', () => {
     }
   });
 
+  it('fait partir chaque éclair du centre exact', () => {
+    for (const bolt of blackFlashBolts(8, 3, 3)) expect(bolt.main.startsWith('M0 0L')).toBe(true);
+  });
+
   it('est identique d’un rendu à l’autre (pas d’écart d’hydratation)', () => {
     expect(blackFlashBolts(6, 11, 3)).toEqual(blackFlashBolts(6, 11, 3));
   });
