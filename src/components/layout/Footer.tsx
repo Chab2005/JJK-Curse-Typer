@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 
@@ -7,10 +8,19 @@ export default function Footer() {
   return (
     <footer className="flex w-full flex-col items-center gap-[22px] border-t border-surface-container-low bg-black px-margin pt-14 pb-9 text-center">
       <p className="flex items-center gap-3.5">
-        <span className="bevel bg-linear-135 from-gold to-gold-deep p-px">
-          <span className="bevel flex items-center bg-black px-3.5 py-2">
-            <span className="bg-linear-to-b from-[#fff1b8] via-gold to-gold-deep bg-clip-text text-base uppercase tracking-[0.12em] text-transparent">Jujutsu Kaisen</span>
-          </span>
+        <span className="relative block w-[200px]">
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute -inset-x-[8%] -inset-y-[30%] bg-[radial-gradient(ellipse_50%_50%_at_50%_50%,rgb(245_215_122/0.3),transparent_72%)] blur-[4px]"
+          />
+          <Image
+            src="/images/jjk-logo.png"
+            alt="Jujutsu Kaisen"
+            width={1164}
+            height={271}
+            sizes="200px"
+            className="relative h-auto w-full [filter:drop-shadow(0_0_1px_#f5d77a)_drop-shadow(0_0_2px_#c9972f)]"
+          />
         </span>
         <span className="text-[22px] tracking-[0.06em]">
           Curse <span className="text-primary">Typer</span>
