@@ -204,5 +204,87 @@
     "empty": "No exorcist goes by that name.",
     "pagination": "Ranking pages",
     "eligibility": "Players appear after {games} finished races. The average score covers their last 5 races."
+  },
+  "Profile": {
+    "eyebrow": "Exorcist profile",
+    "github": "github.com/{handle}",
+    "discord": "Discord: {name}",
+    "discordLink": "Discord profile",
+    "summary": "{games} races · {wins} wins · best: {best} WPM",
+    "chart": {
+      "title": "WPM over time",
+      "period": "Time period",
+      "periods": {
+        "7d": "7 days",
+        "30d": "30 days",
+        "1y": "1 year",
+        "all": "All"
+      },
+      "summary": "WPM chart, {count} points with races, latest {last} WPM. Use the arrow keys to read each point.",
+      "wpm": "{value} WPM",
+      "noRace": "No race",
+      "races": "{count, plural, one {# race} other {# races}}",
+      "empty": "No race in this period.",
+      "date": "Date",
+      "wpmColumn": "Average WPM",
+      "racesColumn": "Races"
+    },
+    "stats": {
+      "label": "Main statistics",
+      "wpm": "Average WPM",
+      "wpmUnit": "WPM",
+      "accuracy": "Accuracy",
+      "errors": "Errors per 100 words",
+      "errorsUnit": "/ 100",
+      "score": "Average score (last 5 races)",
+      "scoreUnit": "pts"
+    },
+    "heatmap": {
+      "title": "Keyboard heatmap",
+      "mode": "Value shown",
+      "modes": {
+        "errors": "Errors",
+        "speed": "Speed"
+      },
+      "layout": "Keyboard layout",
+      "legend": "Legend",
+      "tones": {
+        "weak": "Needs work",
+        "average": "Average",
+        "strong": "Good"
+      },
+      "valueHint": {
+        "errors": "value = error rate",
+        "speed": "value = average delay"
+      },
+      "ms": "{value} ms",
+      "space": "Space",
+      "row": "Row {number}",
+      "keyLabel": "{key}: {value}, {tone}",
+      "keyUnused": "{key}: never typed",
+      "weakest": "Keys to work on:"
+    },
+    "edit": {
+      "open": "Edit profile",
+      "title": "Edit profile",
+      "close": "Close",
+      "avatar": "Profile picture",
+      "username": "Username",
+      "github": "GitHub profile link",
+      "githubPlaceholder": "https://github.com/your-name",
+      "discord": "Discord (link or name)",
+      "discordPlaceholder": "name or https://discord.com/users/…",
+      "cancel": "Cancel",
+      "save": "Save",
+      "saved": "Profile updated.",
+      "errors": {
+        "username": {
+          "length": "Between 3 and 20 characters.",
+          "characters": "Letters, digits, _ and - only."
+        },
+        "github": "Enter a GitHub profile link, like github.com/your-name.",
+        "discord": "Enter a Discord name (2 to 32 lowercase letters, digits, _ or .) or a discord.com link."
+      }
+    }
   }
 }

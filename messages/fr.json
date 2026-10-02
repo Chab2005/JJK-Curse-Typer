@@ -204,5 +204,87 @@
     "empty": "Aucun exorciste ne porte ce nom.",
     "pagination": "Pages du classement",
     "eligibility": "Les joueurs apparaissent après {games} courses terminées. Le score moyen porte sur leurs 5 dernières courses."
+  },
+  "Profile": {
+    "eyebrow": "Profil d'exorciste",
+    "github": "github.com/{handle}",
+    "discord": "Discord : {name}",
+    "discordLink": "Profil Discord",
+    "summary": "{games} courses · {wins} victoires · meilleur : {best} MPM",
+    "chart": {
+      "title": "Évolution du MPM",
+      "period": "Période",
+      "periods": {
+        "7d": "7 jours",
+        "30d": "30 jours",
+        "1y": "1 an",
+        "all": "Tout"
+      },
+      "summary": "Graphique du MPM, {count} points avec courses, dernier : {last} MPM. Utilisez les flèches pour lire chaque point.",
+      "wpm": "{value} MPM",
+      "noRace": "Aucune course",
+      "races": "{count, plural, one {# course} other {# courses}}",
+      "empty": "Aucune course sur cette période.",
+      "date": "Date",
+      "wpmColumn": "MPM moyen",
+      "racesColumn": "Courses"
+    },
+    "stats": {
+      "label": "Statistiques principales",
+      "wpm": "MPM moyen",
+      "wpmUnit": "MPM",
+      "accuracy": "Précision",
+      "errors": "Erreurs pour 100 mots",
+      "errorsUnit": "/ 100",
+      "score": "Score moyen (5 dernières courses)",
+      "scoreUnit": "pts"
+    },
+    "heatmap": {
+      "title": "Carte de chaleur du clavier",
+      "mode": "Valeur affichée",
+      "modes": {
+        "errors": "Erreurs",
+        "speed": "Vitesse"
+      },
+      "layout": "Disposition du clavier",
+      "legend": "Légende",
+      "tones": {
+        "weak": "À travailler",
+        "average": "Moyen",
+        "strong": "Bon"
+      },
+      "valueHint": {
+        "errors": "valeur = taux d'erreur",
+        "speed": "valeur = délai moyen"
+      },
+      "ms": "{value} ms",
+      "space": "Espace",
+      "row": "Rangée {number}",
+      "keyLabel": "{key} : {value}, {tone}",
+      "keyUnused": "{key} : jamais tapée",
+      "weakest": "Touches à travailler :"
+    },
+    "edit": {
+      "open": "Modifier le profil",
+      "title": "Modifier le profil",
+      "close": "Fermer",
+      "avatar": "Photo de profil",
+      "username": "Pseudo",
+      "github": "Lien du profil GitHub",
+      "githubPlaceholder": "https://github.com/votre-pseudo",
+      "discord": "Discord (lien ou nom)",
+      "discordPlaceholder": "nom ou https://discord.com/users/…",
+      "cancel": "Annuler",
+      "save": "Sauvegarder",
+      "saved": "Profil mis à jour.",
+      "errors": {
+        "username": {
+          "length": "Entre 3 et 20 caractères.",
+          "characters": "Lettres, chiffres, _ et - seulement."
+        },
+        "github": "Entrez un lien de profil GitHub, comme github.com/votre-pseudo.",
+        "discord": "Entrez un nom Discord (2 à 32 minuscules, chiffres, _ ou .) ou un lien discord.com."
+      }
+    }
   }
 }
