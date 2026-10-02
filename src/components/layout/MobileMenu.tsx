@@ -1,8 +1,8 @@
 'use client';
 
-import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
+import { Link } from '@/i18n/navigation';
 import LanguageSwitcher from './LanguageSwitcher';
 import ProfileAvatar from './ProfileAvatar';
 

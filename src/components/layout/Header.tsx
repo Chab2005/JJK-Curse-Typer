@@ -1,128 +1,86 @@
 'use client';
 
-import Link from 'next/link';
+import Image from 'next/image';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { Link, usePathname } from '@/i18n/navigation';
 import LanguageSwitcher from './LanguageSwitcher';
 import MobileMenu, { type NavItem } from './MobileMenu';
 import ProfileAvatar from './ProfileAvatar';
 
+const NAV = [
+  { href: '/', key: 'home' },
+  { href: '/lobbies', key: 'arenas' },
+  { href: '/leaderboard', key: 'leaderboard' },
+  { href: '/profile', key: 'archives' },
+] as const;
+
 export default function Header() {
   const t = useTranslations('Header');
-  const [soundEnabled, setSoundEnabled] = useState(true);
-  const [darkMode, setDarkMode] = useState(true);
+  const pathname = usePathname();
 
-  const navItems: NavItem[] = [
-    { href: '#', label: t('nav.join'), active: true },
-    { href: '#', label: t('nav.multiplayer') },
-    { href: '#', label: t('nav.leaderboard') },
-    { href: '#', label: t('nav.archives') },
-  ];
+  const navItems: NavItem[] = NAV.map(({ href, key }) => ({
+    href,
+    label: t(`nav.${key}`),
+    active: href === '/' ? pathname === '/' : pathname.startsWith(href),
+  }));
 
   return (
-    <header className="fixed top-0 w-full z-50 bg-surface/90 backdrop-blur-md shadow-[0_1px_8px_rgba(0,0,0,0.4)]">
-      <div className="h-20 w-full px-space-lg lg:px-margin flex items-center justify-between gap-space-md">
+    <header className="sticky top-0 z-50 w-full bg-linear-to-b from-surface-container-lowest/95 to-surface-container-lowest/75 backdrop-blur-md">
+      <div className="h-19 w-full px-space-lg lg:px-margin flex items-center justify-between gap-space-md">
         {/* Logo */}
-        <div className="flex items-center gap-space-md shrink-0">
-          <Link
-            href="#"
-            className="flex items-center gap-space-sm group"
-          >
-            <div className="flex flex-col">
-              <span className="font-headline-sm text-headline-sm tracking-tight text-on-surface group-hover:text-primary transition-colors">
-                JJK : <span className="text-primary">Curse Typer</span>
-              </span>
-              <span className="font-talisman-tag text-talisman-tag uppercase tracking-widest text-primary-container">
-                <br />
-              </span>
-            </div>
-          </Link>
-        </div>
+        <Link href="/" aria-label={t('home')} className="flex items-center gap-3 shrink-0 text-on-surface hover:text-on-surface">
+          <span className="relative block w-[150px] sm:w-[170px]">
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute -inset-x-[8%] -inset-y-[30%] bg-[radial-gradient(ellipse_50%_50%_at_50%_50%,rgb(245_215_122/0.28),transparent_72%)] blur-[4px]"
+            />
+            <Image
+              src="/images/jjk-logo.png"
+              alt="Jujutsu Kaisen"
+              width={1164}
+              height={271}
+              sizes="170px"
+              priority
+              className="relative h-auto w-full [filter:drop-shadow(0_0_1px_#f5d77a)_drop-shadow(0_0_2px_#c9972f)]"
+            />
+          </span>
+          <span className="text-[21px] tracking-[0.04em] whitespace-nowrap text-primary">Curse Typer</span>
+        </Link>
 
         {/* Navigation */}
-        <nav className="hidden lg:flex items-center gap-space-lg">
+        <nav aria-label={t('nav.label')} className="hidden lg:flex items-center gap-[30px]">
           {navItems.map((item) => (
-            <NavLink key={item.label} {...item} />
+            <NavLink key={item.href} {...item} />
           ))}
         </nav>
 
-        {/* Right Section */}
-        <div className="flex items-center gap-space-md shrink-0">
-          {/* Stats Display */}
-          <div className="hidden 2xl:flex items-center gap-space-md px-space-md py-space-xs bg-surface-container-low rounded-xl">
-            <div className="flex items-center gap-space-xs">
-              <span className="font-headline-sm text-label-code text-primary">142</span>
-              <span className="font-label-code text-talisman-tag uppercase text-on-surface-variant">{t('stats.wpmRecord')}</span>
-            </div>
-            <div className="w-px h-3 bg-surface-container-highest"></div>
-            <div className="flex items-center gap-space-xs">
-              <span className="font-headline-sm text-label-code text-tertiary">99.4%</span>
-              <span className="font-label-code text-talisman-tag uppercase text-on-surface-variant">{t('stats.accuracy')}</span>
-            </div>
-            <div className="w-px h-3 bg-surface-container-highest"></div>
-            <div className="flex items-center gap-space-xs">
-              <span className="font-headline-sm text-label-code text-secondary">Satoru</span>
-              <span className="font-talisman-tag text-talisman-tag text-outline">五条</span>
-            </div>
-          </div>
-
-          {/* Control Buttons */}
-          <div className="flex items-center gap-space-sm">
-            <div className="hidden lg:flex">
+        {/* Langue + profil */}
+        <div className="flex items-center gap-3 shrink-0">
+          <div className="hidden lg:flex diamond-ends bg-error-container p-px">
+            <div className="diamond-ends bg-surface-container-lowest px-2">
               <LanguageSwitcher />
             </div>
-
-            <button
-              onClick={() => setSoundEnabled(!soundEnabled)}
-              title={t('soundEffects')}
-              className="hidden px-space-sm py-space-xs rounded bg-surface-container-low hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-colors items-center gap-space-xs font-label-code text-label-code"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
-                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-                <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
-              </svg>
-            </button>
-
-            <button
-              onClick={() => setDarkMode(!darkMode)}
-              title={t('theme')}
-              className="hidden px-space-sm py-space-xs rounded bg-surface-container-low hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-colors items-center gap-space-xs font-label-code text-label-code"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
-                <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle>
-                <circle cx="17.5" cy="10.5" r=".5" fill="currentColor"></circle>
-                <circle cx="8.5" cy="7.5" r=".5" fill="currentColor"></circle>
-                <circle cx="6.5" cy="12.5" r=".5" fill="currentColor"></circle>
-                <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"></path>
-              </svg>
-              <span className="hidden md:inline font-talisman-tag text-talisman-tag uppercase">Sukuna</span>
-            </button>
-
-            {/* Profile */}
-            <div className="relative hidden lg:flex items-center ml-space-xs pl-space-sm">
-              <ProfileAvatar />
-            </div>
-
-            <MobileMenu items={navItems} />
           </div>
+          <Link href="/profile" aria-label={t('profileAlt')} className="hidden lg:flex rounded-full ring-1 ring-primary-container ring-offset-2 ring-offset-surface-container-lowest">
+            <ProfileAvatar />
+          </Link>
+          <MobileMenu items={navItems} />
         </div>
       </div>
     </header>
   );
 }
 
-function NavLink({ href, label, active = false }: { href: string; label: string; active?: boolean }) {
+function NavLink({ href, label, active = false }: NavItem) {
   return (
     <Link
       href={href}
-      className={`flex flex-col items-center py-space-xs transition-colors ${
-        active
-          ? 'text-primary font-bold border-b border-primary-container'
-          : 'text-on-surface-variant hover:text-on-surface'
+      aria-current={active ? 'page' : undefined}
+      className={`py-1.5 border-b text-[13px] uppercase tracking-[0.16em] transition-colors ${
+        active ? 'text-primary border-primary-container' : 'text-on-surface-variant border-transparent hover:text-on-primary-container'
       }`}
     >
-      <span className="font-headline-sm text-label-code uppercase tracking-wider">{label}</span>
+      {label}
     </Link>
   );
 }
