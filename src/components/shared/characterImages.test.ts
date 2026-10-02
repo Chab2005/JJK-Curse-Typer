@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { FACE_ZOOM_WIDTH, faceFrame, findCharacterImage } from './characterImages';
+import { AVATAR_ZOOM, FACE_ZOOM_WIDTH, faceCrop, faceFrame, findCharacterImage } from './characterImages';
 
 describe('faceFrame', () => {
   const ratio = 1270 / 904;
@@ -15,6 +15,20 @@ describe('faceFrame', () => {
 
   it('agrandit toujours l’image à la même largeur', () => {
     expect(faceFrame({ x: 0.5, y: 0.05 }, 100).width).toBe(FACE_ZOOM_WIDTH);
+  });
+});
+
+describe('faceCrop', () => {
+  const ratio = 1270 / 904;
+
+  it('centre le visage dans un avatar rond de la taille demandée', () => {
+    const crop = faceCrop({ x: 0.47, y: 0.13 }, 48);
+    expect(crop.left + 0.47 * crop.width).toBeCloseTo(24);
+    expect(crop.top + 0.13 * crop.width * ratio).toBeCloseTo(24);
+  });
+
+  it('agrandit l’illustration proportionnellement à l’avatar', () => {
+    expect(faceCrop({ x: 0.5, y: 0.1 }, 100).width).toBe(100 * AVATAR_ZOOM);
   });
 });
 
