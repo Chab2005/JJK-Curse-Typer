@@ -3,10 +3,14 @@ import path from 'node:path';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
-import { findCharacterImage } from './characterImages';
+import { faceFrame, findCharacterImage } from './characterImages';
 
-// Visage du personnage : public/images/characters/<id>.webp (ou .png, .jpg…), vignette de 200 px.
+// Illustration en pied du personnage : public/images/characters/<id>.webp (ou .png, .jpg…),
+// agrandie et cadrée sur le visage (`face`, en fractions de l'illustration).
 // Sans image, la carte affiche l'initiale en contour sur un halo coloré.
+/** Hauteur, depuis le haut de la carte, où l'on pose le centre du visage. */
+const FACE_ANCHOR_Y = 150;
+
 const CHARACTERS_DIR = path.join(process.cwd(), 'public', 'images', 'characters');
 
 function characterFiles(): string[] {
@@ -18,14 +22,14 @@ function characterFiles(): string[] {
 }
 
 const CHARACTERS = [
-  { id: 'yuji', name: 'Yuji Itadori', tint: 'bg-[radial-gradient(ellipse_90%_70%_at_50%_35%,rgb(225_29_72/0.55),#131315_75%)]', ink: 'text-primary', stroke: '[-webkit-text-stroke:2px_#ffb3b6]' },
-  { id: 'megumi', name: 'Megumi Fushiguro', tint: 'bg-[radial-gradient(ellipse_90%_70%_at_50%_35%,rgb(49_49_192/0.6),#131315_75%)]', ink: 'text-secondary', stroke: '[-webkit-text-stroke:2px_#c0c1ff]' },
-  { id: 'nobara', name: 'Nobara Kugisaki', tint: 'bg-[radial-gradient(ellipse_90%_70%_at_50%_35%,rgb(147_0_10/0.6),#131315_75%)]', ink: 'text-primary-fixed', stroke: '[-webkit-text-stroke:2px_#ffdada]' },
-  { id: 'gojo', name: 'Satoru Gojo', tint: 'bg-[radial-gradient(ellipse_90%_70%_at_50%_35%,rgb(0_127_149/0.55),#131315_75%)]', ink: 'text-tertiary-fixed', stroke: '[-webkit-text-stroke:2px_#acedff]' },
-  { id: 'maki', name: 'Maki Zen’in', tint: 'bg-[radial-gradient(ellipse_90%_70%_at_50%_35%,rgb(92_63_64/0.75),#131315_75%)]', ink: 'text-on-surface-variant', stroke: '[-webkit-text-stroke:2px_#e5bdbe]' },
-  { id: 'nanami', name: 'Kento Nanami', tint: 'bg-[radial-gradient(ellipse_90%_70%_at_50%_35%,rgb(0_127_149/0.4),#131315_75%)]', ink: 'text-tertiary', stroke: '[-webkit-text-stroke:2px_#4cd7f6]' },
-  { id: 'todo', name: 'Aoi Todo', tint: 'bg-[radial-gradient(ellipse_90%_70%_at_50%_35%,rgb(225_29_72/0.35),#131315_75%)]', ink: 'text-primary', stroke: '[-webkit-text-stroke:2px_#ffb3b6]' },
-  { id: 'toge', name: 'Toge Inumaki', tint: 'bg-[radial-gradient(ellipse_90%_70%_at_50%_35%,rgb(49_49_192/0.45),#131315_75%)]', ink: 'text-secondary', stroke: '[-webkit-text-stroke:2px_#c0c1ff]' },
+  { id: 'yuji', face: { x: 0.5, y: 0.13 }, name: 'Yuji Itadori', tint: 'bg-[radial-gradient(ellipse_90%_70%_at_50%_35%,rgb(225_29_72/0.55),#131315_75%)]', ink: 'text-primary', stroke: '[-webkit-text-stroke:2px_#ffb3b6]' },
+  { id: 'megumi', face: { x: 0.51, y: 0.13 }, name: 'Megumi Fushiguro', tint: 'bg-[radial-gradient(ellipse_90%_70%_at_50%_35%,rgb(49_49_192/0.6),#131315_75%)]', ink: 'text-secondary', stroke: '[-webkit-text-stroke:2px_#c0c1ff]' },
+  { id: 'nobara', face: { x: 0.52, y: 0.145 }, name: 'Nobara Kugisaki', tint: 'bg-[radial-gradient(ellipse_90%_70%_at_50%_35%,rgb(147_0_10/0.6),#131315_75%)]', ink: 'text-primary-fixed', stroke: '[-webkit-text-stroke:2px_#ffdada]' },
+  { id: 'gojo', face: { x: 0.5, y: 0.115 }, name: 'Satoru Gojo', tint: 'bg-[radial-gradient(ellipse_90%_70%_at_50%_35%,rgb(0_127_149/0.55),#131315_75%)]', ink: 'text-tertiary-fixed', stroke: '[-webkit-text-stroke:2px_#acedff]' },
+  { id: 'maki', face: { x: 0.47, y: 0.15 }, name: 'Maki Zen’in', tint: 'bg-[radial-gradient(ellipse_90%_70%_at_50%_35%,rgb(92_63_64/0.75),#131315_75%)]', ink: 'text-on-surface-variant', stroke: '[-webkit-text-stroke:2px_#e5bdbe]' },
+  { id: 'nanami', face: { x: 0.5, y: 0.135 }, name: 'Kento Nanami', tint: 'bg-[radial-gradient(ellipse_90%_70%_at_50%_35%,rgb(0_127_149/0.4),#131315_75%)]', ink: 'text-tertiary', stroke: '[-webkit-text-stroke:2px_#4cd7f6]' },
+  { id: 'todo', face: { x: 0.52, y: 0.14 }, name: 'Aoi Todo', tint: 'bg-[radial-gradient(ellipse_90%_70%_at_50%_35%,rgb(225_29_72/0.35),#131315_75%)]', ink: 'text-primary', stroke: '[-webkit-text-stroke:2px_#ffb3b6]' },
+  { id: 'toge', face: { x: 0.49, y: 0.145 }, name: 'Toge Inumaki', tint: 'bg-[radial-gradient(ellipse_90%_70%_at_50%_35%,rgb(49_49_192/0.45),#131315_75%)]', ink: 'text-secondary', stroke: '[-webkit-text-stroke:2px_#c0c1ff]' },
 ] as const;
 
 export default function Characters() {
@@ -65,10 +69,11 @@ export default function Characters() {
                   <Image
                     src={image}
                     alt=""
-                    width={200}
-                    height={200}
+                    width={904}
+                    height={1270}
                     unoptimized
-                    className="absolute left-1/2 top-[42%] size-[220px] -translate-x-1/2 -translate-y-1/2 object-contain drop-shadow-[0_10px_18px_rgb(0_0_0/0.55)] transition-transform duration-300 group-hover:scale-105"
+                    style={{ ...faceFrame(character.face, FACE_ANCHOR_Y), transformOrigin: `${character.face.x * 100}% ${character.face.y * 100}%` }}
+                    className="absolute h-auto max-w-none transition-transform duration-300 group-hover:scale-105"
                   />
                 ) : (
                   <span aria-hidden="true" className={`absolute right-3.5 -top-2.5 text-[230px] leading-none text-transparent opacity-75 ${character.stroke}`}>
