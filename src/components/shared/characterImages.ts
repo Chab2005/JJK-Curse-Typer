@@ -27,3 +27,16 @@ export function faceFrame(face: FacePoint, anchorY: number): { width: number; le
     top: anchorY - face.y * width * ILLUSTRATION_RATIO,
   };
 }
+
+/** Agrandissement de l'illustration dans un avatar rond : sa largeur vaut `AVATAR_ZOOM` fois le diamètre. */
+export const AVATAR_ZOOM = 5;
+
+/** Taille et position (px) de l'illustration dans un avatar rond de `size` px, visage au centre. */
+export function faceCrop(face: FacePoint, size: number): { width: number; left: number; top: number } {
+  const width = size * AVATAR_ZOOM;
+  return {
+    width,
+    left: size / 2 - face.x * width,
+    top: size / 2 - face.y * width * ILLUSTRATION_RATIO,
+  };
+}

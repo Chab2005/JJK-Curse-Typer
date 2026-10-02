@@ -168,5 +168,41 @@
       "spectate": "Watch",
       "spectateLabel": "Watch {name} as a spectator"
     }
+  },
+  "Leaderboard": {
+    "metaTitle": "Rankings",
+    "eyebrow": "Top exorcists",
+    "title": "Exorcist rankings",
+    "watermark": "Rankings",
+    "search": "Search a username",
+    "filter": "Filter",
+    "sortBy": "Sort by",
+    "close": "Close",
+    "current": "Category: <strong>{category}</strong>",
+    "categories": {
+      "wpm": "WPM",
+      "accuracy": "Accuracy",
+      "score": "Average score",
+      "errors": "Errors / 100 words"
+    },
+    "units": {
+      "wpm": "{value} WPM",
+      "score": "{value} pts"
+    },
+    "places": {
+      "1": "First · {category}",
+      "2": "Second · {category}",
+      "3": "Third · {category}"
+    },
+    "podium": "Podium",
+    "tableCaption": "Overall rankings, sorted by {category}",
+    "columns": {
+      "rank": "Rank",
+      "player": "Player"
+    },
+    "profileLabel": "View {name}'s profile",
+    "empty": "No exorcist goes by that name.",
+    "pagination": "Ranking pages",
+    "eligibility": "Players appear after {games} finished races. The average score covers their last 5 races."
   }
 }

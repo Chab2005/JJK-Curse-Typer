@@ -168,5 +168,41 @@
       "spectate": "Regarder",
       "spectateLabel": "Regarder {name} en spectateur"
     }
+  },
+  "Leaderboard": {
+    "metaTitle": "Classement",
+    "eyebrow": "Meilleurs exorcistes",
+    "title": "Classement des exorcistes",
+    "watermark": "Classement",
+    "search": "Rechercher un nom d'utilisateur",
+    "filter": "Filtre",
+    "sortBy": "Trier par",
+    "close": "Fermer",
+    "current": "Catégorie : <strong>{category}</strong>",
+    "categories": {
+      "wpm": "MPM",
+      "accuracy": "Précision",
+      "score": "Score moyen",
+      "errors": "Erreurs / 100 mots"
+    },
+    "units": {
+      "wpm": "{value} MPM",
+      "score": "{value} pts"
+    },
+    "places": {
+      "1": "Premier · {category}",
+      "2": "Second · {category}",
+      "3": "Troisième · {category}"
+    },
+    "podium": "Podium",
+    "tableCaption": "Classement général, trié par {category}",
+    "columns": {
+      "rank": "Rang",
+      "player": "Joueur"
+    },
+    "profileLabel": "Voir le profil de {name}",
+    "empty": "Aucun exorciste ne porte ce nom.",
+    "pagination": "Pages du classement",
+    "eligibility": "Les joueurs apparaissent après {games} courses terminées. Le score moyen porte sur leurs 5 dernières courses."
   }
 }
