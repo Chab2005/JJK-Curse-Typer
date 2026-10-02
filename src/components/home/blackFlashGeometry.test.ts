@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { blackFlashBolts, boltPoints, seededRandom, toPath } from './blackFlash';
+import { blackFlashBolts, boltPoints, seededRandom, toPath } from './blackFlashGeometry';
 
 describe('seededRandom', () => {
   it('donne toujours la même suite pour la même graine', () => {

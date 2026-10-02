@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
+import BlackFlash from './BlackFlash';
 
 export default function Hero({ onlineCount }: { onlineCount: number }) {
   const t = useTranslations('Hero');
@@ -10,11 +11,9 @@ export default function Hero({ onlineCount }: { onlineCount: number }) {
       aria-labelledby="hero-title"
       className="torn-bottom relative -mt-19 flex min-h-[860px] items-center justify-center overflow-hidden bg-surface-container-lowest px-6 pt-[150px] pb-[140px]"
     >
-      {/* Énergie occulte : halo, rayons et taches */}
+      {/* Énergie occulte : halo, éclairs Black Flash et taches */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_40%_45%_at_50%_50%,rgb(225_29_72/0.4),rgb(147_0_10/0.18)_45%,transparent_75%)]" />
-      <div aria-hidden="true" className="pointer-events-none absolute left-1/2 top-1/2 size-[2400px] -translate-x-1/2 -translate-y-1/2">
-        <div className="cursed-rays size-full animate-[spin_160s_linear_infinite] motion-reduce:animate-none" />
-      </div>
+      <BlackFlash />
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_78%,rgb(147_0_10/0.35),transparent_22%),radial-gradient(circle_at_86%_22%,rgb(49_49_192/0.28),transparent_24%),radial-gradient(circle_at_78%_88%,rgb(147_0_10/0.25),transparent_18%)]" />
       <p aria-hidden="true" className="hidden lg:block absolute left-10 top-1/2 -translate-y-1/2 [writing-mode:vertical-rl] whitespace-nowrap font-label-code text-[11px] uppercase tracking-[0.5em] text-outline-variant">
         {t('sideLeft')}

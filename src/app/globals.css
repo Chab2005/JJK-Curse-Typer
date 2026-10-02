@@ -198,7 +198,26 @@ kbd,
   -webkit-text-stroke: 1px rgb(255 179 182 / 0.22);
 }
 
-@utility cursed-rays {
-  background: repeating-conic-gradient(from 0deg, rgb(225 29 72 / 0.2) 0deg 0.9deg, transparent 0.9deg 5deg);
-  mask-image: radial-gradient(circle, transparent 8%, #000 22%, transparent 48%);
+/* Black Flash : chaque éclair crépite brièvement, puis disparaît jusqu'au cycle suivant */
+@keyframes black-flash {
+  0%, 100% { opacity: 0; }
+  2% { opacity: 1; }
+  4% { opacity: 0.15; }
+  6% { opacity: 1; }
+  9% { opacity: 0.6; }
+  12% { opacity: 1; }
+  18% { opacity: 0; }
+}
+
+@keyframes black-flash-burst {
+  0%, 100% { opacity: 0; }
+  2% { opacity: 1; }
+  5% { opacity: 0.2; }
+  7% { opacity: 0.8; }
+  14% { opacity: 0; }
+}
+
+@keyframes impact-pulse {
+  0%, 100% { opacity: 0.45; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(1.12); }
 }
