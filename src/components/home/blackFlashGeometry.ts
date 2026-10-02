@@ -46,6 +46,9 @@ export function toPath(points: Point[]): string {
   return points.map((p, i) => `${i === 0 ? 'M' : 'L'}${round(p.x)} ${round(p.y)}`).join('');
 }
 
+/** Distance du centre où naissent les éclairs, dans le repère de ±500 (≈ 50 px à l'écran). */
+export const BOLT_START_RADIUS = 20;
+
 const polar = (radius: number, angle: number): Point => ({ x: radius * Math.cos(angle), y: radius * Math.sin(angle) });
 
 /** `count` éclairs qui partent du centre (0, 0) vers l'extérieur, dans un repère de ±500. */
@@ -54,7 +57,7 @@ export function blackFlashBolts(count: number, seed: number, cycleSeconds: numbe
 
   return Array.from({ length: count }, (_, i) => {
     const angle = (i / count) * Math.PI * 2 + (random() - 0.5) * 0.5;
-    const start: Point = { x: 0, y: 0 };
+    const start = polar(BOLT_START_RADIUS, angle);
     const end = polar(460 + random() * 40, angle + (random() - 0.5) * 0.3);
     const points = boltPoints(start, end, 16 + Math.floor(random() * 6), 18, random);
 
