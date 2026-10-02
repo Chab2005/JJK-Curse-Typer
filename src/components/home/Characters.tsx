@@ -67,7 +67,7 @@ export default function Characters() {
                     alt=""
                     fill
                     sizes="(max-width: 640px) 100vw, 300px"
-                    className="object-cover object-top transition-transform duration-300 group-hover:scale-105"
+                    className="origin-[50%_6%] scale-[1.4] object-cover object-top transition-transform duration-300 group-hover:scale-[1.48]"
                   />
                 ) : (
                   <span aria-hidden="true" className={`absolute right-3.5 -top-2.5 text-[230px] leading-none text-transparent opacity-75 ${character.stroke}`}>
