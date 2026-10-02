@@ -1,7 +1,8 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { normalizePin, pickRandomPseudo } from './join';
 
 const RANDOM_PSEUDOS = [
   'Megumi_Shadows',
@@ -11,36 +12,27 @@ const RANDOM_PSEUDOS = [
   'Sukuna_Malevolent',
   'Nanami_Ratio73',
   'Todo_BoogieWoogie',
-  'Maki_Heavenly'
+  'Maki_Heavenly',
 ];
+
+const DEMO_PIN = '884-JJK';
 
 export default function JoinForm() {
   const t = useTranslations('JoinForm');
   const [roomPin, setRoomPin] = useState('');
   const [exorcistName, setExorcistName] = useState('Megumi_Shadows');
   const [showBanner, setShowBanner] = useState(false);
-  const [statusPin, setStatusPin] = useState('884-JJK');
+  const [statusPin, setStatusPin] = useState(DEMO_PIN);
   const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    const input = document.getElementById('roomPinInput') as HTMLInputElement;
-    if (input) input.focus();
-  }, []);
-
-  const randomizePseudo = () => {
-    const filtered = RANDOM_PSEUDOS.filter(p => p !== exorcistName);
-    const next = filtered[Math.floor(Math.random() * filtered.length)];
-    setExorcistName(next);
-  };
 
   const triggerJoinDomain = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const code = roomPin.trim().toUpperCase() || '884-JJK';
-    setStatusPin(code);
+    setStatusPin(normalizePin(roomPin) || DEMO_PIN);
     setShowBanner(true);
     setIsLoading(true);
 
+    // En attendant le serveur temps réel (phase 2), on simule la connexion.
     setTimeout(() => {
       setIsLoading(false);
       setShowBanner(false);
@@ -48,154 +40,102 @@ export default function JoinForm() {
   };
 
   return (
-    <div className="lg:col-span-7 flex flex-col">
-      <div className="relative bg-surface-container rounded-xl p-space-md lg:p-space-xl shadow-xl overflow-hidden">
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary-container via-secondary-container to-tertiary"></div>
-
-        <div className="flex items-center justify-between pb-space-sm">
-          <div className="flex items-center gap-space-xs">
-            <span className="w-2 h-2 rounded-full bg-primary animate-ping"></span>
-            <span className="font-headline-sm text-label-code uppercase tracking-wider text-on-surface-variant">
-              {t('connection')}
-            </span>
-          </div>
-          <div className="flex items-center gap-1 font-label-code text-talisman-tag text-tertiary">
-            <span className="material-symbols-outlined text-[14px]">bolt</span>
-            <span>{t('serverActive')}</span>
-          </div>
+    <div className="bevel bg-linear-160 from-primary-container via-outline-variant via-40% to-secondary-container p-px">
+      <form onSubmit={triggerJoinDomain} className="bevel flex flex-col gap-[22px] bg-surface-container-low px-[34px] pt-9 pb-[30px]">
+        <div className="flex items-center justify-between gap-2">
+          <h3 className="text-xl uppercase tracking-[0.12em]">{t('title')}</h3>
+          <p className="font-label-code flex items-center gap-1.5 text-[11px] font-bold uppercase text-tertiary">
+            <span aria-hidden="true" className="size-[7px] rounded-full bg-tertiary" />
+            {t('serverActive')}
+          </p>
         </div>
 
-        <form onSubmit={triggerJoinDomain} className="mt-space-md flex flex-col gap-space-lg">
-          {/* Room PIN Input */}
-          <div className="flex flex-col gap-space-xs">
-            <div className="flex items-center justify-between">
-              <label
-                htmlFor="roomPinInput"
-                className="font-headline-sm text-label-code uppercase tracking-wider text-on-surface flex items-center gap-space-xs"
-              >
-                <span className="material-symbols-outlined text-[16px] text-primary">pin</span>
-                <span>{t('pinLabel')}</span>
-              </label>
-              <span className="font-label-code text-talisman-tag text-outline">{t('pinFormat')}</span>
-            </div>
-            <div className="relative flex items-center">
-              <input
-                id="roomPinInput"
-                type="text"
-                maxLength={7}
-                value={roomPin}
-                onChange={(e) => setRoomPin(e.target.value)}
-                placeholder=" "
-                autoComplete="off"
-                spellCheck={false}
-                className="w-full bg-surface-container-lowest text-primary font-headline-lg text-headline-lg lg:text-hud-metric uppercase tracking-widest px-space-md py-space-sm rounded-lg placeholder:text-surface-container-highest focus:outline-none shadow-inner"
-              />
-              <div className="absolute right-space-md flex items-center gap-space-xs pointer-events-none">
-                <span className="w-2.5 h-8 bg-primary animate-pulse rounded"></span>
-                <span className="font-talisman-tag text-talisman-tag text-outline uppercase hidden sm:inline">
-                  {t('liveCursor')}
-                </span>
-              </div>
-            </div>
-          </div>
+        <div className="flex flex-col gap-2">
+          <label htmlFor="roomPinInput" className="flex justify-between text-[13px] uppercase tracking-[0.14em] text-on-surface-variant">
+            {t('pinLabel')}
+            <span className="font-label-code text-[10px] tracking-[0.08em] text-outline">{t('pinExample')}</span>
+          </label>
+          <input
+            id="roomPinInput"
+            type="text"
+            maxLength={7}
+            value={roomPin}
+            onChange={(e) => setRoomPin(e.target.value)}
+            placeholder="___-___"
+            autoComplete="off"
+            spellCheck={false}
+            className="w-full border border-surface-container-highest bg-surface-container-lowest px-[18px] py-3 text-center text-[38px] font-bold uppercase tracking-[0.24em] text-primary placeholder:text-surface-container-highest"
+          />
+        </div>
 
-          {/* Exorcist Name Input */}
-          <div className="flex flex-col gap-space-xs">
-            <div className="flex items-center justify-between">
-              <label
-                htmlFor="exorcistPseudoInput"
-                className="font-headline-sm text-label-code uppercase tracking-wider text-on-surface flex items-center gap-space-xs"
-              >
-                <span className="material-symbols-outlined text-[16px] text-tertiary">badge</span>
-                <span>{t('nameLabel')}</span>
-              </label>
-              <button
-                onClick={randomizePseudo}
-                type="button"
-                className="font-label-code text-talisman-tag text-tertiary hover:text-on-surface transition-colors flex items-center gap-0.5"
-              >
-                <span className="material-symbols-outlined text-[14px]">shuffle</span>
-                <span>{t('randomName')}</span>
-              </button>
-            </div>
-            <div className="relative flex items-center">
-              <div className="absolute left-space-md flex items-center pointer-events-none text-outline">
-                <span className="material-symbols-outlined text-[20px]">person</span>
-              </div>
-              <input
-                id="exorcistPseudoInput"
-                type="text"
-                maxLength={20}
-                value={exorcistName}
-                onChange={(e) => setExorcistName(e.target.value)}
-                placeholder="Megumi_Shadows"
-                className="w-full bg-surface-container-low text-on-surface font-headline-sm text-headline-sm pl-11 pr-space-md py-space-sm rounded-lg placeholder:text-surface-container-highest focus:outline-none"
-              />
-              <div className="absolute right-space-md flex items-center gap-space-xs">
-                <span className="material-symbols-outlined text-[18px] text-tertiary">verified</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Submit Button */}
-          <div className="flex flex-col gap-space-sm pt-space-xs">
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center justify-between">
+            <label htmlFor="exorcistPseudoInput" className="text-[13px] uppercase tracking-[0.14em] text-on-surface-variant">
+              {t('nameLabel')}
+            </label>
             <button
-              type="submit"
-              disabled={isLoading}
-              className="group relative w-full bg-primary-container hover:bg-inverse-primary disabled:opacity-80 disabled:pointer-events-none text-on-primary-container font-headline-sm text-headline-sm uppercase tracking-wider py-space-md rounded-xl transition-all shadow-lg flex items-center justify-center gap-space-md active:scale-[0.99]"
+              type="button"
+              onClick={() => setExorcistName(pickRandomPseudo(exorcistName, RANDOM_PSEUDOS))}
+              className="flex min-h-8 items-center gap-1 text-[13px] text-tertiary transition-colors hover:text-on-surface"
             >
-              <span className="material-symbols-outlined text-[26px] group-hover:rotate-45 transition-transform">
-                swords
-              </span>
-              <span>{t('submit')}</span>
-              <kbd className="hidden sm:inline-flex items-center px-space-xs py-0.5 bg-on-primary-container/20 text-on-primary-container rounded font-label-code text-label-code">
-                {t('enterKey')}
-              </kbd>
+              <span aria-hidden="true" className="material-symbols-outlined text-[15px]">shuffle</span>
+              {t('randomName')}
             </button>
-
-            {/* Create Room Link */}
-            <div className="flex items-center justify-between text-outline font-label-code text-label-code pt-space-xs">
-              <button
-                type="button"
-                className="hover:text-primary transition-colors flex items-center gap-space-xs group"
-              >
-                <span className="material-symbols-outlined text-[16px] text-primary">add_circle</span>
-                <span className="underline underline-offset-4 decoration-primary/40 group-hover:decoration-primary">
-                  {t('createPrivate')}
-                </span>
-              </button>
-            </div>
           </div>
-        </form>
+          <input
+            id="exorcistPseudoInput"
+            type="text"
+            maxLength={20}
+            value={exorcistName}
+            onChange={(e) => setExorcistName(e.target.value)}
+            placeholder="Megumi_Shadows"
+            className="font-grotesk w-full border border-surface-container-highest bg-surface-container-lowest px-[18px] py-[13px] text-xl text-on-surface placeholder:text-surface-container-highest"
+          />
+        </div>
 
-        {/* Status Banner */}
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="group bevel flex bg-primary p-px transition-transform hover:-translate-y-0.5 disabled:pointer-events-none disabled:opacity-80"
+        >
+          <span className="bevel flex min-h-15 flex-grow items-center justify-center gap-3 bg-primary-container text-[19px] uppercase tracking-[0.12em] text-on-primary-container transition-colors group-hover:bg-inverse-primary">
+            <span aria-hidden="true" className="material-symbols-outlined text-[22px]">swords</span>
+            {t('submit')}
+          </span>
+        </button>
+
+        <button type="button" className="group flex min-h-8 items-center gap-2 self-center text-sm text-outline transition-colors hover:text-primary">
+          <span aria-hidden="true" className="material-symbols-outlined text-[17px] text-primary">add</span>
+          <span className="underline decoration-primary/40 underline-offset-4 group-hover:decoration-primary">{t('createPrivate')}</span>
+        </button>
+
         {showBanner && (
-          <div className="mt-space-md p-space-sm bg-surface-container-lowest rounded-lg flex items-center gap-space-sm">
+          <div role="status" className="flex items-center gap-3 bg-surface-container-lowest p-3">
             {isLoading ? (
               <>
-                <span className="material-symbols-outlined text-primary text-[20px] animate-spin">refresh</span>
-                <p className="font-label-code text-label-code text-on-surface flex-1">
+                <span aria-hidden="true" className="material-symbols-outlined animate-spin text-[20px] text-primary">refresh</span>
+                <p className="font-label-code flex-1 text-label-code text-on-surface">
                   {t.rich('syncing', {
                     pin: statusPin,
-                    highlight: (chunks) => <span className="text-primary font-bold">{chunks}</span>,
+                    highlight: (chunks) => <strong className="text-primary">{chunks}</strong>,
                   })}
                 </p>
               </>
             ) : (
               <>
-                <span className="material-symbols-outlined text-tertiary text-[20px]">check_circle</span>
-                <p className="font-label-code text-label-code text-on-surface flex-1">
+                <span aria-hidden="true" className="material-symbols-outlined text-[20px] text-tertiary">check_circle</span>
+                <p className="font-label-code flex-1 text-label-code text-on-surface">
                   {t.rich('connected', {
                     pin: statusPin,
                     name: exorcistName,
-                    highlight: (chunks) => <span className="text-tertiary font-bold">{chunks}</span>,
+                    highlight: (chunks) => <strong className="text-tertiary">{chunks}</strong>,
                   })}
                 </p>
               </>
             )}
           </div>
         )}
-      </div>
+      </form>
     </div>
   );
 }
