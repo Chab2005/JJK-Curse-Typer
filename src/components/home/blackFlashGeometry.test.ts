@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { blackFlashBolts, boltPoints, seededRandom, toPath } from './blackFlashGeometry';
+import { BOLT_START_RADIUS, blackFlashBolts, boltPoints, seededRandom, toPath } from './blackFlashGeometry';
 
 describe('seededRandom', () => {
   it('donne toujours la même suite pour la même graine', () => {
@@ -59,8 +59,11 @@ describe('blackFlashBolts', () => {
     }
   });
 
-  it('fait partir chaque éclair du centre exact', () => {
-    for (const bolt of blackFlashBolts(8, 3, 3)) expect(bolt.main.startsWith('M0 0L')).toBe(true);
+  it('fait partir chaque éclair à BOLT_START_RADIUS du centre', () => {
+    for (const bolt of blackFlashBolts(8, 3, 3)) {
+      const [x, y] = bolt.main.slice(1).split('L')[0].split(' ').map(Number);
+      expect(Math.hypot(x, y)).toBeCloseTo(BOLT_START_RADIUS, 0);
+    }
   });
 
   it('est identique d’un rendu à l’autre (pas d’écart d’hydratation)', () => {
