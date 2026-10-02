@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { findCharacterImage } from './characterImages';
 
-// Image du personnage : public/images/characters/<id>.webp (ou .png, .jpg…).
+// Visage du personnage : public/images/characters/<id>.webp (ou .png, .jpg…), vignette de 200 px.
 // Sans image, la carte affiche l'initiale en contour sur un halo coloré.
 const CHARACTERS_DIR = path.join(process.cwd(), 'public', 'images', 'characters');
 
@@ -65,9 +65,10 @@ export default function Characters() {
                   <Image
                     src={image}
                     alt=""
-                    fill
-                    sizes="(max-width: 640px) 100vw, 300px"
-                    className="origin-[50%_6%] scale-[1.4] object-cover object-top transition-transform duration-300 group-hover:scale-[1.48]"
+                    width={200}
+                    height={200}
+                    unoptimized
+                    className="absolute left-1/2 top-[42%] size-[220px] -translate-x-1/2 -translate-y-1/2 object-contain drop-shadow-[0_10px_18px_rgb(0_0_0/0.55)] transition-transform duration-300 group-hover:scale-105"
                   />
                 ) : (
                   <span aria-hidden="true" className={`absolute right-3.5 -top-2.5 text-[230px] leading-none text-transparent opacity-75 ${character.stroke}`}>
