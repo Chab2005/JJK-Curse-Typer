@@ -3,7 +3,8 @@ import path from 'node:path';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
-import { faceFrame, findCharacterImage } from './characterImages';
+import { faceFrame, findCharacterImage } from '@/components/shared/characterImages';
+import { CHARACTERS, type CharacterId } from '@/components/shared/characters';
 
 // Illustration en pied du personnage : public/images/characters/<id>.webp (ou .png, .jpg…),
 // agrandie et cadrée sur le visage (`face`, en fractions de l'illustration).
@@ -21,16 +22,17 @@ function characterFiles(): string[] {
   }
 }
 
-const CHARACTERS = [
-  { id: 'yuji', face: { x: 0.5, y: 0.13 }, name: 'Yuji Itadori', tint: 'bg-[radial-gradient(ellipse_90%_70%_at_50%_35%,rgb(225_29_72/0.55),#131315_75%)]', ink: 'text-primary', stroke: '[-webkit-text-stroke:2px_#ffb3b6]' },
-  { id: 'megumi', face: { x: 0.51, y: 0.13 }, name: 'Megumi Fushiguro', tint: 'bg-[radial-gradient(ellipse_90%_70%_at_50%_35%,rgb(49_49_192/0.6),#131315_75%)]', ink: 'text-secondary', stroke: '[-webkit-text-stroke:2px_#c0c1ff]' },
-  { id: 'nobara', face: { x: 0.52, y: 0.145 }, name: 'Nobara Kugisaki', tint: 'bg-[radial-gradient(ellipse_90%_70%_at_50%_35%,rgb(147_0_10/0.6),#131315_75%)]', ink: 'text-primary-fixed', stroke: '[-webkit-text-stroke:2px_#ffdada]' },
-  { id: 'gojo', face: { x: 0.5, y: 0.115 }, name: 'Satoru Gojo', tint: 'bg-[radial-gradient(ellipse_90%_70%_at_50%_35%,rgb(0_127_149/0.55),#131315_75%)]', ink: 'text-tertiary-fixed', stroke: '[-webkit-text-stroke:2px_#acedff]' },
-  { id: 'maki', face: { x: 0.47, y: 0.15 }, name: 'Maki Zen’in', tint: 'bg-[radial-gradient(ellipse_90%_70%_at_50%_35%,rgb(92_63_64/0.75),#131315_75%)]', ink: 'text-on-surface-variant', stroke: '[-webkit-text-stroke:2px_#e5bdbe]' },
-  { id: 'nanami', face: { x: 0.5, y: 0.135 }, name: 'Kento Nanami', tint: 'bg-[radial-gradient(ellipse_90%_70%_at_50%_35%,rgb(0_127_149/0.4),#131315_75%)]', ink: 'text-tertiary', stroke: '[-webkit-text-stroke:2px_#4cd7f6]' },
-  { id: 'todo', face: { x: 0.52, y: 0.14 }, name: 'Aoi Todo', tint: 'bg-[radial-gradient(ellipse_90%_70%_at_50%_35%,rgb(225_29_72/0.35),#131315_75%)]', ink: 'text-primary', stroke: '[-webkit-text-stroke:2px_#ffb3b6]' },
-  { id: 'toge', face: { x: 0.49, y: 0.145 }, name: 'Toge Inumaki', tint: 'bg-[radial-gradient(ellipse_90%_70%_at_50%_35%,rgb(49_49_192/0.45),#131315_75%)]', ink: 'text-secondary', stroke: '[-webkit-text-stroke:2px_#c0c1ff]' },
-] as const;
+// Couleurs propres aux cartes de l'accueil.
+const CARD_STYLES: Record<CharacterId, { tint: string; ink: string; stroke: string }> = {
+  yuji: { tint: 'bg-[radial-gradient(ellipse_90%_70%_at_50%_35%,rgb(225_29_72/0.55),#131315_75%)]', ink: 'text-primary', stroke: '[-webkit-text-stroke:2px_#ffb3b6]' },
+  megumi: { tint: 'bg-[radial-gradient(ellipse_90%_70%_at_50%_35%,rgb(49_49_192/0.6),#131315_75%)]', ink: 'text-secondary', stroke: '[-webkit-text-stroke:2px_#c0c1ff]' },
+  nobara: { tint: 'bg-[radial-gradient(ellipse_90%_70%_at_50%_35%,rgb(147_0_10/0.6),#131315_75%)]', ink: 'text-primary-fixed', stroke: '[-webkit-text-stroke:2px_#ffdada]' },
+  gojo: { tint: 'bg-[radial-gradient(ellipse_90%_70%_at_50%_35%,rgb(0_127_149/0.55),#131315_75%)]', ink: 'text-tertiary-fixed', stroke: '[-webkit-text-stroke:2px_#acedff]' },
+  maki: { tint: 'bg-[radial-gradient(ellipse_90%_70%_at_50%_35%,rgb(92_63_64/0.75),#131315_75%)]', ink: 'text-on-surface-variant', stroke: '[-webkit-text-stroke:2px_#e5bdbe]' },
+  nanami: { tint: 'bg-[radial-gradient(ellipse_90%_70%_at_50%_35%,rgb(0_127_149/0.4),#131315_75%)]', ink: 'text-tertiary', stroke: '[-webkit-text-stroke:2px_#4cd7f6]' },
+  todo: { tint: 'bg-[radial-gradient(ellipse_90%_70%_at_50%_35%,rgb(225_29_72/0.35),#131315_75%)]', ink: 'text-primary', stroke: '[-webkit-text-stroke:2px_#ffb3b6]' },
+  toge: { tint: 'bg-[radial-gradient(ellipse_90%_70%_at_50%_35%,rgb(49_49_192/0.45),#131315_75%)]', ink: 'text-secondary', stroke: '[-webkit-text-stroke:2px_#c0c1ff]' },
+};
 
 export default function Characters() {
   const t = useTranslations('Characters');
@@ -60,10 +62,11 @@ export default function Characters() {
         <ul className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,260px),1fr))] gap-[18px]">
           {CHARACTERS.map((character, index) => {
             const image = findCharacterImage(character.id, files);
+            const style = CARD_STYLES[character.id];
             return (
               <li
                 key={character.id}
-                className={`group relative h-[340px] overflow-hidden shadow-[0_0_0_1px_#2a2a2c,0_16px_28px_rgb(0_0_0/0.5)] transition duration-200 hover:-translate-y-1.5 hover:shadow-[0_0_0_1px_#ffb3b6,0_24px_40px_rgb(0_0_0/0.6)] ${character.tint}`}
+                className={`group relative h-[340px] overflow-hidden shadow-[0_0_0_1px_#2a2a2c,0_16px_28px_rgb(0_0_0/0.5)] transition duration-200 hover:-translate-y-1.5 hover:shadow-[0_0_0_1px_#ffb3b6,0_24px_40px_rgb(0_0_0/0.6)] ${style.tint}`}
               >
                 {image ? (
                   <Image
@@ -76,7 +79,7 @@ export default function Characters() {
                     className="absolute h-auto max-w-none transition-transform duration-300 group-hover:scale-105"
                   />
                 ) : (
-                  <span aria-hidden="true" className={`absolute right-3.5 -top-2.5 text-[230px] leading-none text-transparent opacity-75 ${character.stroke}`}>
+                  <span aria-hidden="true" className={`absolute right-3.5 -top-2.5 text-[230px] leading-none text-transparent opacity-75 ${style.stroke}`}>
                     {character.name[0]}
                   </span>
                 )}
@@ -85,7 +88,7 @@ export default function Characters() {
                 </p>
                 <div className="absolute inset-x-0 bottom-0 bg-linear-to-b from-transparent to-surface-container-lowest/95 to-55% px-[18px] pt-10 pb-4">
                   <p className="font-grotesk text-xl font-semibold text-on-primary-container">{character.name}</p>
-                  <p className={`text-[15px] ${character.ink}`}>{t(`techniques.${character.id}`)}</p>
+                  <p className={`text-[15px] ${style.ink}`}>{t(`techniques.${character.id}`)}</p>
                 </div>
               </li>
             );
