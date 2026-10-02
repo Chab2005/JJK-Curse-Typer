@@ -111,5 +111,62 @@
     "leaderboard": "Rankings",
     "profile": "Profile",
     "disclaimer": "Unofficial fan-made school project. Jujutsu Kaisen © Gege Akutami / Shueisha. Character art: Jujutsu Kaisen Phantom Parade (Sumzap). Not affiliated with the rights holders."
+  },
+  "Pagination": {
+    "previous": "Previous page",
+    "next": "Next page",
+    "status": "Page {page} / {pageCount}"
+  },
+  "Lobbies": {
+    "metaTitle": "Arenas",
+    "eyebrow": "Multiplayer battle",
+    "title": "Find an arena",
+    "intro": "Search for a host or a lobby by name; the filters do the rest.",
+    "watermark": "Arenas",
+    "search": "Host or lobby name",
+    "resultCount": "{count, plural, one {# lobby found} other {# lobbies found}}",
+    "empty": "No lobby matches your search.",
+    "clear": "Clear search and filters",
+    "pagination": "Lobby pages",
+    "filters": {
+      "button": "Filters",
+      "availability": "Availability",
+      "showUnavailable": "Show full or in-progress lobbies",
+      "bonusOnly": "Bonuses enabled only",
+      "language": "Text language",
+      "languages": {
+        "fr": "French",
+        "en": "English"
+      },
+      "chars": "Text characters",
+      "charsHint": "Uncheck a type to hide the lobbies that use it.",
+      "charKinds": {
+        "uppercase": "Uppercase (A-Z)",
+        "digits": "Digits (0-9)",
+        "punctuation": "Punctuation and symbols (#$%)",
+        "accents": "Accents (àé)"
+      },
+      "reset": "Reset",
+      "close": "Close"
+    },
+    "table": {
+      "caption": "Public lobbies",
+      "lobby": "Host · Lobby",
+      "players": "Players",
+      "language": "Language",
+      "bonus": "Bonus",
+      "chars": "Text type",
+      "action": "Action",
+      "words": "{count} words",
+      "count": "{players}/{capacity}",
+      "racing": "Racing",
+      "full": "Full",
+      "bonusOn": "Yes",
+      "bonusOff": "No",
+      "join": "Join",
+      "joinLabel": "Join {name}",
+      "spectate": "Watch",
+      "spectateLabel": "Watch {name} as a spectator"
+    }
   }
 }

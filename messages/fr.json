@@ -111,5 +111,62 @@
     "leaderboard": "Classement",
     "profile": "Profil",
     "disclaimer": "Projet scolaire non officiel, réalisé par des fans. Jujutsu Kaisen © Gege Akutami / Shueisha. Illustrations des personnages : Jujutsu Kaisen Phantom Parade (Sumzap). Aucune affiliation avec les ayants droit."
+  },
+  "Pagination": {
+    "previous": "Page précédente",
+    "next": "Page suivante",
+    "status": "Page {page} / {pageCount}"
+  },
+  "Lobbies": {
+    "metaTitle": "Arènes",
+    "eyebrow": "Combat multijoueur",
+    "title": "Trouver une arène",
+    "intro": "Cherchez un hôte ou un salon par son nom ; les filtres font le reste.",
+    "watermark": "Arènes",
+    "search": "Nom de l'hôte ou du lobby",
+    "resultCount": "{count, plural, one {# lobby trouvé} other {# lobbies trouvés}}",
+    "empty": "Aucun lobby ne correspond à votre recherche.",
+    "clear": "Effacer la recherche et les filtres",
+    "pagination": "Pages des lobbies",
+    "filters": {
+      "button": "Filtres",
+      "availability": "Disponibilité",
+      "showUnavailable": "Afficher les lobbies complets ou en course",
+      "bonusOnly": "Bonus activés uniquement",
+      "language": "Langue du texte",
+      "languages": {
+        "fr": "Français",
+        "en": "Anglais"
+      },
+      "chars": "Caractères du texte",
+      "charsHint": "Décochez un type pour cacher les lobbies qui l'utilisent.",
+      "charKinds": {
+        "uppercase": "Majuscules (A-Z)",
+        "digits": "Chiffres (0-9)",
+        "punctuation": "Ponctuation et symboles (#$%)",
+        "accents": "Accents (àé)"
+      },
+      "reset": "Réinitialiser",
+      "close": "Fermer"
+    },
+    "table": {
+      "caption": "Lobbies publics",
+      "lobby": "Hôte · Lobby",
+      "players": "Joueurs",
+      "language": "Langue",
+      "bonus": "Bonus",
+      "chars": "Type de texte",
+      "action": "Action",
+      "words": "{count} mots",
+      "count": "{players}/{capacity}",
+      "racing": "En course",
+      "full": "Complet",
+      "bonusOn": "Oui",
+      "bonusOff": "Non",
+      "join": "Rejoindre",
+      "joinLabel": "Rejoindre {name}",
+      "spectate": "Regarder",
+      "spectateLabel": "Regarder {name} en spectateur"
+    }
   }
 }
