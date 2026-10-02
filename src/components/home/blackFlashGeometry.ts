@@ -54,7 +54,7 @@ export function blackFlashBolts(count: number, seed: number, cycleSeconds: numbe
 
   return Array.from({ length: count }, (_, i) => {
     const angle = (i / count) * Math.PI * 2 + (random() - 0.5) * 0.5;
-    const start = polar(40 + random() * 30, angle);
+    const start: Point = { x: 0, y: 0 };
     const end = polar(460 + random() * 40, angle + (random() - 0.5) * 0.3);
     const points = boltPoints(start, end, 16 + Math.floor(random() * 6), 18, random);
 
