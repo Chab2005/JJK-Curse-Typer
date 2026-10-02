@@ -1,7 +1,22 @@
+import { readdirSync } from 'node:fs';
+import path from 'node:path';
+import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
+import { findCharacterImage } from './characterImages';
 
-// Les visuels des personnages viendront plus tard ; en attendant, initiale en contour sur un halo coloré.
+// Image du personnage : public/images/characters/<id>.webp (ou .png, .jpg…).
+// Sans image, la carte affiche l'initiale en contour sur un halo coloré.
+const CHARACTERS_DIR = path.join(process.cwd(), 'public', 'images', 'characters');
+
+function characterFiles(): string[] {
+  try {
+    return readdirSync(CHARACTERS_DIR);
+  } catch {
+    return [];
+  }
+}
+
 const CHARACTERS = [
   { id: 'yuji', name: 'Yuji Itadori', tint: 'bg-[radial-gradient(ellipse_90%_70%_at_50%_35%,rgb(225_29_72/0.55),#131315_75%)]', ink: 'text-primary', stroke: '[-webkit-text-stroke:2px_#ffb3b6]' },
   { id: 'megumi', name: 'Megumi Fushiguro', tint: 'bg-[radial-gradient(ellipse_90%_70%_at_50%_35%,rgb(49_49_192/0.6),#131315_75%)]', ink: 'text-secondary', stroke: '[-webkit-text-stroke:2px_#c0c1ff]' },
@@ -15,6 +30,7 @@ const CHARACTERS = [
 
 export default function Characters() {
   const t = useTranslations('Characters');
+  const files = characterFiles();
 
   return (
     <section aria-labelledby="characters-title" className="relative overflow-hidden bg-surface-container-lowest px-6 pt-25 pb-[110px]">
@@ -38,23 +54,36 @@ export default function Characters() {
         </div>
 
         <ul className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,260px),1fr))] gap-[18px]">
-          {CHARACTERS.map((character, index) => (
-            <li
-              key={character.id}
-              className={`relative h-[340px] overflow-hidden shadow-[0_0_0_1px_#2a2a2c,0_16px_28px_rgb(0_0_0/0.5)] transition duration-200 hover:-translate-y-1.5 hover:shadow-[0_0_0_1px_#ffb3b6,0_24px_40px_rgb(0_0_0/0.6)] ${character.tint}`}
-            >
-              <span aria-hidden="true" className={`absolute right-3.5 -top-2.5 text-[230px] leading-none text-transparent opacity-75 ${character.stroke}`}>
-                {character.name[0]}
-              </span>
-              <p className="font-label-code absolute left-[18px] top-[18px] text-[11px] tracking-[0.2em] text-outline">
-                {t('number', { number: String(index + 1).padStart(2, '0') })}
-              </p>
-              <div className="absolute inset-x-0 bottom-0 bg-linear-to-b from-transparent to-surface-container-lowest/95 to-55% px-[18px] pt-10 pb-4">
-                <p className="font-grotesk text-xl font-semibold text-on-primary-container">{character.name}</p>
-                <p className={`text-[15px] ${character.ink}`}>{t(`techniques.${character.id}`)}</p>
-              </div>
-            </li>
-          ))}
+          {CHARACTERS.map((character, index) => {
+            const image = findCharacterImage(character.id, files);
+            return (
+              <li
+                key={character.id}
+                className={`group relative h-[340px] overflow-hidden shadow-[0_0_0_1px_#2a2a2c,0_16px_28px_rgb(0_0_0/0.5)] transition duration-200 hover:-translate-y-1.5 hover:shadow-[0_0_0_1px_#ffb3b6,0_24px_40px_rgb(0_0_0/0.6)] ${character.tint}`}
+              >
+                {image ? (
+                  <Image
+                    src={image}
+                    alt=""
+                    fill
+                    sizes="(max-width: 640px) 100vw, 300px"
+                    className="object-cover object-top transition-transform duration-300 group-hover:scale-105"
+                  />
+                ) : (
+                  <span aria-hidden="true" className={`absolute right-3.5 -top-2.5 text-[230px] leading-none text-transparent opacity-75 ${character.stroke}`}>
+                    {character.name[0]}
+                  </span>
+                )}
+                <p className="font-label-code absolute left-[18px] top-[18px] bg-surface-container-lowest/70 px-1.5 py-0.5 text-[11px] tracking-[0.2em] text-on-surface-variant">
+                  {t('number', { number: String(index + 1).padStart(2, '0') })}
+                </p>
+                <div className="absolute inset-x-0 bottom-0 bg-linear-to-b from-transparent to-surface-container-lowest/95 to-55% px-[18px] pt-10 pb-4">
+                  <p className="font-grotesk text-xl font-semibold text-on-primary-container">{character.name}</p>
+                  <p className={`text-[15px] ${character.ink}`}>{t(`techniques.${character.id}`)}</p>
+                </div>
+              </li>
+            );
+          })}
         </ul>
       </div>
     </section>
