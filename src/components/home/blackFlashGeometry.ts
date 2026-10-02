@@ -54,15 +54,15 @@ export function blackFlashBolts(count: number, seed: number, cycleSeconds: numbe
 
   return Array.from({ length: count }, (_, i) => {
     const angle = (i / count) * Math.PI * 2 + (random() - 0.5) * 0.5;
-    const start = polar(70 + random() * 50, angle);
-    const end = polar(360 + random() * 140, angle + (random() - 0.5) * 0.35);
-    const points = boltPoints(start, end, 9 + Math.floor(random() * 5), 26, random);
+    const start = polar(40 + random() * 30, angle);
+    const end = polar(460 + random() * 40, angle + (random() - 0.5) * 0.3);
+    const points = boltPoints(start, end, 16 + Math.floor(random() * 6), 18, random);
 
     const branches = Array.from({ length: 1 + Math.floor(random() * 2) }, () => {
       const from = points[2 + Math.floor(random() * (points.length - 4))];
       const side = random() < 0.5 ? -1 : 1;
       const branchAngle = Math.atan2(from.y, from.x) + side * (0.4 + random() * 0.4);
-      const reach = 70 + random() * 90;
+      const reach = 50 + random() * 70;
       const to = { x: from.x + reach * Math.cos(branchAngle), y: from.y + reach * Math.sin(branchAngle) };
       return toPath(boltPoints(from, to, 4, 12, random));
     });
