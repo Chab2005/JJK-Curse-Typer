@@ -93,9 +93,9 @@ describe('RaceScreen', () => {
     const { user } = start();
 
     await user.type(screen.getByLabelText('Type the text'), 'ab');
-    await waitFor(() => expect(socket.sent.find((m) => m.type === 'keys')).toBeDefined());
-    const keys = socket.sent.filter((m) => m.type === 'keys').flatMap((m) => m.strokes.map((s) => s.key));
-    expect(keys).toEqual(['a', 'b']);
+    // Keys are sent in batches: they may arrive in one message or several.
+    const sentKeys = () => socket.sent.flatMap((m) => (m.type === 'keys' ? m.strokes.map((s) => s.key) : []));
+    await waitFor(() => expect(sentKeys()).toEqual(['a', 'b']));
   });
 
   it('replaces the local text with the server’s after a refused batch', () => {
