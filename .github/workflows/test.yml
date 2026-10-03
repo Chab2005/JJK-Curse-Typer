@@ -1,7 +1,11 @@
 name: Test
 
-on: 
-  push:  
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
     branches:
       - main
       - dev
@@ -23,6 +27,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run unit tests
+      - name: Typecheck .ts and .tsx files
+        run: npm run typecheck
+
+      - name: Run unit tests (*.test.ts and *.test.tsx)
         run: npm test
-  

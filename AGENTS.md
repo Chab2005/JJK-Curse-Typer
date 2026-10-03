@@ -16,8 +16,8 @@ cp .env.example .env      # DATABASE_URL for local Postgres
 npm run dev               # Next.js dev server on :3000
 npm run build
 npm run lint              # ESLint 9 flat config (next core-web-vitals + typescript)
-npx tsc --noEmit          # typecheck (no script for it)
-npm test                  # Vitest (unit tests, *.test.ts in src/ and messages/)
+npm run typecheck         # tsc --noEmit on all .ts/.tsx files
+npm test                  # Vitest (unit tests, *.test.ts/.tsx in src/ and messages/)
 
 npm run db:generate       # drizzle-kit: generate SQL migration from src/db/schema.ts into drizzle/
 npm run db:migrate        # apply migrations
@@ -27,7 +27,7 @@ npm run db:studio
 
 `GET /api/health` runs `select 1` against the DB. It's a quick way to check the DB connection.
 
-Vitest is set up (`vitest.config.mts`, `@` alias). Playwright (E2E, multi-tab races) is still to do.
+Vitest is set up (`vitest.config.mts`, `@` alias). CI (`.github/workflows/test.yml`) runs typecheck + tests on push/PR to `main` and `dev`. Playwright (E2E, multi-tab races) is still to do.
 
 ## Stack notes
 
