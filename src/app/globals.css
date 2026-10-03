@@ -199,14 +199,15 @@ kbd,
 }
 
 /* Black Flash : chaque éclair crépite brièvement, puis disparaît jusqu'au cycle suivant */
+/* Joué en step-end : chaque palier s'allume d'un coup, comme un stroboscope. */
 @keyframes black-flash {
   0%, 100% { opacity: 0; }
-  2% { opacity: 1; }
-  4% { opacity: 0.15; }
-  6% { opacity: 1; }
-  9% { opacity: 0.6; }
-  12% { opacity: 1; }
-  18% { opacity: 0; }
+  1% { opacity: 1; }
+  3% { opacity: 0.1; }
+  4% { opacity: 1; }
+  7% { opacity: 0.35; }
+  8% { opacity: 1; }
+  12% { opacity: 0; }
 }
 
 @keyframes black-flash-burst {
