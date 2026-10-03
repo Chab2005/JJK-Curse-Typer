@@ -45,7 +45,9 @@
     "nameLabel": "Exorcist name",
     "randomName": "Random",
     "submit": "Expand the domain",
-    "createPrivate": "Create a private room with your own texts",
+    "createLobby": "Create a new lobby",
+    "createFailed": "Couldn't create the lobby. Try again.",
+    "newLobbyName": "{host}'s lobby",
     "syncing": "Syncing the occult barriers... Domain: <highlight>{pin}</highlight>",
     "connected": "Connected to Domain <highlight>{pin}</highlight>! Teleporting {name}..."
   },

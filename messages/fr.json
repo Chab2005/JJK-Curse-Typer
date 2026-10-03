@@ -45,7 +45,9 @@
     "nameLabel": "Nom d'exorciste",
     "randomName": "Aléatoire",
     "submit": "Déployer le domaine",
-    "createPrivate": "Créer un salon privé avec vos propres textes",
+    "createLobby": "Créer un nouveau lobby",
+    "createFailed": "Impossible de créer le lobby. Réessayez.",
+    "newLobbyName": "Lobby de {host}",
     "syncing": "Synchronisation des barrières occultes en cours... Domaine : <highlight>{pin}</highlight>",
     "connected": "Connexion établie au Domaine <highlight>{pin}</highlight> ! Téléportation de {name}..."
   },
