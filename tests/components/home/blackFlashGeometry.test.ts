@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { BOLT_START_RADIUS, blackFlashBolts, WIDTH_PEAK_AT, boltPoints, boltWidths, ribbonPath, seededRandom, toPath, widthEnvelope } from '@/components/home/blackFlashGeometry';
+import { blackFlashBolts, WIDTH_PEAK_AT, boltPoints, boltWidths, ribbonPath, seededRandom, toPath, widthEnvelope } from '@/components/home/blackFlashGeometry';
 
 describe('seededRandom', () => {
   it('donne toujours la même suite pour la même graine', () => {
@@ -126,10 +126,10 @@ describe('blackFlashBolts', () => {
     }
   });
 
-  it('fait partir chaque éclair à BOLT_START_RADIUS du centre', () => {
+  it('fait partir chaque éclair du centre exact', () => {
     for (const bolt of blackFlashBolts(8, 3, 3)) {
       const [x, y] = bolt.strands[0].line.slice(1).split('L')[0].split(' ').map(Number);
-      expect(Math.hypot(x, y)).toBeCloseTo(BOLT_START_RADIUS, 0);
+      expect(Math.hypot(x, y)).toBeCloseTo(0, 0);
     }
   });
 

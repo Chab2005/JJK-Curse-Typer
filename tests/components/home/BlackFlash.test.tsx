@@ -9,4 +9,12 @@ describe('BlackFlash (smoke)', () => {
     expect(container.firstChild).toHaveAttribute('aria-hidden', 'true');
     expect(container.querySelectorAll('path').length).toBeGreaterThan(0);
   });
+
+  it('makes every bolt shoot out from the center when it flashes', () => {
+    const { container } = render(<BlackFlash />);
+    const bolts = container.querySelectorAll('[style*="animation-delay"]');
+
+    expect(bolts.length).toBeGreaterThan(0);
+    for (const bolt of bolts) expect(bolt.getAttribute('class')).toContain('black-flash-grow');
+  });
 });

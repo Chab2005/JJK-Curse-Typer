@@ -93,8 +93,6 @@ export function ribbonPath(points: Point[], widths: number[]): string {
   return `${toPath([...edges.map(([left]) => left), ...edges.map(([, right]) => right).reverse()])}Z`;
 }
 
-export const BOLT_START_RADIUS = 20;
-
 const polar = (radius: number, angle: number): Point => ({ x: radius * Math.cos(angle), y: radius * Math.sin(angle) });
 
 type Fork = { points: Point[]; widths: number[] };
@@ -125,7 +123,7 @@ export function blackFlashBolts(count: number, seed: number, cycleSeconds: numbe
 
   return Array.from({ length: count }, (_, i) => {
     const angle = (i / count) * Math.PI * 2 + (random() - 0.5) * 0.5;
-    const start = polar(BOLT_START_RADIUS, angle);
+    const start = { x: 0, y: 0 };
     const end = polar(460 + random() * 40, angle + (random() - 0.5) * 0.3);
     const points = boltPoints(start, end, 9 + Math.floor(random() * 5), 14, random);
     const trunk = { points, widths: boltWidths(points.length, 1, 8, random) };

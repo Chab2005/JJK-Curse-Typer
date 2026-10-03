@@ -210,6 +210,12 @@ kbd,
   12% { opacity: 0; }
 }
 
+/* L'éclair jaillit du centre : le repère SVG a son origine (0, 0) au centre, origine par défaut du scale. */
+@keyframes black-flash-grow {
+  0%, 1% { transform: scale(0); animation-timing-function: cubic-bezier(0.2, 0.8, 0.3, 1); }
+  4%, 100% { transform: scale(1); }
+}
+
 @keyframes black-flash-burst {
   0%, 100% { opacity: 0; }
   2% { opacity: 1; }

@@ -18,7 +18,7 @@ export default function BlackFlash() {
         {BOLTS.map((bolt, i) => (
           <g
             key={i}
-            className="opacity-0 animate-[black-flash_3.4s_step-end_infinite] motion-reduce:animate-none motion-reduce:opacity-30"
+            className="opacity-0 animate-[black-flash_3.4s_step-end_infinite,black-flash-grow_3.4s_linear_infinite] motion-reduce:animate-none motion-reduce:opacity-30"
             style={{ animationDelay: `${bolt.delay}s` }}
           >
             <g fill="#e11d48" stroke="#e11d48" strokeLinejoin="round" filter="url(#black-flash-glow)" opacity="0.85">
