@@ -5,7 +5,6 @@ import {
   Fondamento,
   Geist,
   Geist_Mono,
-  Geist_Pixel,
   JetBrains_Mono,
   Space_Grotesk,
 } from "next/font/google";
@@ -21,11 +20,6 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
-
-const geistPixel = Geist_Pixel({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-})
 
 const fondamento = Fondamento({
   variable: "--font-fondamento",
