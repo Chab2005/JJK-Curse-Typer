@@ -2,16 +2,14 @@
 // La room temps réel (phase 2) rejouera ce réducteur ; en attendant, la page s'en sert en local.
 import type { CharacterId } from '@/components/shared/characters';
 import type { CharKind, TextLanguage } from '@/components/lobbies/lobbySearch';
+import { BOT_LEVELS, type BotLevel } from '@/game/bots';
+import { ERROR_MODES, type ErrorMode } from '@/game/typing';
+
+// Gestion des erreurs (RACE-7, H-22) et niveaux de bots (BOT-2) : définis par le moteur de jeu.
+export { BOT_LEVELS, ERROR_MODES, type BotLevel, type ErrorMode };
 
 export const CONTENT_MODES = ['sentences', 'words'] as const;
 export type ContentMode = (typeof CONTENT_MODES)[number];
-
-/** Gestion des erreurs, choisie par l'hôte pour tout le lobby (RACE-7, H-22). */
-export const ERROR_MODES = ['accumulate', 'block'] as const;
-export type ErrorMode = (typeof ERROR_MODES)[number];
-
-export const BOT_LEVELS = ['beginner', 'intermediate', 'expert'] as const;
-export type BotLevel = (typeof BOT_LEVELS)[number];
 
 /** Durées du timer de course en secondes ; 0 = sans timer, jamais plus de 3 min (RACE-9). */
 export const TIMER_OPTIONS = [0, 30, 60, 90, 120, 180] as const;
