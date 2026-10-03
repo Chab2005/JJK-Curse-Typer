@@ -11,11 +11,15 @@ afterEach(() => {
 });
 
 // next/image needs the Next image loader config: a plain <img> is enough to test markup.
+// `priority` and `unoptimized` are Next-only props, dropped so React doesn't warn about them on <img>.
 vi.mock('next/image', () => ({
-  default: ({ src, alt, priority: _priority, unoptimized: _unoptimized, ...props }: ImgHTMLAttributes<HTMLImageElement> & { priority?: boolean; unoptimized?: boolean }) => (
+  default: (props: ImgHTMLAttributes<HTMLImageElement> & { priority?: boolean; unoptimized?: boolean }) => {
+    const { src, alt, ...rest } = props;
+    delete rest.priority;
+    delete rest.unoptimized;
     // eslint-disable-next-line @next/next/no-img-element
-    <img src={String(src)} alt={alt} {...props} />
-  ),
+    return <img src={String(src)} alt={alt} {...rest} />;
+  },
 }));
 
 // next-intl navigation needs the App Router context: Link becomes a plain <a>, the path is read from the URL.
