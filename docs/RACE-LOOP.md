@@ -73,14 +73,28 @@ Les espaces comptent comme des caractères.
 - **BOT-05** — Moteur **déterministe à partir d'une graine**, testable unitairement.
 - **CONF-10** — Ajout / retrait de bots avec le niveau de chacun.
 
-## 6. Bonus de remontée (BONUS-01 à BONUS-04, CONF-09)
+## 6. Bonus de remontée (BON-1 à BON-8 du cahier v3, CONF-09)
+
+> **Décision (2026-10-03)** : les bonus suivent le **cahier des charges v3** (BON-*), pas la règle de l'énoncé.
+> L'écart avec BONUS-01 (points de contrôle, ≤ 3 par joueur) est à déclarer « partiel » et justifié dans `docs/EXIGENCES.md`.
+> BONUS-02, BONUS-03 et BONUS-04 restent respectés par la règle du cahier.
+
+Règle retenue (`../Cahier des charges - 3.md`) :
+
+- **BON-1** — Bonus inspirés de Mario Kart, pour resserrer la course ; activables par l'hôte (H-7). Une jauge d'énergie (`energy.ts`) se remplit en tapant juste.
+- **BON-2** — Trois types : **carapace** (mots ajoutés au texte des meneurs), **floutage** (portion du texte des meneurs illisible), **gel** (saisie des meneurs bloquée 1 à 2 s, H-24).
+- **BON-3** — Distribués à la **moitié arrière** seulement, en priorité aux trois derniers ; ils visent les **trois premiers**. Bornés à la moitié avant sous six participants (H-23).
+- **BON-4** — Puissance proportionnelle à l'écart avec le meneur.
+- **BON-5** — Longueur du floutage selon l'écart, ou fixée par l'hôte.
+- **BON-6** — Bonus conservé si son porteur remonte ; puissance recalculée à l'usage (H-8).
+- **BON-7** — Usage et effet annoncés ; aucun effet ne peut empêcher de finir (bornés en temps ou en longueur).
+- **BON-8** — Les bots ramassent et utilisent les bonus selon les mêmes règles.
+
+Exigences de l'énoncé toujours visées :
 
 - **CONF-09** — Bonus activés ou non.
-- **BONUS-01** — Un joueur **en retard** reçoit un bonus aux **points de contrôle**.
-  - En retard : **dernier**, ou **à plus de 25 % de progression derrière le meneur**.
-  - Points de contrôle : quand le **meneur** passe **25 %, 50 % et 75 %** du texte.
-  - **Au plus 3 bonus par joueur et par course.** Règle exacte à documenter.
-- **BONUS-02** — **Au moins 3 types**, dont ≥ 1 qui aide le retardataire et ≥ 1 qui ralentit le meneur. Exemples : *+3 mots* au texte du meneur, *−3 mots* au texte du retardataire, *Brouillard* sur les prochains mots du meneur pendant quelques secondes.
+- ~~**BONUS-01**~~ — *Non suivie (voir décision)* : bonus au retardataire quand le meneur passe 25/50/75 %, au plus 3 par joueur.
+- **BONUS-02** — *Couverte par BON-2 (carapace et floutage ralentissent le meneur ; le gel aussi).* **Au moins 3 types**, dont ≥ 1 qui aide le retardataire et ≥ 1 qui ralentit le meneur. Exemples : *+3 mots* au texte du meneur, *−3 mots* au texte du retardataire, *Brouillard* sur les prochains mots du meneur pendant quelques secondes.
 - **BONUS-03** — Activation **annoncée** sur la piste et chez le joueur ciblé.
 - **BONUS-04** — Progression et MPM **cohérents** quand un texte est allongé ou réduit.
 
@@ -120,27 +134,28 @@ Persistance en BD et pages de résultats hors périmètre ; la boucle doit seule
 | BOT-03 | fait | `bots.ts` (`nextBotStroke`) | — |
 | BOT-04 | partiel | — | Bots identifiés. Bonus pas encore faits. |
 | BOT-05 | fait | `random.ts`, `bots.ts` | — |
-| BONUS-01 à 04 | non fait | `energy.ts` | Seule une jauge d'énergie existe (BON-1 du cahier v3). **La règle de l'énoncé (points de contrôle à 25/50/75 % du meneur, retardataire, max 3) n'est pas faite.** `TypingState.text` est déjà propre à chaque joueur, ce qui permet +3/−3 mots. |
+| BON-1 à 8 (BONUS-02 à 04) | partiel | `energy.ts` | Seule la jauge d'énergie existe. Distribution, cibles, puissance et les 3 effets restent à faire. `TypingState.text` est déjà propre à chaque joueur, ce qui permet la carapace. |
+| BONUS-01 | écart assumé | — | Règle du cahier v3 retenue à la place (voir section 6). |
 | TECH-07 | fait | `protocol.ts` (zod) | — |
 | PERF-02 | partiel | `protocol.ts` (`MAX_STROKES_PER_BATCH`) | Le client groupe ses frappes (~150 ms). **Pas de limite de débit côté serveur.** |
 | RES-02 | partiel | `race.ts` (`Standing`) | Il manque MPM brut, nombre d'erreurs et bonus reçus. |
 | RES-03 | non fait | — | Aucune série temporelle de MPM ni stats par touche ratée. |
 | SALLE-09 | fait | `raceRoom.ts` (`join`) | Les retardataires deviennent spectateurs. |
 
-## 9. Conflits avec le cahier des charges v3 (à trancher)
+## 9. Conflits avec le cahier des charges v3 (tranchés le 2026-10-03)
 
-Le code suit les hypothèses du cahier v3 ; l'énoncé de l'enseignant dit autre chose. À décider puis à consigner dans `docs/EXIGENCES.md` (section 2.2 de l'énoncé).
+Règle : **l'énoncé de l'enseignant l'emporte, sauf pour les bonus**. À consigner dans `docs/EXIGENCES.md` (section 2.2 de l'énoncé).
 
-| Sujet | Cahier v3 / code | Énoncé |
+| Sujet | Cahier v3 / code actuel | Retenu |
 |---|---|---|
-| Formule du MPM net | brut − pénalité par erreur (H-21) | caractères justes ÷ 5 ÷ min (**imposée**, « pour que les résultats soient comparables ») |
-| Reprise après coupure | 60 s (H-4) | 30 s |
-| Timer max | 3 min | 10 min |
-| Capacité | 60 | 30 |
-| Niveaux de bots | 3 | 5 |
-| Bonus | jauge d'énergie, moitié arrière (BON-*) | points de contrôle 25/50/75 % du meneur, ≤ 3 par joueur |
-| Décompte | 5 s | 3, 2, 1 |
-| Départ | ≥ 2 participants | ≥ 2 participants **dont ≥ 1 humain** |
+| Formule du MPM net | brut − pénalité par erreur (H-21) | **Énoncé** : caractères justes ÷ 5 ÷ min |
+| Reprise après coupure | 60 s (H-4) | **Énoncé** : 30 s |
+| Timer max | 3 min | **Énoncé** : aucun, ou 30 s à 10 min |
+| Capacité | 60 | **Énoncé** : 2 à 30 |
+| Niveaux de bots | 3 | **Énoncé** : 5 (Noob, Débutant, Intermédiaire, Expert, Impossible) |
+| Décompte | 5 s | **Énoncé** : 3, 2, 1 |
+| Départ | ≥ 2 participants | **Énoncé** : ≥ 2 participants dont ≥ 1 humain |
+| Bonus | jauge d'énergie, moitié arrière (BON-*) | **Cahier v3** (voir section 6) |
 
 ## 10. Travaux de la boucle (ordre suggéré)
 
@@ -149,9 +164,9 @@ Chaque étape : tests d'abord dans `tests/game/` ou `tests/realtime/`, puis le c
 1. [ ] `scoring.ts` : MPM net selon l'annexe A (caractères justes), MPM brut, précision ; progression en ratio sur la longueur du texte du joueur.
 2. [ ] `race.ts` : machine à états complète (`waiting`, `countdown`, `racing`, `results`, `closed`) avec transitions pures et refus des transitions invalides (COURSE-01).
 3. [ ] Garde de départ pure : ≥ 2 participants, ≥ 1 humain, spectateurs exclus (COURSE-02).
-4. [ ] Décompte 3, 2, 1 (COURSE-03) ; reprise après coupure à 30 s (COURSE-08) ; timer 30 s à 10 min (CONF-01).
-5. [ ] `bots.ts` : 5 niveaux (BOT-01), ralentissement sur les mots difficiles et hésitations (BOT-02), toujours seedé (BOT-05).
-6. [ ] `bonus.ts` : détection des points de contrôle, choix du retardataire, ≤ 3 bonus, 3 types (+3 mots, −3 mots, brouillard), texte propre à chaque joueur, progression et MPM cohérents (BONUS-01 à 04) ; bots compris (BOT-04).
+4. [ ] Décompte 3, 2, 1 (COURSE-03) ; reprise après coupure à 30 s (COURSE-08) ; timer aucun ou 30 s à 10 min (CONF-01) ; capacité 2 à 30 (SALLE-05).
+5. [ ] `bots.ts` : 5 niveaux aux valeurs de l'énoncé (BOT-01), ralentissement sur les mots difficiles et hésitations (BOT-02), toujours seedé (BOT-05).
+6. [ ] `bonus.ts` selon le cahier v3 : distribution à la moitié arrière, cibles parmi les trois premiers, puissance selon l'écart, carapace / floutage / gel, bornés (BON-1 à BON-7) ; progression et MPM cohérents avec un texte allongé (BONUS-04) ; bots compris (BON-8, BOT-04).
 7. [ ] Événements de bonus dans le `tick` diffusé (BONUS-03).
 8. [ ] Données de fin : `Standing` avec MPM brut, erreurs, bonus reçus (RES-02) ; série de MPM échantillonnée par participant et touches ratées par joueur (RES-03).
 9. [ ] Room : salon d'attente côté serveur, relance avec les mêmes participants et fermeture par l'hôte (COURSE-11), contrôle de l'hôte côté serveur (SEC-01).
