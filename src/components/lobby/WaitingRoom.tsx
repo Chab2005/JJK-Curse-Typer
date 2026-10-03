@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import PageIntro from '@/components/shared/PageIntro';
+import { useRouter } from '@/i18n/navigation';
 import InviteCard from './InviteCard';
 import LobbySettingsPanel from './LobbySettingsPanel';
 import ParticipantList, { useParticipantName } from './ParticipantList';
@@ -15,6 +16,7 @@ import { type LobbyAction, type LobbyRoom, type Participant, lobbyReducer, start
 export default function WaitingRoom({ initialRoom, viewerId }: { initialRoom: LobbyRoom; viewerId: string }) {
   const t = useTranslations('Lobby');
   const participantName = useParticipantName();
+  const router = useRouter();
   const [room, setRoom] = useState(initialRoom);
   const [announcement, setAnnouncement] = useState('');
 
@@ -96,7 +98,7 @@ export default function WaitingRoom({ initialRoom, viewerId }: { initialRoom: Lo
             ready={me?.kind === 'human' && me.ready}
             blocker={startBlocker(room)}
             onToggleReady={() => me?.kind === 'human' && apply({ type: 'setReady', id: viewerId, ready: !me.ready })}
-            onStart={() => setAnnouncement(t('actions.starting'))}
+            onStart={() => router.push(`/lobby/${room.code}/race`)}
           />
           <p role="status" className="font-label-code text-[13px] text-tertiary empty:hidden">{announcement}</p>
           <LobbySettingsPanel
