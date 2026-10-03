@@ -13,7 +13,9 @@ Multiplayer typing-race game (MonkeyType-like), school project (Web V). Requirem
 ```bash
 docker compose up -d      # local Postgres 17 on :5432 (db "monkeytyper")
 cp .env.example .env      # DATABASE_URL for local Postgres
-npm run dev               # Next.js dev server on :3000
+npm run dev               # server.ts: Next.js dev + race WebSockets (/ws/race/<code>) on :3000
+npm run dev:next          # plain `next dev`, without race sockets
+npm start                 # production: same server.ts (run `npm run build` first)
 npm run build
 npm run lint              # ESLint 9 flat config (next core-web-vitals + typescript)
 npm run typecheck         # tsc --noEmit on all .ts/.tsx files
@@ -39,13 +41,14 @@ CI (`.github/workflows/test.yml`) runs typecheck + tests on push/PR to `main` an
 - **Next.js 16 App Router, React 19, React Compiler on** (`reactCompiler: true`), Tailwind CSS 4 (CSS-first config via `@theme` in `src/app/globals.css`, no `tailwind.config`). Next 16 has breaking changes from older versions (e.g. global `LayoutProps<"/">` / `PageProps` types). The docs matching the installed version are in `node_modules/next/dist/docs/`, so check there rather than relying on memory.
 - Path alias `@/*` → `src/*`.
 - **DB**: Drizzle ORM + `pg`. `src/db/index.ts` is `server-only` and caches the `Pool` on `globalThis` in dev to survive HMR. Import `db` from `@/db` only in server code (route handlers, server components, server actions). Schema in `src/db/schema.ts`; the current `users`/`results` tables are a placeholder to be replaced by the model in PLAN.md §2. Commit generated migrations in `drizzle/`.
-- Deployed on Vercel (pushes to `main` go to prod). Postgres on Neon in prod.
+- Deployed on Railway as one long-running Node service: `npm run build`, then `npm start` (listens on `PORT`). Postgres on Neon in prod.
 
-## Target architecture (from PLAN.md, mostly not built yet)
+## Architecture
 
-- **Realtime runs outside Vercel**: PartyKit / PartyServer (Cloudflare Durable Objects) in `party/`. One room per lobby holds authoritative state (countdown, keystroke validation, bots, bonuses, timers via alarms), plus one index room that lists public lobbies. Rooms broadcast an aggregated 5 Hz `tick`. Lobby state is **never** stored in Postgres. At race end the room POSTs signed results to `/api/races/complete`.
+- **Realtime is self-hosted, no third-party service**: `server.ts` is a custom Next server that also accepts WebSockets on `/ws/race/<code>` (`src/realtime/attach.ts`; `src/proxy.ts` skips `ws/`). `RaceHub` keeps one `RaceRoom` per lobby with a 5 Hz timer; the room is the only source of truth: it validates client messages with zod (`src/game/protocol.ts`), replays keystrokes through `src/game/race.ts`, runs bots and timers, and broadcasts an aggregated `tick`. Lobby state is **never** stored in Postgres. Rooms live in memory, so prod runs a single instance.
+- For now a race is seeded from the sample lobby (`src/realtime/seed.ts`): each browser tab is a guest (id in `sessionStorage`) that takes a free human seat during the countdown, empty seats are driven by the bot sim, late arrivals spectate. Still to do: the waiting room on the server, and POSTing results to `/api/races/complete`.
 - **Pure, shared game logic in `src/game/`**: reducers (`state + event → new state`) with no I/O, imported by both the client (instant local feedback) and the room (server truth / anti-cheat replay of keystrokes). This is a core course requirement (functional programming). Keep I/O, React and network code out of `src/game/`.
-- Planned libs: `zod` for WS message and form validation, custom DB sessions + `@node-rs/argon2` + `arctic` (Discord/GitHub OAuth, no email stored), `next-themes`.
+- Planned libs: `zod` for form validation (already used for WS messages), custom DB sessions + `@node-rs/argon2` + `arctic` (Discord/GitHub OAuth, no email stored), `next-themes`.
 
 ## UI / design
 
