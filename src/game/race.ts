@@ -247,14 +247,25 @@ export function leaderGap(table: readonly { id: string; progress: number }[], id
   return table[0].progress - table[1].progress;
 }
 
-/** Dépassements entre deux classements : qui `id` a dépassé, et qui l'a dépassé (RACE-5). */
-export function overtakes(previous: readonly string[], next: readonly string[], id: string): { passed: string[]; passedBy: string[] } {
-  const before = previous.indexOf(id);
-  const after = next.indexOf(id);
-  if (before < 0 || after < 0) return { passed: [], passedBy: [] };
-  const others = next.filter((other) => other !== id && previous.includes(other));
-  return {
-    passed: others.filter((other) => previous.indexOf(other) < before && next.indexOf(other) > after),
-    passedBy: others.filter((other) => previous.indexOf(other) > before && next.indexOf(other) < after),
-  };
+type Progress = { id: string; progress: number };
+
+/**
+ * Dépassements entre deux classements : qui `id` a dépassé, et qui l'a dépassé (RACE-5).
+ * Seule la progression compte : une égalité (tout le monde à zéro au départ) n'est pas un dépassement.
+ */
+export function overtakes(previous: readonly Progress[], next: readonly Progress[], id: string): { passed: string[]; passedBy: string[] } {
+  const before = new Map(previous.map((row) => [row.id, row.progress]));
+  const after = new Map(next.map((row) => [row.id, row.progress]));
+  const mineBefore = before.get(id);
+  const mineAfter = after.get(id);
+  if (mineBefore === undefined || mineAfter === undefined) return { passed: [], passedBy: [] };
+  const passed: string[] = [];
+  const passedBy: string[] = [];
+  for (const { id: other, progress } of next) {
+    const was = before.get(other);
+    if (other === id || was === undefined) continue;
+    if (was > mineBefore && progress < mineAfter) passed.push(other);
+    if (was < mineBefore && progress > mineAfter) passedBy.push(other);
+  }
+  return { passed, passedBy };
 }

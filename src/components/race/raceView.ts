@@ -20,16 +20,16 @@ export interface RaceView {
 export const initialRaceView: RaceView = { you: null, race: null, startAt: null, phase: null, standings: [], banner: null };
 
 function nextBanner(view: RaceView, standings: Standing[], at: number): RaceBanner | null {
-  const before = view.standings.map((s) => s.id);
-  const after = standings.map((s) => s.id);
-  if (before.length === 0) return view.banner;
+  if (view.standings.length === 0) return view.banner;
   if (view.you) {
-    const { passed, passedBy } = overtakes(before, after, view.you);
+    const { passed, passedBy } = overtakes(view.standings, standings, view.you);
     if (passed.length > 0) return { kind: 'passed', ids: passed, at };
     if (passedBy.length > 0) return { kind: 'passedBy', ids: passedBy, at };
   }
+  // Nouveau meneur seulement s'il devance vraiment l'ancien : une égalité ne fait que changer l'ordre.
   const leader = standings[0];
-  if (leader && leader.id !== before[0] && leader.progress > 0) return { kind: 'newLeader', ids: [leader.id], at };
+  const formerLeader = standings.find((s) => s.id === view.standings[0].id);
+  if (leader && formerLeader && leader.id !== formerLeader.id && leader.progress > formerLeader.progress) return { kind: 'newLeader', ids: [leader.id], at };
   return view.banner;
 }
 
