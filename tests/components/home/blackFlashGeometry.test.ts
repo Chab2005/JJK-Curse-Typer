@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { blackFlashBolts, WIDTH_PEAK_AT, boltPoints, boltWidths, ribbonPath, seededRandom, toPath, widthEnvelope } from '@/components/home/blackFlashGeometry';
+import { blackFlashBolts, boltStrands, WIDTH_PEAK_AT, boltPoints, boltWidths, ribbonPath, seededRandom, toPath, widthEnvelope } from '@/components/home/blackFlashGeometry';
 
 describe('seededRandom', () => {
   it('donne toujours la même suite pour la même graine', () => {
@@ -110,6 +110,24 @@ describe('ribbonPath', () => {
 describe('toPath', () => {
   it('écrit un tracé SVG M puis L, arrondi au dixième', () => {
     expect(toPath([{ x: 0, y: 0 }, { x: 10.04, y: -3.26 }, { x: 20, y: 5 }])).toBe('M0 0L10 -3.3L20 5');
+  });
+});
+
+describe('boltStrands', () => {
+  const lastPoint = (line: string) => line.split('L').at(-1)!.split(' ').map(Number);
+
+  it('part du centre et vise l’angle demandé', () => {
+    for (const angle of [0, 1, 2.5, -2]) {
+      const [trunk] = boltStrands(angle, seededRandom(5));
+      const [x, y] = lastPoint(trunk.line);
+      expect(trunk.line.startsWith('M0 0')).toBe(true);
+      expect(Math.abs(Math.atan2(Math.sin(Math.atan2(y, x) - angle), Math.cos(Math.atan2(y, x) - angle)))).toBeLessThanOrEqual(0.16);
+    }
+  });
+
+  it('dessine une forme différente pour chaque tirage', () => {
+    const random = seededRandom(12);
+    expect(boltStrands(1, random)).not.toEqual(boltStrands(1, random));
   });
 });
 

@@ -14,7 +14,7 @@ export default defineConfig({
       // React components (*.test.tsx): jsdom + Testing Library.
       {
         resolve: { alias },
-        test: { name: 'components', environment: 'jsdom', include: ['tests/**/*.test.tsx'], setupFiles: ['tests/setup.tsx'] },
+        test: { name: 'components', environment: 'jsdom', include: ['tests/**/*.test.tsx'], setupFiles: ['tests/polyfills.ts', 'tests/setup.tsx'] },
       },
     ],
   },
