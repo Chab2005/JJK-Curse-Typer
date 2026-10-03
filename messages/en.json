@@ -4,19 +4,15 @@
     "description": "Multiplayer typing races in the Jujutsu Kaisen universe."
   },
   "Header": {
+    "home": "JJK: Curse Typer, home",
     "nav": {
-      "join": "Join",
-      "multiplayer": "Multiplayer Battle",
-      "leaderboard": "Exorcist Rankings",
-      "archives": "Archives & Spells"
+      "label": "Main navigation",
+      "home": "Home",
+      "arenas": "Arenas",
+      "leaderboard": "Rankings",
+      "archives": "Archives"
     },
-    "stats": {
-      "wpmRecord": "WPM Record",
-      "accuracy": "Accuracy"
-    },
-    "soundEffects": "Sound Effects",
-    "theme": "Occult Theme",
-    "profileAlt": "Profile",
+    "profileAlt": "My profile",
     "menu": {
       "open": "Open menu",
       "close": "Close menu"
@@ -26,38 +22,42 @@
     "label": "Language"
   },
   "Hero": {
-    "title": "Enter the <accent>Domain</accent>",
-    "intro": "Enter your squad's secret seal (Game PIN) or join a public showdown in progress."
+    "tagline": "Channel your cursed energy into your fingertips.",
+    "logoAlt": "Jujutsu Kaisen",
+    "subtitle": "Multiplayer typing race",
+    "arenasOpen": "Arenas open",
+    "online": "● {count} online",
+    "play": "Play now",
+    "joinByCode": "Join with a code",
+    "sideLeft": "Tokyo Jujutsu High · Typing arena",
+    "sideRight": "Curse Typer · Multiplayer"
+  },
+  "JoinSection": {
+    "eyebrow": "Connect",
+    "title": "Enter the domain",
+    "watermark": "Enter"
   },
   "JoinForm": {
-    "connection": "Direct Arena Link",
-    "serverActive": "SERVER ONLINE",
-    "pinLabel": "Room Seal // PIN",
-    "pinFormat": "FORMAT: 6 CHARACTERS (E.G. 884-JJK)",
-    "liveCursor": "LIVE CURSOR",
-    "nameLabel": "NAME",
+    "title": "Room seal",
+    "serverActive": "Server online",
+    "pinLabel": "PIN",
+    "pinExample": "E.g. 884-JJK",
+    "nameLabel": "Exorcist name",
     "randomName": "Random",
-    "submit": "EXPAND THE Domain (JOIN)",
-    "enterKey": "Enter ↵",
+    "submit": "Expand the domain",
     "createPrivate": "Create a private room with your own texts",
     "syncing": "Syncing the occult barriers... Domain: <highlight>{pin}</highlight>",
     "connected": "Connected to Domain <highlight>{pin}</highlight>! Teleporting {name}..."
   },
   "PublicLobbies": {
-    "title": "Public Rooms",
-    "open": "Open",
-    "activeExorcists": "{count} exorcists in battle",
-    "refresh": "Refresh",
-    "explore": "Explore more rooms & arenas",
+    "title": "Public rooms",
+    "openCount": "{count} open",
     "join": "Join",
+    "joinLabel": "Join {name}",
+    "all": "All arenas",
     "mode": {
       "sprint": "{seconds}s Sprint",
       "words": "{count} words"
-    },
-    "badge": {
-      "seconds": "{seconds}s",
-      "words": "{count} words",
-      "standard": "Standard"
     },
     "participants": {
       "exorcists": "{current}/{max} exorcists",
@@ -67,6 +67,224 @@
       "startsIn": "Starts in {seconds}s",
       "waitingSquad": "Waiting for squad",
       "readyToLaunch": "Ready to launch"
+    }
+  },
+  "GameSystem": {
+    "eyebrow": "How it works",
+    "titleLine1": "The rules are simple: type.",
+    "titleLine2": "The curses do the rest.",
+    "intro": "One text, a synchronized start, and every correct keystroke moves your exorcist down the track. Those at the back get bonuses to strike the leaders.",
+    "facts": {
+      "players": { "value": "60", "label": "exorcists per race" },
+      "timer": { "value": "3:00", "label": "minutes at most" },
+      "bots": { "value": "3", "label": "bot levels" },
+      "languages": { "value": "FR · EN", "label": "text languages" }
+    }
+  },
+  "Characters": {
+    "eyebrow": "Characters",
+    "title": "Choose your exorcist",
+    "watermark": "Exorcists",
+    "cta": "Enter a room",
+    "number": "No. {number}",
+    "techniques": {
+      "yuji": "Divergent Fist",
+      "megumi": "Ten Shadows",
+      "nobara": "Resonance",
+      "gojo": "Limitless",
+      "maki": "Heavenly Restriction",
+      "nanami": "Ratio 7:3",
+      "todo": "Boogie Woogie",
+      "toge": "Cursed Speech"
+    }
+  },
+  "TopExorcists": {
+    "eyebrow": "Rankings",
+    "title": "Special grade",
+    "cta": "Full rankings",
+    "wpm": "WPM",
+    "profileLabel": "View {name}'s profile"
+  },
+  "Footer": {
+    "nav": "Footer",
+    "arenas": "Arenas",
+    "leaderboard": "Rankings",
+    "profile": "Profile",
+    "disclaimer": "Unofficial fan-made school project. Jujutsu Kaisen © Gege Akutami / Shueisha. Character art: Jujutsu Kaisen Phantom Parade (Sumzap). Not affiliated with the rights holders."
+  },
+  "Pagination": {
+    "previous": "Previous page",
+    "next": "Next page",
+    "status": "Page {page} / {pageCount}"
+  },
+  "Lobbies": {
+    "metaTitle": "Arenas",
+    "eyebrow": "Multiplayer battle",
+    "title": "Find an arena",
+    "intro": "Search for a host or a lobby by name; the filters do the rest.",
+    "watermark": "Arenas",
+    "search": "Host or lobby name",
+    "resultCount": "{count, plural, one {# lobby found} other {# lobbies found}}",
+    "empty": "No lobby matches your search.",
+    "clear": "Clear search and filters",
+    "pagination": "Lobby pages",
+    "filters": {
+      "button": "Filters",
+      "availability": "Availability",
+      "showUnavailable": "Show full or in-progress lobbies",
+      "bonusOnly": "Bonuses enabled only",
+      "language": "Text language",
+      "languages": {
+        "fr": "French",
+        "en": "English"
+      },
+      "chars": "Text characters",
+      "charsHint": "Uncheck a type to hide the lobbies that use it.",
+      "charKinds": {
+        "uppercase": "Uppercase (A-Z)",
+        "digits": "Digits (0-9)",
+        "punctuation": "Punctuation and symbols (#$%)",
+        "accents": "Accents (àé)"
+      },
+      "reset": "Reset",
+      "close": "Close"
+    },
+    "table": {
+      "caption": "Public lobbies",
+      "lobby": "Host · Lobby",
+      "players": "Players",
+      "language": "Language",
+      "bonus": "Bonus",
+      "chars": "Text type",
+      "action": "Action",
+      "words": "{count} words",
+      "count": "{players}/{capacity}",
+      "racing": "Racing",
+      "full": "Full",
+      "bonusOn": "Yes",
+      "bonusOff": "No",
+      "join": "Join",
+      "joinLabel": "Join {name}",
+      "spectate": "Watch",
+      "spectateLabel": "Watch {name} as a spectator"
+    }
+  },
+  "Leaderboard": {
+    "metaTitle": "Rankings",
+    "eyebrow": "Top exorcists",
+    "title": "Exorcist rankings",
+    "watermark": "Rankings",
+    "search": "Search a username",
+    "filter": "Filter",
+    "sortBy": "Sort by",
+    "close": "Close",
+    "current": "Category: <strong>{category}</strong>",
+    "categories": {
+      "wpm": "WPM",
+      "accuracy": "Accuracy",
+      "score": "Average score",
+      "errors": "Errors / 100 words"
+    },
+    "units": {
+      "wpm": "{value} WPM",
+      "score": "{value} pts"
+    },
+    "places": {
+      "1": "First · {category}",
+      "2": "Second · {category}",
+      "3": "Third · {category}"
+    },
+    "podium": "Podium",
+    "tableCaption": "Overall rankings, sorted by {category}",
+    "columns": {
+      "rank": "Rank",
+      "player": "Player"
+    },
+    "profileLabel": "View {name}'s profile",
+    "empty": "No exorcist goes by that name.",
+    "pagination": "Ranking pages",
+    "eligibility": "Players appear after {games} finished races. The average score covers their last 5 races."
+  },
+  "Profile": {
+    "eyebrow": "Exorcist profile",
+    "github": "github.com/{handle}",
+    "discord": "Discord: {name}",
+    "discordLink": "Discord profile",
+    "summary": "{games} races · {wins} wins · best: {best} WPM",
+    "chart": {
+      "title": "WPM over time",
+      "period": "Time period",
+      "periods": {
+        "7d": "7 days",
+        "30d": "30 days",
+        "1y": "1 year",
+        "all": "All"
+      },
+      "summary": "WPM chart, {count} points with races, latest {last} WPM. Use the arrow keys to read each point.",
+      "wpm": "{value} WPM",
+      "noRace": "No race",
+      "races": "{count, plural, one {# race} other {# races}}",
+      "empty": "No race in this period.",
+      "date": "Date",
+      "wpmColumn": "Average WPM",
+      "racesColumn": "Races"
+    },
+    "stats": {
+      "label": "Main statistics",
+      "wpm": "Average WPM",
+      "wpmUnit": "WPM",
+      "accuracy": "Accuracy",
+      "errors": "Errors per 100 words",
+      "errorsUnit": "/ 100",
+      "score": "Average score (last 5 races)",
+      "scoreUnit": "pts"
+    },
+    "heatmap": {
+      "title": "Keyboard heatmap",
+      "mode": "Value shown",
+      "modes": {
+        "errors": "Errors",
+        "speed": "Speed"
+      },
+      "layout": "Keyboard layout",
+      "legend": "Legend",
+      "tones": {
+        "weak": "Needs work",
+        "average": "Average",
+        "strong": "Good"
+      },
+      "valueHint": {
+        "errors": "value = error rate",
+        "speed": "value = average delay"
+      },
+      "ms": "{value} ms",
+      "space": "Space",
+      "row": "Row {number}",
+      "keyLabel": "{key}: {value}, {tone}",
+      "keyUnused": "{key}: never typed",
+      "weakest": "Keys to work on:"
+    },
+    "edit": {
+      "open": "Edit profile",
+      "title": "Edit profile",
+      "close": "Close",
+      "avatar": "Profile picture",
+      "username": "Username",
+      "github": "GitHub profile link",
+      "githubPlaceholder": "https://github.com/your-name",
+      "discord": "Discord (link or name)",
+      "discordPlaceholder": "name or https://discord.com/users/…",
+      "cancel": "Cancel",
+      "save": "Save",
+      "saved": "Profile updated.",
+      "errors": {
+        "username": {
+          "length": "Between 3 and 20 characters.",
+          "characters": "Letters, digits, _ and - only."
+        },
+        "github": "Enter a GitHub profile link, like github.com/your-name.",
+        "discord": "Enter a Discord name (2 to 32 lowercase letters, digits, _ or .) or a discord.com link."
+      }
     }
   }
 }

@@ -20,7 +20,7 @@ export default function LanguageSwitcher() {
   return (
     <nav
       aria-label={t('label')}
-      className="flex items-center rounded bg-surface-container-low font-label-code text-label-code uppercase"
+      className="flex items-center rounded font-label-code text-label-code uppercase"
     >
       {locales.map((locale) => {
         const active = locale === current;

@@ -4,19 +4,15 @@
     "description": "Courses de dactylographie multijoueur dans l'univers de Jujutsu Kaisen."
   },
   "Header": {
+    "home": "JJK : Curse Typer, accueil",
     "nav": {
-      "join": "Rejoindre",
-      "multiplayer": "Combat Multijoueur",
-      "leaderboard": "Classement Exorcistes",
-      "archives": "Archives & Sorts"
+      "label": "Navigation principale",
+      "home": "Accueil",
+      "arenas": "Arènes",
+      "leaderboard": "Classement",
+      "archives": "Archives"
     },
-    "stats": {
-      "wpmRecord": "WPM Record",
-      "accuracy": "Précision"
-    },
-    "soundEffects": "Effets Sonores",
-    "theme": "Thème Occulte",
-    "profileAlt": "Profil",
+    "profileAlt": "Mon profil",
     "menu": {
       "open": "Ouvrir le menu",
       "close": "Fermer le menu"
@@ -26,38 +22,42 @@
     "label": "Langue"
   },
   "Hero": {
-    "title": "Entrer dans le <accent>Domaine</accent>",
-    "intro": "Saisissez le sceau secret (Game PIN) de votre escouade ou rejoignez une confrontation publique en cours."
+    "tagline": "Mettez votre énergie occulte au bout des doigts.",
+    "logoAlt": "Jujutsu Kaisen",
+    "subtitle": "Course de frappe multijoueur",
+    "arenasOpen": "Arènes ouvertes",
+    "online": "● {count} en ligne",
+    "play": "Jouer maintenant",
+    "joinByCode": "Rejoindre par code",
+    "sideLeft": "Tokyo Jujutsu High · Arène de frappe",
+    "sideRight": "Curse Typer · Multijoueur"
+  },
+  "JoinSection": {
+    "eyebrow": "Connexion",
+    "title": "Entrer dans le domaine",
+    "watermark": "Entrer"
   },
   "JoinForm": {
-    "connection": "Connexion Arène Directe",
-    "serverActive": "SERVEUR ACTIF",
-    "pinLabel": "Sceau de Salon // PIN",
-    "pinFormat": "FORMAT: 6 CARACTÈRES (EX: 884-JJK)",
-    "liveCursor": "CURSEUR VIF",
-    "nameLabel": "NOM",
+    "title": "Sceau de salon",
+    "serverActive": "Serveur actif",
+    "pinLabel": "PIN",
+    "pinExample": "Ex : 884-JJK",
+    "nameLabel": "Nom d'exorciste",
     "randomName": "Aléatoire",
-    "submit": "DÉPLOYER LE Domaine (REJOINDRE)",
-    "enterKey": "Entrée ↵",
+    "submit": "Déployer le domaine",
     "createPrivate": "Créer un salon privé avec vos propres textes",
     "syncing": "Synchronisation des barrières occultes en cours... Domaine : <highlight>{pin}</highlight>",
     "connected": "Connexion établie au Domaine <highlight>{pin}</highlight> ! Téléportation de {name}..."
   },
   "PublicLobbies": {
-    "title": "Salons Publics",
-    "open": "Ouverts",
-    "activeExorcists": "{count} exorcistes en combat",
-    "refresh": "Rafraîchir",
-    "explore": "Explorer d'autres salons & arènes",
+    "title": "Salons publics",
+    "openCount": "{count} ouverts",
     "join": "Rejoindre",
+    "joinLabel": "Rejoindre {name}",
+    "all": "Toutes les arènes",
     "mode": {
       "sprint": "Sprint {seconds}s",
       "words": "{count} mots"
-    },
-    "badge": {
-      "seconds": "{seconds}s",
-      "words": "{count} mots",
-      "standard": "Standard"
     },
     "participants": {
       "exorcists": "{current}/{max} exorcistes",
@@ -67,6 +67,224 @@
       "startsIn": "Départ dans {seconds}s",
       "waitingSquad": "En attente d'escouade",
       "readyToLaunch": "Prêt à lancer"
+    }
+  },
+  "GameSystem": {
+    "eyebrow": "Système de jeu",
+    "titleLine1": "Les règles sont simples : tapez.",
+    "titleLine2": "Les malédictions font le reste.",
+    "intro": "Un texte, un départ synchronisé, et chaque frappe juste fait avancer votre exorciste sur la piste. Les derniers reçoivent des bonus pour viser les meneurs.",
+    "facts": {
+      "players": { "value": "60", "label": "exorcistes par course" },
+      "timer": { "value": "3:00", "label": "minutes au plus" },
+      "bots": { "value": "3", "label": "niveaux de bots" },
+      "languages": { "value": "FR · EN", "label": "textes au choix" }
+    }
+  },
+  "Characters": {
+    "eyebrow": "Personnages",
+    "title": "Choisissez votre exorciste",
+    "watermark": "Exorcistes",
+    "cta": "Vérifier les personnages",
+    "number": "No. {number}",
+    "techniques": {
+      "yuji": "Divergent Fist",
+      "megumi": "Dix Ombres",
+      "nobara": "Résonance",
+      "gojo": "Infini",
+      "maki": "Corps céleste",
+      "nanami": "Ratio 7:3",
+      "todo": "Boogie Woogie",
+      "toge": "Paroles maudites"
+    }
+  },
+  "TopExorcists": {
+    "eyebrow": "Classement",
+    "title": "Grade spécial",
+    "cta": "Classement complet",
+    "wpm": "MPM",
+    "profileLabel": "Voir le profil de {name}"
+  },
+  "Footer": {
+    "nav": "Pied de page",
+    "arenas": "Arènes",
+    "leaderboard": "Classement",
+    "profile": "Profil",
+    "disclaimer": "Projet scolaire non officiel, réalisé par des fans. Jujutsu Kaisen © Gege Akutami / Shueisha. Illustrations des personnages : Jujutsu Kaisen Phantom Parade (Sumzap). Aucune affiliation avec les ayants droit."
+  },
+  "Pagination": {
+    "previous": "Page précédente",
+    "next": "Page suivante",
+    "status": "Page {page} / {pageCount}"
+  },
+  "Lobbies": {
+    "metaTitle": "Arènes",
+    "eyebrow": "Combat multijoueur",
+    "title": "Trouver une arène",
+    "intro": "Cherchez un hôte ou un salon par son nom ; les filtres font le reste.",
+    "watermark": "Arènes",
+    "search": "Nom de l'hôte ou du lobby",
+    "resultCount": "{count, plural, one {# lobby trouvé} other {# lobbies trouvés}}",
+    "empty": "Aucun lobby ne correspond à votre recherche.",
+    "clear": "Effacer la recherche et les filtres",
+    "pagination": "Pages des lobbies",
+    "filters": {
+      "button": "Filtres",
+      "availability": "Disponibilité",
+      "showUnavailable": "Afficher les lobbies complets ou en course",
+      "bonusOnly": "Bonus activés uniquement",
+      "language": "Langue du texte",
+      "languages": {
+        "fr": "Français",
+        "en": "Anglais"
+      },
+      "chars": "Caractères du texte",
+      "charsHint": "Décochez un type pour cacher les lobbies qui l'utilisent.",
+      "charKinds": {
+        "uppercase": "Majuscules (A-Z)",
+        "digits": "Chiffres (0-9)",
+        "punctuation": "Ponctuation et symboles (#$%)",
+        "accents": "Accents (àé)"
+      },
+      "reset": "Réinitialiser",
+      "close": "Fermer"
+    },
+    "table": {
+      "caption": "Lobbies publics",
+      "lobby": "Hôte · Lobby",
+      "players": "Joueurs",
+      "language": "Langue",
+      "bonus": "Bonus",
+      "chars": "Type de texte",
+      "action": "Action",
+      "words": "{count} mots",
+      "count": "{players}/{capacity}",
+      "racing": "En course",
+      "full": "Complet",
+      "bonusOn": "Oui",
+      "bonusOff": "Non",
+      "join": "Rejoindre",
+      "joinLabel": "Rejoindre {name}",
+      "spectate": "Regarder",
+      "spectateLabel": "Regarder {name} en spectateur"
+    }
+  },
+  "Leaderboard": {
+    "metaTitle": "Classement",
+    "eyebrow": "Meilleurs exorcistes",
+    "title": "Classement des exorcistes",
+    "watermark": "Classement",
+    "search": "Rechercher un nom d'utilisateur",
+    "filter": "Filtre",
+    "sortBy": "Trier par",
+    "close": "Fermer",
+    "current": "Catégorie : <strong>{category}</strong>",
+    "categories": {
+      "wpm": "MPM",
+      "accuracy": "Précision",
+      "score": "Score moyen",
+      "errors": "Erreurs / 100 mots"
+    },
+    "units": {
+      "wpm": "{value} MPM",
+      "score": "{value} pts"
+    },
+    "places": {
+      "1": "Premier · {category}",
+      "2": "Second · {category}",
+      "3": "Troisième · {category}"
+    },
+    "podium": "Podium",
+    "tableCaption": "Classement général, trié par {category}",
+    "columns": {
+      "rank": "Rang",
+      "player": "Joueur"
+    },
+    "profileLabel": "Voir le profil de {name}",
+    "empty": "Aucun exorciste ne porte ce nom.",
+    "pagination": "Pages du classement",
+    "eligibility": "Les joueurs apparaissent après {games} courses terminées. Le score moyen porte sur leurs 5 dernières courses."
+  },
+  "Profile": {
+    "eyebrow": "Profil d'exorciste",
+    "github": "github.com/{handle}",
+    "discord": "Discord : {name}",
+    "discordLink": "Profil Discord",
+    "summary": "{games} courses · {wins} victoires · meilleur : {best} MPM",
+    "chart": {
+      "title": "Évolution du MPM",
+      "period": "Période",
+      "periods": {
+        "7d": "7 jours",
+        "30d": "30 jours",
+        "1y": "1 an",
+        "all": "Tout"
+      },
+      "summary": "Graphique du MPM, {count} points avec courses, dernier : {last} MPM. Utilisez les flèches pour lire chaque point.",
+      "wpm": "{value} MPM",
+      "noRace": "Aucune course",
+      "races": "{count, plural, one {# course} other {# courses}}",
+      "empty": "Aucune course sur cette période.",
+      "date": "Date",
+      "wpmColumn": "MPM moyen",
+      "racesColumn": "Courses"
+    },
+    "stats": {
+      "label": "Statistiques principales",
+      "wpm": "MPM moyen",
+      "wpmUnit": "MPM",
+      "accuracy": "Précision",
+      "errors": "Erreurs pour 100 mots",
+      "errorsUnit": "/ 100",
+      "score": "Score moyen (5 dernières courses)",
+      "scoreUnit": "pts"
+    },
+    "heatmap": {
+      "title": "Carte de chaleur du clavier",
+      "mode": "Valeur affichée",
+      "modes": {
+        "errors": "Erreurs",
+        "speed": "Vitesse"
+      },
+      "layout": "Disposition du clavier",
+      "legend": "Légende",
+      "tones": {
+        "weak": "À travailler",
+        "average": "Moyen",
+        "strong": "Bon"
+      },
+      "valueHint": {
+        "errors": "valeur = taux d'erreur",
+        "speed": "valeur = délai moyen"
+      },
+      "ms": "{value} ms",
+      "space": "Espace",
+      "row": "Rangée {number}",
+      "keyLabel": "{key} : {value}, {tone}",
+      "keyUnused": "{key} : jamais tapée",
+      "weakest": "Touches à travailler :"
+    },
+    "edit": {
+      "open": "Modifier le profil",
+      "title": "Modifier le profil",
+      "close": "Fermer",
+      "avatar": "Photo de profil",
+      "username": "Pseudo",
+      "github": "Lien du profil GitHub",
+      "githubPlaceholder": "https://github.com/votre-pseudo",
+      "discord": "Discord (lien ou nom)",
+      "discordPlaceholder": "nom ou https://discord.com/users/…",
+      "cancel": "Annuler",
+      "save": "Sauvegarder",
+      "saved": "Profil mis à jour.",
+      "errors": {
+        "username": {
+          "length": "Entre 3 et 20 caractères.",
+          "characters": "Lettres, chiffres, _ et - seulement."
+        },
+        "github": "Entrez un lien de profil GitHub, comme github.com/votre-pseudo.",
+        "discord": "Entrez un nom Discord (2 à 32 minuscules, chiffres, _ ou .) ou un lien discord.com."
+      }
     }
   }
 }
