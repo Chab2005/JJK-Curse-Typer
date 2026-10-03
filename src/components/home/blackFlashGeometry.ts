@@ -1,18 +1,11 @@
-// Géométrie pure des éclairs « Black Flash » du hero : aucune I/O, tirages seedés
-// pour que le serveur et le client produisent exactement les mêmes tracés.
-
 export type Point = { x: number; y: number };
 
 export type Bolt = {
-  /** Tracé SVG de l'éclair principal. */
   main: string;
-  /** Tracés des petites ramifications. */
   branches: string[];
-  /** Décalage de l'animation, en secondes, dans [0, durée du cycle). */
   delay: number;
 };
 
-/** Générateur pseudo-aléatoire déterministe (mulberry32), valeurs dans [0, 1). */
 export function seededRandom(seed: number): () => number {
   let state = seed >>> 0;
   return () => {
@@ -24,7 +17,6 @@ export function seededRandom(seed: number): () => number {
   };
 }
 
-/** Ligne brisée de `start` à `end` : chaque point intermédiaire s'écarte d'au plus `jitter`. */
 export function boltPoints(start: Point, end: Point, segments: number, jitter: number, random: () => number): Point[] {
   const dx = end.x - start.x;
   const dy = end.y - start.y;
@@ -46,12 +38,10 @@ export function toPath(points: Point[]): string {
   return points.map((p, i) => `${i === 0 ? 'M' : 'L'}${round(p.x)} ${round(p.y)}`).join('');
 }
 
-/** Distance du centre où naissent les éclairs, dans le repère de ±500 (≈ 50 px à l'écran). */
 export const BOLT_START_RADIUS = 20;
 
 const polar = (radius: number, angle: number): Point => ({ x: radius * Math.cos(angle), y: radius * Math.sin(angle) });
 
-/** `count` éclairs qui partent du centre (0, 0) vers l'extérieur, dans un repère de ±500. */
 export function blackFlashBolts(count: number, seed: number, cycleSeconds: number): Bolt[] {
   const random = seededRandom(seed);
 
