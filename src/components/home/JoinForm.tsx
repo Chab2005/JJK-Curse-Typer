@@ -1,7 +1,9 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
+import { createLobbyAction } from '@/app/actions/lobbies';
+import { useRouter } from '@/i18n/navigation';
 import { formatPinInput, isCompletePin, normalizePin, pickRandomPseudo } from './join';
 
 const RANDOM_PSEUDOS = [
@@ -24,22 +26,42 @@ export default function JoinForm() {
   const [showBanner, setShowBanner] = useState(false);
   const [statusPin, setStatusPin] = useState(DEMO_PIN);
   const [isLoading, setIsLoading] = useState(false);
+  const [isCreating, startCreating] = useTransition();
+  const [createFailed, setCreateFailed] = useState(false);
+  const router = useRouter();
   // Vide : on retombe sur le code de démo ; sinon il faut un code complet.
   const canSubmit = roomPin === '' || isCompletePin(roomPin);
 
   const triggerJoinDomain = (e: React.FormEvent) => {
     e.preventDefault();
     if (!canSubmit) return;
+    // Un code complet mène à son lobby (LOB-3) ; la page 404 du lobby gère les codes inconnus.
+    if (roomPin !== '') {
+      router.push(`/lobby/${normalizePin(roomPin)}`);
+      return;
+    }
 
     setStatusPin(normalizePin(roomPin) || DEMO_PIN);
     setShowBanner(true);
     setIsLoading(true);
 
-    // En attendant le serveur temps réel (phase 2), on simule la connexion.
+    // Sans code, on garde la connexion simulée au domaine de démonstration.
     setTimeout(() => {
       setIsLoading(false);
       setShowBanner(false);
     }, 2400);
+  };
+
+  // Nouveau lobby privé dont on est l'hôte (LOB-4), créé sur le serveur puis ouvert.
+  const createLobby = () => {
+    setCreateFailed(false);
+    startCreating(async () => {
+      try {
+        router.push(`/lobby/${await createLobbyAction()}`);
+      } catch {
+        setCreateFailed(true);
+      }
+    });
   };
 
   return (
@@ -108,10 +130,20 @@ export default function JoinForm() {
           </span>
         </button>
 
-        <button type="button" className="group flex min-h-8 items-center gap-2 self-center text-sm text-outline transition-colors hover:text-primary">
-          <span aria-hidden="true" className="material-symbols-outlined text-[17px] text-primary">add</span>
-          <span className="underline decoration-primary/40 underline-offset-4 group-hover:decoration-primary">{t('createPrivate')}</span>
+        <button
+          type="button"
+          onClick={createLobby}
+          disabled={isCreating}
+          className="group flex min-h-8 items-center gap-2 self-center text-sm text-outline transition-colors hover:text-primary disabled:opacity-60"
+        >
+          <span aria-hidden="true" className={`material-symbols-outlined text-[17px] text-primary ${isCreating ? 'animate-spin' : ''}`}>{isCreating ? 'progress_activity' : 'add'}</span>
+          <span className="underline decoration-primary/40 underline-offset-4 group-hover:decoration-primary">{t('createLobby')}</span>
         </button>
+        {createFailed && (
+          <p role="alert" className="self-center text-[14px] text-error">
+            {t('createFailed')}
+          </p>
+        )}
 
         {showBanner && (
           <div role="status" className="flex items-center gap-3 bg-surface-container-lowest p-3">
