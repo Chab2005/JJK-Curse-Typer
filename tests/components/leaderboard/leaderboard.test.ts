@@ -5,7 +5,7 @@ import {
   leaderboardView,
   parseLeaderboardSearch,
   rankPlayers,
-} from './leaderboard';
+} from '@/components/leaderboard/leaderboard';
 
 const player = (username: string, overrides: Partial<PlayerStats> = {}): PlayerStats => ({
   username,

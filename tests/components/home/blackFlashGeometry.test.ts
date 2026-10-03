@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { BOLT_START_RADIUS, blackFlashBolts, WIDTH_PEAK_AT, boltPoints, boltWidths, ribbonPath, seededRandom, toPath, widthEnvelope } from './blackFlashGeometry';
+import { blackFlashBolts, boltStrands, WIDTH_PEAK_AT, boltPoints, boltWidths, ribbonPath, seededRandom, toPath, widthEnvelope } from '@/components/home/blackFlashGeometry';
 
 describe('seededRandom', () => {
   it('donne toujours la même suite pour la même graine', () => {
@@ -113,6 +113,24 @@ describe('toPath', () => {
   });
 });
 
+describe('boltStrands', () => {
+  const lastPoint = (line: string) => line.split('L').at(-1)!.split(' ').map(Number);
+
+  it('part du centre et vise l’angle demandé', () => {
+    for (const angle of [0, 1, 2.5, -2]) {
+      const [trunk] = boltStrands(angle, seededRandom(5));
+      const [x, y] = lastPoint(trunk.line);
+      expect(trunk.line.startsWith('M0 0')).toBe(true);
+      expect(Math.abs(Math.atan2(Math.sin(Math.atan2(y, x) - angle), Math.cos(Math.atan2(y, x) - angle)))).toBeLessThanOrEqual(0.16);
+    }
+  });
+
+  it('dessine une forme différente pour chaque tirage', () => {
+    const random = seededRandom(12);
+    expect(boltStrands(1, random)).not.toEqual(boltStrands(1, random));
+  });
+});
+
 describe('blackFlashBolts', () => {
   const lastPoint = (line: string) => line.split('L').at(-1)!.split(' ').map(Number);
 
@@ -126,10 +144,10 @@ describe('blackFlashBolts', () => {
     }
   });
 
-  it('fait partir chaque éclair à BOLT_START_RADIUS du centre', () => {
+  it('fait partir chaque éclair du centre exact', () => {
     for (const bolt of blackFlashBolts(8, 3, 3)) {
       const [x, y] = bolt.strands[0].line.slice(1).split('L')[0].split(' ').map(Number);
-      expect(Math.hypot(x, y)).toBeCloseTo(BOLT_START_RADIUS, 0);
+      expect(Math.hypot(x, y)).toBeCloseTo(0, 0);
     }
   });
 

@@ -1,11 +1,21 @@
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vitest/config';
 
+const alias = { '@': fileURLToPath(new URL('./src', import.meta.url)) };
+
 export default defineConfig({
-  resolve: {
-    alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
-  },
   test: {
-    include: ['src/**/*.test.ts', 'messages/**/*.test.ts'],
+    projects: [
+      // Pure logic (*.test.ts): plain Node, no DOM.
+      {
+        resolve: { alias },
+        test: { name: 'unit', environment: 'node', include: ['tests/**/*.test.ts'] },
+      },
+      // React components (*.test.tsx): jsdom + Testing Library.
+      {
+        resolve: { alias },
+        test: { name: 'components', environment: 'jsdom', include: ['tests/**/*.test.tsx'], setupFiles: ['tests/polyfills.ts', 'tests/setup.tsx'] },
+      },
+    ],
   },
 });

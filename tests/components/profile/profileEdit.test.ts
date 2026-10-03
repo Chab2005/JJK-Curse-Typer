@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { discordHref, githubHandle, normalizeGithub, validateProfileEdit } from './profileEdit';
+import { discordHref, githubHandle, normalizeGithub, validateProfileEdit } from '@/components/profile/profileEdit';
 
 const valid = { username: 'Megumi_Shadows', github: '', discord: '' };
 

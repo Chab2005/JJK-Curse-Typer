@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { initials } from './initials';
+import { initials } from '@/lib/initials';
 
 describe('initials', () => {
   it('prend la première lettre des deux premiers mots, en majuscules', () => {

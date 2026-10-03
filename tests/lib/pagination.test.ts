@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { paginate, parsePage } from './pagination';
+import { paginate, parsePage } from '@/lib/pagination';
 
 describe('paginate', () => {
   const items = Array.from({ length: 12 }, (_, i) => i + 1);

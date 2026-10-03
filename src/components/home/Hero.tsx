@@ -2,6 +2,7 @@ import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import BlackFlash from './BlackFlash';
+import SmoothScrollLink from './SmoothScrollLink';
 
 export default function Hero({ onlineCount }: { onlineCount: number }) {
   const t = useTranslations('Hero');
@@ -68,12 +69,12 @@ export default function Hero({ onlineCount }: { onlineCount: number }) {
               {t('play')}
             </span>
           </Link>
-          <a href="#join" className="group bevel inline-flex bg-outline p-px transition-transform hover:-translate-y-0.5">
+          <SmoothScrollLink href="#join" className="group bevel inline-flex bg-outline p-px transition-transform hover:-translate-y-0.5">
             <span className="bevel flex min-h-[58px] items-center gap-2.5 bg-surface-container-lowest px-[30px] text-[17px] uppercase tracking-[0.12em] text-on-surface transition-colors group-hover:bg-surface-container-high">
               <span aria-hidden="true" className="material-symbols-outlined text-[20px] text-primary">pin</span>
               {t('joinByCode')}
             </span>
-          </a>
+          </SmoothScrollLink>
         </div>
       </div>
     </section>

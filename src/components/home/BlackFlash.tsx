@@ -1,3 +1,4 @@
+import BlackFlashBolt from './BlackFlashBolt';
 import { blackFlashBolts } from './blackFlashGeometry';
 
 const CYCLE_SECONDS = 3.4;
@@ -16,21 +17,7 @@ export default function BlackFlash() {
           </filter>
         </defs>
         {BOLTS.map((bolt, i) => (
-          <g
-            key={i}
-            className="opacity-0 animate-[black-flash_3.4s_step-end_infinite] motion-reduce:animate-none motion-reduce:opacity-30"
-            style={{ animationDelay: `${bolt.delay}s` }}
-          >
-            <g fill="#e11d48" stroke="#e11d48" strokeLinejoin="round" filter="url(#black-flash-glow)" opacity="0.85">
-              {bolt.strands.map((strand) => <path key={strand.line} d={strand.rim} strokeWidth={strand.glow} />)}
-            </g>
-            <g fill="#ff2d55">
-              {bolt.strands.map((strand) => <path key={strand.rim} d={strand.rim} />)}
-            </g>
-            <g fill="#050505">
-              {bolt.strands.map((strand) => <path key={strand.core} d={strand.core} />)}
-            </g>
-          </g>
+          <BlackFlashBolt key={i} strands={bolt.strands} delay={bolt.delay} index={i} count={BOLTS.length} />
         ))}
       </svg>
     </div>

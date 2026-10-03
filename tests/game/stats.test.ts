@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { averageScore, errorsPer100Words } from './stats';
+import { averageScore, errorsPer100Words } from '@/game/stats';
 
 describe('averageScore', () => {
   it('fait la moyenne des 5 dernières parties (les plus récentes en fin de liste)', () => {

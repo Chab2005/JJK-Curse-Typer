@@ -10,7 +10,7 @@ import {
   lobbySearchQuery,
   parseLobbySearch,
   textCharsLabel,
-} from './lobbySearch';
+} from '@/components/lobbies/lobbySearch';
 
 const lobby = (overrides: Partial<LobbySummary>): LobbySummary => ({
   code: 'ABC-DEF',

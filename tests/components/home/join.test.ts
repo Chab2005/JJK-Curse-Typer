@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { normalizePin, pickRandomPseudo } from './join';
+import { normalizePin, pickRandomPseudo } from '@/components/home/join';
 
 describe('pickRandomPseudo', () => {
   const pseudos = ['Megumi_Shadows', 'Yuji_BlackFlash', 'Nobara_Resonance'];

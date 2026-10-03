@@ -93,8 +93,6 @@ export function ribbonPath(points: Point[], widths: number[]): string {
   return `${toPath([...edges.map(([left]) => left), ...edges.map(([, right]) => right).reverse()])}Z`;
 }
 
-export const BOLT_START_RADIUS = 20;
-
 const polar = (radius: number, angle: number): Point => ({ x: radius * Math.cos(angle), y: radius * Math.sin(angle) });
 
 type Fork = { points: Point[]; widths: number[] };
@@ -118,40 +116,45 @@ function fork(parent: Fork, index: number, turn: number, reach: number, segments
   return { points, widths: boltWidths(points.length, 0.6, parent.widths[index] * 0.9, random) };
 }
 
-/** `count` éclairs qui partent du centre (0, 0) vers l'extérieur, dans un repère de ±500. */
+/** Un éclair qui part du centre (0, 0) vers `angle`, dans un repère de ±500 : le tronc d'abord, puis ses fourches et ramifications. */
+export function boltStrands(angle: number, random: () => number): Strand[] {
+  const side = () => (random() < 0.5 ? -1 : 1);
+  const end = polar(460 + random() * 40, angle + (random() - 0.5) * 0.3);
+  const points = boltPoints({ x: 0, y: 0 }, end, 9 + Math.floor(random() * 5), 14, random);
+  const trunk = { points, widths: boltWidths(points.length, 1, 8, random) };
+  const last = points.length - 1;
+
+  // Fourche finale : une ou deux pointes de plus que celle du tronc.
+  const endForks = Array.from({ length: 1 + Math.floor(random() * 2) }, () =>
+    fork(trunk, last - 2 - Math.floor(random() * 2), side() * (0.25 + random() * 0.3), 90 + random() * 70, 4, 10, random),
+  );
+
+  // Ramifications latérales, qui peuvent elles-mêmes se diviser une fois.
+  const branches = Array.from({ length: 1 + Math.floor(random() * 2) }, () =>
+    fork(trunk, 2 + Math.floor(random() * (last - 4)), side() * (0.5 + random() * 0.4), 60 + random() * 70, 3, 9, random),
+  );
+  const twigs = branches.flatMap((branch) =>
+    random() < 0.5 ? [fork(branch, 1 + Math.floor(random() * 2), side() * (0.4 + random() * 0.4), 30 + random() * 40, 2, 6, random)] : [],
+  );
+
+  return [
+    toStrand(trunk, 3),
+    ...endForks.map((f) => toStrand(f, 2)),
+    ...branches.map((b) => toStrand(b, 1.5)),
+    ...twigs.map((t) => toStrand(t, 1)),
+  ];
+}
+
+/** Angle d'un éclair dans la part `index` sur `count` du cercle, décalé au hasard jusque dans les parts voisines. */
+export function slotAngle(index: number, count: number, random: () => number): number {
+  return ((index + (random() - 0.5) * 2) / count) * Math.PI * 2;
+}
+
+/** `count` éclairs répartis autour du centre, chacun avec son délai dans le cycle. */
 export function blackFlashBolts(count: number, seed: number, cycleSeconds: number): Bolt[] {
   const random = seededRandom(seed);
-  const side = () => (random() < 0.5 ? -1 : 1);
-
-  return Array.from({ length: count }, (_, i) => {
-    const angle = (i / count) * Math.PI * 2 + (random() - 0.5) * 0.5;
-    const start = polar(BOLT_START_RADIUS, angle);
-    const end = polar(460 + random() * 40, angle + (random() - 0.5) * 0.3);
-    const points = boltPoints(start, end, 9 + Math.floor(random() * 5), 14, random);
-    const trunk = { points, widths: boltWidths(points.length, 1, 8, random) };
-    const last = points.length - 1;
-
-    // Fourche finale : une ou deux pointes de plus que celle du tronc.
-    const endForks = Array.from({ length: 1 + Math.floor(random() * 2) }, () =>
-      fork(trunk, last - 2 - Math.floor(random() * 2), side() * (0.25 + random() * 0.3), 90 + random() * 70, 4, 10, random),
-    );
-
-    // Ramifications latérales, qui peuvent elles-mêmes se diviser une fois.
-    const branches = Array.from({ length: 1 + Math.floor(random() * 2) }, () =>
-      fork(trunk, 2 + Math.floor(random() * (last - 4)), side() * (0.5 + random() * 0.4), 60 + random() * 70, 3, 9, random),
-    );
-    const twigs = branches.flatMap((branch) =>
-      random() < 0.5 ? [fork(branch, 1 + Math.floor(random() * 2), side() * (0.4 + random() * 0.4), 30 + random() * 40, 2, 6, random)] : [],
-    );
-
-    return {
-      strands: [
-        toStrand(trunk, 3),
-        ...endForks.map((f) => toStrand(f, 2)),
-        ...branches.map((b) => toStrand(b, 1.5)),
-        ...twigs.map((t) => toStrand(t, 1)),
-      ],
-      delay: round(random() * cycleSeconds) % cycleSeconds,
-    };
-  });
+  return Array.from({ length: count }, (_, i) => ({
+    strands: boltStrands(slotAngle(i, count, random), random),
+    delay: round(random() * cycleSeconds) % cycleSeconds,
+  }));
 }
