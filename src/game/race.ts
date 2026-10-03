@@ -122,7 +122,9 @@ function strokesAreValid(racer: Racer, strokes: readonly Keystroke[], latest: nu
 }
 
 /** Rejoue un lot de frappes d'un joueur ; `accepted` à faux si le lot est refusé (la room renvoie alors la vraie saisie). */
-export function applyKeys(race: RaceState, id: string, strokes: readonly Keystroke[], now: number): { race: RaceState; accepted: boolean } {
+export function applyKeys(current: RaceState, id: string, strokes: readonly Keystroke[], now: number): { race: RaceState; accepted: boolean } {
+  // Le départ a pu sonner depuis le dernier tick : on le fait passer avant les frappes.
+  const race = current.phase === 'countdown' && now >= current.startAt ? tick(current, now) : current;
   const racer = race.racers.find((r) => r.seat.id === id);
   const refuse = { race, accepted: false };
   if (race.phase !== 'racing' || !racer || racer.driver !== 'player' || racer.status !== 'racing') return refuse;
