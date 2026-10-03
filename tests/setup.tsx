@@ -2,11 +2,14 @@ import '@testing-library/jest-dom/vitest';
 import { cleanup } from '@testing-library/react';
 import type { AnchorHTMLAttributes, ImgHTMLAttributes } from 'react';
 import { afterEach, vi } from 'vitest';
+import { routerMock } from './router';
 
 // Setup for component tests (*.test.tsx), run before each file in jsdom.
 
 afterEach(() => {
   cleanup();
+  routerMock.push.mockReset();
+  routerMock.replace.mockReset();
   window.history.replaceState(null, '', '/');
 });
 
@@ -23,11 +26,14 @@ vi.mock('next/image', () => ({
 }));
 
 // next-intl navigation needs the App Router context: Link becomes a plain <a>, the path is read from the URL.
-vi.mock('@/i18n/navigation', () => ({
-  Link: ({ href, ...props }: AnchorHTMLAttributes<HTMLAnchorElement> & { href: string }) => <a href={href} {...props} />,
-  usePathname: () => window.location.pathname,
-  useRouter: () => ({ push: vi.fn(), replace: vi.fn() }),
-}));
+vi.mock('@/i18n/navigation', async () => {
+  const { routerMock } = await import('./router');
+  return {
+    Link: ({ href, ...props }: AnchorHTMLAttributes<HTMLAnchorElement> & { href: string }) => <a href={href} {...props} />,
+    usePathname: () => window.location.pathname,
+    useRouter: () => routerMock,
+  };
+});
 
 // The browsers (lobbies, leaderboard) read their state from the URL, written with history.pushState.
 vi.mock('next/navigation', () => ({

@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import type { LobbyRoom } from '@/components/lobby/lobbyRoom';
 import WaitingRoom from '@/components/lobby/WaitingRoom';
 import { renderWithIntl } from '../../render';
+import { routerMock } from '../../router';
 
 const ROOM: LobbyRoom = {
   code: 'SHJ-60S',
@@ -106,7 +107,7 @@ describe('WaitingRoom host controls (LOB-8, LOB-11)', () => {
     const ready = { ...ROOM, participants: ROOM.participants.map((p) => (p.kind === 'human' ? { ...p, ready: true } : p)) };
     rerender(<WaitingRoom key="ready" initialRoom={ready} viewerId="Satoru_Infinity" />);
     await user.click(screen.getByRole('button', { name: 'Start the race' }));
-    expect(screen.getByRole('status')).toHaveTextContent('The race screen is coming soon.');
+    expect(routerMock.push).toHaveBeenCalledWith('/lobby/SHJ-60S/race');
   });
 
   it('edits the race settings (LOB-5)', async () => {
