@@ -1,10 +1,10 @@
-// Course tirée d'un lobby de démonstration, en attendant que le salon d'attente vive lui aussi
+// Course tirée d'un lobby (créé depuis l'accueil ou de démonstration), en attendant que le salon d'attente vive lui aussi
 // sur le serveur : les sièges, le texte et les réglages viennent du lobby, jamais du client.
-import { findSampleRoom } from '@/components/lobby/sampleRooms';
 import { createRace, type RaceState, type RacerSeat } from '@/game/race';
 import { hashSeed } from '@/game/random';
 import { generateText } from '@/game/text/generate';
 import { SAMPLE_CURRENT_USER } from '@/lib/currentUser';
+import { findLobby } from '@/lib/lobbies';
 
 export interface SeededRace {
   race: RaceState;
@@ -13,7 +13,7 @@ export interface SeededRace {
 }
 
 export function raceFromLobby(code: string, now: number): SeededRace | null {
-  const lobby = findSampleRoom(code, SAMPLE_CURRENT_USER, false);
+  const lobby = findLobby(code, SAMPLE_CURRENT_USER, false);
   if (!lobby) return null;
 
   const seats = lobby.participants.map((p): RacerSeat =>

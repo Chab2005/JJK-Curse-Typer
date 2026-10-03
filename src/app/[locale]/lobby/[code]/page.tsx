@@ -3,14 +3,14 @@ import { notFound } from 'next/navigation';
 import Footer from '@/components/layout/Footer';
 import Header from '@/components/layout/Header';
 import WaitingRoom from '@/components/lobby/WaitingRoom';
-import { findSampleRoom } from '@/components/lobby/sampleRooms';
 import type { Locale } from '@/i18n/config';
 import { SAMPLE_CURRENT_USER } from '@/lib/currentUser';
+import { findLobby } from '@/lib/lobbies';
 
 export async function generateMetadata({ params }: PageProps<'/[locale]/lobby/[code]'>) {
   const { locale, code } = await params;
   const t = await getTranslations({ locale: locale as Locale, namespace: 'Lobby' });
-  const room = findSampleRoom(decodeURIComponent(code), SAMPLE_CURRENT_USER, false);
+  const room = findLobby(decodeURIComponent(code), SAMPLE_CURRENT_USER, false);
   return { title: room ? t('metaTitle', { name: room.name }) : t('notFound.metaTitle') };
 }
 
@@ -19,7 +19,7 @@ export default async function LobbyPage({ params, searchParams }: PageProps<'/[l
   const { locale, code } = await params;
   setRequestLocale(locale as Locale);
   const spectate = (await searchParams).spectate === '1';
-  const room = findSampleRoom(decodeURIComponent(code), SAMPLE_CURRENT_USER, spectate);
+  const room = findLobby(decodeURIComponent(code), SAMPLE_CURRENT_USER, spectate);
   if (!room) notFound();
 
   return (
