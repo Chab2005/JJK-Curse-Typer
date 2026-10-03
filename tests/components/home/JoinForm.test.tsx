@@ -9,11 +9,11 @@ describe('JoinForm', () => {
 
   it('shows the syncing banner with the upper-cased PIN until the simulated connection ends', async () => {
     const { user } = renderWithIntl(<JoinForm />);
-    await user.type(screen.getByLabelText(/PIN/), 'abc-123');
+    await user.type(screen.getByLabelText(/PIN/), 'abc-234');
 
     await user.click(screen.getByRole('button', { name: 'Expand the domain' }));
 
-    expect(screen.getByRole('status')).toHaveTextContent('Syncing the occult barriers... Domain: ABC-123');
+    expect(screen.getByRole('status')).toHaveTextContent('Syncing the occult barriers... Domain: ABC-234');
     expect(screen.getByRole('button', { name: 'Expand the domain' })).toBeDisabled();
 
     act(() => vi.advanceTimersByTime(2400));
@@ -30,13 +30,34 @@ describe('JoinForm', () => {
     expect(screen.getByRole('status')).toHaveTextContent('884-JJK');
   });
 
-  it('caps the PIN at 7 characters', async () => {
+  it('caps the PIN at XXX-XXX', async () => {
     const { user } = renderWithIntl(<JoinForm />);
     const pin = screen.getByLabelText(/PIN/);
 
-    await user.type(pin, '123-4567');
+    await user.type(pin, '234-5678');
 
-    expect(pin).toHaveValue('123-456');
+    expect(pin).toHaveValue('234-567');
+  });
+
+  it('formats the PIN while typing: upper-case, auto dash, no confusing characters', async () => {
+    const { user } = renderWithIntl(<JoinForm />);
+    const pin = screen.getByLabelText(/PIN/);
+
+    await user.type(pin, 'a0b1cOdIeLf');
+
+    expect(pin).toHaveValue('ABC-DEF');
+  });
+
+  it('blocks submit while the PIN is incomplete', async () => {
+    const { user } = renderWithIntl(<JoinForm />);
+    const pin = screen.getByLabelText(/PIN/);
+    const submit = screen.getByRole('button', { name: 'Expand the domain' });
+
+    await user.type(pin, 'abc-d');
+    expect(submit).toBeDisabled();
+
+    await user.type(pin, 'ef');
+    expect(submit).toBeEnabled();
   });
 
   it('draws another exorcist name with the random button', async () => {
