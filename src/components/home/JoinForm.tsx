@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
-import { normalizePin, pickRandomPseudo } from './join';
+import { formatPinInput, isCompletePin, normalizePin, pickRandomPseudo } from './join';
 
 const RANDOM_PSEUDOS = [
   'Megumi_Shadows',
@@ -24,9 +24,12 @@ export default function JoinForm() {
   const [showBanner, setShowBanner] = useState(false);
   const [statusPin, setStatusPin] = useState(DEMO_PIN);
   const [isLoading, setIsLoading] = useState(false);
+  // Vide : on retombe sur le code de démo ; sinon il faut un code complet.
+  const canSubmit = roomPin === '' || isCompletePin(roomPin);
 
   const triggerJoinDomain = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!canSubmit) return;
 
     setStatusPin(normalizePin(roomPin) || DEMO_PIN);
     setShowBanner(true);
@@ -60,9 +63,10 @@ export default function JoinForm() {
             type="text"
             maxLength={7}
             value={roomPin}
-            onChange={(e) => setRoomPin(e.target.value)}
+            onChange={(e) => setRoomPin(formatPinInput(e.target.value))}
             placeholder="___-___"
             autoComplete="off"
+            autoCapitalize="characters"
             spellCheck={false}
             className="w-full border border-surface-container-highest bg-surface-container-lowest px-[18px] py-3 text-center text-[38px] font-bold uppercase tracking-[0.24em] text-primary placeholder:text-surface-container-highest"
           />
@@ -95,7 +99,7 @@ export default function JoinForm() {
 
         <button
           type="submit"
-          disabled={isLoading}
+          disabled={isLoading || !canSubmit}
           className="group bevel flex bg-primary p-px transition-transform hover:-translate-y-0.5 disabled:pointer-events-none disabled:opacity-80"
         >
           <span className="bevel flex min-h-15 flex-grow items-center justify-center gap-3 bg-primary-container text-[19px] uppercase tracking-[0.12em] text-on-primary-container transition-colors group-hover:bg-inverse-primary">

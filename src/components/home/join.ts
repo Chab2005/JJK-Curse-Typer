@@ -11,3 +11,19 @@ export function pickRandomPseudo(current: string, pseudos: readonly string[], ra
 export function normalizePin(pin: string): string {
   return pin.trim().toUpperCase();
 }
+
+/** Caractères autorisés dans un code de salon : sans 0 O 1 I L, trop faciles à confondre. */
+export const PIN_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+
+const PIN_PATTERN = new RegExp(`^[${PIN_ALPHABET}]{3}-[${PIN_ALPHABET}]{3}$`);
+
+/** Met en forme la saisie du code : majuscules, caractères ambigus retirés, tiret après 3 caractères, 6 au plus. */
+export function formatPinInput(raw: string): string {
+  const chars = [...raw.toUpperCase()].filter((char) => PIN_ALPHABET.includes(char)).slice(0, 6).join('');
+  return chars.length > 3 ? `${chars.slice(0, 3)}-${chars.slice(3)}` : chars;
+}
+
+/** Vrai si le code est complet au format XXX-XXX. */
+export function isCompletePin(pin: string): boolean {
+  return PIN_PATTERN.test(pin);
+}
