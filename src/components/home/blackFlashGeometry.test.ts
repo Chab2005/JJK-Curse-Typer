@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { BOLT_START_RADIUS, blackFlashBolts, boltPoints, seededRandom, toPath } from './blackFlashGeometry';
+import { BOLT_START_RADIUS, blackFlashBolts, boltPoints, ribbonPath, seededRandom, toPath } from './blackFlashGeometry';
 
 describe('seededRandom', () => {
   it('donne toujours la même suite pour la même graine', () => {
@@ -40,6 +40,34 @@ describe('boltPoints', () => {
   it('reste une ligne droite sans décalage', () => {
     for (const point of boltPoints(start, end, 5, 0, seededRandom(9))) expect(point.y).toBeCloseTo(0);
   });
+
+  it('zigzague : chaque point intermédiaire passe de l’autre côté de la ligne', () => {
+    const offsets = boltPoints(start, end, 12, 15, seededRandom(4)).slice(1, -1).map((p) => p.y);
+    for (let i = 1; i < offsets.length; i++) expect(Math.sign(offsets[i])).toBe(-Math.sign(offsets[i - 1]));
+  });
+
+  it('marque nettement chaque coude (au moins un tiers du décalage permis)', () => {
+    for (const point of boltPoints(start, end, 12, 15, seededRandom(6)).slice(1, -1)) {
+      expect(Math.abs(point.y)).toBeGreaterThanOrEqual(5);
+    }
+  });
+});
+
+describe('ribbonPath', () => {
+  const coords = (path: string) => [...path.matchAll(/-?\d+(?:\.\d+)?/g)].map(([n]) => Number(n));
+
+  it('trace une forme fermée avec deux bords par point', () => {
+    const path = ribbonPath([{ x: 0, y: 0 }, { x: 50, y: 0 }, { x: 100, y: 0 }], 10, 0);
+    expect(path.startsWith('M')).toBe(true);
+    expect(path.endsWith('Z')).toBe(true);
+    expect(coords(path)).toHaveLength(12);
+  });
+
+  it('a la largeur de départ à la base et finit en pointe', () => {
+    const [x0, y0, , , x2, y2, x3, y3, , , x5, y5] = coords(ribbonPath([{ x: 0, y: 0 }, { x: 50, y: 0 }, { x: 100, y: 0 }], 10, 0));
+    expect(Math.hypot(x5 - x0, y5 - y0)).toBeCloseTo(10);
+    expect([x2, y2]).toEqual([x3, y3]);
+  });
 });
 
 describe('toPath', () => {
@@ -63,6 +91,14 @@ describe('blackFlashBolts', () => {
     for (const bolt of blackFlashBolts(8, 3, 3)) {
       const [x, y] = bolt.main.slice(1).split('L')[0].split(' ').map(Number);
       expect(Math.hypot(x, y)).toBeCloseTo(BOLT_START_RADIUS, 0);
+    }
+  });
+
+  it('donne un ruban effilé (liseré et cœur) pour l’éclair principal et chaque ramification', () => {
+    for (const bolt of blackFlashBolts(8, 3, 3)) {
+      expect(bolt.rim).toHaveLength(bolt.branches.length + 1);
+      expect(bolt.core).toHaveLength(bolt.branches.length + 1);
+      for (const d of [...bolt.rim, ...bolt.core]) expect(d.endsWith('Z')).toBe(true);
     }
   });
 

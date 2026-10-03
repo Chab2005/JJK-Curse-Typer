@@ -12,28 +12,24 @@ export default function BlackFlash() {
       <svg viewBox="-500 -500 1000 1000" className="absolute inset-0 size-full overflow-visible">
         <defs>
           <filter id="black-flash-glow" x="-20%" y="-20%" width="140%" height="140%">
-            <feGaussianBlur stdDeviation="4" />
+            <feGaussianBlur stdDeviation="2.5" />
           </filter>
         </defs>
         {BOLTS.map((bolt, i) => (
           <g
             key={i}
-            className="opacity-0 animate-[black-flash_3.4s_linear_infinite] motion-reduce:animate-none motion-reduce:opacity-30"
+            className="opacity-0 animate-[black-flash_3.4s_step-end_infinite] motion-reduce:animate-none motion-reduce:opacity-30"
             style={{ animationDelay: `${bolt.delay}s` }}
-            fill="none"
-            strokeLinecap="round"
-            strokeLinejoin="round"
           >
-            <g stroke="#e11d48" strokeWidth="11" filter="url(#black-flash-glow)">
+            <g fill="none" stroke="#e11d48" strokeWidth="7" strokeLinejoin="miter" strokeLinecap="round" filter="url(#black-flash-glow)" opacity="0.85">
               <path d={bolt.main} />
-              {bolt.branches.map((d) => <path key={d} d={d} strokeWidth="7" />)}
+              {bolt.branches.map((d) => <path key={d} d={d} strokeWidth="4" />)}
             </g>
-            <g stroke="#050505" strokeWidth="3.8">
-              <path d={bolt.main} />
-              {bolt.branches.map((d) => <path key={d} d={d} strokeWidth="2.4" />)}
+            <g fill="#ff2d55">
+              {bolt.rim.map((d) => <path key={d} d={d} />)}
             </g>
-            <g stroke="#050505" strokeWidth="0.9" opacity="0.75">
-              <path d={bolt.main} />
+            <g fill="#050505">
+              {bolt.core.map((d) => <path key={d} d={d} />)}
             </g>
           </g>
         ))}
