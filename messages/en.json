@@ -227,7 +227,6 @@
         "notEnoughPlayers": "A race needs at least two participants: add a bot or wait for a player.",
         "notReady": "Waiting for every exorcist to be ready."
       },
-      "starting": "The race screen is coming soon.",
       "waitHost": "The host starts the race once everyone is ready.",
       "spectator": "Spectators don't take part in the race.",
       "leave": "Leave the lobby"
@@ -399,5 +398,92 @@
         "discord": "Enter a Discord name (2 to 32 lowercase letters, digits, _ or .) or a discord.com link."
       }
     }
+  },
+  "Race": {
+    "metaTitle": "{name} · Race",
+    "title": "Race · {name}",
+    "connection": {
+      "connecting": "Connecting to the race…",
+      "lost": "Connection lost, reconnecting…"
+    },
+    "countdown": {
+      "label": "Countdown",
+      "go": "Go!"
+    },
+    "track": {
+      "label": "Race track",
+      "finish": "Finish line",
+      "standings": "Live standings",
+      "row": "{rank}. {name}{you, select, true { (you)} other {}}: {percent}% · {wpm} WPM · {status}",
+      "leader": "Leader",
+      "you": "You"
+    },
+    "banner": {
+      "waiting": "The race is about to begin",
+      "lead": "You lead by {gap, plural, one {# character} other {# characters}}",
+      "leader": "{name} leads the race",
+      "passed": "You passed {names}!",
+      "passedBy": "{names} passed you",
+      "newLeader": "{name} takes the lead!",
+      "youLead": "You take the lead!"
+    },
+    "energy": {
+      "label": "Energy",
+      "value": "{value} / {max} EP",
+      "full": "Full energy!"
+    },
+    "hud": {
+      "wpm": "WPM",
+      "accuracy": "Accuracy",
+      "accuracyValue": "{value}%",
+      "position": "Position",
+      "positionValue": "{rank}/{total}",
+      "elapsed": "Time",
+      "remaining": "Time left",
+      "abandon": "Abandon"
+    },
+    "typing": {
+      "label": "Type the text",
+      "focus": "Click here to type"
+    },
+    "spectator": {
+      "title": "Spectator mode",
+      "body": "The race had already started when you arrived: you're watching it."
+    },
+    "status": {
+      "racing": "Racing",
+      "finished": "Finished",
+      "timeout": "Time's up",
+      "abandoned": "Abandoned"
+    },
+    "summary": {
+      "finished": "Finished!",
+      "abandoned": "You abandoned the race",
+      "timeout": "Time's up!",
+      "position": "Position {rank} of {total}",
+      "stats": "{wpm} WPM · {accuracy}% accuracy",
+      "waiting": "{count, plural, one {# exorcist is} other {# exorcists are}} still racing…",
+      "over": "Race over",
+      "results": "Results",
+      "rank": "Rank",
+      "name": "Exorcist",
+      "wpm": "WPM",
+      "accuracy": "Accuracy",
+      "state": "Status",
+      "you": "(you)",
+      "backToLobby": "Back to the lobby"
+    },
+    "leave": {
+      "title": "Leave the race?",
+      "body": "Leaving this page abandons the race: your run won't count.",
+      "stay": "Keep racing",
+      "confirm": "Abandon and leave"
+    },
+    "abandon": {
+      "title": "Abandon the race?",
+      "body": "You stop racing, but you can keep watching the others.",
+      "confirm": "Abandon"
+    },
+    "footer": "Stay focused, exorcist."
   }
 }

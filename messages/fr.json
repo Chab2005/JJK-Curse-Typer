@@ -227,7 +227,6 @@
         "notEnoughPlayers": "Une course demande au moins deux participants : ajoutez un bot ou attendez un joueur.",
         "notReady": "En attente que chaque exorciste soit prêt."
       },
-      "starting": "L'écran de course arrive bientôt.",
       "waitHost": "L'hôte lance la course quand tout le monde est prêt.",
       "spectator": "Les spectateurs ne participent pas à la course.",
       "leave": "Quitter le lobby"
@@ -399,5 +398,92 @@
         "discord": "Entrez un nom Discord (2 à 32 minuscules, chiffres, _ ou .) ou un lien discord.com."
       }
     }
+  },
+  "Race": {
+    "metaTitle": "{name} · Course",
+    "title": "Course · {name}",
+    "connection": {
+      "connecting": "Connexion à la course…",
+      "lost": "Connexion perdue, reconnexion…"
+    },
+    "countdown": {
+      "label": "Décompte",
+      "go": "Partez !"
+    },
+    "track": {
+      "label": "Piste de course",
+      "finish": "Ligne d'arrivée",
+      "standings": "Classement en direct",
+      "row": "{rank}. {name}{you, select, true { (vous)} other {}} : {percent} % · {wpm} MPM · {status}",
+      "leader": "Meneur",
+      "you": "Vous"
+    },
+    "banner": {
+      "waiting": "La course va commencer",
+      "lead": "Vous menez de {gap, plural, one {# caractère} other {# caractères}}",
+      "leader": "{name} mène la course",
+      "passed": "Vous avez dépassé {names} !",
+      "passedBy": "{names} vous a dépassé",
+      "newLeader": "{name} prend la tête !",
+      "youLead": "Vous prenez la tête !"
+    },
+    "energy": {
+      "label": "Énergie",
+      "value": "{value} / {max} EP",
+      "full": "Énergie au maximum !"
+    },
+    "hud": {
+      "wpm": "MPM",
+      "accuracy": "Précision",
+      "accuracyValue": "{value} %",
+      "position": "Position",
+      "positionValue": "{rank}/{total}",
+      "elapsed": "Temps",
+      "remaining": "Temps restant",
+      "abandon": "Abandonner"
+    },
+    "typing": {
+      "label": "Tapez le texte",
+      "focus": "Cliquez ici pour taper"
+    },
+    "spectator": {
+      "title": "Mode spectateur",
+      "body": "La course avait déjà commencé à votre arrivée : vous la regardez."
+    },
+    "status": {
+      "racing": "En course",
+      "finished": "Arrivé",
+      "timeout": "Temps écoulé",
+      "abandoned": "Abandon"
+    },
+    "summary": {
+      "finished": "Arrivé !",
+      "abandoned": "Vous avez abandonné la course",
+      "timeout": "Temps écoulé !",
+      "position": "Position {rank} sur {total}",
+      "stats": "{wpm} MPM · précision de {accuracy} %",
+      "waiting": "{count, plural, one {# exorciste est encore} other {# exorcistes sont encore}} en course…",
+      "over": "Course terminée",
+      "results": "Résultats",
+      "rank": "Rang",
+      "name": "Exorciste",
+      "wpm": "MPM",
+      "accuracy": "Précision",
+      "state": "État",
+      "you": "(vous)",
+      "backToLobby": "Retour au lobby"
+    },
+    "leave": {
+      "title": "Quitter la course ?",
+      "body": "Quitter cette page abandonne la course : votre partie ne comptera pas.",
+      "stay": "Continuer la course",
+      "confirm": "Abandonner et quitter"
+    },
+    "abandon": {
+      "title": "Abandonner la course ?",
+      "body": "Vous arrêtez de courir, mais vous pouvez continuer à regarder les autres.",
+      "confirm": "Abandonner"
+    },
+    "footer": "Restez concentré, exorciste."
   }
 }
