@@ -119,6 +119,11 @@ describe('applyKeys (RACE-14)', () => {
     expect(applyKeys(race, 'ann', keys('a'), T0 + 100).accepted).toBe(false);
   });
 
+  it('accepte les frappes dès l’heure de départ, avant le tick qui lance la course', () => {
+    const race = reduce(newRace(), { type: 'claim', id: 'ann', now: T0 });
+    expect(applyKeys(race, 'ann', keys('a', 50), START + 150).accepted).toBe(true);
+  });
+
   it('refuse les frappes d’un siège simulé', () => {
     expect(applyKeys(racing(), 'bot-1', keys('a'), START + 1000).accepted).toBe(false);
   });
