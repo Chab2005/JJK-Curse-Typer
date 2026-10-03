@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
+import { updateLobbyAction } from '@/app/actions/lobbies';
 import PageIntro from '@/components/shared/PageIntro';
 import { useRouter } from '@/i18n/navigation';
 import InviteCard from './InviteCard';
@@ -25,9 +26,11 @@ export default function WaitingRoom({ initialRoom, viewerId }: { initialRoom: Lo
   const me = room.participants.find((p) => p.id === viewerId);
   const host = room.participants.find((p) => p.id === room.hostId);
 
+  // Appliquée tout de suite à l'écran, puis rejouée par le serveur, qui garde les lobbies créés (LOB-4).
   const apply = (action: LobbyAction) => {
     const next = lobbyReducer(room, action);
     setRoom(next);
+    void updateLobbyAction(room.code, action).catch(() => {});
     return next;
   };
 
