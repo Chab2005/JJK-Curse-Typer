@@ -169,6 +169,119 @@
       "spectateLabel": "Regarder {name} en spectateur"
     }
   },
+  "Lobby": {
+    "metaTitle": "{name} · Salon d'attente",
+    "eyebrow": "Salon d'attente",
+    "hostedBy": "Hôte : {host}",
+    "status": {
+      "waiting": "En attente de joueurs",
+      "racing": "Course en cours"
+    },
+    "invite": {
+      "title": "Inviter des exorcistes",
+      "code": "Code du lobby",
+      "copyCode": "Copier le code",
+      "copyLink": "Copier le lien d'invitation",
+      "copied": "Copié !",
+      "copyFailed": "Copie impossible"
+    },
+    "spectating": {
+      "title": "Mode spectateur",
+      "waiting": "Vous regardez ce lobby. Vous suivrez la course dès son départ.",
+      "racing": "Une course est en cours. Vous la regardez en spectateur."
+    },
+    "participants": {
+      "title": "Exorcistes",
+      "count": "{count}/{capacity}",
+      "ready": "{count, plural, one {# prêt} other {# prêts}}",
+      "host": "Hôte",
+      "you": "Vous",
+      "bot": "Bot · {level}",
+      "botName": "Cadavre maudit {number}",
+      "readyState": "Prêt",
+      "notReady": "Pas prêt",
+      "makeHost": "Faire de {name} l'hôte",
+      "kick": "Expulser {name}",
+      "removeBot": "Retirer {name}"
+    },
+    "bots": {
+      "level": "Niveau du bot",
+      "add": "Ajouter un bot",
+      "full": "Le lobby est complet.",
+      "levels": {
+        "beginner": "Débutant",
+        "intermediate": "Intermédiaire",
+        "expert": "Expert"
+      }
+    },
+    "spectators": {
+      "title": "Spectateurs",
+      "empty": "Aucun spectateur.",
+      "kick": "Expulser {name}"
+    },
+    "actions": {
+      "ready": "Je suis prêt",
+      "unready": "Je ne suis plus prêt",
+      "start": "Lancer la course",
+      "blockers": {
+        "notEnoughPlayers": "Une course demande au moins deux participants : ajoutez un bot ou attendez un joueur.",
+        "notReady": "En attente que chaque exorciste soit prêt."
+      },
+      "starting": "L'écran de course arrive bientôt.",
+      "waitHost": "L'hôte lance la course quand tout le monde est prêt.",
+      "spectator": "Les spectateurs ne participent pas à la course.",
+      "leave": "Quitter le lobby"
+    },
+    "announce": {
+      "kicked": "{name} a été expulsé.",
+      "botAdded": "{name} a rejoint le lobby.",
+      "botRemoved": "{name} a quitté le lobby.",
+      "newHost": "{name} est maintenant l'hôte."
+    },
+    "settings": {
+      "title": "Paramètres de course",
+      "readOnly": "Seul l'hôte peut modifier ces paramètres.",
+      "language": "Langue du texte",
+      "content": "Type de texte",
+      "contents": {
+        "sentences": "Vrai texte",
+        "words": "Mots aléatoires"
+      },
+      "words": "Longueur (mots)",
+      "wordsValue": "{count} mots",
+      "wordsHint": "Entre {min} et {max} mots.",
+      "chars": "Caractères",
+      "lowercase": "Minuscules seulement",
+      "practice": "Caractères à pratiquer",
+      "practiceHint": "Plus fréquents dans le texte, ex. , . / z",
+      "practiceNone": "Aucun",
+      "timer": "Timer de course",
+      "timerOff": "Sans timer",
+      "errorMode": "Erreurs",
+      "errorModes": {
+        "accumulate": "Continuer",
+        "block": "Bloquer jusqu'à correction"
+      },
+      "errorHints": {
+        "accumulate": "Les fautes restent dans le texte et coûtent des points.",
+        "block": "Impossible d'avancer sans taper le bon caractère."
+      },
+      "bonus": "Bonus",
+      "bonusToggle": "Activer les bonus",
+      "bonusOn": "Activés",
+      "bonusOff": "Désactivés",
+      "capacity": "Capacité",
+      "capacityHint": "Entre {min} et {max} participants.",
+      "capacityValue": "{count} participants"
+    },
+    "notFound": {
+      "metaTitle": "Lobby introuvable",
+      "eyebrow": "Lobby introuvable",
+      "title": "Ce lobby n'existe pas",
+      "text": "Vérifiez le code : il est peut-être mal tapé, ou le lobby a fermé.",
+      "back": "Entrer un code"
+    }
+  },
   "Leaderboard": {
     "metaTitle": "Classement",
     "eyebrow": "Meilleurs exorcistes",

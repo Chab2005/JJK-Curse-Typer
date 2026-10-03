@@ -148,7 +148,7 @@ export function lobbyReducer(room: LobbyRoom, action: LobbyAction): LobbyRoom {
 }
 
 /** Prêt pour le départ : l'hôte lance la course, les bots sont toujours prêts. */
-const isReady = (room: LobbyRoom, p: Participant) => p.kind === 'bot' || p.id === room.hostId || p.ready;
+export const isReady = (room: LobbyRoom, p: Participant) => p.kind === 'bot' || p.id === room.hostId || p.ready;
 
 export function readyCount(room: LobbyRoom): number {
   return room.participants.filter((p) => isReady(room, p)).length;

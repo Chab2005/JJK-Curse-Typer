@@ -169,6 +169,119 @@
       "spectateLabel": "Watch {name} as a spectator"
     }
   },
+  "Lobby": {
+    "metaTitle": "{name} · Waiting room",
+    "eyebrow": "Waiting room",
+    "hostedBy": "Hosted by {host}",
+    "status": {
+      "waiting": "Waiting for players",
+      "racing": "Race in progress"
+    },
+    "invite": {
+      "title": "Invite exorcists",
+      "code": "Lobby code",
+      "copyCode": "Copy code",
+      "copyLink": "Copy invite link",
+      "copied": "Copied!",
+      "copyFailed": "Copy failed"
+    },
+    "spectating": {
+      "title": "Spectator mode",
+      "waiting": "You're watching this lobby. You'll follow the race when it starts.",
+      "racing": "A race is in progress. You're watching it as a spectator."
+    },
+    "participants": {
+      "title": "Exorcists",
+      "count": "{count}/{capacity}",
+      "ready": "{count} ready",
+      "host": "Host",
+      "you": "You",
+      "bot": "Bot · {level}",
+      "botName": "Cursed corpse {number}",
+      "readyState": "Ready",
+      "notReady": "Not ready",
+      "makeHost": "Make {name} the host",
+      "kick": "Kick {name}",
+      "removeBot": "Remove {name}"
+    },
+    "bots": {
+      "level": "Bot level",
+      "add": "Add a bot",
+      "full": "The lobby is full.",
+      "levels": {
+        "beginner": "Beginner",
+        "intermediate": "Intermediate",
+        "expert": "Expert"
+      }
+    },
+    "spectators": {
+      "title": "Spectators",
+      "empty": "No spectators.",
+      "kick": "Kick {name}"
+    },
+    "actions": {
+      "ready": "I'm ready",
+      "unready": "Not ready anymore",
+      "start": "Start the race",
+      "blockers": {
+        "notEnoughPlayers": "A race needs at least two participants: add a bot or wait for a player.",
+        "notReady": "Waiting for every exorcist to be ready."
+      },
+      "starting": "The race screen is coming soon.",
+      "waitHost": "The host starts the race once everyone is ready.",
+      "spectator": "Spectators don't take part in the race.",
+      "leave": "Leave the lobby"
+    },
+    "announce": {
+      "kicked": "{name} was kicked.",
+      "botAdded": "{name} joined the lobby.",
+      "botRemoved": "{name} left the lobby.",
+      "newHost": "{name} is now the host."
+    },
+    "settings": {
+      "title": "Race settings",
+      "readOnly": "Only the host can change these settings.",
+      "language": "Text language",
+      "content": "Text type",
+      "contents": {
+        "sentences": "Real text",
+        "words": "Random words"
+      },
+      "words": "Length (words)",
+      "wordsValue": "{count} words",
+      "wordsHint": "Between {min} and {max} words.",
+      "chars": "Characters",
+      "lowercase": "Lowercase only",
+      "practice": "Characters to practise",
+      "practiceHint": "Shown more often in the text, e.g. , . / z",
+      "practiceNone": "None",
+      "timer": "Race timer",
+      "timerOff": "No timer",
+      "errorMode": "Errors",
+      "errorModes": {
+        "accumulate": "Keep going",
+        "block": "Block until fixed"
+      },
+      "errorHints": {
+        "accumulate": "Mistakes stay in the text and cost points.",
+        "block": "You can't go on until you type the right character."
+      },
+      "bonus": "Bonuses",
+      "bonusToggle": "Enable bonuses",
+      "bonusOn": "Enabled",
+      "bonusOff": "Disabled",
+      "capacity": "Capacity",
+      "capacityHint": "Between {min} and {max} participants.",
+      "capacityValue": "{count} participants"
+    },
+    "notFound": {
+      "metaTitle": "Lobby not found",
+      "eyebrow": "Lobby not found",
+      "title": "This lobby doesn't exist",
+      "text": "Check the code: it may be mistyped, or the lobby has closed.",
+      "back": "Enter a code"
+    }
+  },
   "Leaderboard": {
     "metaTitle": "Rankings",
     "eyebrow": "Top exorcists",
