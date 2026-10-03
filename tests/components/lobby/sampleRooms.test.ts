@@ -21,7 +21,7 @@ describe('findSampleRoom', () => {
     expect(room.name).toBe(summary.name);
     expect(room.hostId).toBe(summary.host);
     expect(room.participants).toHaveLength(summary.players);
-    expect(room.settings).toMatchObject({ languages: summary.languages, chars: summary.chars, words: summary.words, bonus: summary.bonus, capacity: summary.capacity });
+    expect(room.settings).toMatchObject({ languages: summary.languages, chars: summary.chars, words: summary.words, bonus: summary.bonus, capacity: summary.capacity, visibility: 'public' });
   });
 
   it("fait rejoindre le visiteur comme participant d'un lobby joignable", () => {

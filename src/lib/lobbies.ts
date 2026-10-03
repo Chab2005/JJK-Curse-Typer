@@ -3,9 +3,10 @@
 // chargées par deux chargeurs de modules différents, partagent ainsi le même processus et la même vérité.
 // Pas de `server-only` ici : la room de course l'importe hors de Next.
 import { z } from 'zod';
-import { CHAR_KINDS, TEXT_LANGUAGES } from '@/components/lobbies/lobbySearch';
+import { CHAR_KINDS, type LobbySummary, TEXT_LANGUAGES } from '@/components/lobbies/lobbySearch';
 import { SAMPLE_LOBBIES } from '@/components/lobbies/sampleLobbies';
-import { BOT_LEVELS, CONTENT_MODES, ERROR_MODES, lobbyReducer, type LobbyAction, type LobbyRoom } from '@/components/lobby/lobbyRoom';
+import { isListed, lobbySummary } from '@/components/lobby/lobbyAccess';
+import { BOT_LEVELS, CONTENT_MODES, ERROR_MODES, LOBBY_VISIBILITIES, lobbyReducer, type LobbyAction, type LobbyRoom } from '@/components/lobby/lobbyRoom';
 import { newLobbyCode, newLobbyRoom, viewLobby } from '@/components/lobby/newLobby';
 import { findSampleRoom } from '@/components/lobby/sampleRooms';
 import type { CharacterId } from '@/components/shared/characters';
@@ -22,10 +23,15 @@ const store = (): Map<string, Entry> => ((globalThis as { __createdLobbies?: Map
 
 const normalize = (code: string) => code.trim().toUpperCase();
 
-/** Ouvre un lobby privé (LOB-4) dont `host` est l'hôte ; `name` reçoit le nom de l'hôte. */
-export function createLobby(name: (host: string) => string, host: { id: string; name: string; avatar: CharacterId | null }, now = Date.now()): LobbyRoom {
+function dropExpired(now: number): Map<string, Entry> {
   const lobbies = store();
   for (const [code, entry] of lobbies) if (now - entry.createdAt > LOBBY_TTL_MS) lobbies.delete(code);
+  return lobbies;
+}
+
+/** Ouvre un lobby privé (LOB-4) dont `host` est l'hôte ; `name` reçoit le nom de l'hôte. */
+export function createLobby(name: (host: string) => string, host: { id: string; name: string; avatar: CharacterId | null }, now = Date.now()): LobbyRoom {
+  const lobbies = dropExpired(now);
 
   const taken = new Set([...lobbies.keys(), ...SAMPLE_LOBBIES.map((l) => l.code)]);
   const room = newLobbyRoom(newLobbyCode(taken), name(host.name), host);
@@ -37,6 +43,16 @@ export function createLobby(name: (host: string) => string, host: { id: string; 
 export function findLobby(code: string, viewer: string, spectate: boolean): LobbyRoom | null {
   const entry = store().get(normalize(code));
   return entry ? viewLobby(entry.room, viewer, spectate) : findSampleRoom(code, viewer, spectate);
+}
+
+/** Lobby créé tel qu'enregistré, sans le visiteur ; `null` pour un lobby de démonstration ou inconnu. */
+export function storedLobby(code: string): LobbyRoom | null {
+  return store().get(normalize(code))?.room ?? null;
+}
+
+/** Lobbies créés rendus publics, pour la liste (LOB-2) ; les lobbies à code ou privés n'y sont jamais. */
+export function listPublicLobbies(now = Date.now()): LobbySummary[] {
+  return [...dropExpired(now).values()].map((entry) => entry.room).filter(isListed).map(lobbySummary);
 }
 
 /** Rejoue une action du salon sur le lobby créé (le réducteur vérifie les droits d'hôte) ; `null` pour un lobby inconnu ou de démonstration. */
@@ -62,6 +78,7 @@ const settingsPatchSchema = z
     errorMode: z.enum(ERROR_MODES),
     bonus: z.boolean(),
     capacity: z.number().finite(),
+    visibility: z.enum(LOBBY_VISIBILITIES),
   })
   .partial()
   .strict();

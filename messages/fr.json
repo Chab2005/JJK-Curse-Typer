@@ -185,7 +185,11 @@
       "copyCode": "Copier le code",
       "copyLink": "Copier le lien d'invitation",
       "copied": "Copié !",
-      "copyFailed": "Copie impossible"
+      "copyFailed": "Copie impossible",
+      "newLink": "Nouveau lien d'invitation",
+      "lastLink": "Dernier lien d'invitation",
+      "oneTime": "Chaque lien d'invitation ne sert qu'à une seule personne.",
+      "hostOnly": "Seul l'hôte peut inviter des joueurs dans un lobby privé."
     },
     "spectating": {
       "title": "Mode spectateur",
@@ -273,7 +277,18 @@
       "bonusOff": "Désactivés",
       "capacity": "Capacité",
       "capacityHint": "Entre {min} et {max} participants.",
-      "capacityValue": "{count} participants"
+      "capacityValue": "{count} participants",
+      "visibility": "Accès",
+      "visibilities": {
+        "public": "Public",
+        "code": "Code",
+        "private": "Privé"
+      },
+      "visibilityHints": {
+        "public": "Affiché dans la liste des lobbies. Tout le monde peut rejoindre.",
+        "code": "Absent de la liste des lobbies. On rejoint avec le code ou un lien d'invitation.",
+        "private": "Absent de la liste des lobbies. On rejoint seulement avec un lien d'invitation."
+      }
     },
     "notFound": {
       "metaTitle": "Lobby introuvable",

@@ -29,8 +29,8 @@ describe('newLobbyRoom', () => {
     expect(room.settings).toEqual(DEFAULT_LOBBY_SETTINGS);
   });
 
-  it('a des réglages par défaut en vrai texte FR + EN, sans timer ni bonus', () => {
-    expect(DEFAULT_LOBBY_SETTINGS).toMatchObject({ languages: ['en', 'fr'], content: 'sentences', words: 50, timer: 0, errorMode: 'accumulate', bonus: false, capacity: 10 });
+  it('a des réglages par défaut en vrai texte FR + EN, sans timer ni bonus, privé (LOB-4)', () => {
+    expect(DEFAULT_LOBBY_SETTINGS).toMatchObject({ languages: ['en', 'fr'], content: 'sentences', words: 50, timer: 0, errorMode: 'accumulate', bonus: false, capacity: 10, visibility: 'private' });
   });
 });
 

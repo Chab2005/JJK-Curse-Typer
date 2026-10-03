@@ -59,6 +59,7 @@ export function findSampleRoom(code: string, viewer: string, spectate: boolean):
       errorMode: 'accumulate',
       bonus: lobby.bonus,
       capacity: lobby.capacity,
+      visibility: 'public',
     },
   };
 }

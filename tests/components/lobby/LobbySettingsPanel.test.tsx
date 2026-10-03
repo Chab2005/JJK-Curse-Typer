@@ -14,6 +14,7 @@ const SETTINGS: LobbySettings = {
   errorMode: 'block',
   bonus: false,
   capacity: 12,
+  visibility: 'code',
 };
 
 describe('LobbySettingsPanel (LOB-5)', () => {
@@ -29,6 +30,7 @@ describe('LobbySettingsPanel (LOB-5)', () => {
     expect(screen.getByText('Block until fixed')).toBeInTheDocument();
     expect(screen.getByText('Disabled')).toBeInTheDocument();
     expect(screen.getByText('12 participants')).toBeInTheDocument();
+    expect(screen.getByText('Code')).toBeInTheDocument();
   });
 
   it('sends each change made by the host', async () => {
@@ -46,6 +48,16 @@ describe('LobbySettingsPanel (LOB-5)', () => {
 
     await user.selectOptions(screen.getByLabelText('Race timer'), '180');
     expect(onChange).toHaveBeenLastCalledWith({ timer: 180 });
+
+    await user.click(screen.getByRole('button', { name: 'Private' }));
+    expect(onChange).toHaveBeenLastCalledWith({ visibility: 'private' });
+  });
+
+  it('explains the chosen access (LOB-1)', () => {
+    renderWithIntl(<LobbySettingsPanel settings={SETTINGS} participantCount={3} editable onChange={() => {}} />);
+
+    expect(screen.getByRole('button', { name: 'Code' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByText('Hidden from the lobby list. Join with the code or an invite link.')).toBeInTheDocument();
   });
 
   it('commits the length and capacity when the field loses focus', async () => {

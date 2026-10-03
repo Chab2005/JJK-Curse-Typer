@@ -4,4 +4,5 @@ import { vi } from 'vitest';
 export const lobbyActionsMock = {
   createLobbyAction: vi.fn(async (): Promise<string> => 'NEW-LBY'),
   updateLobbyAction: vi.fn<(code: string, action: unknown) => Promise<void>>(async () => {}),
+  createInviteAction: vi.fn<(code: string) => Promise<string | null>>(async () => null),
 };

@@ -8,6 +8,13 @@
       "when": 1790613545414,
       "tag": "0000_curious_la_nuit",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791060909250,
+      "tag": "0001_lobby_invites",
+      "breakpoints": true
     }
   ]
 }

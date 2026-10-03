@@ -22,6 +22,7 @@ const SETTINGS: LobbySettings = {
   errorMode: 'accumulate',
   bonus: true,
   capacity: 4,
+  visibility: 'private',
 };
 
 const human = (id: string, ready = false) => ({ kind: 'human' as const, id, name: id, avatar: null, ready });
@@ -94,6 +95,16 @@ describe('updateSettings (LOB-5)', () => {
   it('refuse un timer de plus de trois minutes (RACE-9)', () => {
     const next = lobbyReducer(room(), { type: 'updateSettings', by: 'Gojo', patch: { timer: 600 } });
     expect(next.settings.timer).toBe(0);
+  });
+
+  it("change l'accès au lobby (LOB-1)", () => {
+    const next = lobbyReducer(room(), { type: 'updateSettings', by: 'Gojo', patch: { visibility: 'public' } });
+    expect(next.settings.visibility).toBe('public');
+  });
+
+  it('garde l’accès courant si la valeur est inconnue', () => {
+    const next = lobbyReducer(room(), { type: 'updateSettings', by: 'Gojo', patch: { visibility: 'secret' as never } });
+    expect(next.settings.visibility).toBe('private');
   });
 
   it('nettoie les caractères à pratiquer (TXT-5)', () => {

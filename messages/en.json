@@ -185,7 +185,11 @@
       "copyCode": "Copy code",
       "copyLink": "Copy invite link",
       "copied": "Copied!",
-      "copyFailed": "Copy failed"
+      "copyFailed": "Copy failed",
+      "newLink": "New invite link",
+      "lastLink": "Last invite link",
+      "oneTime": "Each invite link works for one person only.",
+      "hostOnly": "Only the host can invite players to a private lobby."
     },
     "spectating": {
       "title": "Spectator mode",
@@ -273,7 +277,18 @@
       "bonusOff": "Disabled",
       "capacity": "Capacity",
       "capacityHint": "Between {min} and {max} participants.",
-      "capacityValue": "{count} participants"
+      "capacityValue": "{count} participants",
+      "visibility": "Access",
+      "visibilities": {
+        "public": "Public",
+        "code": "Code",
+        "private": "Private"
+      },
+      "visibilityHints": {
+        "public": "Listed in the lobby list. Anyone can join.",
+        "code": "Hidden from the lobby list. Join with the code or an invite link.",
+        "private": "Hidden from the lobby list. Join only with an invite link."
+      }
     },
     "notFound": {
       "metaTitle": "Lobby not found",

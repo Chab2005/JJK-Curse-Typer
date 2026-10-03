@@ -1,8 +1,9 @@
 import { useTranslations } from 'next-intl';
+import type { LobbySummary } from '@/components/lobbies/lobbySearch';
 import JoinForm from './JoinForm';
 import PublicLobbies from './PublicLobbies';
 
-export default function JoinSection() {
+export default function JoinSection({ publicLobbies }: { publicLobbies?: LobbySummary[] }) {
   const t = useTranslations('JoinSection');
 
   return (
@@ -17,7 +18,7 @@ export default function JoinSection() {
         </div>
         <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,440px),1fr))] items-start gap-7">
           <JoinForm />
-          <PublicLobbies />
+          <PublicLobbies created={publicLobbies} />
         </div>
       </div>
     </section>

@@ -13,6 +13,7 @@ afterEach(() => {
   routerMock.replace.mockReset();
   lobbyActionsMock.createLobbyAction.mockReset();
   lobbyActionsMock.updateLobbyAction.mockReset();
+  lobbyActionsMock.createInviteAction.mockReset();
   window.history.replaceState(null, '', '/');
 });
 

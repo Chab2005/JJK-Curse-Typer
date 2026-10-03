@@ -15,6 +15,7 @@ export const DEFAULT_LOBBY_SETTINGS: LobbySettings = {
   errorMode: 'accumulate',
   bonus: false,
   capacity: 10,
+  visibility: 'private',
 };
 
 /** Code XXX-XXX sans caractères ambigus, différent de ceux de `taken` ; `random` renvoie un nombre dans [0, 1). */

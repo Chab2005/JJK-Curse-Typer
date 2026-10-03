@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { viewerRole } from '@/components/lobby/lobbyRoom';
-import { LOBBY_TTL_MS, clearLobbies, createLobby, findLobby, parseLobbyAction, updateLobby } from '@/lib/lobbies';
+import { LOBBY_TTL_MS, clearLobbies, createLobby, findLobby, listPublicLobbies, parseLobbyAction, storedLobby, updateLobby } from '@/lib/lobbies';
 
 const HOST = { id: 'Megumi_Shadows', name: 'Megumi_Shadows', avatar: 'megumi' as const };
 const name = (host: string) => `Lobby de ${host}`;
@@ -36,6 +36,38 @@ describe('createLobby / findLobby', () => {
   });
 });
 
+describe('storedLobby', () => {
+  it('renvoie le lobby créé tel qu’enregistré, sans y ajouter de visiteur', () => {
+    const room = createLobby(name, HOST, 1000);
+    expect(storedLobby(room.code.toLowerCase())).toEqual(room);
+  });
+
+  it('renvoie null pour un lobby de démonstration ou inconnu', () => {
+    expect(storedLobby('TKY-HGH')).toBeNull();
+    expect(storedLobby('ZZZ-ZZZ')).toBeNull();
+  });
+});
+
+describe('listPublicLobbies (LOB-2)', () => {
+  it('ne liste que les lobbies créés rendus publics', () => {
+    const hidden = createLobby(name, HOST, 1000);
+    const listed = createLobby(name, HOST, 1000);
+    const byCode = createLobby(name, HOST, 1000);
+    updateLobby(listed.code, { type: 'updateSettings', by: HOST.id, patch: { visibility: 'public' } });
+    updateLobby(byCode.code, { type: 'updateSettings', by: HOST.id, patch: { visibility: 'code' } });
+
+    const codes = listPublicLobbies(1000).map((l) => l.code);
+    expect(codes).toEqual([listed.code]);
+    expect(codes).not.toContain(hidden.code);
+  });
+
+  it('oublie les lobbies expirés', () => {
+    const room = createLobby(name, HOST, 1000);
+    updateLobby(room.code, { type: 'updateSettings', by: HOST.id, patch: { visibility: 'public' } });
+    expect(listPublicLobbies(1000 + LOBBY_TTL_MS + 1)).toEqual([]);
+  });
+});
+
 describe('updateLobby', () => {
   it('rejoue l’action de l’hôte sur le lobby enregistré (LOB-8)', () => {
     const room = createLobby(name, HOST, 1000);
@@ -62,6 +94,8 @@ describe('parseLobbyAction', () => {
 
   it('valide les réglages envoyés', () => {
     expect(parseLobbyAction({ type: 'updateSettings', patch: { words: 80, bonus: true } }, HOST.id)).toEqual({ type: 'updateSettings', by: HOST.id, patch: { words: 80, bonus: true } });
+    expect(parseLobbyAction({ type: 'updateSettings', patch: { visibility: 'code' } }, HOST.id)).toEqual({ type: 'updateSettings', by: HOST.id, patch: { visibility: 'code' } });
+    expect(parseLobbyAction({ type: 'updateSettings', patch: { visibility: 'secret' } }, HOST.id)).toBeNull();
     expect(parseLobbyAction({ type: 'updateSettings', patch: { languages: ['de'] } }, HOST.id)).toBeNull();
     expect(parseLobbyAction({ type: 'updateSettings', patch: { hostId: 'me' } }, HOST.id)).toBeNull();
   });

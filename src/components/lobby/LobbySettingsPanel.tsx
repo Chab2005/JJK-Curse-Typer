@@ -4,14 +4,14 @@ import { useFormatter, useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { CHAR_KINDS, TEXT_LANGUAGES, textCharsLabel } from '@/components/lobbies/lobbySearch';
 import Segmented from '@/components/shared/Segmented';
-import { CONTENT_MODES, ERROR_MODES, type LobbySettings, MAX_CAPACITY, MIN_PARTICIPANTS, TIMER_OPTIONS, WORDS_MAX, WORDS_MIN } from './lobbyRoom';
+import { CONTENT_MODES, ERROR_MODES, LOBBY_VISIBILITIES, type LobbySettings, MAX_CAPACITY, MIN_PARTICIPANTS, TIMER_OPTIONS, WORDS_MAX, WORDS_MIN } from './lobbyRoom';
 
 type Patch = Partial<LobbySettings>;
 
 /** Ajoute ou retire `item` de la liste selon `checked`, dans l'ordre de `order`. */
 const toggle = <T,>(order: readonly T[], list: readonly T[], item: T, checked: boolean): T[] => order.filter((x) => (x === item ? checked : list.includes(x)));
 
-// Paramètres de course (LOB-5) : modifiables par l'hôte, en lecture seule pour les autres.
+// Paramètres de course (LOB-5) et accès au lobby (LOB-1) : modifiables par l'hôte, en lecture seule pour les autres.
 // Chaque changement part tout de suite ; le réducteur borne les valeurs.
 export default function LobbySettingsPanel({ settings, participantCount, editable, onChange }: { settings: LobbySettings; participantCount: number; editable: boolean; onChange: (patch: Patch) => void }) {
   const t = useTranslations('Lobby.settings');
@@ -50,6 +50,7 @@ function SettingsSummary({ settings }: { settings: LobbySettings }) {
     [t('errorMode'), t(`errorModes.${settings.errorMode}`)],
     [t('bonus'), settings.bonus ? t('bonusOn') : t('bonusOff')],
     [t('capacity'), t('capacityValue', { count: settings.capacity })],
+    [t('visibility'), t(`visibilities.${settings.visibility}`)],
   ];
 
   return (
@@ -146,6 +147,11 @@ function SettingsForm({ settings, participantCount, onChange }: { settings: Lobb
         max={MAX_CAPACITY}
         onCommit={(capacity) => onChange({ capacity })}
       />
+
+      <Group legend={t('visibility')}>
+        <Segmented label={t('visibility')} options={LOBBY_VISIBILITIES} value={settings.visibility} onChange={(visibility) => onChange({ visibility })} optionLabel={(v) => t(`visibilities.${v}`)} />
+        <p className="mt-1 text-[13px] leading-5 text-outline">{t(`visibilityHints.${settings.visibility}`)}</p>
+      </Group>
     </div>
   );
 }

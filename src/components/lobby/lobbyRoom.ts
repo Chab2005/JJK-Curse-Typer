@@ -1,4 +1,4 @@
-// Logique pure du salon d'attente d'un lobby (LOB-5 à LOB-9, LOB-11) : état + action → nouvel état.
+// Logique pure du salon d'attente d'un lobby (LOB-1, LOB-5 à LOB-9, LOB-11) : état + action → nouvel état.
 // La room temps réel (phase 2) rejouera ce réducteur ; en attendant, la page s'en sert en local.
 import type { CharacterId } from '@/components/shared/characters';
 import type { CharKind, TextLanguage } from '@/components/lobbies/lobbySearch';
@@ -10,6 +10,10 @@ export { BOT_LEVELS, ERROR_MODES, type BotLevel, type ErrorMode };
 
 export const CONTENT_MODES = ['sentences', 'words'] as const;
 export type ContentMode = (typeof CONTENT_MODES)[number];
+
+/** Accès au lobby (LOB-1) : listé, masqué mais joignable par code, ou par lien d'invitation seulement. */
+export const LOBBY_VISIBILITIES = ['public', 'code', 'private'] as const;
+export type LobbyVisibility = (typeof LOBBY_VISIBILITIES)[number];
 
 /** Durées du timer de course en secondes ; 0 = sans timer, jamais plus de 3 min (RACE-9). */
 export const TIMER_OPTIONS = [0, 30, 60, 90, 120, 180] as const;
@@ -33,6 +37,7 @@ export interface LobbySettings {
   errorMode: ErrorMode;
   bonus: boolean;
   capacity: number;
+  visibility: LobbyVisibility;
 }
 
 export interface HumanParticipant {
@@ -99,6 +104,7 @@ function updateSettings(room: LobbyRoom, patch: Partial<LobbySettings>): LobbySe
     capacity: clamp(next.capacity, Math.max(MIN_PARTICIPANTS, room.participants.length), MAX_CAPACITY),
     timer: (TIMER_OPTIONS as readonly number[]).includes(next.timer) ? next.timer : 0,
     practice: normalizePractice(next.practice),
+    visibility: (LOBBY_VISIBILITIES as readonly string[]).includes(next.visibility) ? next.visibility : room.settings.visibility,
   };
 }
 

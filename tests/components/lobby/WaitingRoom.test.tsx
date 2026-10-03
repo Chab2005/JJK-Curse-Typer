@@ -17,7 +17,7 @@ const ROOM: LobbyRoom = {
     { kind: 'bot', id: 'bot-1', level: 'expert', number: 1 },
   ],
   spectators: [{ id: 'Ijichi_Driver', name: 'Ijichi_Driver', avatar: null }],
-  settings: { languages: ['fr'], content: 'sentences', words: 60, chars: ['uppercase'], practice: '', timer: 0, errorMode: 'accumulate', bonus: true, capacity: 4 },
+  settings: { languages: ['fr'], content: 'sentences', words: 60, chars: ['uppercase'], practice: '', timer: 0, errorMode: 'accumulate', bonus: true, capacity: 4, visibility: 'public' },
 };
 
 const participants = () => within(screen.getByRole('list', { name: /Exorcists/ }));

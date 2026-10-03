@@ -1,4 +1,5 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { connection } from 'next/server';
 import { Suspense } from 'react';
 import Footer from '@/components/layout/Footer';
 import Header from '@/components/layout/Header';
@@ -6,6 +7,7 @@ import LobbyBrowser from '@/components/lobbies/LobbyBrowser';
 import { SAMPLE_LOBBIES } from '@/components/lobbies/sampleLobbies';
 import PageIntro from '@/components/shared/PageIntro';
 import type { Locale } from '@/i18n/config';
+import { listPublicLobbies } from '@/lib/lobbies';
 
 export async function generateMetadata({ params }: PageProps<'/[locale]/lobbies'>) {
   const { locale } = await params;
@@ -18,6 +20,10 @@ export default async function LobbiesPage({ params }: PageProps<'/[locale]/lobbi
   const { locale } = await params;
   setRequestLocale(locale as Locale);
   const t = await getTranslations('Lobbies');
+  // Les lobbies créés vivent en mémoire : la liste se calcule à chaque requête.
+  await connection();
+  // Seuls les lobbies publics sont listés ; ceux à code ou privés restent cachés (LOB-2, LOB-3).
+  const lobbies = [...listPublicLobbies(), ...SAMPLE_LOBBIES];
 
   return (
     <>
@@ -31,7 +37,7 @@ export default async function LobbiesPage({ params }: PageProps<'/[locale]/lobbi
           <div className="min-h-[752px] sm:min-h-[656px]">
             {/* useSearchParams : la liste se rend côté client, avec l'état lu dans l'URL. */}
             <Suspense fallback={null}>
-              <LobbyBrowser lobbies={SAMPLE_LOBBIES} />
+              <LobbyBrowser lobbies={lobbies} />
             </Suspense>
           </div>
         </section>
