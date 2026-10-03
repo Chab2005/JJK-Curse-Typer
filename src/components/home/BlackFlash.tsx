@@ -21,15 +21,14 @@ export default function BlackFlash() {
             className="opacity-0 animate-[black-flash_3.4s_step-end_infinite] motion-reduce:animate-none motion-reduce:opacity-30"
             style={{ animationDelay: `${bolt.delay}s` }}
           >
-            <g fill="none" stroke="#e11d48" strokeWidth="7" strokeLinejoin="miter" strokeLinecap="round" filter="url(#black-flash-glow)" opacity="0.85">
-              <path d={bolt.main} />
-              {bolt.branches.map((d) => <path key={d} d={d} strokeWidth="4" />)}
+            <g fill="#e11d48" stroke="#e11d48" strokeLinejoin="round" filter="url(#black-flash-glow)" opacity="0.85">
+              {bolt.strands.map((strand) => <path key={strand.line} d={strand.rim} strokeWidth={strand.glow} />)}
             </g>
             <g fill="#ff2d55">
-              {bolt.rim.map((d) => <path key={d} d={d} />)}
+              {bolt.strands.map((strand) => <path key={strand.rim} d={strand.rim} />)}
             </g>
             <g fill="#050505">
-              {bolt.core.map((d) => <path key={d} d={d} />)}
+              {bolt.strands.map((strand) => <path key={strand.core} d={strand.core} />)}
             </g>
           </g>
         ))}

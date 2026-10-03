@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { BOLT_START_RADIUS, blackFlashBolts, boltPoints, ribbonPath, seededRandom, toPath } from './blackFlashGeometry';
+import { BOLT_START_RADIUS, blackFlashBolts, boltPoints, boltWidths, ribbonPath, seededRandom, toPath } from './blackFlashGeometry';
 
 describe('seededRandom', () => {
   it('donne toujours la même suite pour la même graine', () => {
@@ -53,19 +53,40 @@ describe('boltPoints', () => {
   });
 });
 
+describe('boltWidths', () => {
+  it('donne une largeur par point, de la base jusqu’à la pointe', () => {
+    const widths = boltWidths(10, 6, 0, seededRandom(2));
+    expect(widths).toHaveLength(10);
+    expect(widths[0]).toBe(6);
+    expect(widths.at(-1)).toBe(0);
+  });
+
+  it('gonfle et se resserre autour de l’effilement, sans sortir de [0,5× ; 1,5×]', () => {
+    const widths = boltWidths(12, 6, 0, seededRandom(8));
+    const ratios = widths.slice(1, -1).map((w, i) => w / (6 * (1 - ((i + 1) / 11) ** 2)));
+    for (const ratio of ratios) {
+      expect(ratio).toBeGreaterThanOrEqual(0.5);
+      expect(ratio).toBeLessThan(1.5);
+    }
+    expect(Math.max(...ratios) - Math.min(...ratios)).toBeGreaterThan(0.3);
+  });
+});
+
 describe('ribbonPath', () => {
   const coords = (path: string) => [...path.matchAll(/-?\d+(?:\.\d+)?/g)].map(([n]) => Number(n));
+  const line = [{ x: 0, y: 0 }, { x: 50, y: 0 }, { x: 100, y: 0 }];
 
   it('trace une forme fermée avec deux bords par point', () => {
-    const path = ribbonPath([{ x: 0, y: 0 }, { x: 50, y: 0 }, { x: 100, y: 0 }], 10, 0);
+    const path = ribbonPath(line, [10, 4, 0]);
     expect(path.startsWith('M')).toBe(true);
     expect(path.endsWith('Z')).toBe(true);
     expect(coords(path)).toHaveLength(12);
   });
 
-  it('a la largeur de départ à la base et finit en pointe', () => {
-    const [x0, y0, , , x2, y2, x3, y3, , , x5, y5] = coords(ribbonPath([{ x: 0, y: 0 }, { x: 50, y: 0 }, { x: 100, y: 0 }], 10, 0));
+  it('suit la largeur donnée à chaque point et finit en pointe', () => {
+    const [x0, y0, x1, y1, x2, y2, x3, y3, x4, y4, x5, y5] = coords(ribbonPath(line, [10, 4, 0]));
     expect(Math.hypot(x5 - x0, y5 - y0)).toBeCloseTo(10);
+    expect(Math.hypot(x4 - x1, y4 - y1)).toBeCloseTo(4);
     expect([x2, y2]).toEqual([x3, y3]);
   });
 });
@@ -77,11 +98,13 @@ describe('toPath', () => {
 });
 
 describe('blackFlashBolts', () => {
+  const lastPoint = (line: string) => line.split('L').at(-1)!.split(' ').map(Number);
+
   it('produit le nombre d’éclairs demandé, avec un délai dans la durée du cycle', () => {
     const bolts = blackFlashBolts(10, 5, 3.4);
     expect(bolts).toHaveLength(10);
     for (const bolt of bolts) {
-      expect(bolt.main.startsWith('M')).toBe(true);
+      expect(bolt.strands[0].line.startsWith('M')).toBe(true);
       expect(bolt.delay).toBeGreaterThanOrEqual(0);
       expect(bolt.delay).toBeLessThan(3.4);
     }
@@ -89,16 +112,25 @@ describe('blackFlashBolts', () => {
 
   it('fait partir chaque éclair à BOLT_START_RADIUS du centre', () => {
     for (const bolt of blackFlashBolts(8, 3, 3)) {
-      const [x, y] = bolt.main.slice(1).split('L')[0].split(' ').map(Number);
+      const [x, y] = bolt.strands[0].line.slice(1).split('L')[0].split(' ').map(Number);
       expect(Math.hypot(x, y)).toBeCloseTo(BOLT_START_RADIUS, 0);
     }
   });
 
-  it('donne un ruban effilé (liseré et cœur) pour l’éclair principal et chaque ramification', () => {
+  it('se divise en plusieurs extrémités vers l’extérieur', () => {
+    for (const bolt of blackFlashBolts(12, 4, 3)) {
+      const outerEnds = bolt.strands.filter(({ line }) => Math.hypot(...(lastPoint(line) as [number, number])) > 300);
+      expect(outerEnds.length).toBeGreaterThanOrEqual(2);
+    }
+  });
+
+  it('donne à chaque brin un liseré et un cœur effilés, plus fins que l’éclair principal', () => {
     for (const bolt of blackFlashBolts(8, 3, 3)) {
-      expect(bolt.rim).toHaveLength(bolt.branches.length + 1);
-      expect(bolt.core).toHaveLength(bolt.branches.length + 1);
-      for (const d of [...bolt.rim, ...bolt.core]) expect(d.endsWith('Z')).toBe(true);
+      for (const strand of bolt.strands) {
+        expect(strand.rim.endsWith('Z')).toBe(true);
+        expect(strand.core.endsWith('Z')).toBe(true);
+      }
+      for (const strand of bolt.strands.slice(1)) expect(strand.glow).toBeLessThan(bolt.strands[0].glow);
     }
   });
 
