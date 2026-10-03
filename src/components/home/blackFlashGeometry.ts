@@ -59,12 +59,21 @@ const unit = (from: Point, to: Point): Point => {
   return { x: (to.x - from.x) / length, y: (to.y - from.y) / length };
 };
 
-/** Largeur à chaque point : reste épaisse puis s'effile vite vers `endWidth`, avec des renflements et des étranglements au hasard. */
-export function boltWidths(count: number, startWidth: number, endWidth: number, random: () => number): number[] {
+/** Position (dans [0, 1]) où l'éclair atteint sa largeur maximale. */
+export const WIDTH_PEAK_AT = 0.3;
+
+/** Largeur de référence à la position `t` : part de `baseWidth`, monte jusqu'à `peakWidth` puis s'effile jusqu'à 0. */
+export function widthEnvelope(t: number, baseWidth: number, peakWidth: number): number {
+  if (t <= WIDTH_PEAK_AT) return baseWidth + (peakWidth - baseWidth) * (t / WIDTH_PEAK_AT);
+  return peakWidth * (1 - ((t - WIDTH_PEAK_AT) / (1 - WIDTH_PEAK_AT)) ** 2);
+}
+
+/** Largeur à chaque point : suit `widthEnvelope`, avec des renflements et des étranglements au hasard. */
+export function boltWidths(count: number, baseWidth: number, peakWidth: number, random: () => number): number[] {
   const last = count - 1;
   return Array.from({ length: count }, (_, i) => {
-    const taper = startWidth + (endWidth - startWidth) * (i / last) ** 2;
-    return i === 0 || i === last ? taper : taper * (0.5 + random());
+    const width = widthEnvelope(i / last, baseWidth, peakWidth);
+    return i === 0 || i === last ? width : width * (0.5 + random());
   });
 }
 
@@ -106,7 +115,7 @@ function fork(parent: Fork, index: number, turn: number, reach: number, segments
   const start = parent.points[0];
   const heading = Math.atan2(tip.y - start.y, tip.x - start.x) + turn;
   const points = boltPoints(from, { x: from.x + reach * Math.cos(heading), y: from.y + reach * Math.sin(heading) }, segments, jitter, random);
-  return { points, widths: boltWidths(points.length, parent.widths[index] * 0.9, 0, random) };
+  return { points, widths: boltWidths(points.length, 0.6, parent.widths[index] * 0.9, random) };
 }
 
 /** `count` éclairs qui partent du centre (0, 0) vers l'extérieur, dans un repère de ±500. */
@@ -119,7 +128,7 @@ export function blackFlashBolts(count: number, seed: number, cycleSeconds: numbe
     const start = polar(BOLT_START_RADIUS, angle);
     const end = polar(460 + random() * 40, angle + (random() - 0.5) * 0.3);
     const points = boltPoints(start, end, 9 + Math.floor(random() * 5), 14, random);
-    const trunk = { points, widths: boltWidths(points.length, 8, 0, random) };
+    const trunk = { points, widths: boltWidths(points.length, 1, 8, random) };
     const last = points.length - 1;
 
     // Fourche finale : une ou deux pointes de plus que celle du tronc.

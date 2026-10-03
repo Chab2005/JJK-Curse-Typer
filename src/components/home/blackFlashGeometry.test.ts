@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { BOLT_START_RADIUS, blackFlashBolts, boltPoints, boltWidths, ribbonPath, seededRandom, toPath } from './blackFlashGeometry';
+import { BOLT_START_RADIUS, blackFlashBolts, WIDTH_PEAK_AT, boltPoints, boltWidths, ribbonPath, seededRandom, toPath, widthEnvelope } from './blackFlashGeometry';
 
 describe('seededRandom', () => {
   it('donne toujours la même suite pour la même graine', () => {
@@ -53,17 +53,33 @@ describe('boltPoints', () => {
   });
 });
 
-describe('boltWidths', () => {
-  it('donne une largeur par point, de la base jusqu’à la pointe', () => {
-    const widths = boltWidths(10, 6, 0, seededRandom(2));
-    expect(widths).toHaveLength(10);
-    expect(widths[0]).toBe(6);
-    expect(widths.at(-1)).toBe(0);
+describe('widthEnvelope', () => {
+  it('part fin, s’épaissit jusqu’au pic puis finit en pointe', () => {
+    expect(widthEnvelope(0, 1, 8)).toBe(1);
+    expect(widthEnvelope(WIDTH_PEAK_AT, 1, 8)).toBe(8);
+    expect(widthEnvelope(1, 1, 8)).toBe(0);
   });
 
-  it('gonfle et se resserre autour de l’effilement, sans sortir de [0,5× ; 1,5×]', () => {
-    const widths = boltWidths(12, 6, 0, seededRandom(8));
-    const ratios = widths.slice(1, -1).map((w, i) => w / (6 * (1 - ((i + 1) / 11) ** 2)));
+  it('monte jusqu’au pic puis redescend', () => {
+    const before = [0, 0.1, 0.2, WIDTH_PEAK_AT].map((t) => widthEnvelope(t, 1, 8));
+    const after = [WIDTH_PEAK_AT, 0.5, 0.7, 0.9, 1].map((t) => widthEnvelope(t, 1, 8));
+    for (let i = 1; i < before.length; i++) expect(before[i]).toBeGreaterThan(before[i - 1]);
+    for (let i = 1; i < after.length; i++) expect(after[i]).toBeLessThan(after[i - 1]);
+  });
+});
+
+describe('boltWidths', () => {
+  it('donne une largeur par point, fine à la base et en pointe au bout', () => {
+    const widths = boltWidths(10, 1, 8, seededRandom(2));
+    expect(widths).toHaveLength(10);
+    expect(widths[0]).toBe(1);
+    expect(widths.at(-1)).toBe(0);
+    expect(Math.max(...widths)).toBeGreaterThan(4);
+  });
+
+  it('gonfle et se resserre autour de l’enveloppe, sans sortir de [0,5× ; 1,5×]', () => {
+    const widths = boltWidths(12, 1, 8, seededRandom(8));
+    const ratios = widths.slice(1, -1).map((w, i) => w / widthEnvelope((i + 1) / 11, 1, 8));
     for (const ratio of ratios) {
       expect(ratio).toBeGreaterThanOrEqual(0.5);
       expect(ratio).toBeLessThan(1.5);
