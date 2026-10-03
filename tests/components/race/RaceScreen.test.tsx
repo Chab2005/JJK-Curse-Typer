@@ -154,6 +154,7 @@ describe('RaceScreen', () => {
       standings: [standing('Yuji_BlackFlash', 1, 'finished'), standing('bot-1', 2, 'finished'), standing('Megumi_Shadows', 3, 'timeout')],
     });
 
+    expect(screen.getByText('Yuji_BlackFlash wins the race!')).toBeInTheDocument();
     const table = screen.getByRole('table', { name: 'Results' });
     expect(within(table).getByText('Cursed corpse 1')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Back to the lobby' })).toBeInTheDocument();
