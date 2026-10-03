@@ -163,6 +163,8 @@ button:not(.material-symbols-outlined) {
 }
 
 .font-label-code,
+.font-typing-stream,
+.font-typing-stream span,
 kbd,
 #roomPinInput {
   font-family: var(--font-jetbrains-mono), monospace !important;
@@ -227,4 +229,56 @@ kbd,
 @keyframes impact-pulse {
   0%, 100% { opacity: 0.45; transform: scale(1); }
   50% { opacity: 0.85; transform: scale(1.12); }
+}
+
+/* Course : barre d'énergie en flammes bleues (BON-1). Des langues claires défilent sur un dégradé
+   qui ondule, avec un léger scintillement ; la barre pleine pulse. */
+.energy-flame {
+  background-image:
+    repeating-linear-gradient(105deg, transparent 0 7px, rgb(200 246 255 / 0.45) 7px 9px, transparent 9px 15px),
+    radial-gradient(ellipse 70% 140% at 50% 120%, rgb(232 252 255 / 0.7), transparent 60%),
+    linear-gradient(90deg, #0a2470, #1d5bff 35%, #4cd7f6 70%, #c8f6ff);
+  background-size: 30px 100%, 26px 100%, 200% 100%;
+  box-shadow: 0 0 10px rgb(76 215 246 / 0.75), inset 0 0 6px rgb(200 246 255 / 0.6);
+  animation: energy-flame 1.4s linear infinite, energy-flicker 0.9s steps(3, jump-none) infinite;
+  transition: width 200ms linear;
+}
+
+.energy-full {
+  animation: energy-full 1.2s ease-in-out infinite;
+}
+
+@keyframes energy-flame {
+  from { background-position: 0 0, 0 0, 0% 0; }
+  to { background-position: 30px 0, -26px 0, 200% 0; }
+}
+
+@keyframes energy-flicker {
+  0%, 100% { filter: brightness(1) saturate(1); }
+  50% { filter: brightness(1.25) saturate(1.2); }
+}
+
+@keyframes energy-full {
+  0%, 100% { filter: drop-shadow(0 0 4px rgb(76 215 246 / 0.6)); }
+  50% { filter: drop-shadow(0 0 12px rgb(76 215 246 / 1)); }
+}
+
+/* Course : annonces de la zone d'animation (RACE-5) et décompte (RACE-1). */
+@keyframes race-pop {
+  0% { opacity: 0; transform: scale(0.7); }
+  60% { opacity: 1; transform: scale(1.08); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.race-pop {
+  animation: race-pop 320ms ease-out both;
+}
+
+/* Animations jamais bloquantes et coupées sur demande (UI-7, UI-8). */
+@media (prefers-reduced-motion: reduce) {
+  .energy-flame,
+  .energy-full,
+  .race-pop {
+    animation: none;
+  }
 }
