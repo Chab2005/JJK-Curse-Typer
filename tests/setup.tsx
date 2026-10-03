@@ -2,6 +2,7 @@ import '@testing-library/jest-dom/vitest';
 import { cleanup } from '@testing-library/react';
 import type { AnchorHTMLAttributes, ImgHTMLAttributes } from 'react';
 import { afterEach, vi } from 'vitest';
+import { lobbyActionsMock } from './actions';
 import { routerMock } from './router';
 
 // Setup for component tests (*.test.tsx), run before each file in jsdom.
@@ -10,6 +11,8 @@ afterEach(() => {
   cleanup();
   routerMock.push.mockReset();
   routerMock.replace.mockReset();
+  lobbyActionsMock.createLobbyAction.mockReset();
+  lobbyActionsMock.updateLobbyAction.mockReset();
   window.history.replaceState(null, '', '/');
 });
 
@@ -34,6 +37,9 @@ vi.mock('@/i18n/navigation', async () => {
     useRouter: () => routerMock,
   };
 });
+
+// Server actions run on the Next server: components only see these stubs.
+vi.mock('@/app/actions/lobbies', async () => (await import('./actions')).lobbyActionsMock);
 
 // The browsers (lobbies, leaderboard) read their state from the URL, written with history.pushState.
 vi.mock('next/navigation', () => ({

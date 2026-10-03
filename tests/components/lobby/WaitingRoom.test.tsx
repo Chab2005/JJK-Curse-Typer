@@ -2,6 +2,7 @@ import { screen, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import type { LobbyRoom } from '@/components/lobby/lobbyRoom';
 import WaitingRoom from '@/components/lobby/WaitingRoom';
+import { lobbyActionsMock } from '../../actions';
 import { renderWithIntl } from '../../render';
 import { routerMock } from '../../router';
 
@@ -108,6 +109,13 @@ describe('WaitingRoom host controls (LOB-8, LOB-11)', () => {
     rerender(<WaitingRoom key="ready" initialRoom={ready} viewerId="Satoru_Infinity" />);
     await user.click(screen.getByRole('button', { name: 'Start the race' }));
     expect(routerMock.push).toHaveBeenCalledWith('/lobby/SHJ-60S/race');
+  });
+
+  it('sends each action to the server, which replays it on created lobbies', async () => {
+    const { user } = renderWithIntl(<WaitingRoom initialRoom={ROOM} viewerId="Satoru_Infinity" />);
+
+    await user.click(screen.getByRole('button', { name: 'Add a bot' }));
+    expect(lobbyActionsMock.updateLobbyAction).toHaveBeenCalledWith('SHJ-60S', { type: 'addBot', by: 'Satoru_Infinity', level: 'intermediate' });
   });
 
   it('edits the race settings (LOB-5)', async () => {

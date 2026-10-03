@@ -1,25 +1,41 @@
-import { act, screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import JoinForm from '@/components/home/JoinForm';
+import { lobbyActionsMock } from '../../actions';
 import { renderWithIntl } from '../../render';
+import { routerMock } from '../../router';
 
 describe('JoinForm', () => {
   beforeEach(() => vi.useFakeTimers({ shouldAdvanceTime: true }));
   afterEach(() => vi.useRealTimers());
 
-  it('shows the syncing banner with the upper-cased PIN until the simulated connection ends', async () => {
+  it('opens the lobby of the typed code (LOB-3)', async () => {
     const { user } = renderWithIntl(<JoinForm />);
     await user.type(screen.getByLabelText(/PIN/), 'abc-234');
 
     await user.click(screen.getByRole('button', { name: 'Expand the domain' }));
 
-    expect(screen.getByRole('status')).toHaveTextContent('Syncing the occult barriers... Domain: ABC-234');
-    expect(screen.getByRole('button', { name: 'Expand the domain' })).toBeDisabled();
+    expect(routerMock.push).toHaveBeenCalledWith('/lobby/ABC-234');
+  });
 
-    act(() => vi.advanceTimersByTime(2400));
+  it('creates a new private lobby and opens it (LOB-4)', async () => {
+    lobbyActionsMock.createLobbyAction.mockResolvedValue('NEW-234');
+    const { user } = renderWithIntl(<JoinForm />);
 
-    expect(screen.queryByRole('status')).not.toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Expand the domain' })).toBeEnabled();
+    await user.click(screen.getByRole('button', { name: 'Create a new lobby' }));
+
+    await waitFor(() => expect(routerMock.push).toHaveBeenCalledWith('/lobby/NEW-234'));
+    expect(lobbyActionsMock.createLobbyAction).toHaveBeenCalledTimes(1);
+  });
+
+  it('says when the lobby could not be created', async () => {
+    lobbyActionsMock.createLobbyAction.mockRejectedValue(new Error('down'));
+    const { user } = renderWithIntl(<JoinForm />);
+
+    await user.click(screen.getByRole('button', { name: 'Create a new lobby' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent("Couldn't create the lobby. Try again.");
+    expect(routerMock.push).not.toHaveBeenCalled();
   });
 
   it('falls back to the demo PIN when none is typed', async () => {
