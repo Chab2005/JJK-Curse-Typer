@@ -425,7 +425,9 @@
       "passed": "You passed {names}!",
       "passedBy": "{names} passed you",
       "newLeader": "{name} takes the lead!",
-      "youLead": "You take the lead!"
+      "youLead": "You take the lead!",
+      "winner": "{name} wins the race!",
+      "youWin": "You win the race!"
     },
     "energy": {
       "label": "Energy",

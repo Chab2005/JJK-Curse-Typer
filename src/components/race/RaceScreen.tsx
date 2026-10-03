@@ -114,13 +114,15 @@ export default function RaceScreen({ code, lobbyName }: { code: string; lobbyNam
 
   const bannerText = () => {
     if (!race || elapsed < 0) return t('banner.waiting');
+    const winner = standings[0];
+    if (phase === 'finished' && winner) return winner.id === you ? t('banner.youWin') : t('banner.winner', { name: nameById(winner.id) });
     const { banner } = view;
     if (banner && now - banner.at < BANNER_MS) {
       const names = banner.ids.map(nameById).join(', ');
       if (banner.kind === 'newLeader') return banner.ids[0] === you ? t('banner.youLead') : t('banner.newLeader', { name: names });
       return t(`banner.${banner.kind}`, { names });
     }
-    const gap = you ? leaderGap(standings, you) : null;
+    const gap = you && !done ? leaderGap(standings, you) : null;
     if (gap !== null && gap > 0) return t('banner.lead', { gap });
     const leader = standings[0];
     return leader && leader.progress > 0 ? t('banner.leader', { name: nameById(leader.id) }) : '';
@@ -128,7 +130,9 @@ export default function RaceScreen({ code, lobbyName }: { code: string; lobbyNam
 
   const myElapsed = Math.max(0, Math.min(elapsed, race && race.timerMs > 0 ? race.timerMs : Infinity));
   const score = typing ? typingScore(typing, typing.finishedAt ?? myElapsed) : null;
-  const clock = race && race.timerMs > 0 ? formatClock(race.timerMs - myElapsed) : formatClock(myElapsed);
+  // Le chrono du joueur s'arrête à son arrivée.
+  const clockMs = typing?.finishedAt ?? myElapsed;
+  const clock = race && race.timerMs > 0 ? formatClock(race.timerMs - clockMs) : formatClock(clockMs);
 
   const rows: SummaryRow[] = standings.map((s) => {
     const seat = seats.find((candidate) => candidate.id === s.id);

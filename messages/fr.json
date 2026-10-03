@@ -425,7 +425,9 @@
       "passed": "Vous avez dépassé {names} !",
       "passedBy": "{names} vous a dépassé",
       "newLeader": "{name} prend la tête !",
-      "youLead": "Vous prenez la tête !"
+      "youLead": "Vous prenez la tête !",
+      "winner": "{name} remporte la course !",
+      "youWin": "Vous remportez la course !"
     },
     "energy": {
       "label": "Énergie",
