@@ -52,6 +52,13 @@ describe('raceViewReducer', () => {
     expect(view.banner).toEqual({ kind: 'newLeader', ids: ['bot-1'], at: 6200 });
   });
 
+  it('n’annonce pas de nouveau meneur sur une simple égalité', () => {
+    let view = raceViewReducer(initialRaceView, welcome, 0);
+    view = raceViewReducer(view, tick(1000, standing('ann', 1, 5), standing('bot-1', 2, 4), standing('me', 3, 1)), 6000);
+    view = raceViewReducer(view, tick(1200, standing('bot-1', 1, 5), standing('ann', 2, 5), standing('me', 3, 1)), 6200);
+    expect(view.banner).toBeNull();
+  });
+
   it('ignore les ticks reçus avant l’accueil', () => {
     expect(raceViewReducer(initialRaceView, tick(1000, standing('me', 1, 0)), 0)).toBe(initialRaceView);
   });

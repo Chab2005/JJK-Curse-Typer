@@ -197,12 +197,19 @@ describe('leaderGap (RACE-4)', () => {
 });
 
 describe('overtakes (RACE-5)', () => {
+  const rows = (...entries: [string, number][]) => entries.map(([id, progress]) => ({ id, progress }));
+
   it('liste ceux que le joueur a dépassés et ceux qui l’ont dépassé', () => {
-    expect(overtakes(['a', 'b', 'me', 'c'], ['a', 'me', 'b', 'c'], 'me')).toEqual({ passed: ['b'], passedBy: [] });
-    expect(overtakes(['me', 'a', 'b'], ['a', 'b', 'me'], 'me')).toEqual({ passed: [], passedBy: ['a', 'b'] });
+    expect(overtakes(rows(['a', 9], ['b', 6], ['me', 5]), rows(['a', 10], ['me', 8], ['b', 7]), 'me')).toEqual({ passed: ['b'], passedBy: [] });
+    expect(overtakes(rows(['me', 5], ['a', 4], ['b', 3]), rows(['a', 7], ['b', 6], ['me', 5]), 'me')).toEqual({ passed: [], passedBy: ['a', 'b'] });
+  });
+
+  it('ne compte pas les égalités : au départ, tout le monde est à zéro', () => {
+    expect(overtakes(rows(['a', 0], ['b', 0], ['me', 0]), rows(['me', 0], ['a', 0], ['b', 0]), 'me')).toEqual({ passed: [], passedBy: [] });
+    expect(overtakes(rows(['a', 0], ['me', 0]), rows(['a', 1], ['me', 0]), 'me')).toEqual({ passed: [], passedBy: [] });
   });
 
   it('ne signale rien sans classement précédent', () => {
-    expect(overtakes([], ['a', 'me'], 'me')).toEqual({ passed: [], passedBy: [] });
+    expect(overtakes([], rows(['a', 1], ['me', 0]), 'me')).toEqual({ passed: [], passedBy: [] });
   });
 });
