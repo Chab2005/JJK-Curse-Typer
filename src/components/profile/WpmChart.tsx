@@ -2,7 +2,7 @@
 
 import { useFormatter, useTranslations } from 'next-intl';
 import { useEffect, useRef, useState } from 'react';
-import Segmented from './Segmented';
+import Segmented from '@/components/shared/Segmented';
 import { PERIODS, type Period, type RaceWpm, wpmHistory } from './wpmHistory';
 
 const H = 240;

@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import Segmented from '@/components/profile/Segmented';
+import Segmented from '@/components/shared/Segmented';
 import { renderWithIntl } from '../../render';
 
 const OPTIONS = ['7d', '30d', 'all'] as const;
