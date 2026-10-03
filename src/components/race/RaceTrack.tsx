@@ -46,7 +46,7 @@ export default function RaceTrack({ runners, banner, nameOf }: { runners: TrackR
               )}
               <RunnerAvatar runner={runner} name={name} size={size} />
               {runner.you && (
-                <span aria-hidden="true" className="font-label-code -mt-1.5 bg-primary-container px-1 text-[10px] font-bold uppercase leading-[14px] text-on-primary-container">
+                <span aria-hidden="true" className="font-label-code relative z-10 -mt-1.5 bg-primary-container px-1 text-[10px] font-bold uppercase leading-[14px] text-on-primary-container">
                   {t('you')}
                 </span>
               )}
