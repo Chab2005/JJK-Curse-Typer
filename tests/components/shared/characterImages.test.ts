@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { AVATAR_ZOOM, FACE_ZOOM_WIDTH, faceCrop, faceFrame, findCharacterImage } from './characterImages';
+import { AVATAR_ZOOM, FACE_ZOOM_WIDTH, faceCrop, faceFrame, findCharacterImage } from '@/components/shared/characterImages';
 
 describe('faceFrame', () => {
   const ratio = 1270 / 904;

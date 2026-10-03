@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { locales } from '@/i18n/config';
-import en from './en.json';
-import fr from './fr.json';
+import en from '../../messages/en.json';
+import fr from '../../messages/fr.json';
 
 type Messages = { [key: string]: string | Messages };
 

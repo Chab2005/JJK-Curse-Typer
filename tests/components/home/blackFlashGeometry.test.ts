@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { BOLT_START_RADIUS, blackFlashBolts, WIDTH_PEAK_AT, boltPoints, boltWidths, ribbonPath, seededRandom, toPath, widthEnvelope } from './blackFlashGeometry';
+import { BOLT_START_RADIUS, blackFlashBolts, WIDTH_PEAK_AT, boltPoints, boltWidths, ribbonPath, seededRandom, toPath, widthEnvelope } from '@/components/home/blackFlashGeometry';
 
 describe('seededRandom', () => {
   it('donne toujours la même suite pour la même graine', () => {

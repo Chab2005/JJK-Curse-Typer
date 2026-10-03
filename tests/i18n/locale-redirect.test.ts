@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { hostForLocale, localeForHost } from './config';
+import { hostForLocale, localeForHost } from '@/i18n/config';
 import {
   localeSwitchHref,
   matchAcceptLanguage,
   resolveLocaleRedirect,
   type LocaleRequest,
-} from './locale-redirect';
+} from '@/i18n/locale-redirect';
 
 const ROOT = 'monkey-type.foo';
 const FR = 'fr.monkey-type.foo';

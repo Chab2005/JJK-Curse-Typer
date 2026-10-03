@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { type KeyStat, LAYOUTS, heatmap, weakestKeys } from './keyboard';
+import { type KeyStat, LAYOUTS, heatmap, weakestKeys } from '@/components/profile/keyboard';
 
 const stat = (key: string, hits: number, errors: number, totalLatencyMs: number): KeyStat => ({ key, hits, errors, totalLatencyMs });
 

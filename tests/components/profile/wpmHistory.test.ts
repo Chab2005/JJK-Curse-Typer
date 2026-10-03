@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { wpmHistory } from './wpmHistory';
+import { wpmHistory } from '@/components/profile/wpmHistory';
 
 const now = new Date('2026-10-02T15:00:00Z');
 const race = (date: string, wpm: number) => ({ date, wpm });
