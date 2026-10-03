@@ -17,7 +17,7 @@ npm run dev               # Next.js dev server on :3000
 npm run build
 npm run lint              # ESLint 9 flat config (next core-web-vitals + typescript)
 npm run typecheck         # tsc --noEmit on all .ts/.tsx files
-npm test                  # Vitest (unit tests, *.test.ts/.tsx in src/ and messages/)
+npm test                  # Vitest: unit (*.test.ts) + component (*.test.tsx) tests in tests/
 
 npm run db:generate       # drizzle-kit: generate SQL migration from src/db/schema.ts into drizzle/
 npm run db:migrate        # apply migrations
@@ -27,7 +27,12 @@ npm run db:studio
 
 `GET /api/health` runs `select 1` against the DB. It's a quick way to check the DB connection.
 
-Vitest is set up (`vitest.config.mts`, `@` alias). CI (`.github/workflows/test.yml`) runs typecheck + tests on push/PR to `main` and `dev`. Playwright (E2E, multi-tab races) is still to do.
+Tests live in the top-level `tests/` folder, which mirrors `src/` (`src/components/home/join.ts` → `tests/components/home/join.test.ts`; `messages/` → `tests/messages/`). Import the code under test with the `@/` alias. `vitest.config.mts` has two projects:
+
+- `unit`: `*.test.ts` in Node, for pure logic.
+- `components`: `*.test.tsx` in jsdom with Testing Library. `tests/setup.tsx` mocks `next/image`, `@/i18n/navigation` and `next/navigation` (search params are read from `window.location`). Render with `renderWithIntl` from `tests/render.tsx`, which wraps the real English messages and returns a `user` (user-event). Interactive components get behaviour tests; static ones get a smoke test (renders, one key element).
+
+CI (`.github/workflows/test.yml`) runs typecheck + tests on push/PR to `main` and `dev`. Playwright (E2E, multi-tab races) is still to do.
 
 ## Stack notes
 
@@ -50,7 +55,7 @@ Vitest is set up (`vitest.config.mts`, `@` alias). CI (`.github/workflows/test.y
 ## i18n (GEN-3)
 
 - `next-intl`, locales `en` (default) and `fr`. One domain per locale: English on the root domain (`monkey-type.foo`), French on `fr.monkey-type.foo`. Root domain comes from `NEXT_PUBLIC_ROOT_DOMAIN` (default `monkey-type.foo`; `localhost:3000` in `.env`, so dev uses `http://fr.localhost:3000`). On an unknown host (Vercel preview) the locale falls back to a path prefix (`/fr`).
-- Pages live under `src/app/[locale]/`. UI copy goes in `messages/en.json` and `messages/fr.json` (same keys, checked by `messages/messages.test.ts`); never hardcode copy in components, use `useTranslations` / `getTranslations`.
+- Pages live under `src/app/[locale]/`. UI copy goes in `messages/en.json` and `messages/fr.json` (same keys, checked by `tests/messages/messages.test.ts`); never hardcode copy in components, use `useTranslations` / `getTranslations`.
 - `src/proxy.ts` runs `resolveLocaleRedirect` (pure, `src/i18n/locale-redirect.ts`) before the next-intl middleware: on the root domain it redirects to `fr.` from the `NEXT_LOCALE` cookie or `Accept-Language`; `?lang=xx` (language switcher in the header) stores the choice in that cookie on the root domain.
 - Use `Link`/`usePathname` from `@/i18n/navigation`, not `next/link`, for internal links.
 
