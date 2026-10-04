@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import Avatar from '@/components/shared/Avatar';
 import EditProfileDialog, { type EditableProfile } from './EditProfileDialog';
+import { DiscordIcon, GithubIcon } from './BrandIcons';
 import { discordHref, githubHandle } from './profileEdit';
 
 // Avatar, pseudo et liens du joueur ; le bouton ⋯ n'apparaît que sur son propre profil.
@@ -26,14 +27,14 @@ export default function ProfileHeader({ profile, own, summary }: { profile: Edit
           {github && (
             <li>
               <a href={current.github} target="_blank" rel="noreferrer" className="font-label-code inline-flex min-h-8 items-center gap-2 text-[14px] text-primary hover:text-primary-fixed">
-                <span aria-hidden="true" className="material-symbols-outlined text-lg">code</span>
+                <GithubIcon className="size-[18px]" />
                 {t('github', { handle: github })}
               </a>
             </li>
           )}
           {current.discord && (
             <li className="font-label-code inline-flex min-h-8 items-center gap-2 text-[14px] text-secondary">
-              <span aria-hidden="true" className="material-symbols-outlined text-lg">forum</span>
+              <DiscordIcon className="size-[18px]" />
               {discordLink ? (
                 <a href={discordLink} target="_blank" rel="noreferrer" className="font-label-code text-secondary hover:text-secondary-fixed">{t('discordLink')}</a>
               ) : (
