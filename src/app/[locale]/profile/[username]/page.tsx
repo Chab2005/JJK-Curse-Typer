@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import Avatar from '@/components/shared/Avatar';
 import Footer from '@/components/layout/Footer';
 import SiteHeader from '@/components/layout/SiteHeader';
+import EmptyStats from '@/components/profile/EmptyStats';
 import KeyboardHeatmap from '@/components/profile/KeyboardHeatmap';
 import ProfileHeader from '@/components/profile/ProfileHeader';
 import StatTiles from '@/components/profile/StatTiles';
@@ -53,6 +54,7 @@ export default async function ProfilePage({ params }: PageProps<'/[locale]/profi
                 )}
               </div>
             </section>
+            {account.games === 0 && <EmptyStats own={viewer?.id === account.id} />}
           </div>
         </main>
         <Footer />

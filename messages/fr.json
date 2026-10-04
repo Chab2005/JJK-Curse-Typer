@@ -76,7 +76,8 @@
       "startsIn": "Départ dans {seconds}s",
       "waitingSquad": "En attente d'escouade",
       "readyToLaunch": "Prêt à lancer"
-    }
+    },
+    "noLobbies": "Aucune salle publique n'est ouverte pour le moment."
   },
   "GameSystem": {
     "eyebrow": "Système de jeu",
@@ -124,7 +125,8 @@
     "title": "Grade spécial",
     "cta": "Classement complet",
     "wpm": "MPM",
-    "profileLabel": "Voir le profil de {name}"
+    "profileLabel": "Voir le profil de {name}",
+    "empty": "Personne n'est encore classé. Termine des courses pour prendre la première place."
   },
   "Footer": {
     "nav": "Pied de page",
@@ -361,7 +363,8 @@
     "profileLabel": "Voir le profil de {name}",
     "empty": "Aucun exorciste ne porte ce nom.",
     "pagination": "Pages du classement",
-    "eligibility": "Les joueurs apparaissent après {games} courses terminées. Le score moyen porte sur leurs 5 dernières courses."
+    "eligibility": "Les joueurs apparaissent après {games} courses terminées. Le score moyen porte sur leurs 5 dernières courses.",
+    "noPlayers": "Personne n'est encore classé. Termine des courses pour prendre la première place."
   },
   "Profile": {
     "eyebrow": "Profil d'exorciste",
@@ -445,7 +448,13 @@
       }
     },
     "games": "{games, plural, one {# course jouée} other {# courses jouées}}",
-    "editSettings": "Paramètres du compte"
+    "editSettings": "Paramètres du compte",
+    "empty": {
+      "label": "Statistiques",
+      "own": "Aucune course pour l'instant. Tes statistiques apparaîtront ici après ta première course.",
+      "other": "Cet exorciste n'a pas encore couru.",
+      "cta": "Trouver une arène"
+    }
   },
   "Race": {
     "metaTitle": "{name} · Course",

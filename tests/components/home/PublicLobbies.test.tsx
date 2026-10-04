@@ -22,3 +22,13 @@ describe('PublicLobbies (smoke)', () => {
     expect(screen.getByText(/2\/6 exorcists/)).toBeInTheDocument();
   });
 });
+
+describe('PublicLobbies without sample data', () => {
+  it('says there is no public room yet and still links to all arenas', () => {
+    renderWithIntl(<PublicLobbies showSamples={false} />);
+
+    expect(screen.getByText('No public room is open right now.')).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: /^Join / })).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /All arenas/ })).toBeInTheDocument();
+  });
+});

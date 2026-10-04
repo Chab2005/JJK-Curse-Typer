@@ -76,7 +76,8 @@
       "startsIn": "Starts in {seconds}s",
       "waitingSquad": "Waiting for squad",
       "readyToLaunch": "Ready to launch"
-    }
+    },
+    "noLobbies": "No public room is open right now."
   },
   "GameSystem": {
     "eyebrow": "How it works",
@@ -124,7 +125,8 @@
     "title": "Special grade",
     "cta": "Full rankings",
     "wpm": "WPM",
-    "profileLabel": "View {name}'s profile"
+    "profileLabel": "View {name}'s profile",
+    "empty": "No one is ranked yet. Finish races to claim the first spot."
   },
   "Footer": {
     "nav": "Footer",
@@ -361,7 +363,8 @@
     "profileLabel": "View {name}'s profile",
     "empty": "No exorcist goes by that name.",
     "pagination": "Ranking pages",
-    "eligibility": "Players appear after {games} finished races. The average score covers their last 5 races."
+    "eligibility": "Players appear after {games} finished races. The average score covers their last 5 races.",
+    "noPlayers": "No one is ranked yet. Finish races to claim the first spot."
   },
   "Profile": {
     "eyebrow": "Exorcist profile",
@@ -445,7 +448,13 @@
       }
     },
     "games": "{games, plural, one {# race played} other {# races played}}",
-    "editSettings": "Account settings"
+    "editSettings": "Account settings",
+    "empty": {
+      "label": "Statistics",
+      "own": "No races yet. Your stats appear here after your first race.",
+      "other": "This exorcist has not raced yet.",
+      "cta": "Find an arena"
+    }
   },
   "Race": {
     "metaTitle": "{name} · Race",

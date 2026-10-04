@@ -10,7 +10,7 @@ const TOP = [
   { name: 'Nobara_Resonance', wpm: 146, accuracy: 0.978, color: 'text-outline' },
 ];
 
-export default function TopExorcists() {
+export default function TopExorcists({ showSamples = true }: { showSamples?: boolean }) {
   const t = useTranslations('TopExorcists');
   const format = useFormatter();
 
@@ -31,8 +31,10 @@ export default function TopExorcists() {
           </Link>
         </div>
 
+        {!showSamples && <p className="border border-dashed border-outline-variant px-6 py-12 text-center text-lg text-on-surface-variant">{t('empty')}</p>}
+
         <ol className="border-t border-surface-container-highest">
-          {TOP.map((player, index) => (
+          {(showSamples ? TOP : []).map((player, index) => (
             <li key={player.name} className="border-b border-surface-container-highest">
               <Link
                 href={`/profile/${player.name}`}

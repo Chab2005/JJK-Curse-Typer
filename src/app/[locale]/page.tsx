@@ -26,11 +26,11 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
     <>
       <SiteHeader />
       <main className="w-full flex-1 bg-surface-container-lowest">
-        <Hero onlineCount={ONLINE_EXORCISTS} />
+        <Hero onlineCount={showSampleData() ? ONLINE_EXORCISTS : null} />
         <JoinSection showSamples={showSampleData()} publicLobbies={listPublicLobbies()} accountName={user?.displayName ?? null} />
         <GameSystem />
         <Characters />
-        {showSampleData() && <TopExorcists />}
+        <TopExorcists showSamples={showSampleData()} />
       </main>
       <Footer />
     </>

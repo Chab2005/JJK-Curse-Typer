@@ -67,6 +67,8 @@ export default function PublicLobbies({ created = [], showSamples = true }: { cr
         <p className="font-label-code text-[11px] uppercase tracking-[0.12em] text-tertiary">{t('openCount', { count: lobbies.length })}</p>
       </div>
 
+      {lobbies.length === 0 && <p className="border border-dashed border-outline-variant px-6 py-10 text-center text-on-surface-variant">{t('noLobbies')}</p>}
+
       <ul className="flex flex-col gap-3">
         {lobbies.slice(0, SHOWN).map((lobby) => (
           <li key={lobby.joinCode} className={`flex items-stretch border-l-[3px] bg-surface-container-low transition-colors hover:bg-surface-container-high ${lobby.accent}`}>
