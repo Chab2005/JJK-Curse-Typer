@@ -51,7 +51,7 @@ export default function InviteCard({ code, visibility, isHost }: { code: string;
               </>
             ) : (
               <p className="flex items-center gap-2 text-[14px] leading-5 text-on-surface-variant">
-                <span aria-hidden="true" className="material-symbols-outlined w-[18px] shrink-0 overflow-hidden text-[18px] text-outline">lock</span>
+                <span aria-hidden="true" className="material-symbols-outlined w-[18px] shrink-0 overflow-hidden text-[18px]! text-outline">lock</span>
                 {t('privateCode')}
               </p>
             )}
@@ -113,7 +113,7 @@ function CopyButton({ icon, label, copy, iconOnly = false, disabled = false }: {
   };
 
   const iconNode = (
-    <span aria-hidden="true" className="material-symbols-outlined w-[18px] shrink-0 overflow-hidden text-[18px]">
+    <span aria-hidden="true" className="material-symbols-outlined w-[18px] shrink-0 overflow-hidden text-[18px]!">
       {state === 'copied' ? 'check' : state === 'failed' ? 'error' : icon}
     </span>
   );

@@ -61,7 +61,7 @@ export default function WaitingRoom({ initialRoom, viewerId }: { initialRoom: Lo
             }
           />
         </div>
-        <div className="w-full sm:w-[380px]">
+        <div className="w-full lg:w-[360px]">
           <InviteCard code={room.code} visibility={room.settings.visibility} isHost={isHost} />
         </div>
       </div>
