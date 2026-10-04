@@ -6,6 +6,7 @@ import { updateLobbyAction } from '@/app/actions/lobbies';
 import PageIntro from '@/components/shared/PageIntro';
 import { useRouter } from '@/i18n/navigation';
 import InviteCard from './InviteCard';
+import LeaveLobbyLink from './LeaveLobbyLink';
 import LobbySettingsPanel from './LobbySettingsPanel';
 import ParticipantList, { useParticipantName } from './ParticipantList';
 import ReadyPanel from './ReadyPanel';
@@ -95,22 +96,25 @@ export default function WaitingRoom({ initialRoom, viewerId }: { initialRoom: Lo
           <SpectatorList spectators={room.spectators} viewerId={viewerId} isHost={isHost} onKick={kick} />
         </div>
 
-        <aside className="flex flex-col gap-6">
-          <ReadyPanel
-            role={role}
-            ready={me?.kind === 'human' && me.ready}
-            blocker={startBlocker(room)}
-            onToggleReady={() => me?.kind === 'human' && apply({ type: 'setReady', id: viewerId, ready: !me.ready })}
-            onStart={() => router.push(`/lobby/${room.code}/race`)}
-          />
-          {/* Ligne réservée même vide : une annonce ne pousse pas les paramètres. */}
-          <p role="status" title={announcement} className="font-label-code min-h-5 truncate text-[13px] leading-5 text-tertiary">{announcement}</p>
+        <aside className="flex flex-col gap-7">
+          <div className="relative">
+            <ReadyPanel
+              role={role}
+              ready={me?.kind === 'human' && me.ready}
+              blocker={startBlocker(room)}
+              onToggleReady={() => me?.kind === 'human' && apply({ type: 'setReady', id: viewerId, ready: !me.ready })}
+              onStart={() => router.push(`/lobby/${room.code}/race`)}
+            />
+            {/* Annonce posée dans l'espace avant les paramètres : elle ne les pousse pas et n'ajoute pas de vide. */}
+            <p role="status" title={announcement} className="font-label-code absolute inset-x-0 top-full mt-1 h-5 truncate text-[13px] leading-5 text-tertiary">{announcement}</p>
+          </div>
           <LobbySettingsPanel
             settings={room.settings}
             participantCount={room.participants.length}
             editable={isHost}
             onChange={(patch) => apply({ type: 'updateSettings', by: viewerId, patch })}
           />
+          <LeaveLobbyLink />
         </aside>
       </div>
     </div>
