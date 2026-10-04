@@ -1,7 +1,7 @@
 // Logique pure de l'accès à un lobby (LOB-1 à LOB-4) : qui entre, ce qui est listé et quand un lien
 // d'invitation à usage unique s'ouvre. Le lien appartient à la première IP qui l'ouvre ; une expulsion le révoque.
 import type { LobbySummary } from '@/components/lobbies/lobbySearch';
-import type { LobbyRoom } from './lobbyRoom';
+import type { LobbyRoom, LobbyVisibility } from './lobbyRoom';
 
 /** Lien d'invitation tel que lu en base. */
 export interface Invite {
@@ -24,6 +24,22 @@ export function needsInvite(room: LobbyRoom, viewer: string): boolean {
 /** Seul l'hôte crée des liens d'invitation, inutiles dans un lobby public. */
 export function canInvite(room: LobbyRoom, viewer: string): boolean {
   return room.hostId === viewer && room.settings.visibility !== 'public';
+}
+
+/**
+ * Lien que la carte d'invitation propose : `url` (adresse du lobby public), `oneTime` (liens à usage unique)
+ * ou `hostOnly` : seul l'hôte partage un lien, quel que soit l'accès.
+ */
+export type InviteLinkMode = 'url' | 'oneTime' | 'hostOnly';
+
+export function inviteLinkMode(visibility: LobbyVisibility, isHost: boolean): InviteLinkMode {
+  if (!isHost) return 'hostOnly';
+  return visibility === 'public' ? 'url' : 'oneTime';
+}
+
+/** Le code d'un lobby privé ne s'affiche pas : on n'y entre que par un lien (LOB-3, LOB-4). */
+export function canCopyCode(visibility: LobbyVisibility): boolean {
+  return visibility !== 'private';
 }
 
 /** Seuls les lobbies publics apparaissent dans les listes (LOB-2, LOB-3). */

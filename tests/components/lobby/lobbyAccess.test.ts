@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { canInvite, clientIp, type Invite, inviteDecision, inviteUrl, isInviteToken, isListed, lobbySummary, needsInvite } from '@/components/lobby/lobbyAccess';
+import { canCopyCode, canInvite, clientIp, type Invite, inviteDecision, inviteLinkMode, inviteUrl, isInviteToken, isListed, lobbySummary, needsInvite } from '@/components/lobby/lobbyAccess';
 import type { LobbyRoom, LobbySettings, LobbyVisibility } from '@/components/lobby/lobbyRoom';
 
 const SETTINGS: LobbySettings = {
@@ -58,6 +58,28 @@ describe('canInvite', () => {
 
   it('n’en crée pas pour un lobby public, ouvert à tous', () => {
     expect(canInvite(room('public'), 'Gojo')).toBe(false);
+  });
+});
+
+describe('inviteLinkMode', () => {
+  it('ne donne de lien qu’à l’hôte, quel que soit l’accès', () => {
+    expect(inviteLinkMode('public', false)).toBe('hostOnly');
+    expect(inviteLinkMode('code', false)).toBe('hostOnly');
+    expect(inviteLinkMode('private', false)).toBe('hostOnly');
+  });
+
+  it('donne à l’hôte l’adresse du lobby public et des liens à usage unique sinon', () => {
+    expect(inviteLinkMode('public', true)).toBe('url');
+    expect(inviteLinkMode('code', true)).toBe('oneTime');
+    expect(inviteLinkMode('private', true)).toBe('oneTime');
+  });
+});
+
+describe('canCopyCode (LOB-3)', () => {
+  it('montre le code sauf dans un lobby privé', () => {
+    expect(canCopyCode('public')).toBe(true);
+    expect(canCopyCode('code')).toBe(true);
+    expect(canCopyCode('private')).toBe(false);
   });
 });
 
