@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import Avatar from '@/components/shared/Avatar';
+import BevelSelect from '@/components/shared/BevelSelect';
 import IconButton from './IconButton';
 import { BOT_LEVELS, type BotLevel, type LobbyRoom, type Participant, isReady, readyCount } from './lobbyRoom';
 
@@ -133,17 +134,8 @@ function BotAdder({ full, onAdd }: { full: boolean; onAdd: (level: BotLevel) => 
 
   return (
     <div className="flex flex-wrap items-center gap-3 border border-dashed border-outline-variant px-4 py-3">
-      <label htmlFor="bot-level" className="text-[13px] uppercase tracking-[0.14em] text-on-surface-variant">{t('level')}</label>
-      <select
-        id="bot-level"
-        value={level}
-        onChange={(e) => setLevel(e.target.value as BotLevel)}
-        className="font-label-code min-h-11 border border-surface-container-highest bg-surface-container-lowest px-3 text-[14px] text-on-surface focus:border-primary-container focus:outline-none"
-      >
-        {BOT_LEVELS.map((option) => (
-          <option key={option} value={option}>{t(`levels.${option}`)}</option>
-        ))}
-      </select>
+      <span id="bot-level" className="text-[13px] uppercase tracking-[0.14em] text-on-surface-variant">{t('level')}</span>
+      <BevelSelect labelId="bot-level" options={BOT_LEVELS} value={level} onChange={setLevel} optionLabel={(option) => t(`levels.${option}`)} />
       <button
         type="button"
         disabled={full}

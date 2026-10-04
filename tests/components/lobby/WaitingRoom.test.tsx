@@ -57,7 +57,8 @@ describe('WaitingRoom host controls (LOB-8, LOB-11)', () => {
   it('adds a bot of the chosen level, up to the capacity', async () => {
     const { user } = renderWithIntl(<WaitingRoom initialRoom={ROOM} viewerId="Satoru_Infinity" />);
 
-    await user.selectOptions(screen.getByLabelText('Bot level'), 'beginner');
+    await user.click(screen.getByRole('combobox', { name: 'Bot level' }));
+    await user.click(screen.getByRole('option', { name: 'Beginner' }));
     await user.click(screen.getByRole('button', { name: 'Add a bot' }));
 
     expect(participants().getByText('Cursed corpse 2')).toBeInTheDocument();
