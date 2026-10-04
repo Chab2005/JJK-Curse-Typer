@@ -187,9 +187,13 @@
       "copied": "Copié !",
       "copyFailed": "Copie impossible",
       "newLink": "Nouveau lien d'invitation",
-      "lastLink": "Dernier lien d'invitation",
+      "link": "Lien d'invitation",
+      "noLinkYet": "Aucun lien pour l'instant",
+      "hostOnlyField": "Réservé à l'hôte",
+      "privateCode": "Lobby privé : accès par lien uniquement",
+      "urlNote": "Toute personne qui a ce lien rejoint le lobby.",
       "oneTime": "Chaque lien d'invitation ne sert qu'à une seule personne.",
-      "hostOnly": "Seul l'hôte peut inviter des joueurs dans un lobby privé."
+      "hostOnly": "Seul l'hôte peut partager un lien d'invitation."
     },
     "spectating": {
       "title": "Mode spectateur",

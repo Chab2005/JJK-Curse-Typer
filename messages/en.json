@@ -187,9 +187,13 @@
       "copied": "Copied!",
       "copyFailed": "Copy failed",
       "newLink": "New invite link",
-      "lastLink": "Last invite link",
+      "link": "Invite link",
+      "noLinkYet": "No link yet",
+      "hostOnlyField": "Host only",
+      "privateCode": "Private lobby: invite link only",
+      "urlNote": "Anyone with this link joins the lobby.",
       "oneTime": "Each invite link works for one person only.",
-      "hostOnly": "Only the host can invite players to a private lobby."
+      "hostOnly": "Only the host can share an invite link."
     },
     "spectating": {
       "title": "Spectator mode",
