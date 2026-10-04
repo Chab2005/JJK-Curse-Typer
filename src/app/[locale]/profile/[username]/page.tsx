@@ -7,6 +7,7 @@ import KeyboardHeatmap from '@/components/profile/KeyboardHeatmap';
 import ProfileHeader from '@/components/profile/ProfileHeader';
 import StatTiles from '@/components/profile/StatTiles';
 import WpmChart from '@/components/profile/WpmChart';
+import { showSampleData } from '@/lib/sampleData';
 import { findSampleProfile } from '@/components/profile/sampleProfiles';
 import type { Locale } from '@/i18n/config';
 import { Link } from '@/i18n/navigation';
@@ -24,7 +25,7 @@ export default async function ProfilePage({ params }: PageProps<'/[locale]/profi
   setRequestLocale(locale as Locale);
   const now = new Date();
   const name = decodeURIComponent(username);
-  const profile = findSampleProfile(name, now);
+  const profile = showSampleData() ? findSampleProfile(name, now) : null;
   const t = await getTranslations('Profile');
   const viewer = await getSessionUser();
 

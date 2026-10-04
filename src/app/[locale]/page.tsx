@@ -8,6 +8,7 @@ import JoinSection from "@/components/home/JoinSection";
 import TopExorcists from "@/components/home/TopExorcists";
 import type { Locale } from "@/i18n/config";
 import { listPublicLobbies } from "@/lib/lobbies";
+import { showSampleData } from "@/lib/sampleData";
 import { setRequestLocale } from "next-intl/server";
 import { connection } from "next/server";
 
@@ -26,10 +27,10 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
       <SiteHeader />
       <main className="w-full flex-1 bg-surface-container-lowest">
         <Hero onlineCount={ONLINE_EXORCISTS} />
-        <JoinSection publicLobbies={listPublicLobbies()} accountName={user?.displayName ?? null} />
+        <JoinSection showSamples={showSampleData()} publicLobbies={listPublicLobbies()} accountName={user?.displayName ?? null} />
         <GameSystem />
         <Characters />
-        <TopExorcists />
+        {showSampleData() && <TopExorcists />}
       </main>
       <Footer />
     </>

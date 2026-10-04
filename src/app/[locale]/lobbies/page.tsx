@@ -4,6 +4,7 @@ import { Suspense } from 'react';
 import Footer from '@/components/layout/Footer';
 import SiteHeader from '@/components/layout/SiteHeader';
 import LobbyBrowser from '@/components/lobbies/LobbyBrowser';
+import { showSampleData } from '@/lib/sampleData';
 import { SAMPLE_LOBBIES } from '@/components/lobbies/sampleLobbies';
 import PageIntro from '@/components/shared/PageIntro';
 import type { Locale } from '@/i18n/config';
@@ -23,7 +24,7 @@ export default async function LobbiesPage({ params }: PageProps<'/[locale]/lobbi
   // Les lobbies créés vivent en mémoire : la liste se calcule à chaque requête.
   await connection();
   // Seuls les lobbies publics sont listés ; ceux à code ou privés restent cachés (LOB-2, LOB-3).
-  const lobbies = [...listPublicLobbies(), ...SAMPLE_LOBBIES];
+  const lobbies = [...listPublicLobbies(), ...(showSampleData() ? SAMPLE_LOBBIES : [])];
 
   return (
     <>

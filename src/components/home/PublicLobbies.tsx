@@ -56,9 +56,9 @@ const toItem = (lobby: LobbySummary, index: number): LobbyItem => ({
   joinCode: lobby.code,
 });
 
-export default function PublicLobbies({ created = [] }: { created?: LobbySummary[] }) {
+export default function PublicLobbies({ created = [], showSamples = true }: { created?: LobbySummary[]; showSamples?: boolean }) {
   const t = useTranslations('PublicLobbies');
-  const lobbies = [...created.map(toItem), ...LOBBIES];
+  const lobbies = [...created.map(toItem), ...(showSamples ? LOBBIES : [])];
 
   return (
     <div className="flex flex-col gap-3">

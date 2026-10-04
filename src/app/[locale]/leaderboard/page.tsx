@@ -3,6 +3,7 @@ import { Suspense } from 'react';
 import Footer from '@/components/layout/Footer';
 import SiteHeader from '@/components/layout/SiteHeader';
 import LeaderboardBrowser from '@/components/leaderboard/LeaderboardBrowser';
+import { showSampleData } from '@/lib/sampleData';
 import { SAMPLE_PLAYERS } from '@/components/leaderboard/samplePlayers';
 import PageIntro from '@/components/shared/PageIntro';
 import type { Locale } from '@/i18n/config';
@@ -28,7 +29,7 @@ export default async function LeaderboardPage({ params }: PageProps<'/[locale]/l
           <PageIntro id="leaderboard-title" eyebrow={t('eyebrow')} title={t('title')} watermark={t('watermark')} />
           {/* useSearchParams : la liste se rend côté client, avec l'état lu dans l'URL. */}
           <Suspense fallback={<div className="min-h-[480px]" />}>
-            <LeaderboardBrowser players={SAMPLE_PLAYERS} />
+            <LeaderboardBrowser players={showSampleData() ? SAMPLE_PLAYERS : []} />
           </Suspense>
         </section>
       </main>

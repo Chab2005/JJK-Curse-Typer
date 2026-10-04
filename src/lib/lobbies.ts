@@ -8,6 +8,7 @@ import { SAMPLE_LOBBIES } from '@/components/lobbies/sampleLobbies';
 import { isListed, lobbySummary } from '@/components/lobby/lobbyAccess';
 import { BOT_LEVELS, CONTENT_MODES, ERROR_MODES, LOBBY_VISIBILITIES, lobbyReducer, type LobbyAction, type LobbyRoom } from '@/components/lobby/lobbyRoom';
 import { newLobbyCode, newLobbyRoom, viewLobby } from '@/components/lobby/newLobby';
+import { showSampleData } from '@/lib/sampleData';
 import { findSampleRoom } from '@/components/lobby/sampleRooms';
 import type { CharacterId } from '@/components/shared/characters';
 
@@ -33,6 +34,7 @@ function dropExpired(now: number): Map<string, Entry> {
 export function createLobby(name: (host: string) => string, host: { id: string; name: string; avatar: CharacterId | null }, now = Date.now()): LobbyRoom {
   const lobbies = dropExpired(now);
 
+  // Les codes de démonstration restent réservés même masqués : un lobby créé ne doit jamais les reprendre.
   const taken = new Set([...lobbies.keys(), ...SAMPLE_LOBBIES.map((l) => l.code)]);
   const room = newLobbyRoom(newLobbyCode(taken), name(host.name), host);
   lobbies.set(room.code, { room, createdAt: now });
@@ -42,7 +44,8 @@ export function createLobby(name: (host: string) => string, host: { id: string; 
 /** Lobby `code` vu par `viewer` : un lobby créé, sinon un lobby de démonstration ; `null` s'il n'existe pas. */
 export function findLobby(code: string, viewer: string, spectate: boolean): LobbyRoom | null {
   const entry = store().get(normalize(code));
-  return entry ? viewLobby(entry.room, viewer, spectate) : findSampleRoom(code, viewer, spectate);
+  if (entry) return viewLobby(entry.room, viewer, spectate);
+  return showSampleData() ? findSampleRoom(code, viewer, spectate) : null;
 }
 
 /** Lobby créé tel qu'enregistré, sans le visiteur ; `null` pour un lobby de démonstration ou inconnu. */

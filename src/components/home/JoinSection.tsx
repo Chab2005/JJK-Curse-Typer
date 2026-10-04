@@ -3,7 +3,7 @@ import type { LobbySummary } from '@/components/lobbies/lobbySearch';
 import JoinForm from './JoinForm';
 import PublicLobbies from './PublicLobbies';
 
-export default function JoinSection({ publicLobbies, accountName = null }: { publicLobbies?: LobbySummary[]; accountName?: string | null }) {
+export default function JoinSection({ publicLobbies, accountName = null, showSamples = true }: { publicLobbies?: LobbySummary[]; accountName?: string | null; showSamples?: boolean }) {
   const t = useTranslations('JoinSection');
 
   return (
@@ -18,7 +18,7 @@ export default function JoinSection({ publicLobbies, accountName = null }: { pub
         </div>
         <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,440px),1fr))] items-start gap-7">
           <JoinForm accountName={accountName} />
-          <PublicLobbies created={publicLobbies} />
+          <PublicLobbies created={publicLobbies} showSamples={showSamples} />
         </div>
       </div>
     </section>
