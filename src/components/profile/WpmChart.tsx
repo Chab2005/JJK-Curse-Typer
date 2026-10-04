@@ -135,7 +135,6 @@ export default function WpmChart({ races, now }: { races: RaceWpm[]; now: string
       {values.length === 0 && <p className="text-center text-on-surface-variant">{t('empty')}</p>}
 
       <table className="sr-only">
-        <caption>{t('title')}</caption>
         <thead>
           <tr>
             <th scope="col">{t('date')}</th>
