@@ -250,6 +250,12 @@
     "settings": {
       "title": "Race settings",
       "readOnly": "Only the host can change these settings.",
+      "edit": "Edit settings",
+      "save": "Save",
+      "cancel": "Cancel",
+      "close": "Close",
+      "decrease": "Decrease {field}",
+      "increase": "Increase {field}",
       "language": "Text language",
       "content": "Text type",
       "contents": {

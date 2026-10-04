@@ -122,11 +122,18 @@ describe('WaitingRoom host controls (LOB-8, LOB-11)', () => {
   it('edits the race settings (LOB-5)', async () => {
     const { user } = renderWithIntl(<WaitingRoom initialRoom={ROOM} viewerId="Satoru_Infinity" />);
 
+    await user.click(screen.getByRole('button', { name: 'Edit settings' }));
     await user.click(screen.getByRole('checkbox', { name: 'English' }));
     await user.click(screen.getByRole('button', { name: 'Block until fixed' }));
+    await user.click(screen.getByRole('button', { name: 'Save' }));
 
-    expect(screen.getByRole('checkbox', { name: 'English' })).toBeChecked();
-    expect(screen.getByRole('button', { name: 'Block until fixed' })).toHaveAttribute('aria-pressed', 'true');
+    const summary = screen.getAllByRole('definition').map((value) => value.textContent);
+    expect(summary).toEqual(expect.arrayContaining(['French · English', 'Block until fixed']));
+    expect(lobbyActionsMock.updateLobbyAction).toHaveBeenCalledWith('SHJ-60S', {
+      type: 'updateSettings',
+      by: 'Satoru_Infinity',
+      patch: { languages: ['fr', 'en'], errorMode: 'block' },
+    });
   });
 });
 

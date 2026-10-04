@@ -1,8 +1,9 @@
 'use client';
 
 import { useFormatter, useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { CHAR_KINDS, TEXT_LANGUAGES, textCharsLabel } from '@/components/lobbies/lobbySearch';
+import BevelSelect, { bevelFrame } from '@/components/shared/BevelSelect';
 import Reserve from '@/components/shared/Reserve';
 import Segmented from '@/components/shared/Segmented';
 import { CONTENT_MODES, ERROR_MODES, LOBBY_VISIBILITIES, type LobbySettings, MAX_CAPACITY, MIN_PARTICIPANTS, TIMER_OPTIONS, WORDS_MAX, WORDS_MIN } from './lobbyRoom';
@@ -12,8 +13,12 @@ type Patch = Partial<LobbySettings>;
 /** Ajoute ou retire `item` de la liste selon `checked`, dans l'ordre de `order`. */
 const toggle = <T,>(order: readonly T[], list: readonly T[], item: T, checked: boolean): T[] => order.filter((x) => (x === item ? checked : list.includes(x)));
 
-// Paramètres de course (LOB-5) et accès au lobby (LOB-1) : modifiables par l'hôte, en lecture seule pour les autres.
-// Chaque changement part tout de suite ; le réducteur borne les valeurs.
+/** Champs de `next` qui diffèrent de `current`. */
+const changes = (current: LobbySettings, next: LobbySettings): Patch =>
+  Object.fromEntries(Object.entries(next).filter(([key, value]) => JSON.stringify(value) !== JSON.stringify(current[key as keyof LobbySettings])));
+
+// Paramètres de course (LOB-5) et accès au lobby (LOB-1) : tout le monde voit le résumé des choix.
+// L'hôte les modifie dans une fenêtre, et rien ne part avant « Enregistrer » ; le réducteur borne les valeurs.
 export default function LobbySettingsPanel({ settings, participantCount, editable, onChange }: { settings: LobbySettings; participantCount: number; editable: boolean; onChange: (patch: Patch) => void }) {
   const t = useTranslations('Lobby.settings');
 
@@ -24,9 +29,86 @@ export default function LobbySettingsPanel({ settings, participantCount, editabl
           <h2 id="settings-title" className="text-xl uppercase tracking-[0.12em]">{t('title')}</h2>
           {!editable && <p className="text-[14px] text-outline">{t('readOnly')}</p>}
         </div>
-        {editable ? <SettingsForm settings={settings} participantCount={participantCount} onChange={onChange} /> : <SettingsSummary settings={settings} />}
+        <SettingsSummary settings={settings} />
+        {editable && <SettingsDialog settings={settings} participantCount={participantCount} onSave={onChange} />}
       </div>
     </section>
+  );
+}
+
+// <dialog> natif : focus piégé, Échap ou clic à côté pour annuler, retour du focus sur le bouton.
+function SettingsDialog({ settings, participantCount, onSave }: { settings: LobbySettings; participantCount: number; onSave: (patch: Patch) => void }) {
+  const t = useTranslations('Lobby.settings');
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
+  const [draft, setDraft] = useState(settings);
+
+  // Repart des réglages courants, en haut de la liste.
+  const open = () => {
+    setDraft(settings);
+    dialogRef.current?.showModal();
+    // Après showModal : une fenêtre fermée n'a pas de boîte, le défilement y est ignoré.
+    if (bodyRef.current) bodyRef.current.scrollTop = 0;
+  };
+  const close = () => dialogRef.current?.close();
+
+  // Pas de <form> : Entrée dans un champ numérique valide le champ, pas toute la fenêtre.
+  const save = () => {
+    const patch = changes(settings, draft);
+    if (Object.keys(patch).length > 0) onSave(patch);
+    close();
+  };
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={open}
+        aria-haspopup="dialog"
+        className="flex min-h-11 w-full items-center justify-center gap-2 border border-surface-container-highest px-4 text-[13px] uppercase tracking-[0.12em] text-on-surface transition-colors hover:border-primary hover:text-primary"
+      >
+        <span aria-hidden="true" className="material-symbols-outlined w-[18px] shrink-0 overflow-hidden text-[18px]!">edit</span>
+        {t('edit')}
+      </button>
+
+      <dialog
+        ref={dialogRef}
+        aria-labelledby="settings-dialog-title"
+        onClick={(e) => e.target === e.currentTarget && close()}
+        className="m-auto w-[min(calc(100vw-32px),560px)] bg-transparent p-0 text-on-surface backdrop:bg-black/70 backdrop:backdrop-blur-sm"
+      >
+        <div className="bevel flex max-h-[calc(100dvh-112px)] flex-col bg-linear-160 from-primary-container via-outline-variant via-40% to-secondary-container p-px">
+          <div className="bevel flex min-h-0 flex-col bg-surface-container-low">
+            <div className="flex items-center justify-between gap-3 px-6 pt-6 pb-4 sm:px-8">
+              <h2 id="settings-dialog-title" className="text-[22px] uppercase tracking-[0.12em]">{t('title')}</h2>
+              <button type="button" onClick={close} aria-label={t('close')} className="flex size-10 items-center justify-center text-on-surface-variant transition-colors hover:text-primary">
+                <span aria-hidden="true" className="material-symbols-outlined text-[22px]">close</span>
+              </button>
+            </div>
+
+            <div ref={bodyRef} className="min-h-0 overflow-y-auto px-6 pb-2 sm:px-8">
+              <SettingsForm settings={draft} participantCount={participantCount} onChange={(patch) => setDraft((d) => ({ ...d, ...patch }))} />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 border-t border-surface-container-highest px-6 pt-4 pb-6 sm:px-8">
+              <button
+                type="button"
+                onClick={close}
+                className="min-h-13 border border-surface-container-highest text-[15px] uppercase tracking-[0.12em] text-on-surface transition-colors hover:border-primary hover:text-primary"
+              >
+                {t('cancel')}
+              </button>
+              <button type="button" onClick={save} className="group bevel flex bg-linear-135 from-gold to-gold-deep p-px">
+                <span className="bevel flex min-h-[50px] flex-1 items-center justify-center gap-2 bg-primary-container text-[15px] uppercase tracking-[0.12em] text-on-primary-container transition-colors group-hover:bg-inverse-primary">
+                  <span aria-hidden="true" className="material-symbols-outlined text-[19px]">save</span>
+                  {t('save')}
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </dialog>
+    </>
   );
 }
 
@@ -75,11 +157,13 @@ function SettingsForm({ settings, participantCount, onChange }: { settings: Lobb
   return (
     <div className="flex flex-col gap-5">
       <Group legend={t('language')}>
-        <div className="flex flex-wrap gap-x-5">
+        <div className="flex flex-wrap gap-2">
           {TEXT_LANGUAGES.map((language) => (
             <Check
               key={language}
               checked={settings.languages.includes(language)}
+              // Le texte a toujours au moins une langue.
+              disabled={settings.languages.length === 1 && settings.languages.includes(language)}
               onChange={(checked) => onChange({ languages: toggle(TEXT_LANGUAGES, settings.languages, language, checked) })}
             >
               {tFilters(`languages.${language}`)}
@@ -95,11 +179,13 @@ function SettingsForm({ settings, participantCount, onChange }: { settings: Lobb
       <NumberField id="settings-words" label={t('words')} hint={t('wordsHint', { min: WORDS_MIN, max: WORDS_MAX })} value={settings.words} min={WORDS_MIN} max={WORDS_MAX} onCommit={(words) => onChange({ words })} />
 
       <Group legend={t('chars')}>
-        {CHAR_KINDS.map((kind) => (
-          <Check key={kind} checked={settings.chars.includes(kind)} onChange={(checked) => onChange({ chars: toggle(CHAR_KINDS, settings.chars, kind, checked) })}>
-            {tFilters(`charKinds.${kind}`)}
-          </Check>
-        ))}
+        <div className="flex flex-wrap gap-2">
+          {CHAR_KINDS.map((kind) => (
+            <Check key={kind} checked={settings.chars.includes(kind)} onChange={(checked) => onChange({ chars: toggle(CHAR_KINDS, settings.chars, kind, checked) })}>
+              {tFilters(`charKinds.${kind}`)}
+            </Check>
+          ))}
+        </div>
       </Group>
 
       <div className="flex flex-col gap-2">
@@ -117,17 +203,10 @@ function SettingsForm({ settings, participantCount, onChange }: { settings: Lobb
       </div>
 
       <div className="flex flex-col gap-2">
-        <Label htmlFor="settings-timer">{t('timer')}</Label>
-        <select
-          id="settings-timer"
-          value={settings.timer}
-          onChange={(e) => onChange({ timer: Number(e.target.value) })}
-          className="font-label-code min-h-11 border border-surface-container-highest bg-surface-container-lowest px-3 text-[14px] text-on-surface focus:border-primary-container focus:outline-none"
-        >
-          {TIMER_OPTIONS.map((seconds) => (
-            <option key={seconds} value={seconds}>{timerLabel(seconds)}</option>
-          ))}
-        </select>
+        <Label htmlFor="settings-timer" id="settings-timer-label">{t('timer')}</Label>
+        <div className="self-start">
+          <BevelSelect id="settings-timer" labelId="settings-timer-label" options={TIMER_OPTIONS as readonly number[]} value={settings.timer} onChange={(timer) => onChange({ timer })} optionLabel={timerLabel} />
+        </div>
       </div>
 
       <Group legend={t('errorMode')}>
@@ -136,7 +215,9 @@ function SettingsForm({ settings, participantCount, onChange }: { settings: Lobb
       </Group>
 
       <Group legend={t('bonus')}>
-        <Check checked={settings.bonus} onChange={(bonus) => onChange({ bonus })}>{t('bonusToggle')}</Check>
+        <div className="flex">
+          <Check checked={settings.bonus} onChange={(bonus) => onChange({ bonus })}>{t('bonusToggle')}</Check>
+        </div>
       </Group>
 
       <NumberField
@@ -163,8 +244,8 @@ function Hints<T extends string>({ active, options, hint }: { active: T; options
   return <Reserve active={active} variants={variants} className="mt-1" />;
 }
 
-function Label({ htmlFor, children }: { htmlFor: string; children: React.ReactNode }) {
-  return <label htmlFor={htmlFor} className="font-label-code text-[11px] font-bold uppercase tracking-[0.2em] text-primary">{children}</label>;
+function Label({ htmlFor, id, children }: { htmlFor: string; id?: string; children: React.ReactNode }) {
+  return <label htmlFor={htmlFor} id={id} className="font-label-code text-[11px] font-bold uppercase tracking-[0.2em] text-primary">{children}</label>;
 }
 
 function Group({ legend, children }: { legend: string; children: React.ReactNode }) {
@@ -176,17 +257,24 @@ function Group({ legend, children }: { legend: string; children: React.ReactNode
   );
 }
 
-function Check({ checked, onChange, children }: { checked: boolean; onChange: (checked: boolean) => void; children: React.ReactNode }) {
+// Case à cocher en pastille biseautée : la vraie case reste là (masquée) pour le clavier et les lecteurs d'écran.
+// La coche garde sa place décochée, pour que la pastille ne change pas de taille.
+function Check({ checked, onChange, disabled = false, children }: { checked: boolean; onChange: (checked: boolean) => void; disabled?: boolean; children: React.ReactNode }) {
   return (
-    <label className="flex min-h-10 cursor-pointer items-center gap-3 text-[15px] text-on-surface">
-      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="size-[18px] shrink-0 accent-primary-container" />
-      {children}
+    <label className="group bevel flex cursor-pointer bg-outline-variant p-px transition-colors hover:bg-primary has-checked:bg-primary-container has-checked:hover:bg-primary has-focus-visible:bg-primary has-disabled:cursor-not-allowed has-disabled:hover:bg-primary-container">
+      <input type="checkbox" checked={checked} disabled={disabled} onChange={(e) => onChange(e.target.checked)} className="sr-only" />
+      <span className="bevel flex min-h-10 flex-1 items-center gap-2 bg-surface-container-lowest pr-4 pl-3 text-[14px] text-on-surface-variant transition-colors group-has-checked:bg-surface-container-high group-has-checked:text-on-surface">
+        <span aria-hidden="true" className="material-symbols-outlined text-[16px]! text-primary invisible group-has-checked:visible">check</span>
+        {children}
+      </span>
     </label>
   );
 }
 
 // Champ numérique validé à la sortie du champ ou sur Entrée, pour ne pas borner pendant la frappe.
+// Les boutons − et + remplacent les flèches natives ; au clavier, ↑ et ↓ du champ font la même chose.
 function NumberField({ id, label, hint, value, min, max, onCommit }: { id: string; label: string; hint: string; value: number; min: number; max: number; onCommit: (value: number) => void }) {
+  const t = useTranslations('Lobby.settings');
   const [draft, setDraft] = useState(String(value));
   const [shown, setShown] = useState(value);
   if (shown !== value) {
@@ -196,28 +284,57 @@ function NumberField({ id, label, hint, value, min, max, onCommit }: { id: strin
 
   const commit = () => {
     const parsed = Number(draft);
-    // Si la valeur bornée ne change pas, le champ revient à la valeur courante.
-    setDraft(String(value));
-    if (draft.trim() !== '' && Number.isFinite(parsed) && parsed !== value) onCommit(parsed);
+    // Champ vide ou invalide : retour à la valeur courante. Sinon bornée tout de suite, pour montrer ce qui sera enregistré.
+    const bounded = draft.trim() !== '' && Number.isFinite(parsed) ? Math.min(max, Math.max(min, Math.round(parsed))) : value;
+    setDraft(String(bounded));
+    if (bounded !== value) onCommit(bounded);
+  };
+
+  const step = (delta: number) => {
+    const next = Math.min(max, Math.max(min, value + delta));
+    setDraft(String(next));
+    if (next !== value) onCommit(next);
   };
 
   return (
     <div className="flex flex-col gap-2">
       <Label htmlFor={id}>{label}</Label>
-      <input
-        id={id}
-        type="number"
-        inputMode="numeric"
-        min={min}
-        max={max}
-        value={draft}
-        onChange={(e) => setDraft(e.target.value)}
-        onBlur={commit}
-        onKeyDown={(e) => e.key === 'Enter' && commit()}
-        aria-describedby={`${id}-hint`}
-        className="font-label-code min-h-11 w-32 border border-surface-container-highest bg-surface-container-lowest px-3 text-[16px] text-on-surface focus:border-primary-container focus:outline-none"
-      />
+      <div className={`${bevelFrame} flex self-start transition-colors focus-within:bg-primary`}>
+        <div className="bevel flex min-h-11 bg-surface-container-lowest">
+          <StepButton icon="remove" label={t('decrease', { field: label })} disabled={value <= min} onClick={() => step(-1)} />
+          <input
+            id={id}
+            type="number"
+            inputMode="numeric"
+            min={min}
+            max={max}
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            onBlur={commit}
+            onKeyDown={(e) => e.key === 'Enter' && commit()}
+            aria-describedby={`${id}-hint`}
+            className="font-label-code w-16 appearance-none bg-transparent text-center text-[16px] text-on-surface focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [-moz-appearance:textfield]"
+          />
+          <StepButton icon="add" label={t('increase', { field: label })} disabled={value >= max} onClick={() => step(1)} />
+        </div>
+      </div>
       <p id={`${id}-hint`} className="text-[13px] text-outline">{hint}</p>
     </div>
+  );
+}
+
+// Hors de l'ordre de tabulation, comme les flèches natives : le champ suffit au clavier.
+function StepButton({ icon, label, disabled, onClick }: { icon: string; label: string; disabled: boolean; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      tabIndex={-1}
+      aria-label={label}
+      disabled={disabled}
+      onClick={onClick}
+      className="grid w-10 place-items-center text-primary transition-colors enabled:hover:bg-surface-container-high disabled:cursor-not-allowed disabled:text-outline-variant"
+    >
+      <span aria-hidden="true" className="material-symbols-outlined text-[18px]!">{icon}</span>
+    </button>
   );
 }

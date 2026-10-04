@@ -43,8 +43,11 @@ test('changing the lobby access moves nothing', async ({ page }) => {
   const settingsBefore = await box(settings(page));
 
   for (const access of ['Public', 'Code', 'Private', 'Public']) {
-    await page.getByRole('group', { name: 'Access' }).getByRole('button', { name: access }).click();
-    await expect(page.getByRole('group', { name: 'Access' }).getByRole('button', { name: access })).toHaveAttribute('aria-pressed', 'true');
+    await page.getByRole('button', { name: 'Edit settings' }).click();
+    await page.getByRole('dialog').getByRole('group', { name: 'Access' }).getByRole('button', { name: access }).click();
+    await page.getByRole('dialog').getByRole('button', { name: 'Save' }).click();
+    await expect(page.getByRole('dialog')).toBeHidden();
+    await expect(settings(page).getByText(access, { exact: true })).toBeVisible();
     expect(await box(card(page)), access).toEqual(cardBefore);
     expect(await box(settings(page)), access).toEqual(settingsBefore);
   }

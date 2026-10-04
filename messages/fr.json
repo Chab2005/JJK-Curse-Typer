@@ -250,6 +250,12 @@
     "settings": {
       "title": "Paramètres de course",
       "readOnly": "Seul l'hôte peut modifier ces paramètres.",
+      "edit": "Modifier les paramètres",
+      "save": "Enregistrer",
+      "cancel": "Annuler",
+      "close": "Fermer",
+      "decrease": "Diminuer : {field}",
+      "increase": "Augmenter : {field}",
       "language": "Langue du texte",
       "content": "Type de texte",
       "contents": {
