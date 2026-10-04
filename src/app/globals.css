@@ -162,6 +162,11 @@ button:not(.material-symbols-outlined) {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Une fenêtre modale ouverte bloque le défilement de la page derrière elle. */
+html:has(dialog:modal) {
+  overflow: hidden;
+}
+
 .font-label-code,
 .font-typing-stream,
 .font-typing-stream span,
