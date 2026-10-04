@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 import { useActionState, useRef, useState } from 'react';
 import { removeAvatarAction, updateDisplayNameAction, updateLinksAction, uploadAvatarAction, type ProfileState } from '@/app/actions/auth';
 import Avatar from '@/components/shared/Avatar';
+import { githubHandle } from '@/components/profile/profileEdit';
 import { AVATAR_MAX_BYTES } from '@/lib/auth/avatar';
 import { DISPLAY_NAME_MAX } from '@/lib/auth/validation';
 
@@ -102,7 +103,7 @@ export function LinksForm({ github, discord }: { github: string; discord: string
     <form action={action} className="flex flex-col gap-4">
       <div className="flex flex-col gap-2">
         <label htmlFor="link-github" className="text-[13px] uppercase tracking-[0.14em] text-on-surface-variant">{t('links.github')}</label>
-        <input id="link-github" name="github" type="text" defaultValue={state?.values?.github ?? github} placeholder={t('links.githubPlaceholder')} spellCheck={false} aria-invalid={state?.error === 'github'} className={input} />
+        <input id="link-github" name="github" type="text" defaultValue={state?.values?.github ?? githubHandle(github) ?? github} placeholder={t('links.githubPlaceholder')} spellCheck={false} aria-invalid={state?.error === 'github'} className={input} />
       </div>
       <div className="flex flex-col gap-2">
         <label htmlFor="link-discord" className="text-[13px] uppercase tracking-[0.14em] text-on-surface-variant">{t('links.discord')}</label>

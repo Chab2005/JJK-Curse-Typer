@@ -93,7 +93,7 @@ test('settings and profile need an account', async ({ page }) => {
 test('shows the GitHub and Discord links set in the settings on the profile (PROF-4)', async ({ page }) => {
   const { username } = await register(page);
   await page.goto('/settings');
-  await page.getByLabel('GitHub profile link').fill('github.com/megumi');
+  await page.getByLabel('GitHub username').fill('megumi');
   await page.getByLabel('Discord (link or name)').fill('not valid!');
   await page.getByRole('button', { name: 'Save links' }).click();
   await expect(page.getByRole('alert').filter({ hasText: 'Discord name' })).toBeVisible();

@@ -14,10 +14,14 @@ const DISCORD_URL = /^https:\/\/(?:www\.)?(?:discord\.com\/users\/\d+|discord\.g
 /** Nom d'utilisateur Discord : 2 à 32 caractères, minuscules, chiffres, `_` et `.`. */
 const DISCORD_NAME = /^[a-z0-9_.]{2,32}$/;
 
-/** Lien GitHub complété en `https://` ; chaîne vide si rien n'est saisi. */
+const GITHUB_HANDLE = /^[A-Za-z0-9-]{1,39}$/;
+
+/** Lien GitHub complété : un simple pseudo (`megumi` ou `@megumi`) devient `https://github.com/megumi`, un lien reçoit son `https://` ; chaîne vide si rien n'est saisi. */
 export function normalizeGithub(input: string): string {
   const value = input.trim();
   if (!value) return '';
+  const bare = value.replace(/^@/, '');
+  if (GITHUB_HANDLE.test(bare)) return `https://github.com/${bare}`;
   return /^https?:\/\//.test(value) ? value.replace(/^http:/, 'https:') : `https://${value}`;
 }
 

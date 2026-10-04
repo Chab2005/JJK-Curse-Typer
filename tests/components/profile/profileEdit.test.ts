@@ -18,6 +18,12 @@ describe('validateProfileEdit', () => {
     expect(validateProfileEdit({ ...valid, username: 'Yuji-Itadori_2' }).username).toBeUndefined();
   });
 
+  it('accepte un simple pseudo GitHub et refuse un pseudo invalide', () => {
+    expect(validateProfileEdit({ ...valid, github: 'megumi' }).github).toBeUndefined();
+    expect(validateProfileEdit({ ...valid, github: 'not valid!' }).github).toBe('invalid');
+    expect(validateProfileEdit({ ...valid, github: 'a'.repeat(40) }).github).toBe('invalid');
+  });
+
   it('refuse un lien GitHub qui ne mène pas à un profil', () => {
     expect(validateProfileEdit({ ...valid, github: 'https://gitlab.com/megumi' }).github).toBe('invalid');
     expect(validateProfileEdit({ ...valid, github: 'github.com/megumi' }).github).toBeUndefined();
@@ -38,6 +44,11 @@ describe('validateProfileEdit', () => {
 describe('normalizeGithub et githubHandle', () => {
   it('complète un lien GitHub sans protocole', () => {
     expect(normalizeGithub(' github.com/megumi ')).toBe('https://github.com/megumi');
+  });
+
+  it('complète un simple pseudo en lien de profil, avec ou sans @', () => {
+    expect(normalizeGithub('megumi')).toBe('https://github.com/megumi');
+    expect(normalizeGithub(' @Megumi-S ')).toBe('https://github.com/Megumi-S');
   });
 
   it('renvoie une chaîne vide si rien n’est saisi', () => {
