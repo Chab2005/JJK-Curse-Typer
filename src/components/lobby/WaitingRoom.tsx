@@ -103,7 +103,8 @@ export default function WaitingRoom({ initialRoom, viewerId }: { initialRoom: Lo
             onToggleReady={() => me?.kind === 'human' && apply({ type: 'setReady', id: viewerId, ready: !me.ready })}
             onStart={() => router.push(`/lobby/${room.code}/race`)}
           />
-          <p role="status" className="font-label-code text-[13px] text-tertiary empty:hidden">{announcement}</p>
+          {/* Ligne réservée même vide : une annonce ne pousse pas les paramètres. */}
+          <p role="status" title={announcement} className="font-label-code min-h-5 truncate text-[13px] leading-5 text-tertiary">{announcement}</p>
           <LobbySettingsPanel
             settings={room.settings}
             participantCount={room.participants.length}

@@ -3,6 +3,7 @@
 import { useFormatter, useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { CHAR_KINDS, TEXT_LANGUAGES, textCharsLabel } from '@/components/lobbies/lobbySearch';
+import Reserve from '@/components/shared/Reserve';
 import Segmented from '@/components/shared/Segmented';
 import { CONTENT_MODES, ERROR_MODES, LOBBY_VISIBILITIES, type LobbySettings, MAX_CAPACITY, MIN_PARTICIPANTS, TIMER_OPTIONS, WORDS_MAX, WORDS_MIN } from './lobbyRoom';
 
@@ -131,7 +132,7 @@ function SettingsForm({ settings, participantCount, onChange }: { settings: Lobb
 
       <Group legend={t('errorMode')}>
         <Segmented label={t('errorMode')} options={ERROR_MODES} value={settings.errorMode} onChange={(errorMode) => onChange({ errorMode })} optionLabel={(mode) => t(`errorModes.${mode}`)} />
-        <p className="mt-1 text-[13px] leading-5 text-outline">{t(`errorHints.${settings.errorMode}`)}</p>
+        <Hints active={settings.errorMode} options={ERROR_MODES} hint={(mode) => t(`errorHints.${mode}`)} />
       </Group>
 
       <Group legend={t('bonus')}>
@@ -150,10 +151,16 @@ function SettingsForm({ settings, participantCount, onChange }: { settings: Lobb
 
       <Group legend={t('visibility')}>
         <Segmented label={t('visibility')} options={LOBBY_VISIBILITIES} value={settings.visibility} onChange={(visibility) => onChange({ visibility })} optionLabel={(v) => t(`visibilities.${v}`)} />
-        <p className="mt-1 text-[13px] leading-5 text-outline">{t(`visibilityHints.${settings.visibility}`)}</p>
+        <Hints active={settings.visibility} options={LOBBY_VISIBILITIES} hint={(v) => t(`visibilityHints.${v}`)} />
       </Group>
     </div>
   );
+}
+
+/** Aide de l'option choisie, à la hauteur de la plus longue : changer d'option ne décale pas la suite du formulaire. */
+function Hints<T extends string>({ active, options, hint }: { active: T; options: readonly T[]; hint: (option: T) => string }) {
+  const variants = Object.fromEntries(options.map((option) => [option, <p key={option} className="text-[13px] leading-5 text-outline">{hint(option)}</p>])) as Record<T, React.ReactNode>;
+  return <Reserve active={active} variants={variants} className="mt-1" />;
 }
 
 function Label({ htmlFor, children }: { htmlFor: string; children: React.ReactNode }) {

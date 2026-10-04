@@ -103,7 +103,7 @@ describe('WaitingRoom host controls (LOB-8, LOB-11)', () => {
     const { user, rerender } = renderWithIntl(<WaitingRoom initialRoom={ROOM} viewerId="Satoru_Infinity" />);
 
     expect(screen.getByRole('button', { name: 'Start the race' })).toBeDisabled();
-    expect(screen.getByText('Waiting for every exorcist to be ready.')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Start the race' })).toHaveAccessibleDescription('Waiting for every exorcist to be ready.');
 
     const ready = { ...ROOM, participants: ROOM.participants.map((p) => (p.kind === 'human' ? { ...p, ready: true } : p)) };
     rerender(<WaitingRoom key="ready" initialRoom={ready} viewerId="Satoru_Infinity" />);

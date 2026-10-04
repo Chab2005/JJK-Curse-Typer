@@ -1,4 +1,5 @@
 import { useTranslations } from 'next-intl';
+import Reserve from '@/components/shared/Reserve';
 import { Link } from '@/i18n/navigation';
 import type { StartBlocker, ViewerRole } from './lobbyRoom';
 
@@ -26,7 +27,15 @@ export default function ReadyPanel({
           <PrimaryButton icon="swords" disabled={blocker !== null} describedBy={blocker ? 'start-blocker' : undefined} onClick={onStart}>
             {t('start')}
           </PrimaryButton>
-          {blocker && <p id="start-blocker" className="text-[14px] leading-5 text-on-surface-variant">{t(`blockers.${blocker}`)}</p>}
+          {/* La place de la raison reste réservée : la lever ne fait pas remonter la suite du salon. */}
+          <Reserve
+            active={blocker ?? 'none'}
+            variants={{
+              notEnoughPlayers: <Blocker id={blocker === 'notEnoughPlayers' ? 'start-blocker' : undefined}>{t('blockers.notEnoughPlayers')}</Blocker>,
+              notReady: <Blocker id={blocker === 'notReady' ? 'start-blocker' : undefined}>{t('blockers.notReady')}</Blocker>,
+              none: null,
+            }}
+          />
         </>
       )}
 
@@ -53,6 +62,10 @@ export default function ReadyPanel({
       </Link>
     </div>
   );
+}
+
+function Blocker({ id, children }: { id?: string; children: React.ReactNode }) {
+  return <p id={id} className="text-[14px] leading-5 text-on-surface-variant">{children}</p>;
 }
 
 function PrimaryButton({ icon, disabled, describedBy, onClick, children }: { icon: string; disabled?: boolean; describedBy?: string; onClick: () => void; children: React.ReactNode }) {
