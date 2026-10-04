@@ -1,4 +1,5 @@
 import { expect, type Locator, type Page, test } from '@playwright/test';
+import { register } from './auth';
 
 // Carte d'invitation (LOB-3, LOB-4) : seul l'hôte partage un lien, et rien ne bouge ni ne change de taille
 // quand on crée un lien ou qu'on change l'accès du lobby.
@@ -13,9 +14,9 @@ const box = (locator: Locator) =>
     return { x: r.x + window.scrollX, y: r.y + window.scrollY, width: r.width, height: r.height };
   });
 
-/** Ouvre un lobby neuf depuis l'accueil : l'utilisateur courant en est l'hôte. */
+/** Ouvre un lobby neuf depuis l'accueil : un compte neuf en est l'hôte (un invité ne peut pas héberger). */
 async function createLobby(page: Page) {
-  await page.goto('/');
+  await register(page);
   await page.getByRole('button', { name: 'Create a new lobby' }).click();
   await page.waitForURL(/\/lobby\/[A-Z0-9]{3}-[A-Z0-9]{3}$/);
   await page.evaluate(() => document.fonts.ready);

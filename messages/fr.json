@@ -16,7 +16,9 @@
     "menu": {
       "open": "Ouvrir le menu",
       "close": "Fermer le menu"
-    }
+    },
+    "login": "Connexion",
+    "logout": "Déconnexion"
   },
   "LanguageSwitcher": {
     "label": "Langue"
@@ -49,7 +51,12 @@
     "createFailed": "Impossible de créer le lobby. Réessayez.",
     "newLobbyName": "Lobby de {host}",
     "syncing": "Synchronisation des barrières occultes en cours... Domaine : <highlight>{pin}</highlight>",
-    "connected": "Connexion établie au Domaine <highlight>{pin}</highlight> ! Téléportation de {name}..."
+    "connected": "Connexion établie au Domaine <highlight>{pin}</highlight> ! Téléportation de {name}...",
+    "createLobbyGuest": "Se connecter pour créer un lobby",
+    "nameError": {
+      "length": "Ton nom doit faire de {min} à {max} caractères.",
+      "characters": "Uniquement des lettres, chiffres, _ et -."
+    }
   },
   "PublicLobbies": {
     "title": "Salons publics",
@@ -77,10 +84,22 @@
     "titleLine2": "Les malédictions font le reste.",
     "intro": "Un texte, un départ synchronisé, et chaque frappe juste fait avancer votre exorciste sur la piste. Les derniers reçoivent des bonus pour viser les meneurs.",
     "facts": {
-      "players": { "value": "60", "label": "exorcistes par course" },
-      "timer": { "value": "3:00", "label": "minutes au plus" },
-      "bots": { "value": "3", "label": "niveaux de bots" },
-      "languages": { "value": "FR · EN", "label": "textes au choix" }
+      "players": {
+        "value": "60",
+        "label": "exorcistes par course"
+      },
+      "timer": {
+        "value": "3:00",
+        "label": "minutes au plus"
+      },
+      "bots": {
+        "value": "3",
+        "label": "niveaux de bots"
+      },
+      "languages": {
+        "value": "FR · EN",
+        "label": "textes au choix"
+      }
     }
   },
   "Characters": {
@@ -424,7 +443,9 @@
         "github": "Entrez un lien de profil GitHub, comme github.com/votre-pseudo.",
         "discord": "Entrez un nom Discord (2 à 32 minuscules, chiffres, _ ou .) ou un lien discord.com."
       }
-    }
+    },
+    "games": "{games, plural, one {# course jouée} other {# courses jouées}}",
+    "editSettings": "Paramètres du compte"
   },
   "Race": {
     "metaTitle": "{name} · Course",
@@ -514,5 +535,78 @@
       "confirm": "Abandonner"
     },
     "footer": "Restez concentré, exorciste."
+  },
+  "Auth": {
+    "username": "Nom d'utilisateur",
+    "password": "Mot de passe",
+    "or": "ou",
+    "usernameHint": "{min} à {max} caractères",
+    "passwordHint": "{min} caractères min.",
+    "showPassword": "Afficher le mot de passe",
+    "hidePassword": "Masquer le mot de passe",
+    "lossWarning": "Il n'existe aucune récupération de mot de passe. Si tu le perds, le compte et toutes ses statistiques sont perdus pour de bon.",
+    "submit": {
+      "login": "Se connecter",
+      "register": "Créer le compte",
+      "oauth": "Créer le compte"
+    },
+    "oauth": {
+      "login": "Se connecter avec {provider}",
+      "register": "S'inscrire avec {provider}"
+    },
+    "errors": {
+      "username": "Ton nom d'utilisateur doit faire de {min} à {max} caractères.",
+      "usernameChars": "Uniquement des lettres, chiffres, _ et -.",
+      "password": "Ton mot de passe doit faire au moins {passwordMin} caractères.",
+      "taken": "Ce nom d'utilisateur est déjà pris.",
+      "invalid": "Nom d'utilisateur ou mot de passe incorrect.",
+      "blocked": "Trop de tentatives. Réessaie dans quelques minutes.",
+      "expired": "Ta connexion a expiré. Recommence depuis la page d'inscription.",
+      "oauthFailed": "La connexion avec ce service a échoué. Réessaie.",
+      "oauthUnavailable": "Ce service n'est pas disponible pour le moment."
+    },
+    "login": {
+      "eyebrow": "Retour",
+      "title": "Connexion",
+      "intro": "Reprends tes statistiques là où tu les avais laissées.",
+      "noAccount": "Pas encore de compte ?",
+      "createOne": "Crée-en un"
+    },
+    "register": {
+      "eyebrow": "Rejoindre",
+      "title": "Créer un compte",
+      "intro": "Un nom d'utilisateur et un mot de passe. Rien d'autre, pas même un courriel.",
+      "haveAccount": "Déjà inscrit ?",
+      "logIn": "Se connecter"
+    },
+    "oauthComplete": {
+      "eyebrow": "Presque fini",
+      "title": "Choisis ton nom",
+      "intro": "Choisis le nom d'utilisateur et le mot de passe de ton compte. Le courriel de ton compte Discord ou GitHub n'est jamais lu."
+    }
+  },
+  "Settings": {
+    "eyebrow": "Compte",
+    "title": "Paramètres",
+    "saved": "Enregistré.",
+    "avatar": {
+      "title": "Photo de profil",
+      "choose": "Choisir une image",
+      "hint": "JPEG, PNG ou WebP, 2 Mo max. Elle est recadrée en carré et redimensionnée.",
+      "upload": "Téléverser",
+      "remove": "Retirer"
+    },
+    "displayName": {
+      "label": "Nom affiché",
+      "hint": "Montré sur ton profil et en course. Tu te connectes toujours avec {username}.",
+      "save": "Enregistrer"
+    },
+    "errors": {
+      "displayName": "Ton nom affiché doit faire de 1 à 32 caractères.",
+      "avatarType": "Seules les images JPEG, PNG ou WebP sont acceptées.",
+      "avatarSize": "L'image doit faire 2 Mo ou moins.",
+      "avatarInvalid": "Cette image n'a pas pu être lue.",
+      "auth": "Connecte-toi pour modifier ton profil."
+    }
   }
 }

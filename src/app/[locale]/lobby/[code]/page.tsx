@@ -1,10 +1,10 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import Footer from '@/components/layout/Footer';
-import Header from '@/components/layout/Header';
+import SiteHeader from '@/components/layout/SiteHeader';
 import WaitingRoom from '@/components/lobby/WaitingRoom';
 import type { Locale } from '@/i18n/config';
-import { SAMPLE_CURRENT_USER } from '@/lib/currentUser';
+import { getViewerId } from '@/lib/currentUser';
 import { openLobby } from '@/lib/openLobby';
 
 export async function generateMetadata({ params, searchParams }: PageProps<'/[locale]/lobby/[code]'>) {
@@ -22,14 +22,15 @@ export default async function LobbyPage({ params, searchParams }: PageProps<'/[l
   const { spectate, invite } = await searchParams;
   const room = await openLobby(decodeURIComponent(code), { spectate: spectate === '1', invite });
   if (!room) notFound();
+  const viewerId = await getViewerId();
 
   return (
     <>
-      <Header />
+      <SiteHeader />
       <main className="relative w-full flex-1 overflow-hidden bg-surface">
         <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-[420px] bg-[radial-gradient(ellipse_55%_70%_at_50%_0%,rgb(147_0_10/0.4),transparent_70%)]" />
         {/* La clé repart d'un salon neuf quand on passe de participant à spectateur. */}
-        <WaitingRoom key={`${room.code}-${spectate === '1'}`} initialRoom={room} viewerId={SAMPLE_CURRENT_USER} />
+        <WaitingRoom key={`${room.code}-${spectate === '1'}`} initialRoom={room} viewerId={viewerId} />
       </main>
       <Footer />
     </>

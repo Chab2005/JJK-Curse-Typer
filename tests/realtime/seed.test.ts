@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { COUNTDOWN_MS } from '@/game/race';
-import { SAMPLE_CURRENT_USER } from '@/lib/currentUser';
+import { SAMPLE_CURRENT_USER } from '@/lib/sampleUser';
 import { clearLobbies, createLobby, updateLobby } from '@/lib/lobbies';
 import { raceFromLobby } from '@/realtime/seed';
 

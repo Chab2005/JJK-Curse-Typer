@@ -3,6 +3,8 @@ export const PAGES = [
   { name: 'home', path: '/' },
   { name: 'lobbies', path: '/lobbies' },
   { name: 'leaderboard', path: '/leaderboard' },
+  { name: 'login', path: '/login' },
+  { name: 'register', path: '/register' },
   { name: 'profile', path: '/profile' },
   { name: 'profile-other', path: '/profile/Satoru_Infinity' },
   { name: 'lobby', path: '/lobby/SHJ-60S' },

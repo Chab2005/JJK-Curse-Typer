@@ -5,7 +5,8 @@ import { Link, usePathname } from '@/i18n/navigation';
 import Brand from './Brand';
 import LanguageSwitcher from './LanguageSwitcher';
 import MobileMenu, { type NavItem } from './MobileMenu';
-import ProfileAvatar from './ProfileAvatar';
+import AccountControls from './AccountControls';
+import type { HeaderAccount } from './ProfileAvatar';
 
 const NAV = [
   { href: '/', key: 'home' },
@@ -14,7 +15,7 @@ const NAV = [
   { href: '/profile', key: 'archives' },
 ] as const;
 
-export default function Header() {
+export default function Header({ account = null }: { account?: HeaderAccount | null }) {
   const t = useTranslations('Header');
   const pathname = usePathname();
 
@@ -46,10 +47,10 @@ export default function Header() {
               <LanguageSwitcher />
             </div>
           </div>
-          <Link href="/profile" aria-label={t('profileAlt')} className="hidden lg:flex rounded-full ring-1 ring-primary-container ring-offset-2 ring-offset-surface-container-lowest">
-            <ProfileAvatar />
-          </Link>
-          <MobileMenu items={navItems} />
+          <div className="hidden lg:flex">
+            <AccountControls account={account} />
+          </div>
+          <MobileMenu items={navItems} account={account} />
         </div>
       </div>
     </header>

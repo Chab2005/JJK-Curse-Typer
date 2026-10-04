@@ -10,6 +10,7 @@ import { useRouter } from '@/i18n/navigation';
 import ConfirmDialog from './ConfirmDialog';
 import Countdown from './Countdown';
 import EnergyBar from './EnergyBar';
+import type { HeaderAccount } from '@/components/layout/ProfileAvatar';
 import RaceHeader from './RaceHeader';
 import RaceHud from './RaceHud';
 import RaceSummary, { type SummaryRow } from './RaceSummary';
@@ -39,7 +40,7 @@ function useNow(intervalMs: number, enabled: boolean) {
 
 // Écran de course (maquette « Course ») rendu côté client (TECH-8) : la room fait foi (RACE-14),
 // le joueur voit sa frappe tout de suite grâce au même réducteur que le serveur.
-export default function RaceScreen({ code, lobbyName }: { code: string; lobbyName: string }) {
+export default function RaceScreen({ code, lobbyName, account = null }: { code: string; lobbyName: string; account?: HeaderAccount | null }) {
   const t = useTranslations('Race');
   const tLobby = useTranslations('Lobby.participants');
   const router = useRouter();
@@ -144,7 +145,7 @@ export default function RaceScreen({ code, lobbyName }: { code: string; lobbyNam
 
   return (
     <>
-      <RaceHeader onLeave={racing ? (href) => setPending({ kind: 'leave', href }) : null} />
+      <RaceHeader account={account} onLeave={racing ? (href) => setPending({ kind: 'leave', href }) : null} />
       <main className="relative w-full flex-1 bg-surface">
         <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-[360px] bg-[radial-gradient(ellipse_55%_70%_at_50%_0%,rgb(147_0_10/0.32),transparent_70%)]" />
         <div className="relative mx-auto flex max-w-[1100px] flex-col gap-7 px-6 pt-6 pb-16">

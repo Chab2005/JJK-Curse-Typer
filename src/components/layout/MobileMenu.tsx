@@ -4,12 +4,13 @@ import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { Link } from '@/i18n/navigation';
 import LanguageSwitcher from './LanguageSwitcher';
-import ProfileAvatar from './ProfileAvatar';
+import AccountControls from './AccountControls';
+import type { HeaderAccount } from './ProfileAvatar';
 
 export type NavItem = { href: string; label: string; active?: boolean };
 
 // Menu hamburger affiché sous `lg` : langue + profil, puis les liens de navigation.
-export default function MobileMenu({ items }: { items: NavItem[] }) {
+export default function MobileMenu({ items, account = null }: { items: NavItem[]; account?: HeaderAccount | null }) {
   const t = useTranslations('Header.menu');
   const [open, setOpen] = useState(false);
 
@@ -58,7 +59,7 @@ export default function MobileMenu({ items }: { items: NavItem[] }) {
       >
         <div className="flex items-center justify-between">
           <LanguageSwitcher />
-          <ProfileAvatar />
+          <AccountControls account={account} />
         </div>
 
         <nav className="flex flex-col">

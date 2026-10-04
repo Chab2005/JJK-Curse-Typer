@@ -1,9 +1,6 @@
-/** Initiales d'un nom d'utilisateur pour un avatar sans image : `Megumi_Shadows` → `MS`. */
+/** Initiales d'un avatar sans image : les deux premières lettres du nom, `Megumi_Shadows` → `ME`. */
 export function initials(name: string): string {
-  const words = name.split(/[^\p{L}\p{N}]+/u).filter(Boolean);
-  if (words.length === 0) return '?';
-  return words
-    .slice(0, 2)
-    .map((word) => word[0].toUpperCase())
-    .join('');
+  const chars = [...name].filter((char) => /[\p{L}\p{N}]/u.test(char));
+  if (chars.length === 0) return '?';
+  return chars.slice(0, 2).join('').toUpperCase();
 }

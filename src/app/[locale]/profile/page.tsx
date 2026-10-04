@@ -1,9 +1,10 @@
 import { redirect } from '@/i18n/navigation';
 import type { Locale } from '@/i18n/config';
-import { SAMPLE_CURRENT_USER } from '@/lib/currentUser';
+import { getSessionUser } from '@/lib/auth/session';
 
-// « Mon profil » : mène au profil de l'utilisateur connecté (de démonstration en attendant AUTH-8).
+// « Mon profil » : mène au profil de l'utilisateur connecté, ou à la connexion pour un invité (qui n'a pas de profil).
 export default async function MyProfilePage({ params }: PageProps<'/[locale]/profile'>) {
   const { locale } = await params;
-  redirect({ href: `/profile/${SAMPLE_CURRENT_USER}`, locale: locale as Locale });
+  const user = await getSessionUser();
+  redirect({ href: user ? `/profile/${encodeURIComponent(user.username)}` : '/login', locale: locale as Locale });
 }

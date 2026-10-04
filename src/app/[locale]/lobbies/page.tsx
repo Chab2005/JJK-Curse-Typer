@@ -2,7 +2,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { connection } from 'next/server';
 import { Suspense } from 'react';
 import Footer from '@/components/layout/Footer';
-import Header from '@/components/layout/Header';
+import SiteHeader from '@/components/layout/SiteHeader';
 import LobbyBrowser from '@/components/lobbies/LobbyBrowser';
 import { SAMPLE_LOBBIES } from '@/components/lobbies/sampleLobbies';
 import PageIntro from '@/components/shared/PageIntro';
@@ -27,7 +27,7 @@ export default async function LobbiesPage({ params }: PageProps<'/[locale]/lobbi
 
   return (
     <>
-      <Header />
+      <SiteHeader />
       <main className="relative w-full flex-1 overflow-hidden bg-surface">
         <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-[420px] bg-[radial-gradient(ellipse_55%_70%_at_50%_0%,rgb(147_0_10/0.4),transparent_70%)]" />
         <section aria-labelledby="lobbies-title" className="relative mx-auto flex max-w-[1152px] flex-col gap-10 px-6 pt-14 pb-24">

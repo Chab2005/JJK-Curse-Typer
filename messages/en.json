@@ -16,7 +16,9 @@
     "menu": {
       "open": "Open menu",
       "close": "Close menu"
-    }
+    },
+    "login": "Log in",
+    "logout": "Log out"
   },
   "LanguageSwitcher": {
     "label": "Language"
@@ -49,7 +51,12 @@
     "createFailed": "Couldn't create the lobby. Try again.",
     "newLobbyName": "{host}'s lobby",
     "syncing": "Syncing the occult barriers... Domain: <highlight>{pin}</highlight>",
-    "connected": "Connected to Domain <highlight>{pin}</highlight>! Teleporting {name}..."
+    "connected": "Connected to Domain <highlight>{pin}</highlight>! Teleporting {name}...",
+    "createLobbyGuest": "Log in to create a lobby",
+    "nameError": {
+      "length": "Your name must be {min} to {max} characters long.",
+      "characters": "Use only letters, digits, _ and -."
+    }
   },
   "PublicLobbies": {
     "title": "Public rooms",
@@ -77,10 +84,22 @@
     "titleLine2": "The curses do the rest.",
     "intro": "One text, a synchronized start, and every correct keystroke moves your exorcist down the track. Those at the back get bonuses to strike the leaders.",
     "facts": {
-      "players": { "value": "60", "label": "exorcists per race" },
-      "timer": { "value": "3:00", "label": "minutes at most" },
-      "bots": { "value": "3", "label": "bot levels" },
-      "languages": { "value": "FR · EN", "label": "text languages" }
+      "players": {
+        "value": "60",
+        "label": "exorcists per race"
+      },
+      "timer": {
+        "value": "3:00",
+        "label": "minutes at most"
+      },
+      "bots": {
+        "value": "3",
+        "label": "bot levels"
+      },
+      "languages": {
+        "value": "FR · EN",
+        "label": "text languages"
+      }
     }
   },
   "Characters": {
@@ -424,7 +443,9 @@
         "github": "Enter a GitHub profile link, like github.com/your-name.",
         "discord": "Enter a Discord name (2 to 32 lowercase letters, digits, _ or .) or a discord.com link."
       }
-    }
+    },
+    "games": "{games, plural, one {# race played} other {# races played}}",
+    "editSettings": "Account settings"
   },
   "Race": {
     "metaTitle": "{name} · Race",
@@ -514,5 +535,78 @@
       "confirm": "Abandon"
     },
     "footer": "Stay focused, exorcist."
+  },
+  "Auth": {
+    "username": "Username",
+    "password": "Password",
+    "or": "or",
+    "usernameHint": "{min}-{max} characters",
+    "passwordHint": "{min}+ characters",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "lossWarning": "There is no password recovery. If you lose your password, the account and all its stats are lost for good.",
+    "submit": {
+      "login": "Log in",
+      "register": "Create account",
+      "oauth": "Create account"
+    },
+    "oauth": {
+      "login": "Log in with {provider}",
+      "register": "Sign up with {provider}"
+    },
+    "errors": {
+      "username": "Your username must be {min} to {max} characters long.",
+      "usernameChars": "Use only letters, digits, _ and -.",
+      "password": "Your password must be at least {passwordMin} characters long.",
+      "taken": "That username is already taken.",
+      "invalid": "Wrong username or password.",
+      "blocked": "Too many attempts. Try again in a few minutes.",
+      "expired": "Your sign-in expired. Start again from the sign-up page.",
+      "oauthFailed": "The sign-in with that service failed. Try again.",
+      "oauthUnavailable": "That service isn't available right now."
+    },
+    "login": {
+      "eyebrow": "Return",
+      "title": "Log in",
+      "intro": "Pick up your stats where you left off.",
+      "noAccount": "No account yet?",
+      "createOne": "Create one"
+    },
+    "register": {
+      "eyebrow": "Join",
+      "title": "Create account",
+      "intro": "A username and a password. Nothing else, not even an email.",
+      "haveAccount": "Already registered?",
+      "logIn": "Log in"
+    },
+    "oauthComplete": {
+      "eyebrow": "Almost there",
+      "title": "Choose your name",
+      "intro": "Pick the username and password of your account. Your Discord or GitHub email is never read."
+    }
+  },
+  "Settings": {
+    "eyebrow": "Account",
+    "title": "Settings",
+    "saved": "Saved.",
+    "avatar": {
+      "title": "Profile picture",
+      "choose": "Choose a picture",
+      "hint": "JPEG, PNG or WebP, 2 MB max. It is cropped to a square and resized.",
+      "upload": "Upload",
+      "remove": "Remove"
+    },
+    "displayName": {
+      "label": "Display name",
+      "hint": "Shown on your profile and in races. You still log in as {username}.",
+      "save": "Save"
+    },
+    "errors": {
+      "displayName": "Your display name must be 1 to 32 characters long.",
+      "avatarType": "Only JPEG, PNG or WebP pictures are accepted.",
+      "avatarSize": "The picture must be 2 MB or less.",
+      "avatarInvalid": "That picture couldn't be read.",
+      "auth": "Log in to change your profile."
+    }
   }
 }

@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import RaceFooter from '@/components/race/RaceFooter';
 import RaceScreen from '@/components/race/RaceScreen';
 import type { Locale } from '@/i18n/config';
+import { getSessionUser } from '@/lib/auth/session';
 import { openLobby } from '@/lib/openLobby';
 
 export async function generateMetadata({ params, searchParams }: PageProps<'/[locale]/lobby/[code]/race'>) {
@@ -20,10 +21,15 @@ export default async function RacePage({ params, searchParams }: PageProps<'/[lo
   setRequestLocale(locale as Locale);
   const room = await openLobby(decodeURIComponent(code), { invite: (await searchParams).invite });
   if (!room) notFound();
+  const user = await getSessionUser();
 
   return (
     <>
-      <RaceScreen code={room.code} lobbyName={room.name} />
+      <RaceScreen
+        code={room.code}
+        lobbyName={room.name}
+        account={user && { username: user.username, displayName: user.displayName, avatarUrl: user.hasAvatar ? `/api/avatar/${encodeURIComponent(user.username)}?v=${user.avatarVersion}` : null }}
+      />
       <RaceFooter />
     </>
   );

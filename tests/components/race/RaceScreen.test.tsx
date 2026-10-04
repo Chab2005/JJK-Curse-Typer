@@ -56,7 +56,7 @@ const standing = (id: string, rank: number, status: Standing['status'] = 'racing
 let socket: FakeWebSocket;
 
 function start(welcome: Partial<Extract<ServerMessage, { type: 'welcome' }>> = {}) {
-  const view = renderWithIntl(<RaceScreen code="TKY-HGH" lobbyName="Tokyo Jujutsu High" />);
+  const view = renderWithIntl(<RaceScreen code="TKY-HGH" lobbyName="Tokyo Jujutsu High" account={{ username: 'megumi', displayName: 'Megumi', avatarUrl: null }} />);
   socket = FakeWebSocket.instances.at(-1)!;
   socket.open();
   socket.receive({ type: 'welcome', you: 'Megumi_Shadows', race: race(), typing: null, ...welcome });
@@ -74,7 +74,7 @@ afterEach(() => {
 
 describe('RaceScreen', () => {
   it('connects to the lobby race socket and joins with a guest id', () => {
-    renderWithIntl(<RaceScreen code="TKY-HGH" lobbyName="Tokyo Jujutsu High" />);
+    renderWithIntl(<RaceScreen code="TKY-HGH" lobbyName="Tokyo Jujutsu High" account={{ username: 'megumi', displayName: 'Megumi', avatarUrl: null }} />);
     expect(screen.getByText('Connecting to the race…')).toBeInTheDocument();
 
     const [ws] = FakeWebSocket.instances;

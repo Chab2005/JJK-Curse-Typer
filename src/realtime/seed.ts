@@ -3,7 +3,7 @@
 import { createRace, type RaceState, type RacerSeat } from '@/game/race';
 import { hashSeed } from '@/game/random';
 import { generateText } from '@/game/text/generate';
-import { SAMPLE_CURRENT_USER } from '@/lib/currentUser';
+import { SAMPLE_CURRENT_USER } from '@/lib/sampleUser';
 import { findLobby } from '@/lib/lobbies';
 
 export interface SeededRace {

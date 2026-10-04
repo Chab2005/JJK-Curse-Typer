@@ -3,7 +3,7 @@ import type { LobbySummary } from '@/components/lobbies/lobbySearch';
 import JoinForm from './JoinForm';
 import PublicLobbies from './PublicLobbies';
 
-export default function JoinSection({ publicLobbies }: { publicLobbies?: LobbySummary[] }) {
+export default function JoinSection({ publicLobbies, accountName = null }: { publicLobbies?: LobbySummary[]; accountName?: string | null }) {
   const t = useTranslations('JoinSection');
 
   return (
@@ -17,7 +17,7 @@ export default function JoinSection({ publicLobbies }: { publicLobbies?: LobbySu
           <h2 id="join-title" className="text-[clamp(36px,4.5vw,56px)] leading-tight uppercase tracking-[0.08em]">{t('title')}</h2>
         </div>
         <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,440px),1fr))] items-start gap-7">
-          <JoinForm />
+          <JoinForm accountName={accountName} />
           <PublicLobbies created={publicLobbies} />
         </div>
       </div>

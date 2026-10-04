@@ -18,6 +18,8 @@
     "screenshots": "playwright test --grep @screenshot --project desktop --project mobile"
   },
   "dependencies": {
+    "@node-rs/argon2": "^2.2.1",
+    "arctic": "^3.7.0",
     "drizzle-orm": "^0.45.3",
     "next": "16.3.6",
     "next-intl": "^4.14.8",
@@ -25,6 +27,7 @@
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "server-only": "^0.0.1",
+    "sharp": "^0.35.5",
     "tsx": "^4.23.15",
     "ws": "^8.22.0",
     "zod": "^4.6.5"
