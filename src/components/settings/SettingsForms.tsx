@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { useActionState, useRef, useState } from 'react';
-import { removeAvatarAction, updateDisplayNameAction, uploadAvatarAction, type ProfileState } from '@/app/actions/auth';
+import { removeAvatarAction, updateDisplayNameAction, updateLinksAction, uploadAvatarAction, type ProfileState } from '@/app/actions/auth';
 import Avatar from '@/components/shared/Avatar';
 import { AVATAR_MAX_BYTES } from '@/lib/auth/avatar';
 import { DISPLAY_NAME_MAX } from '@/lib/auth/validation';
@@ -76,7 +76,7 @@ export function DisplayNameForm({ username, displayName }: { username: string; d
         type="text"
         required
         maxLength={DISPLAY_NAME_MAX}
-        defaultValue={displayName}
+        defaultValue={state?.values?.displayName ?? displayName}
         aria-invalid={state?.error === 'displayName'}
         aria-describedby="display-name-hint display-name-error"
         className="font-grotesk min-h-13 w-full border border-surface-container-highest bg-surface-container-lowest px-4 text-xl text-on-surface focus:border-primary-container focus:outline-none aria-invalid:border-error"
@@ -85,6 +85,32 @@ export function DisplayNameForm({ username, displayName }: { username: string; d
       <p id="display-name-error" role="alert" className="min-h-[22px] text-[14px] text-error">{state?.error ? t(`errors.${state.error}`) : ''}</p>
       <div className="flex items-center gap-4">
         <button type="submit" disabled={pending} className={BUTTON}>{t('displayName.save')}</button>
+        <p role="status" className="text-[14px] text-tertiary">{state?.ok ? t('saved') : ''}</p>
+      </div>
+    </form>
+  );
+}
+
+// Liens GitHub et Discord du profil (PROF-4) : facultatifs, vides ils sont retirés.
+export function LinksForm({ github, discord }: { github: string; discord: string }) {
+  const t = useTranslations('Settings');
+  const [state, action, pending] = useActionState(updateLinksAction, null as ProfileState);
+  const input =
+    'font-label-code min-h-13 w-full border border-surface-container-highest bg-surface-container-lowest px-4 text-[15px] text-on-surface placeholder:text-outline focus:border-primary-container focus:outline-none aria-invalid:border-error';
+
+  return (
+    <form action={action} className="flex flex-col gap-4">
+      <div className="flex flex-col gap-2">
+        <label htmlFor="link-github" className="text-[13px] uppercase tracking-[0.14em] text-on-surface-variant">{t('links.github')}</label>
+        <input id="link-github" name="github" type="text" defaultValue={state?.values?.github ?? github} placeholder={t('links.githubPlaceholder')} spellCheck={false} aria-invalid={state?.error === 'github'} className={input} />
+      </div>
+      <div className="flex flex-col gap-2">
+        <label htmlFor="link-discord" className="text-[13px] uppercase tracking-[0.14em] text-on-surface-variant">{t('links.discord')}</label>
+        <input id="link-discord" name="discord" type="text" defaultValue={state?.values?.discord ?? discord} placeholder={t('links.discordPlaceholder')} spellCheck={false} aria-invalid={state?.error === 'discord'} className={input} />
+      </div>
+      <p role="alert" className="min-h-[22px] text-[14px] text-error">{state?.error === 'github' || state?.error === 'discord' ? t(`errors.${state.error}`) : ''}</p>
+      <div className="flex items-center gap-4">
+        <button type="submit" disabled={pending} className={BUTTON}>{t('links.save')}</button>
         <p role="status" className="text-[14px] text-tertiary">{state?.ok ? t('saved') : ''}</p>
       </div>
     </form>

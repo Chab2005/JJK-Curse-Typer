@@ -10,6 +10,8 @@ export interface AccountProfile {
   displayName: string;
   country: string | null;
   avatarUrl: string | null;
+  github: string;
+  discord: string;
   games: number;
 }
 
@@ -21,6 +23,8 @@ export async function findAccountProfile(username: string): Promise<AccountProfi
       username: users.username,
       displayName: users.displayName,
       country: users.country,
+      github: users.github,
+      discord: users.discord,
       avatarVersion: users.avatarVersion,
       hasAvatar: sql<boolean>`${users.avatar} is not null`,
     })
@@ -34,6 +38,8 @@ export async function findAccountProfile(username: string): Promise<AccountProfi
     username: user.username,
     displayName: user.displayName,
     country: user.country,
+    github: user.github,
+    discord: user.discord,
     avatarUrl: user.hasAvatar ? `/api/avatar/${encodeURIComponent(user.username)}?v=${user.avatarVersion}` : null,
     games,
   };

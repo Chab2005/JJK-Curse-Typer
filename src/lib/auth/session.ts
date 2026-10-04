@@ -38,6 +38,8 @@ export interface SessionUser {
   username: string;
   displayName: string;
   country: string | null;
+  github: string;
+  discord: string;
   avatarVersion: number;
   hasAvatar: boolean;
 }
@@ -52,6 +54,8 @@ export const getSessionUser = cache(async (): Promise<SessionUser | null> => {
       username: users.username,
       displayName: users.displayName,
       country: users.country,
+      github: users.github,
+      discord: users.discord,
       avatarVersion: users.avatarVersion,
       hasAvatar: sql<boolean>`${users.avatar} is not null`,
       expiresAt: sessions.expiresAt,

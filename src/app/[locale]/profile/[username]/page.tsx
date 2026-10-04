@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import Avatar from '@/components/shared/Avatar';
 import Footer from '@/components/layout/Footer';
 import SiteHeader from '@/components/layout/SiteHeader';
+import ProfileLinks from '@/components/profile/ProfileLinks';
 import EmptyStats from '@/components/profile/EmptyStats';
 import KeyboardHeatmap from '@/components/profile/KeyboardHeatmap';
 import ProfileHeader from '@/components/profile/ProfileHeader';
@@ -44,6 +45,7 @@ export default async function ProfilePage({ params }: PageProps<'/[locale]/profi
               <div className="flex min-w-0 flex-1 basis-60 flex-col gap-2">
                 <p className="font-label-code text-[12px] font-bold uppercase tracking-[0.32em] text-primary-container">{t('eyebrow')}</p>
                 <h1 id="profile-title" className="font-grotesk text-[clamp(30px,4vw,42px)] leading-tight font-semibold break-words">{account.displayName}</h1>
+                <ProfileLinks github={account.github} discord={account.discord} />
                 <p className="font-label-code text-[14px] text-outline">@{account.username}{account.country ? ` · ${account.country}` : ''}</p>
                 <p className="font-label-code text-[12px] text-outline">{t('games', { games: account.games })}</p>
                 {viewer?.id === account.id && (

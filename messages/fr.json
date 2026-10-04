@@ -615,7 +615,16 @@
       "avatarType": "Seules les images JPEG, PNG ou WebP sont acceptées.",
       "avatarSize": "L'image doit faire 2 Mo ou moins.",
       "avatarInvalid": "Cette image n'a pas pu être lue.",
-      "auth": "Connecte-toi pour modifier ton profil."
+      "auth": "Connecte-toi pour modifier ton profil.",
+      "github": "Saisis un lien de profil GitHub, comme github.com/ton-nom.",
+      "discord": "Saisis un nom Discord (2 à 32 minuscules, chiffres, _ ou .) ou un lien discord.com."
+    },
+    "links": {
+      "github": "Lien du profil GitHub",
+      "githubPlaceholder": "https://github.com/ton-nom",
+      "discord": "Discord (lien ou nom)",
+      "discordPlaceholder": "nom ou https://discord.com/users/…",
+      "save": "Enregistrer les liens"
     }
   }
 }

@@ -39,7 +39,7 @@ test('keeps the login name and shows the display name on the profile (PROF-3)', 
   const { username } = await register(page);
   await page.goto('/settings');
   await page.getByLabel('Display name').fill('Gojo の Satoru');
-  await page.getByRole('button', { name: 'Save' }).click();
+  await page.getByRole('button', { name: 'Save', exact: true }).click();
   await expect(page.getByRole('status').filter({ hasText: 'Saved.' })).toBeVisible();
 
   await page.goto('/profile');
@@ -88,4 +88,21 @@ test('settings and profile need an account', async ({ page }) => {
   await expect(page).toHaveURL('/login');
   await page.goto('/profile');
   await expect(page).toHaveURL('/login');
+});
+
+test('shows the GitHub and Discord links set in the settings on the profile (PROF-4)', async ({ page }) => {
+  const { username } = await register(page);
+  await page.goto('/settings');
+  await page.getByLabel('GitHub profile link').fill('github.com/megumi');
+  await page.getByLabel('Discord (link or name)').fill('not valid!');
+  await page.getByRole('button', { name: 'Save links' }).click();
+  await expect(page.getByRole('alert').filter({ hasText: 'Discord name' })).toBeVisible();
+
+  await page.getByLabel('Discord (link or name)').fill('megumi.s');
+  await page.getByRole('button', { name: 'Save links' }).click();
+  await expect(page.getByRole('status').filter({ hasText: 'Saved.' })).toBeVisible();
+
+  await page.goto(`/profile/${username}`);
+  await expect(page.getByRole('link', { name: /megumi/ })).toHaveAttribute('href', 'https://github.com/megumi');
+  await expect(page.getByText(/megumi\.s/)).toBeVisible();
 });

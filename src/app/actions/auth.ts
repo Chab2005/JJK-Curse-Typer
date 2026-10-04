@@ -7,6 +7,7 @@ import { cookies } from 'next/headers';
 import sharp from 'sharp';
 import { db } from '@/db';
 import { oauthPending, users } from '@/db/schema';
+import { normalizeGithub, validateLinks } from '@/components/profile/profileEdit';
 import { redirect } from '@/i18n/navigation';
 import type { Locale } from '@/i18n/config';
 import { attachGuestGames, createAccount, findUserByUsername } from '@/lib/auth/accounts';
@@ -118,16 +119,30 @@ export async function setGuestNameAction(name: string): Promise<'length' | 'char
   return null;
 }
 
-export type ProfileState = { ok?: boolean; error?: 'displayName' | 'avatarType' | 'avatarSize' | 'avatarInvalid' | 'auth' } | null;
+// `values` : ce que le formulaire a envoyé, pour le réafficher (React vide les champs après une action).
+export type ProfileState = { values?: Record<string, string>; ok?: boolean; error?: 'displayName' | 'github' | 'discord' | 'avatarType' | 'avatarSize' | 'avatarInvalid' | 'auth' } | null;
 
 /** Nom affiché, distinct de l'identifiant de connexion (PROF-3). */
 export async function updateDisplayNameAction(_prev: ProfileState, form: FormData): Promise<ProfileState> {
   const user = await getSessionUser();
   if (!user) return { error: 'auth' };
   const displayName = text(form, 'displayName').trim();
-  if (validateDisplayName(displayName)) return { error: 'displayName' };
+  if (validateDisplayName(displayName)) return { error: 'displayName', values: { displayName } };
   await db.update(users).set({ displayName }).where(eq(users.id, user.id));
-  return { ok: true };
+  return { ok: true, values: { displayName } };
+}
+
+/** Liens GitHub et Discord affichés sur le profil (PROF-4) ; vides, ils disparaissent. */
+export async function updateLinksAction(_prev: ProfileState, form: FormData): Promise<ProfileState> {
+  const user = await getSessionUser();
+  if (!user) return { error: 'auth' };
+  const input = { github: text(form, 'github'), discord: text(form, 'discord') };
+  const errors = validateLinks(input);
+  const values = { github: input.github, discord: input.discord };
+  if (errors.github) return { error: 'github', values };
+  if (errors.discord) return { error: 'discord', values };
+  await db.update(users).set({ github: normalizeGithub(input.github), discord: input.discord.trim() }).where(eq(users.id, user.id));
+  return { ok: true, values };
 }
 
 /** Téléverse une photo de profil (PROF-5) : JPEG, PNG ou WebP de 2 Mo au plus, recadrée et redimensionnée avant stockage. */

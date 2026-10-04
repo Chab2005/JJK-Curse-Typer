@@ -12,6 +12,9 @@ export const users = pgTable("users", {
   displayName: text("display_name").notNull(),
   passwordHash: text("password_hash").notNull(),
   country: text("country"),
+  /** Liens de profil facultatifs (PROF-4) : lien GitHub complet, nom ou lien Discord. Chaîne vide : aucun. */
+  github: text("github").default("").notNull(),
+  discord: text("discord").default("").notNull(),
   /** Photo téléversée (PROF-5), déjà redimensionnée en WebP ; `null` : initiales. */
   avatar: bytea("avatar"),
   avatarVersion: integer("avatar_version").default(0).notNull(),

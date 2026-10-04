@@ -31,16 +31,22 @@ export function discordHref(value: string): string | null {
   return DISCORD_URL.test(value) ? value : null;
 }
 
-export function validateProfileEdit({ username, github, discord }: ProfileEditInput): ProfileEditErrors {
-  const errors: ProfileEditErrors = {};
-  const name = username.trim();
-  if (name.length < 3 || name.length > 20) errors.username = 'length';
-  else if (!USERNAME_CHARS.test(name)) errors.username = 'characters';
-
+/** Liens GitHub et Discord seuls (page des paramètres) : un lien vide est valide. */
+export function validateLinks({ github, discord }: Pick<ProfileEditInput, 'github' | 'discord'>): Pick<ProfileEditErrors, 'github' | 'discord'> {
+  const errors: Pick<ProfileEditErrors, 'github' | 'discord'> = {};
   if (github.trim() && !githubHandle(normalizeGithub(github))) errors.github = 'invalid';
 
   const contact = discord.trim();
   if (contact && !discordHref(contact) && !DISCORD_NAME.test(contact.toLowerCase())) errors.discord = 'invalid';
 
   return errors;
+}
+
+export function validateProfileEdit({ username, github, discord }: ProfileEditInput): ProfileEditErrors {
+  const errors: ProfileEditErrors = {};
+  const name = username.trim();
+  if (name.length < 3 || name.length > 20) errors.username = 'length';
+  else if (!USERNAME_CHARS.test(name)) errors.username = 'characters';
+
+  return { ...errors, ...validateLinks({ github, discord }) };
 }

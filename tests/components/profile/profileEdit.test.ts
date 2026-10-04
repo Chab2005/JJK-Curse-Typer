@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { discordHref, githubHandle, normalizeGithub, validateProfileEdit } from '@/components/profile/profileEdit';
+import { discordHref, githubHandle, normalizeGithub, validateLinks, validateProfileEdit } from '@/components/profile/profileEdit';
 
 const valid = { username: 'Megumi_Shadows', github: '', discord: '' };
 
@@ -56,5 +56,16 @@ describe('discordHref', () => {
 
   it('ne fait pas de lien pour un simple nom', () => {
     expect(discordHref('megumi.shadows')).toBeNull();
+  });
+});
+
+describe('validateLinks', () => {
+  it('accepts empty links, a GitHub profile and a Discord name', () => {
+    expect(validateLinks({ github: '', discord: '' })).toEqual({});
+    expect(validateLinks({ github: 'github.com/megumi', discord: 'megumi.shadows' })).toEqual({});
+  });
+
+  it('flags a bad GitHub link and a bad Discord name', () => {
+    expect(validateLinks({ github: 'https://gitlab.com/x', discord: 'No Spaces' })).toEqual({ github: 'invalid', discord: 'invalid' });
   });
 });

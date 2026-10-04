@@ -1,7 +1,7 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import Footer from '@/components/layout/Footer';
 import SiteHeader from '@/components/layout/SiteHeader';
-import { AvatarForm, DisplayNameForm } from '@/components/settings/SettingsForms';
+import { AvatarForm, DisplayNameForm, LinksForm } from '@/components/settings/SettingsForms';
 import { redirect } from '@/i18n/navigation';
 import type { Locale } from '@/i18n/config';
 import { getSessionUser } from '@/lib/auth/session';
@@ -32,6 +32,7 @@ export default async function SettingsPage({ params }: PageProps<'/[locale]/sett
           </header>
           <AvatarForm username={user.username} displayName={user.displayName} avatarUrl={avatarUrl} />
           <DisplayNameForm username={user.username} displayName={user.displayName} />
+          <LinksForm github={user.github} discord={user.discord} />
         </div>
       </main>
       <Footer />

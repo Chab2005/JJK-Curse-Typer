@@ -615,7 +615,16 @@
       "avatarType": "Only JPEG, PNG or WebP pictures are accepted.",
       "avatarSize": "The picture must be 2 MB or less.",
       "avatarInvalid": "That picture couldn't be read.",
-      "auth": "Log in to change your profile."
+      "auth": "Log in to change your profile.",
+      "github": "Enter a GitHub profile link, like github.com/your-name.",
+      "discord": "Enter a Discord name (2 to 32 lowercase letters, digits, _ or .) or a discord.com link."
+    },
+    "links": {
+      "github": "GitHub profile link",
+      "githubPlaceholder": "https://github.com/your-name",
+      "discord": "Discord (link or name)",
+      "discordPlaceholder": "name or https://discord.com/users/…",
+      "save": "Save links"
     }
   }
 }
