@@ -4,6 +4,11 @@ export const AVATAR_MAX_BYTES = 2 * 1024 * 1024;
 /** Côté du carré dans lequel l'image est redimensionnée avant d'être stockée. */
 export const AVATAR_SIZE = 256;
 
+/** URL publique de la photo de `username` ; `?v=` change à chaque téléversement, l'image reste donc cacheable à vie. */
+export function avatarUrl(username: string, version: number): string {
+  return `/api/avatar/${encodeURIComponent(username)}?v=${version}`;
+}
+
 export type ImageType = 'jpeg' | 'png' | 'webp';
 
 const startsWith = (bytes: Uint8Array, signature: number[], offset = 0) => signature.every((b, i) => bytes[offset + i] === b);

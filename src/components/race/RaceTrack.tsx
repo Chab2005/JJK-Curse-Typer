@@ -93,5 +93,5 @@ function RunnerAvatar({ runner, name, size }: { runner: TrackRunner; name: strin
       </span>
     );
   }
-  return <Avatar avatar={runner.seat.avatar} name={name} size={size} className={`${ring} ${faded}`} />;
+  return <Avatar avatar={runner.seat.avatar} name={name} src={runner.seat.photo} size={size} className={`${ring} ${faded}`} />;
 }
