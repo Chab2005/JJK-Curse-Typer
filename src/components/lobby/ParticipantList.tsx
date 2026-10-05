@@ -130,7 +130,7 @@ function Tag({ icon, className, children }: { icon?: string; className: string; 
 
 function BotAdder({ full, onAdd }: { full: boolean; onAdd: (level: BotLevel) => void }) {
   const t = useTranslations('Lobby.bots');
-  const [level, setLevel] = useState<BotLevel>('intermediate');
+  const [level, setLevel] = useState<BotLevel>('grade_2');
 
   return (
     <div className="flex flex-wrap items-center gap-3 border border-dashed border-outline-variant px-4 py-3">

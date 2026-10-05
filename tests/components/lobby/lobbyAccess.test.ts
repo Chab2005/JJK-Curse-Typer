@@ -23,7 +23,7 @@ const room = (visibility: LobbyVisibility, overrides: Partial<LobbyRoom> = {}): 
   participants: [
     { kind: 'human', id: 'Gojo', name: 'Gojo', avatar: 'gojo', ready: true },
     { kind: 'human', id: 'Yuji', name: 'Yuji', avatar: null, ready: false },
-    { kind: 'bot', id: 'bot-1', level: 'expert', number: 1 },
+    { kind: 'bot', id: 'bot-1', level: 'grade_1', number: 1 },
   ],
   spectators: [{ id: 'Ijichi', name: 'Ijichi', avatar: null }],
   settings: { ...SETTINGS, visibility },

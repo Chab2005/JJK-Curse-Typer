@@ -71,18 +71,18 @@ describe('listPublicLobbies (LOB-2)', () => {
 describe('updateLobby', () => {
   it('rejoue l’action de l’hôte sur le lobby enregistré (LOB-8)', () => {
     const room = createLobby(name, HOST, 1000);
-    updateLobby(room.code, { type: 'addBot', by: HOST.id, level: 'expert' });
+    updateLobby(room.code, { type: 'addBot', by: HOST.id, level: 'grade_1' });
     expect(findLobby(room.code, HOST.id, false)!.participants.map((p) => p.id)).toEqual([HOST.id, 'bot-1']);
   });
 
   it('refuse les actions d’hôte venant d’un autre participant', () => {
     const room = createLobby(name, HOST, 1000);
-    updateLobby(room.code, { type: 'addBot', by: 'Yuji', level: 'expert' });
+    updateLobby(room.code, { type: 'addBot', by: 'Yuji', level: 'grade_1' });
     expect(findLobby(room.code, HOST.id, false)!.participants).toHaveLength(1);
   });
 
   it('ne touche pas aux lobbies de démonstration', () => {
-    expect(updateLobby('TKY-HGH', { type: 'addBot', by: HOST.id, level: 'expert' })).toBeNull();
+    expect(updateLobby('TKY-HGH', { type: 'addBot', by: HOST.id, level: 'grade_1' })).toBeNull();
   });
 
   it('enregistre un nouveau venu : tout le monde le voit ensuite', () => {
@@ -93,7 +93,7 @@ describe('updateLobby', () => {
 
   it('oublie le lobby quand le dernier humain le quitte', () => {
     const room = createLobby(name, HOST, 1000);
-    updateLobby(room.code, { type: 'addBot', by: HOST.id, level: 'expert' });
+    updateLobby(room.code, { type: 'addBot', by: HOST.id, level: 'grade_1' });
     updateLobby(room.code, { type: 'leave', id: HOST.id });
     expect(storedLobby(room.code)).toBeNull();
   });
@@ -105,10 +105,10 @@ describe('subscribeLobby', () => {
     const listener = vi.fn();
     const unsubscribe = subscribeLobby(room.code.toLowerCase(), listener);
 
-    updateLobby(room.code, { type: 'addBot', by: HOST.id, level: 'expert' });
+    updateLobby(room.code, { type: 'addBot', by: HOST.id, level: 'grade_1' });
     expect(listener).toHaveBeenLastCalledWith(expect.objectContaining({ participants: expect.arrayContaining([expect.objectContaining({ id: 'bot-1' })]) }));
 
-    updateLobby(room.code, { type: 'addBot', by: 'Yuji', level: 'expert' });
+    updateLobby(room.code, { type: 'addBot', by: 'Yuji', level: 'grade_1' });
     expect(listener).toHaveBeenCalledTimes(1);
 
     updateLobby(room.code, { type: 'leave', id: HOST.id });
@@ -121,7 +121,7 @@ describe('subscribeLobby', () => {
 
 describe('parseLobbyAction', () => {
   it('impose le visiteur comme auteur de l’action, quoi qu’envoie le client', () => {
-    expect(parseLobbyAction({ type: 'addBot', by: 'Someone_Else', level: 'beginner' }, HOST.id)).toEqual({ type: 'addBot', by: HOST.id, level: 'beginner' });
+    expect(parseLobbyAction({ type: 'addBot', by: 'Someone_Else', level: 'grade_4' }, HOST.id)).toEqual({ type: 'addBot', by: HOST.id, level: 'grade_4' });
     expect(parseLobbyAction({ type: 'setReady', id: 'Someone_Else', ready: true }, HOST.id)).toEqual({ type: 'setReady', id: HOST.id, ready: true });
   });
 
