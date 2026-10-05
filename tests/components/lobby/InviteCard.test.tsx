@@ -1,5 +1,5 @@
 import { screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import InviteCard from '@/components/lobby/InviteCard';
 import type { LobbyVisibility } from '@/components/lobby/lobbyRoom';
 import { lobbyActionsMock } from '../../actions';
@@ -11,6 +11,10 @@ const TOKEN = 'abcdefghijklmnopqrstu_';
 const isShown = (text: string) => screen.getByText(text).closest('[aria-hidden="true"]') === null;
 
 describe('InviteCard (LOB-3, LOB-4)', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
   it('copies the lobby code', async () => {
     const { user } = renderWithIntl(<InviteCard code="SHJ-60S" visibility="public" isHost={false} />);
 
@@ -54,6 +58,34 @@ describe('InviteCard (LOB-3, LOB-4)', () => {
     expect(await navigator.clipboard.readText()).toBe(link);
     expect(screen.getByLabelText('Invite link')).toHaveValue(link);
     expect(isShown('Each invite link works for one person only.')).toBe(true);
+  });
+
+  // Safari only lets the click write to the clipboard: the write starts before the server answers.
+  it('starts the clipboard write during the click, before the new link exists', async () => {
+    vi.stubGlobal(
+      'ClipboardItem',
+      class {
+        constructor(readonly data: Record<string, Promise<Blob>>) {}
+        get types() {
+          return Object.keys(this.data);
+        }
+        getType(type: string) {
+          return this.data[type];
+        }
+      },
+    );
+    window.history.replaceState(null, '', '/fr/lobby/SHJ-60S');
+    let answer: (token: string) => void = () => {};
+    lobbyActionsMock.createInviteAction.mockReturnValue(new Promise<string>((resolve) => (answer = resolve)));
+    const { user } = renderWithIntl(<InviteCard code="SHJ-60S" visibility="code" isHost />);
+    const write = vi.spyOn(navigator.clipboard, 'write');
+
+    await user.click(screen.getByRole('button', { name: 'New invite link' }));
+    expect(write).toHaveBeenCalledOnce();
+
+    answer(TOKEN);
+    expect(await screen.findByRole('button', { name: 'Copied!' })).toBeInTheDocument();
+    expect(await navigator.clipboard.readText()).toBe(`${window.location.origin}/fr/lobby/SHJ-60S?invite=${TOKEN}`);
   });
 
   it('says so when the server refuses to create a link', async () => {

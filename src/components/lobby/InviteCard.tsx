@@ -17,6 +17,15 @@ const subscribeNever = () => () => {};
 /** Adresse du lobby, vide au rendu serveur qui ne connaît pas `window`. */
 const useLobbyUrl = () => useSyncExternalStore(subscribeNever, lobbyUrl, () => '');
 
+/**
+ * Copie un texte qui peut encore attendre le serveur. Safari refuse une écriture lancée après un `await` :
+ * la promesse est confiée tout de suite au presse-papiers, pendant le clic.
+ */
+function copyText(text: Promise<string>): Promise<void> {
+  if (typeof ClipboardItem === 'undefined' || !navigator.clipboard.write) return text.then((value) => navigator.clipboard.writeText(value));
+  return navigator.clipboard.write([new ClipboardItem({ 'text/plain': text.then((value) => new Blob([value], { type: 'text/plain' })) })]);
+}
+
 // Code du lobby et lien à partager (LOB-3, LOB-4). Seul l'hôte partage un lien : l'adresse d'un lobby public,
 // ou un lien à usage unique par personne sinon. Un lobby privé ne montre pas son code.
 // La carte garde les mêmes blocs et la même taille quels que soient l'accès, le rôle et le lien créé.
@@ -103,7 +112,7 @@ function CopyButton({ icon, label, copy, iconOnly = false, disabled = false }: {
 
   const onClick = async () => {
     try {
-      await navigator.clipboard.writeText(await copy());
+      await copyText(copy());
       setState('copied');
     } catch {
       setState('failed');
