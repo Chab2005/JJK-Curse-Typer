@@ -34,6 +34,14 @@ describe('WaitingRoom (LOB-9)', () => {
     expect(screen.getByText('2 ready')).toBeInTheDocument();
   });
 
+  it('shows no ready tag on bots, they are always ready', () => {
+    renderWithIntl(<WaitingRoom initialRoom={ROOM} viewerId="Yuji_BlackFlash" />);
+
+    const bot = participants().getByText('Cursed corpse 1').closest('li')!;
+    expect(within(bot).queryByText('Ready')).not.toBeInTheDocument();
+    expect(participants().getAllByText(/^(Ready|Not ready)$/)).toHaveLength(2);
+  });
+
   it('lets a player toggle their ready state', async () => {
     const { user } = renderWithIntl(<WaitingRoom initialRoom={ROOM} viewerId="Yuji_BlackFlash" />);
 
