@@ -70,9 +70,12 @@ export function useRaceSocket(code: string, onMessage: (message: ServerMessage) 
     };
   }, [code, ticket]);
 
+  /** Envoie `message` ; faux si la connexion est coupée et que rien n'est parti. */
   const send = useCallback((message: ClientMessage) => {
     const socket = socketRef.current;
-    if (socket?.readyState === WebSocket.OPEN) socket.send(JSON.stringify(message));
+    if (socket?.readyState !== WebSocket.OPEN) return false;
+    socket.send(JSON.stringify(message));
+    return true;
   }, []);
 
   return { status, send };

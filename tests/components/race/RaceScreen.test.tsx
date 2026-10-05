@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import RaceScreen from '@/components/race/RaceScreen';
 import type { ClientMessage, RaceSnapshot, ServerMessage } from '@/game/protocol';
 import type { RacerSeat, Standing } from '@/game/race';
+import { startTyping } from '@/game/typing';
 import { renderWithIntl } from '../../render';
 import { routerMock } from '../../router';
 
@@ -31,6 +32,10 @@ class FakeWebSocket {
   }
   receive(message: ServerMessage) {
     act(() => this.onmessage?.({ data: JSON.stringify(message) }));
+  }
+  drop() {
+    this.readyState = 3;
+    act(() => this.onclose?.());
   }
 }
 
@@ -95,6 +100,23 @@ describe('RaceScreen', () => {
     await user.type(screen.getByLabelText('Type the text'), 'ab');
     // Keys are sent in batches: they may arrive in one message or several.
     const sentKeys = () => socket.sent.flatMap((m) => (m.type === 'keys' ? m.strokes.map((s) => s.key) : []));
+    await waitFor(() => expect(sentKeys()).toEqual(['a', 'b']));
+  });
+
+  it('keeps the keys typed during a disconnection and sends them after reconnecting (RACE-13)', async () => {
+    const { user, container } = start();
+    socket.drop();
+
+    await user.type(screen.getByLabelText('Type the text'), 'ab');
+    expect(screen.getByText('Connection lost, reconnecting…')).toBeInTheDocument();
+    await waitFor(() => expect(FakeWebSocket.instances).toHaveLength(2), { timeout: 2000 });
+    const next = FakeWebSocket.instances[1];
+    next.open();
+    next.receive({ type: 'welcome', you: 'Megumi_Shadows', race: race(), typing: startTyping('abc def', 'accumulate') });
+
+    // The server never got the keys: they are replayed on its text, then sent.
+    expect(container.querySelector('[data-caret]')).toHaveTextContent('c');
+    const sentKeys = () => next.sent.flatMap((m) => (m.type === 'keys' ? m.strokes.map((s) => s.key) : []));
     await waitFor(() => expect(sentKeys()).toEqual(['a', 'b']));
   });
 
