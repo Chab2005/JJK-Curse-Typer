@@ -38,6 +38,16 @@ describe('raceFromLobby', () => {
     expect(preferredSeat).toBe(SAMPLE_CURRENT_USER);
   });
 
+  it('n’ajoute pas l’utilisateur de démonstration à un lobby créé par un vrai compte', () => {
+    clearLobbies();
+    const lobby = createLobby((host) => host, { id: 'chab', name: 'Chab', avatar: 'yuji' }, 1000);
+    updateLobby(lobby.code, { type: 'addBot', by: 'chab', level: 'beginner' });
+
+    const { race, preferredSeat } = raceFromLobby(lobby.code, 2000)!;
+    expect(race.racers.map((r) => r.seat.id)).toEqual(['chab', 'bot-1']);
+    expect(preferredSeat).toBe('chab');
+  });
+
   it('accepte un code en minuscules et refuse un lobby inconnu', () => {
     expect(raceFromLobby('tky-hgh', 1000)).not.toBeNull();
     expect(raceFromLobby('ZZZ-ZZZ', 1000)).toBeNull();

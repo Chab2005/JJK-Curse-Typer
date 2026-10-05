@@ -4,17 +4,21 @@ import { createRace, type RaceState, type RacerSeat } from '@/game/race';
 import { hashSeed } from '@/game/random';
 import { generateText } from '@/game/text/generate';
 import { SAMPLE_CURRENT_USER } from '@/lib/sampleUser';
-import { findLobby } from '@/lib/lobbies';
+import { findLobby, storedLobby } from '@/lib/lobbies';
 
 export interface SeededRace {
   race: RaceState;
-  /** Siège donné en priorité au premier joueur connecté : celui de l'utilisateur de démonstration. */
+  /** Siège donné en priorité au premier joueur connecté : l'hôte d'un lobby créé, l'utilisateur de démonstration sinon. */
   preferredSeat: string | null;
 }
 
 export function raceFromLobby(code: string, now: number): SeededRace | null {
-  const lobby = findLobby(code, SAMPLE_CURRENT_USER, false);
+  // Un lobby créé est pris tel quel : le voir au nom de l'utilisateur de démonstration lui ajouterait un siège fantôme,
+  // que le premier onglet prendrait en laissant le sien à la simulation.
+  const stored = storedLobby(code);
+  const lobby = stored ?? findLobby(code, SAMPLE_CURRENT_USER, false);
   if (!lobby) return null;
+  const preferred = stored ? stored.hostId : SAMPLE_CURRENT_USER;
 
   const seats = lobby.participants.map((p): RacerSeat =>
     p.kind === 'human'
@@ -31,6 +35,6 @@ export function raceFromLobby(code: string, now: number): SeededRace | null {
 
   return {
     race: createRace({ seats, text, mode: settings.errorMode, timerMs: settings.timer * 1000, bonus: settings.bonus, now, seed }),
-    preferredSeat: seats.some((seat) => seat.id === SAMPLE_CURRENT_USER) ? SAMPLE_CURRENT_USER : null,
+    preferredSeat: seats.some((seat) => seat.id === preferred) ? preferred : null,
   };
 }
