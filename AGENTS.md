@@ -114,6 +114,7 @@ Playwright (`playwright.config.ts`, projects `desktop` and `mobile`) runs specs 
 - A commit is always understandable by a junior dev
 - Never does a commit have a description
 - At best, a commit has 15 words max
+- When a commit contains new packages, send the package-lock.json file
 
 Ex: 
     `{SUFFIX}` : `{MESSAGE}`
