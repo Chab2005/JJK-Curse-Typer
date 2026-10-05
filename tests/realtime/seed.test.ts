@@ -52,6 +52,16 @@ describe('raceFromLobby', () => {
     expect(preferredSeat).toBe('chab');
   });
 
+  it('donne à chaque joueur sa photo téléversée, jamais aux bots (PROF-5)', () => {
+    clearLobbies();
+    const lobby = createLobby((host) => host, { id: 'chab', name: 'Chab', avatar: null, photo: '/api/avatar/chab?v=3' }, 1000);
+    updateLobby(lobby.code, { type: 'addBot', by: 'chab', level: 'grade_4' });
+    updateLobby(lobby.code, { type: 'start', by: 'chab' });
+
+    const { race } = raceFromLobby(lobby.code, 2000)!;
+    expect(race.racers.map((r) => r.seat.photo)).toEqual(['/api/avatar/chab?v=3', undefined]);
+  });
+
   it('ne prépare la course d’un lobby créé qu’une fois lancée par l’hôte', () => {
     clearLobbies();
     const lobby = createLobby((host) => host, { id: 'chab', name: 'Chab', avatar: null }, 1000);

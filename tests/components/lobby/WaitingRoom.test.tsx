@@ -34,6 +34,18 @@ describe('WaitingRoom (LOB-9)', () => {
     expect(screen.getByText('2 ready')).toBeInTheDocument();
   });
 
+  it("shows a player's or spectator's uploaded photo (PROF-5)", () => {
+    const room: LobbyRoom = {
+      ...ROOM,
+      participants: [{ ...ROOM.participants[0], photo: '/api/avatar/Satoru_Infinity?v=1' } as LobbyRoom['participants'][number], ...ROOM.participants.slice(1)],
+      spectators: [{ ...ROOM.spectators[0], photo: '/api/avatar/Ijichi_Driver?v=4' }],
+    };
+    const { container } = renderWithIntl(<WaitingRoom initialRoom={room} viewerId="Yuji_BlackFlash" />);
+
+    expect(container.querySelector('img[src="/api/avatar/Satoru_Infinity?v=1"]')).toBeInTheDocument();
+    expect(container.querySelector('img[src="/api/avatar/Ijichi_Driver?v=4"]')).toBeInTheDocument();
+  });
+
   it('shows no ready tag on bots, they are always ready', () => {
     renderWithIntl(<WaitingRoom initialRoom={ROOM} viewerId="Yuji_BlackFlash" />);
 

@@ -32,6 +32,13 @@ describe('RaceTrack (RACE-2, RACE-3)', () => {
     expect(screen.getByTitle('Megumi · You')).toBeInTheDocument();
   });
 
+  it("shows a racer's uploaded photo on the track (PROF-5)", () => {
+    const runners = [{ ...RUNNERS[0], seat: { ...seat('Megumi'), photo: '/api/avatar/Megumi?v=1' } }, ...RUNNERS.slice(1)];
+    const { container } = renderWithIntl(<RaceTrack runners={runners} banner="" nameOf={(s) => s.name} />);
+
+    expect(container.querySelector('img[src="/api/avatar/Megumi?v=1"]')).toBeInTheDocument();
+  });
+
   it('shows the banner in the animation zone', () => {
     renderWithIntl(<RaceTrack runners={RUNNERS} banner="You passed Yuji!" nameOf={(s) => s.name} />);
 
