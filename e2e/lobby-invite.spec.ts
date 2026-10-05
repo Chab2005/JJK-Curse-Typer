@@ -48,7 +48,7 @@ test('changing the lobby access moves nothing', async ({ page }) => {
     await page.getByRole('dialog').getByRole('group', { name: 'Access' }).getByRole('button', { name: access }).click();
     await page.getByRole('dialog').getByRole('button', { name: 'Save' }).click();
     await expect(page.getByRole('dialog')).toBeHidden();
-    await expect(settings(page).getByText(access, { exact: true })).toBeVisible();
+    await expect(settings(page).getByRole('definition').getByText(access, { exact: true })).toBeVisible();
     expect(await box(card(page)), access).toEqual(cardBefore);
     expect(await box(settings(page)), access).toEqual(settingsBefore);
   }

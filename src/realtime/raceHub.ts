@@ -10,6 +10,8 @@ interface Entry {
   room: RaceRoom;
   timer: ReturnType<typeof setInterval>;
   emptySince: number | null;
+  /** Prévient le lobby, une seule fois, que la course est finie ou abandonnée. */
+  end: () => void;
 }
 
 export class RaceHub {
@@ -24,15 +26,22 @@ export class RaceHub {
     return this.rooms.size;
   }
 
-  /** Room du lobby `code`, créée au besoin ; `null` si le lobby n'existe pas. */
+  /** Room du lobby `code`, créée au besoin ; `null` si le lobby n'existe pas. Une course finie cède la place à la suivante. */
   open(code: string): RaceRoom | null {
     const existing = this.rooms.get(code);
-    if (existing) return existing.room;
+    if (existing && existing.room.phase !== 'finished') return existing.room;
 
     const seeded = this.create(code, this.now());
-    if (!seeded) return null;
-    const room = new RaceRoom(seeded.race, seeded.preferredSeat, this.now);
-    const entry: Entry = { room, emptySince: null, timer: setInterval(() => this.step(code, entry), TICK_MS) };
+    if (!seeded) return existing?.room ?? null;
+    if (existing) this.close(code);
+    const room = new RaceRoom(seeded.race, seeded.preferredSeat, this.now, seeded.ticketSeat);
+    let ended = false;
+    const end = () => {
+      if (ended) return;
+      ended = true;
+      seeded.onEnd?.();
+    };
+    const entry: Entry = { room, emptySince: null, end, timer: setInterval(() => this.step(code, entry), TICK_MS) };
     this.rooms.set(code, entry);
     return room;
   }
@@ -43,6 +52,7 @@ export class RaceHub {
 
   private step(code: string, entry: Entry) {
     entry.room.tick();
+    if (entry.room.phase === 'finished') entry.end();
     if (entry.room.connections > 0) {
       entry.emptySince = null;
       return;
@@ -56,5 +66,6 @@ export class RaceHub {
     if (!entry) return;
     clearInterval(entry.timer);
     this.rooms.delete(code);
+    entry.end();
   }
 }

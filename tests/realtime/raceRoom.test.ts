@@ -146,3 +146,41 @@ describe('RaceRoom.connections', () => {
     expect(room.connections).toBe(0);
   });
 });
+
+describe('RaceRoom avec tickets (lobby créé)', () => {
+  const ticketSeat = (ticket: string | undefined) => (ticket?.startsWith('seat:') ? ticket.slice(5) : null);
+
+  beforeEach(() => {
+    room = new RaceRoom(createRace({ seats: SEATS, text: TEXT, mode: 'accumulate', timerMs: 0, bonus: false, now: T0, seed: 1 }), 'host', () => now, ticketSeat);
+  });
+
+  const joinWith = (guest: string, ticket?: string) => {
+    const conn = new FakeConnection();
+    room.connect(conn);
+    room.receive(conn, JSON.stringify({ type: 'join', guest, ticket }));
+    return conn;
+  };
+
+  it('donne à chacun le siège de son ticket, pas le premier libre', () => {
+    expect(joinWith('guest-aaaaaaaa', 'seat:me').last('welcome')?.you).toBe('me');
+    expect(joinWith('guest-bbbbbbbb', 'seat:host').last('welcome')?.you).toBe('host');
+  });
+
+  it('met en spectateur qui n’a pas de ticket, même s’il reste des sièges', () => {
+    expect(joinWith('guest-aaaaaaaa').last('welcome')?.you).toBeNull();
+    expect(joinWith('guest-bbbbbbbb', 'seat:bot-1').last('welcome')?.you).toBeNull();
+  });
+
+  it('ne donne pas un siège déjà tenu par une autre connexion', () => {
+    joinWith('guest-aaaaaaaa', 'seat:me');
+    expect(joinWith('guest-bbbbbbbb', 'seat:me').last('welcome')?.you).toBeNull();
+  });
+
+  it('rend son siège à un joueur revenu dans un nouvel onglet pendant la course (RACE-13)', () => {
+    const conn = joinWith('guest-aaaaaaaa', 'seat:me');
+    now = START + 1000;
+    room.tick();
+    room.disconnect(conn);
+    expect(joinWith('guest-bbbbbbbb', 'seat:me').last('welcome')?.you).toBe('me');
+  });
+});

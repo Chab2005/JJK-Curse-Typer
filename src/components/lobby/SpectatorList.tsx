@@ -24,7 +24,7 @@ export default function SpectatorList({ spectators, viewerId, isHost, onKick }: 
               <Avatar avatar={spectator.avatar} name={spectator.name} size={28} />
               <span className="font-grotesk text-[14px] text-on-surface">{spectator.name}</span>
               {spectator.id === viewerId && <span className="font-label-code pr-2 text-[12px] text-primary">{tParticipants('you')}</span>}
-              {isHost && <IconButton icon="person_remove" label={t('kick', { name: spectator.name })} onClick={() => onKick(spectator)} />}
+              {isHost && spectator.id !== viewerId && <IconButton icon="person_remove" label={t('kick', { name: spectator.name })} onClick={() => onKick(spectator)} />}
             </li>
           ))}
         </ul>

@@ -13,7 +13,8 @@ export interface Invite {
 /** `claim` : lien neuf, à attribuer à cette IP ; `allow` : lien déjà à elle ; `deny` : refusé. */
 export type InviteDecision = 'claim' | 'allow' | 'deny';
 
-const isInside = (room: LobbyRoom, viewer: string) =>
+/** Vrai si `viewer` est dans le salon : hôte, participant ou spectateur. */
+export const isInside = (room: LobbyRoom, viewer: string) =>
   room.hostId === viewer || room.participants.some((p) => p.id === viewer) || room.spectators.some((s) => s.id === viewer);
 
 /** Vrai si `viewer` doit présenter un lien d'invitation : lobby privé où il n'est pas encore (LOB-4). */

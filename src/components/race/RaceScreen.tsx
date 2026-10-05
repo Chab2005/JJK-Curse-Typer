@@ -5,12 +5,13 @@ import { useEffect, useRef, useState } from 'react';
 import { MAX_STROKES_PER_BATCH, type ServerMessage } from '@/game/protocol';
 import { leaderGap, type RacerSeat } from '@/game/race';
 import { typingScore } from '@/game/scoring';
-import { startTyping, typeKey, type Keystroke, type TypingState } from '@/game/typing';
+import { startTyping, typeKey, typeKeys, type Keystroke, type TypingState } from '@/game/typing';
 import { useRouter } from '@/i18n/navigation';
 import ConfirmDialog from './ConfirmDialog';
 import Countdown from './Countdown';
 import EnergyBar from './EnergyBar';
 import type { HeaderAccount } from '@/components/layout/ProfileAvatar';
+import { useLobbyEvents } from '@/components/lobby/useLobbyEvents';
 import RaceHeader from './RaceHeader';
 import RaceHud from './RaceHud';
 import RaceSummary, { type SummaryRow } from './RaceSummary';
@@ -40,7 +41,20 @@ function useNow(intervalMs: number, enabled: boolean) {
 
 // Écran de course (maquette « Course ») rendu côté client (TECH-8) : la room fait foi (RACE-14),
 // le joueur voit sa frappe tout de suite grâce au même réducteur que le serveur.
-export default function RaceScreen({ code, lobbyName, account = null }: { code: string; lobbyName: string; account?: HeaderAccount | null }) {
+// `live` (lobby créé) : l'écran garde aussi la place du joueur dans le lobby, pour le retrouver après la course.
+export default function RaceScreen({
+  code,
+  lobbyName,
+  account = null,
+  live = false,
+  ticket,
+}: {
+  code: string;
+  lobbyName: string;
+  account?: HeaderAccount | null;
+  live?: boolean;
+  ticket?: string;
+}) {
   const t = useTranslations('Race');
   const tLobby = useTranslations('Lobby.participants');
   const router = useRouter();
@@ -58,15 +72,25 @@ export default function RaceScreen({ code, lobbyName, account = null }: { code: 
     setTyping(next);
   };
 
+  // Retour après une coupure, sur le même siège : les frappes jamais parties sont rejouées sur la saisie du serveur, puis envoyées.
+  const resumeTyping = (server: TypingState) => {
+    const next = typeKeys(server, outbox.current);
+    typingRef.current = next;
+    setTyping(next);
+  };
+
   const { status, send } = useRaceSocket(code, (message: ServerMessage) => {
     const receivedAt = Date.now();
     setView((current) => raceViewReducer(current, message, receivedAt));
     if (message.type === 'welcome') {
       setAbandoned(false);
-      replaceTyping(message.you ? (message.typing ?? startTyping(message.race.text, message.race.mode)) : null);
+      if (message.you !== null && message.you === view.you && message.typing) resumeTyping(message.typing);
+      else replaceTyping(message.you ? (message.typing ?? startTyping(message.race.text, message.race.mode)) : null);
     }
     if (message.type === 'resync') replaceTyping(message.typing);
-  });
+  }, ticket);
+
+  useLobbyEvents(live ? code : null, () => {}, () => {});
 
   const { race, you, startAt, phase, standings } = view;
   const now = useNow(100, race !== null && phase !== 'finished');
@@ -76,9 +100,11 @@ export default function RaceScreen({ code, lobbyName, account = null }: { code: 
   const done = abandoned || typing?.finishedAt != null || (mine !== undefined && mine.status !== 'racing');
   const racing = race !== null && you !== null && phase !== 'finished' && elapsed >= 0 && !timeUp && !done;
 
+  // Un lot ne quitte la file qu'une fois parti : pendant une coupure, les frappes attendent la reconnexion.
   useEffect(() => {
     const timer = setInterval(() => {
-      if (outbox.current.length > 0) send({ type: 'keys', strokes: outbox.current.splice(0, MAX_STROKES_PER_BATCH) });
+      const batch = outbox.current.slice(0, MAX_STROKES_PER_BATCH);
+      if (batch.length > 0 && send({ type: 'keys', strokes: batch })) outbox.current.splice(0, batch.length);
     }, FLUSH_MS);
     return () => clearInterval(timer);
   }, [send]);
@@ -94,7 +120,9 @@ export default function RaceScreen({ code, lobbyName, account = null }: { code: 
   };
 
   const abandon = () => {
-    if (outbox.current.length > 0) send({ type: 'keys', strokes: outbox.current.splice(0) });
+    while (outbox.current.length > 0 && send({ type: 'keys', strokes: outbox.current.slice(0, MAX_STROKES_PER_BATCH) })) {
+      outbox.current.splice(0, MAX_STROKES_PER_BATCH);
+    }
     send({ type: 'abandon' });
     setAbandoned(true);
   };
