@@ -1,38 +1,96 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
-import { updateLobbyAction } from '@/app/actions/lobbies';
+import { useEffect, useState } from 'react';
+import { joinLobbyAction, leaveLobbyAction, updateLobbyAction } from '@/app/actions/lobbies';
 import PageIntro from '@/components/shared/PageIntro';
 import { useRouter } from '@/i18n/navigation';
+import GuestJoinCard from './GuestJoinCard';
 import InviteCard from './InviteCard';
 import LeaveLobbyLink from './LeaveLobbyLink';
 import LobbySettingsPanel from './LobbySettingsPanel';
 import ParticipantList, { useParticipantName } from './ParticipantList';
 import ReadyPanel from './ReadyPanel';
 import SpectatorList from './SpectatorList';
-import { type LobbyAction, type LobbyRoom, type Participant, lobbyReducer, startBlocker, viewerRole } from './lobbyRoom';
+import { isInside } from './lobbyAccess';
+import { type LobbyAction, type LobbyRoom, type Participant, isSpectating, lobbyReducer, startBlocker, viewerRole } from './lobbyRoom';
+import { useLobbyEvents } from './useLobbyEvents';
 
-// Salon d'attente d'un lobby (LOB-5 à LOB-9, LOB-11). En attendant la room temps réel,
-// les actions passent par le réducteur pur et ne vivent que dans cette page.
-export default function WaitingRoom({ initialRoom, viewerId }: { initialRoom: LobbyRoom; viewerId: string }) {
+// Salon d'attente d'un lobby (LOB-5 à LOB-9, LOB-11). Chaque action s'applique tout de suite à l'écran, puis le serveur
+// la rejoue. Un lobby créé (`live`) vit sur le serveur : le visiteur y entre en arrivant (`invite`, `spectate`), puis le
+// flux temps réel lui montre les arrivées, départs, bots, réglages et le départ de la course. Les lobbies de démonstration restent locaux.
+export default function WaitingRoom({
+  initialRoom,
+  viewerId,
+  live = false,
+  invite,
+  spectate = false,
+}: {
+  initialRoom: LobbyRoom;
+  viewerId: string;
+  live?: boolean;
+  invite?: string;
+  spectate?: boolean;
+}) {
   const t = useTranslations('Lobby');
   const participantName = useParticipantName();
   const router = useRouter();
   const [room, setRoom] = useState(initialRoom);
+  const [joined, setJoined] = useState(false);
   const [announcement, setAnnouncement] = useState('');
 
   const role = viewerRole(room, viewerId);
   const isHost = role === 'host';
   const me = room.participants.find((p) => p.id === viewerId);
-  const host = room.participants.find((p) => p.id === room.hostId);
+  const host = room.participants.find((p) => p.id === room.hostId) ?? room.spectators.find((s) => s.id === room.hostId);
+  const inside = viewerId !== '' && isInside(room, viewerId);
+  const spectating = isSpectating(room, viewerId);
 
-  // Appliquée tout de suite à l'écran, puis rejouée par le serveur, qui garde les lobbies créés (LOB-4).
+  // Entrée dans le lobby créé : c'est ici, pas à l'affichage de la page, que la place est prise et le lien d'invitation consommé.
+  useEffect(() => {
+    if (!live || !viewerId) return;
+    let cancelled = false;
+    joinLobbyAction(initialRoom.code, { spectate, invite })
+      .then((next) => {
+        if (cancelled) return;
+        if (!next || !isInside(next, viewerId)) {
+          router.replace('/lobbies');
+          return;
+        }
+        setRoom(next);
+        setJoined(true);
+        // Le lien ne sert plus : recharger la page ne doit pas le redemander.
+        if (window.location.search) window.history.replaceState(null, '', window.location.pathname);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [live, viewerId, initialRoom.code, spectate, invite, router]);
+
+  useLobbyEvents(live && joined ? room.code : null, setRoom, () => router.push('/lobbies'));
+
+  // Course lancée par l'hôte : tout le salon la rejoint, les spectateurs pour la regarder.
+  useEffect(() => {
+    if (live && joined && room.status === 'racing') router.push(`/lobby/${room.code}/race`);
+  }, [live, joined, room.status, room.code, router]);
+
   const apply = (action: LobbyAction) => {
     const next = lobbyReducer(room, action);
     setRoom(next);
     void updateLobbyAction(room.code, action).catch(() => {});
     return next;
+  };
+
+  const start = () => {
+    if (!live) {
+      router.push(`/lobby/${room.code}/race`);
+      return;
+    }
+    // Pas d'affichage anticipé : la course n'existe qu'une fois le départ enregistré par le serveur.
+    void updateLobbyAction(room.code, { type: 'start', by: viewerId })
+      .then((next) => next && setRoom(next))
+      .catch(() => {});
   };
 
   const kick = (target: Participant | { id: string; name: string }) => {
@@ -53,7 +111,7 @@ export default function WaitingRoom({ initialRoom, viewerId }: { initialRoom: Lo
             watermark={room.code}
             intro={
               <span className="flex flex-wrap items-center gap-x-4 gap-y-1">
-                {host && t('hostedBy', { host: participantName(host) })}
+                {host && t('hostedBy', { host: 'kind' in host ? participantName(host) : host.name })}
                 <span className={`font-label-code inline-flex items-center gap-1.5 text-[12px] font-bold uppercase tracking-[0.14em] ${room.status === 'racing' ? 'text-primary' : 'text-tertiary'}`}>
                   <span aria-hidden="true" className={`size-[7px] rounded-full ${room.status === 'racing' ? 'bg-primary' : 'bg-tertiary'}`} />
                   {t(`status.${room.status}`)}
@@ -66,16 +124,6 @@ export default function WaitingRoom({ initialRoom, viewerId }: { initialRoom: Lo
           <InviteCard code={room.code} visibility={room.settings.visibility} isHost={isHost} />
         </div>
       </div>
-
-      {role === 'spectator' && (
-        <section aria-labelledby="spectating-title" className="flex items-start gap-4 border-l-[3px] border-secondary bg-secondary-container/20 px-5 py-4">
-          <span aria-hidden="true" className="material-symbols-outlined text-[26px] text-secondary">visibility</span>
-          <div className="flex flex-col gap-1">
-            <h2 id="spectating-title" className="text-[15px] uppercase tracking-[0.14em] text-on-surface">{t('spectating.title')}</h2>
-            <p className="text-on-surface-variant">{t(room.status === 'racing' ? 'spectating.racing' : 'spectating.waiting')}</p>
-          </div>
-        </section>
-      )}
 
       <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_360px]">
         <div className="flex flex-col gap-10">
@@ -98,13 +146,21 @@ export default function WaitingRoom({ initialRoom, viewerId }: { initialRoom: Lo
 
         <aside className="flex flex-col gap-7">
           <div className="relative">
-            <ReadyPanel
-              role={role}
-              ready={me?.kind === 'human' && me.ready}
-              blocker={startBlocker(room)}
-              onToggleReady={() => me?.kind === 'human' && apply({ type: 'setReady', id: viewerId, ready: !me.ready })}
-              onStart={() => router.push(`/lobby/${room.code}/race`)}
-            />
+            {live && !viewerId ? (
+              <GuestJoinCard />
+            ) : (
+              <ReadyPanel
+                role={role}
+                ready={me?.kind === 'human' && me.ready}
+                blocker={startBlocker(room)}
+                racing={room.status === 'racing'}
+                spectating={inside ? spectating : null}
+                canPlay={room.participants.length < room.settings.capacity}
+                onToggleReady={() => me?.kind === 'human' && apply({ type: 'setReady', id: viewerId, ready: !me.ready })}
+                onStart={start}
+                onToggleSpectating={() => apply({ type: 'setSpectating', id: viewerId, spectating: !spectating })}
+              />
+            )}
             {/* Annonce posée dans l'espace avant les paramètres : elle ne les pousse pas et n'ajoute pas de vide. */}
             <p role="status" title={announcement} className="font-label-code absolute inset-x-0 top-full mt-1 h-5 truncate text-[13px] leading-5 text-tertiary">{announcement}</p>
           </div>
@@ -114,7 +170,7 @@ export default function WaitingRoom({ initialRoom, viewerId }: { initialRoom: Lo
             editable={isHost}
             onChange={(patch) => apply({ type: 'updateSettings', by: viewerId, patch })}
           />
-          <LeaveLobbyLink />
+          <LeaveLobbyLink onLeave={live && inside ? () => leaveLobbyAction(room.code) : undefined} />
         </aside>
       </div>
     </div>

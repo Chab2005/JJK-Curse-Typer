@@ -14,6 +14,13 @@ export async function createInvite(code: string): Promise<string> {
   return token;
 }
 
+/** Vrai si le lien `token` peut ouvrir le lobby `code` à cette IP. Lecture seule : afficher la page ne consomme pas le lien. */
+export async function inviteOpens(token: string, code: string, ip: string | null): Promise<boolean> {
+  const [row] = await db.select().from(lobbyInvites).where(eq(lobbyInvites.token, token));
+  const invite = row && { lobbyCode: row.lobbyCode, claimedIp: row.claimedIp, revoked: row.revokedAt !== null };
+  return inviteDecision(invite ?? null, code, ip) !== 'deny';
+}
+
 /** Vrai si le lien `token` ouvre le lobby `code` à cette IP ; un lien neuf lui est alors attribué. */
 export async function claimInvite(token: string, code: string, ip: string | null, viewer: string): Promise<boolean> {
   const [row] = await db.select().from(lobbyInvites).where(eq(lobbyInvites.token, token));

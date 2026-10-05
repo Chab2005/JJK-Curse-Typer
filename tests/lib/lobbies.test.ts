@@ -1,6 +1,6 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { viewerRole } from '@/components/lobby/lobbyRoom';
-import { LOBBY_TTL_MS, clearLobbies, createLobby, findLobby, listPublicLobbies, parseLobbyAction, storedLobby, updateLobby } from '@/lib/lobbies';
+import { LOBBY_TTL_MS, clearLobbies, createLobby, findLobby, listPublicLobbies, parseLobbyAction, storedLobby, subscribeLobby, updateLobby } from '@/lib/lobbies';
 
 const HOST = { id: 'Megumi_Shadows', name: 'Megumi_Shadows', avatar: 'megumi' as const };
 const name = (host: string) => `Lobby de ${host}`;
@@ -84,6 +84,39 @@ describe('updateLobby', () => {
   it('ne touche pas aux lobbies de démonstration', () => {
     expect(updateLobby('TKY-HGH', { type: 'addBot', by: HOST.id, level: 'expert' })).toBeNull();
   });
+
+  it('enregistre un nouveau venu : tout le monde le voit ensuite', () => {
+    const room = createLobby(name, HOST, 1000);
+    updateLobby(room.code, { type: 'join', person: { id: 'Yuji', name: 'Yuji', avatar: null }, spectate: false });
+    expect(storedLobby(room.code)!.participants.map((p) => p.id)).toEqual([HOST.id, 'Yuji']);
+  });
+
+  it('oublie le lobby quand le dernier humain le quitte', () => {
+    const room = createLobby(name, HOST, 1000);
+    updateLobby(room.code, { type: 'addBot', by: HOST.id, level: 'expert' });
+    updateLobby(room.code, { type: 'leave', id: HOST.id });
+    expect(storedLobby(room.code)).toBeNull();
+  });
+});
+
+describe('subscribeLobby', () => {
+  it('prévient les abonnés de chaque changement, puis de la fermeture du lobby', () => {
+    const room = createLobby(name, HOST, 1000);
+    const listener = vi.fn();
+    const unsubscribe = subscribeLobby(room.code.toLowerCase(), listener);
+
+    updateLobby(room.code, { type: 'addBot', by: HOST.id, level: 'expert' });
+    expect(listener).toHaveBeenLastCalledWith(expect.objectContaining({ participants: expect.arrayContaining([expect.objectContaining({ id: 'bot-1' })]) }));
+
+    updateLobby(room.code, { type: 'addBot', by: 'Yuji', level: 'expert' });
+    expect(listener).toHaveBeenCalledTimes(1);
+
+    updateLobby(room.code, { type: 'leave', id: HOST.id });
+    expect(listener).toHaveBeenLastCalledWith(null);
+
+    unsubscribe();
+    expect(listener).toHaveBeenCalledTimes(2);
+  });
 });
 
 describe('parseLobbyAction', () => {
@@ -98,6 +131,17 @@ describe('parseLobbyAction', () => {
     expect(parseLobbyAction({ type: 'updateSettings', patch: { visibility: 'secret' } }, HOST.id)).toBeNull();
     expect(parseLobbyAction({ type: 'updateSettings', patch: { languages: ['de'] } }, HOST.id)).toBeNull();
     expect(parseLobbyAction({ type: 'updateSettings', patch: { hostId: 'me' } }, HOST.id)).toBeNull();
+  });
+
+  it('accepte de passer spectateur et de lancer la course, au nom du visiteur', () => {
+    expect(parseLobbyAction({ type: 'setSpectating', id: 'Someone_Else', spectating: true }, HOST.id)).toEqual({ type: 'setSpectating', id: HOST.id, spectating: true });
+    expect(parseLobbyAction({ type: 'start' }, HOST.id)).toEqual({ type: 'start', by: HOST.id });
+  });
+
+  it('refuse les arrivées, départs et fins de course venant du client', () => {
+    expect(parseLobbyAction({ type: 'join', person: { id: 'x', name: 'x', avatar: null }, spectate: false }, HOST.id)).toBeNull();
+    expect(parseLobbyAction({ type: 'leave', id: 'Yuji' }, HOST.id)).toBeNull();
+    expect(parseLobbyAction({ type: 'finish' }, HOST.id)).toBeNull();
   });
 
   it('rejette les actions inconnues', () => {

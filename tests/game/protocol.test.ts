@@ -4,6 +4,7 @@ import { parseClientMessage, raceCodeFromPath, raceSocketPath } from '@/game/pro
 describe('parseClientMessage', () => {
   it('lit les messages valides', () => {
     expect(parseClientMessage('{"type":"join","guest":"guest-12345678"}')).toEqual({ type: 'join', guest: 'guest-12345678' });
+    expect(parseClientMessage('{"type":"join","guest":"guest-12345678","ticket":"abc.def"}')).toEqual({ type: 'join', guest: 'guest-12345678', ticket: 'abc.def' });
     expect(parseClientMessage('{"type":"keys","strokes":[{"key":"a","t":12}]}')).toEqual({ type: 'keys', strokes: [{ key: 'a', t: 12 }] });
     expect(parseClientMessage('{"type":"abandon"}')).toEqual({ type: 'abandon' });
   });

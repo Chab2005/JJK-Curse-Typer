@@ -260,7 +260,10 @@
       },
       "waitHost": "The host starts the race once everyone is ready.",
       "spectator": "Spectators don't take part in the race.",
-      "leave": "Leave the lobby"
+      "leave": "Leave the lobby",
+      "spectate": "Watch as a spectator",
+      "play": "Join the race",
+      "full": "The lobby is full."
     },
     "announce": {
       "kicked": "{name} was kicked.",
@@ -327,6 +330,11 @@
       "title": "This lobby doesn't exist",
       "text": "Check the code: it may be mistyped, or the lobby has closed.",
       "back": "Enter a code"
+    },
+    "guest": {
+      "title": "Choose a name",
+      "text": "Pick an exorcist name to join this lobby.",
+      "submit": "Join the lobby"
     }
   },
   "Leaderboard": {

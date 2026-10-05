@@ -24,7 +24,8 @@ function guestId(): string {
 }
 
 // WebSocket de la course `code`, sur le même hôte que la page (server.ts) ; reconnexion automatique.
-export function useRaceSocket(code: string, onMessage: (message: ServerMessage) => void) {
+// `ticket` : siège signé du joueur dans un lobby créé (src/realtime/ticket.ts).
+export function useRaceSocket(code: string, onMessage: (message: ServerMessage) => void, ticket?: string) {
   const [status, setStatus] = useState<SocketStatus>('connecting');
   const socketRef = useRef<WebSocket | null>(null);
   const handlerRef = useRef(onMessage);
@@ -45,7 +46,7 @@ export function useRaceSocket(code: string, onMessage: (message: ServerMessage) 
       socket.onopen = () => {
         retries = 0;
         setStatus('open');
-        socket.send(JSON.stringify({ type: 'join', guest: guestId() } satisfies ClientMessage));
+        socket.send(JSON.stringify({ type: 'join', guest: guestId(), ...(ticket && { ticket }) } satisfies ClientMessage));
       };
       socket.onmessage = (event) => {
         try {
@@ -67,7 +68,7 @@ export function useRaceSocket(code: string, onMessage: (message: ServerMessage) 
       clearTimeout(retryTimer);
       socketRef.current?.close();
     };
-  }, [code]);
+  }, [code, ticket]);
 
   const send = useCallback((message: ClientMessage) => {
     const socket = socketRef.current;

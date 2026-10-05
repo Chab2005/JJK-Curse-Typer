@@ -11,6 +11,7 @@ import ConfirmDialog from './ConfirmDialog';
 import Countdown from './Countdown';
 import EnergyBar from './EnergyBar';
 import type { HeaderAccount } from '@/components/layout/ProfileAvatar';
+import { useLobbyEvents } from '@/components/lobby/useLobbyEvents';
 import RaceHeader from './RaceHeader';
 import RaceHud from './RaceHud';
 import RaceSummary, { type SummaryRow } from './RaceSummary';
@@ -40,7 +41,20 @@ function useNow(intervalMs: number, enabled: boolean) {
 
 // Écran de course (maquette « Course ») rendu côté client (TECH-8) : la room fait foi (RACE-14),
 // le joueur voit sa frappe tout de suite grâce au même réducteur que le serveur.
-export default function RaceScreen({ code, lobbyName, account = null }: { code: string; lobbyName: string; account?: HeaderAccount | null }) {
+// `live` (lobby créé) : l'écran garde aussi la place du joueur dans le lobby, pour le retrouver après la course.
+export default function RaceScreen({
+  code,
+  lobbyName,
+  account = null,
+  live = false,
+  ticket,
+}: {
+  code: string;
+  lobbyName: string;
+  account?: HeaderAccount | null;
+  live?: boolean;
+  ticket?: string;
+}) {
   const t = useTranslations('Race');
   const tLobby = useTranslations('Lobby.participants');
   const router = useRouter();
@@ -66,7 +80,9 @@ export default function RaceScreen({ code, lobbyName, account = null }: { code: 
       replaceTyping(message.you ? (message.typing ?? startTyping(message.race.text, message.race.mode)) : null);
     }
     if (message.type === 'resync') replaceTyping(message.typing);
-  });
+  }, ticket);
+
+  useLobbyEvents(live ? code : null, () => {}, () => {});
 
   const { race, you, startAt, phase, standings } = view;
   const now = useNow(100, race !== null && phase !== 'finished');

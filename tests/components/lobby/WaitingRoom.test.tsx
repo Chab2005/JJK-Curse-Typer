@@ -1,5 +1,5 @@
-import { screen, within } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { act, screen, waitFor, within } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { LobbyRoom } from '@/components/lobby/lobbyRoom';
 import WaitingRoom from '@/components/lobby/WaitingRoom';
 import { lobbyActionsMock } from '../../actions';
@@ -150,5 +150,139 @@ describe('WaitingRoom spectator view', () => {
     renderWithIntl(<WaitingRoom initialRoom={{ ...ROOM, status: 'racing' }} viewerId="Ijichi_Driver" />);
 
     expect(screen.getByText("A race is in progress. You're watching it as a spectator.")).toBeInTheDocument();
+  });
+});
+
+describe('WaitingRoom spectator switch', () => {
+  it('lets a player watch as a spectator, then come back', async () => {
+    const { user } = renderWithIntl(<WaitingRoom initialRoom={ROOM} viewerId="Yuji_BlackFlash" />);
+
+    await user.click(screen.getByRole('button', { name: 'Watch as a spectator' }));
+    expect(participants().queryByText('Yuji_BlackFlash')).not.toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Spectator mode' })).toBeInTheDocument();
+    expect(lobbyActionsMock.updateLobbyAction).toHaveBeenCalledWith('SHJ-60S', { type: 'setSpectating', id: 'Yuji_BlackFlash', spectating: true });
+
+    await user.click(screen.getByRole('button', { name: 'Join the race' }));
+    expect(participants().getByText('Yuji_BlackFlash')).toBeInTheDocument();
+  });
+
+  it('lets the host watch while keeping the host controls', async () => {
+    const { user } = renderWithIntl(<WaitingRoom initialRoom={ROOM} viewerId="Satoru_Infinity" />);
+
+    await user.click(screen.getByRole('button', { name: 'Watch as a spectator' }));
+
+    expect(participants().queryByText('Satoru_Infinity')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Start the race' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Add a bot' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Kick Satoru_Infinity' })).not.toBeInTheDocument();
+  });
+
+  it('does not let a spectator into a full lobby', () => {
+    const full = { ...ROOM, settings: { ...ROOM.settings, capacity: 3 } };
+    renderWithIntl(<WaitingRoom initialRoom={full} viewerId="Ijichi_Driver" />);
+
+    expect(screen.getByRole('button', { name: 'Join the race' })).toBeDisabled();
+  });
+});
+
+// Fake EventSource: the test plays the lobby event stream.
+class FakeEventSource {
+  static CLOSED = 2;
+  static instances: FakeEventSource[] = [];
+  readyState = 1;
+  onmessage: ((event: { data: string }) => void) | null = null;
+  onerror: (() => void) | null = null;
+  listeners = new Map<string, () => void>();
+  constructor(public url: string) {
+    FakeEventSource.instances.push(this);
+  }
+  addEventListener(type: string, listener: () => void) {
+    this.listeners.set(type, listener);
+  }
+  close() {
+    this.readyState = FakeEventSource.CLOSED;
+  }
+}
+
+describe('WaitingRoom of a created lobby (realtime)', () => {
+  const LIVE: LobbyRoom = { ...ROOM, code: 'ABC-DEF', settings: { ...ROOM.settings, visibility: 'private' } };
+  const joined = { ...LIVE, participants: [...LIVE.participants, { kind: 'human' as const, id: 'Nobara', name: 'Nobara', avatar: null, ready: false }] };
+
+  beforeEach(() => {
+    FakeEventSource.instances = [];
+    vi.stubGlobal('EventSource', FakeEventSource);
+  });
+
+  afterEach(() => vi.unstubAllGlobals());
+
+  it('joins the lobby with the invite link, then follows the stream', async () => {
+    lobbyActionsMock.joinLobbyAction.mockResolvedValue(joined);
+    renderWithIntl(<WaitingRoom initialRoom={joined} viewerId="Nobara" live invite={'a'.repeat(22)} />);
+
+    await waitFor(() => expect(FakeEventSource.instances).toHaveLength(1));
+    expect(lobbyActionsMock.joinLobbyAction).toHaveBeenCalledWith('ABC-DEF', { spectate: false, invite: 'a'.repeat(22) });
+    expect(FakeEventSource.instances[0].url).toBe('/api/lobbies/ABC-DEF/events');
+
+    // The host adds a bot and changes a setting: everyone sees it.
+    const update = { ...joined, participants: [...joined.participants, { kind: 'bot' as const, id: 'bot-2', level: 'beginner' as const, number: 2 }], settings: { ...joined.settings, bonus: false } };
+    act(() => FakeEventSource.instances[0].onmessage!({ data: JSON.stringify(update) }));
+    expect(participants().getByText('Cursed corpse 2')).toBeInTheDocument();
+  });
+
+  it('goes to the race when the host starts it', async () => {
+    lobbyActionsMock.joinLobbyAction.mockResolvedValue(joined);
+    renderWithIntl(<WaitingRoom initialRoom={joined} viewerId="Nobara" live />);
+    await waitFor(() => expect(FakeEventSource.instances).toHaveLength(1));
+
+    act(() => FakeEventSource.instances[0].onmessage!({ data: JSON.stringify({ ...joined, status: 'racing' }) }));
+    expect(routerMock.push).toHaveBeenCalledWith('/lobby/ABC-DEF/race');
+  });
+
+  it('leaves the page when kicked', async () => {
+    lobbyActionsMock.joinLobbyAction.mockResolvedValue(joined);
+    renderWithIntl(<WaitingRoom initialRoom={joined} viewerId="Nobara" live />);
+    await waitFor(() => expect(FakeEventSource.instances).toHaveLength(1));
+
+    act(() => FakeEventSource.instances[0].listeners.get('gone')!());
+    expect(routerMock.push).toHaveBeenCalledWith('/lobbies');
+  });
+
+  it('goes back to the lobby list when the server refuses the entry', async () => {
+    lobbyActionsMock.joinLobbyAction.mockResolvedValue(null);
+    renderWithIntl(<WaitingRoom initialRoom={joined} viewerId="Nobara" live />);
+
+    await waitFor(() => expect(routerMock.replace).toHaveBeenCalledWith('/lobbies'));
+    expect(FakeEventSource.instances).toHaveLength(0);
+  });
+
+  it('starts the race on the server and waits for it before leaving', async () => {
+    const ready = { ...LIVE, participants: LIVE.participants.map((p) => (p.kind === 'human' ? { ...p, ready: true } : p)) };
+    lobbyActionsMock.joinLobbyAction.mockResolvedValue(ready);
+    lobbyActionsMock.updateLobbyAction.mockResolvedValue({ ...ready, status: 'racing' });
+    const { user } = renderWithIntl(<WaitingRoom initialRoom={ready} viewerId="Satoru_Infinity" live />);
+    await waitFor(() => expect(FakeEventSource.instances).toHaveLength(1));
+
+    await user.click(screen.getByRole('button', { name: 'Start the race' }));
+
+    expect(lobbyActionsMock.updateLobbyAction).toHaveBeenCalledWith('ABC-DEF', { type: 'start', by: 'Satoru_Infinity' });
+    await waitFor(() => expect(routerMock.push).toHaveBeenCalledWith('/lobby/ABC-DEF/race'));
+  });
+
+  it('records the departure before leaving', async () => {
+    lobbyActionsMock.joinLobbyAction.mockResolvedValue(joined);
+    const { user } = renderWithIntl(<WaitingRoom initialRoom={joined} viewerId="Nobara" live />);
+    await waitFor(() => expect(FakeEventSource.instances).toHaveLength(1));
+
+    await user.click(screen.getByRole('link', { name: 'Leave the lobby' }));
+
+    expect(lobbyActionsMock.leaveLobbyAction).toHaveBeenCalledWith('ABC-DEF');
+    await waitFor(() => expect(routerMock.push).toHaveBeenCalledWith('/lobbies'));
+  });
+
+  it('asks a visitor without a name to pick one before joining', () => {
+    renderWithIntl(<WaitingRoom initialRoom={LIVE} viewerId="" live />);
+
+    expect(screen.getByRole('heading', { name: 'Choose a name' })).toBeInTheDocument();
+    expect(lobbyActionsMock.joinLobbyAction).not.toHaveBeenCalled();
   });
 });

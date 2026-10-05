@@ -20,10 +20,15 @@ export class RaceRoom {
   /** Siège de chaque invité : il le retrouve s'il se reconnecte (RACE-13). */
   private readonly seatsByGuest = new Map<string, string>();
 
+  /**
+   * `ticketSeat` (lobby créé) : chacun reçoit le siège de son ticket, sans ticket il regarde. Sans lui (lobby de
+   * démonstration), chaque onglet prend un siège humain libre pendant le compte à rebours.
+   */
   constructor(
     race: RaceState,
     private readonly preferredSeat: string | null,
     private readonly now: () => number = Date.now,
+    private readonly ticketSeat?: (ticket: string | undefined) => string | null,
   ) {
     this.race = race;
   }
@@ -46,7 +51,7 @@ export class RaceRoom {
     if (!client || !message) return;
 
     if (message.type === 'join') {
-      if (client.guest === null) this.join(conn, client, message.guest);
+      if (client.guest === null) this.join(conn, client, message.guest, message.ticket);
       return;
     }
     if (client.seat === null) return;
@@ -79,8 +84,8 @@ export class RaceRoom {
     for (const conn of this.clients.keys()) conn.send(message);
   }
 
-  private join(conn: Connection, client: Client, guest: string) {
-    const seat = this.seatsByGuest.get(guest) ?? (this.race.phase === 'countdown' ? this.freeSeat() : null);
+  private join(conn: Connection, client: Client, guest: string, ticket: string | undefined) {
+    const seat = this.seatsByGuest.get(guest) ?? (this.ticketSeat ? this.seatFromTicket(ticket) : this.race.phase === 'countdown' ? this.freeSeat() : null);
     client.guest = guest;
     client.seat = seat;
     if (seat) {
@@ -89,6 +94,13 @@ export class RaceRoom {
     }
     const typing = seat ? (this.race.racers.find((r) => r.seat.id === seat)?.typing ?? null) : null;
     this.send(conn, { type: 'welcome', you: seat, race: this.snapshot(), typing });
+  }
+
+  /** Siège humain du ticket, s'il n'est pas déjà tenu par une autre connexion. */
+  private seatFromTicket(ticket: string | undefined): string | null {
+    const seat = this.ticketSeat?.(ticket) ?? null;
+    if (!seat || !this.race.racers.some((r) => r.seat.kind === 'human' && r.seat.id === seat)) return null;
+    return [...this.clients.values()].some((other) => other.seat === seat) ? null : seat;
   }
 
   /** Siège humain que personne ne tient : celui de l'utilisateur de démonstration d'abord. */

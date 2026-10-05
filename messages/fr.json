@@ -260,7 +260,10 @@
       },
       "waitHost": "L'hôte lance la course quand tout le monde est prêt.",
       "spectator": "Les spectateurs ne participent pas à la course.",
-      "leave": "Quitter le lobby"
+      "leave": "Quitter le lobby",
+      "spectate": "Regarder en spectateur",
+      "play": "Rejoindre la course",
+      "full": "Le lobby est complet."
     },
     "announce": {
       "kicked": "{name} a été expulsé.",
@@ -327,6 +330,11 @@
       "title": "Ce lobby n'existe pas",
       "text": "Vérifiez le code : il est peut-être mal tapé, ou le lobby a fermé.",
       "back": "Entrer un code"
+    },
+    "guest": {
+      "title": "Choisissez un pseudo",
+      "text": "Choisissez un nom d'exorciste pour rejoindre ce lobby.",
+      "submit": "Rejoindre le lobby"
     }
   },
   "Leaderboard": {
