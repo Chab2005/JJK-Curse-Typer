@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { COUNTDOWN_MS } from '@/game/race';
 import { SAMPLE_CURRENT_USER } from '@/lib/sampleUser';
-import { clearLobbies, createLobby, updateLobby } from '@/lib/lobbies';
+import { clearLobbies, createLobby, storedLobby, updateLobby } from '@/lib/lobbies';
+import { authSecret } from '@/lib/auth/secret';
+import { seatTicket } from '@/realtime/ticket';
 import { raceFromLobby } from '@/realtime/seed';
 
 describe('raceFromLobby', () => {
@@ -30,6 +32,7 @@ describe('raceFromLobby', () => {
     const lobby = createLobby((host) => host, { id: SAMPLE_CURRENT_USER, name: SAMPLE_CURRENT_USER, avatar: 'megumi' }, 1000);
     updateLobby(lobby.code, { type: 'addBot', by: SAMPLE_CURRENT_USER, level: 'beginner' });
     updateLobby(lobby.code, { type: 'updateSettings', by: SAMPLE_CURRENT_USER, patch: { words: 20, bonus: true } });
+    updateLobby(lobby.code, { type: 'start', by: SAMPLE_CURRENT_USER });
 
     const { race, preferredSeat } = raceFromLobby(lobby.code, 2000)!;
     expect(race.racers.map((r) => r.seat.id)).toEqual([SAMPLE_CURRENT_USER, 'bot-1']);
@@ -42,10 +45,32 @@ describe('raceFromLobby', () => {
     clearLobbies();
     const lobby = createLobby((host) => host, { id: 'chab', name: 'Chab', avatar: 'yuji' }, 1000);
     updateLobby(lobby.code, { type: 'addBot', by: 'chab', level: 'beginner' });
+    updateLobby(lobby.code, { type: 'start', by: 'chab' });
 
     const { race, preferredSeat } = raceFromLobby(lobby.code, 2000)!;
     expect(race.racers.map((r) => r.seat.id)).toEqual(['chab', 'bot-1']);
     expect(preferredSeat).toBe('chab');
+  });
+
+  it('ne prépare la course d’un lobby créé qu’une fois lancée par l’hôte', () => {
+    clearLobbies();
+    const lobby = createLobby((host) => host, { id: 'chab', name: 'Chab', avatar: null }, 1000);
+    updateLobby(lobby.code, { type: 'addBot', by: 'chab', level: 'beginner' });
+    expect(raceFromLobby(lobby.code, 2000)).toBeNull();
+  });
+
+  it('place chacun d’après son ticket et rouvre le salon à la fin de la course', () => {
+    clearLobbies();
+    const lobby = createLobby((host) => host, { id: 'chab', name: 'Chab', avatar: null }, 1000);
+    updateLobby(lobby.code, { type: 'addBot', by: 'chab', level: 'beginner' });
+    updateLobby(lobby.code, { type: 'start', by: 'chab' });
+
+    const seeded = raceFromLobby(lobby.code, 2000)!;
+    expect(seeded.ticketSeat?.(seatTicket(lobby.code, 'chab', authSecret()))).toBe('chab');
+    expect(seeded.ticketSeat?.(undefined)).toBeNull();
+
+    seeded.onEnd?.();
+    expect(storedLobby(lobby.code)?.status).toBe('waiting');
   });
 
   it('accepte un code en minuscules et refuse un lobby inconnu', () => {

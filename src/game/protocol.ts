@@ -8,7 +8,8 @@ import type { ErrorMode, TypingState } from './typing';
 export const MAX_STROKES_PER_BATCH = 400;
 
 const clientMessageSchema = z.discriminatedUnion('type', [
-  z.object({ type: z.literal('join'), guest: z.string().min(8).max(64) }),
+  /** `ticket` : siège signé par la page de course d'un lobby créé (src/realtime/ticket.ts). */
+  z.object({ type: z.literal('join'), guest: z.string().min(8).max(64), ticket: z.string().max(512).optional() }),
   z.object({
     type: z.literal('keys'),
     strokes: z.array(z.object({ key: z.string().min(1).max(16), t: z.number().finite().nonnegative() })).max(MAX_STROKES_PER_BATCH),

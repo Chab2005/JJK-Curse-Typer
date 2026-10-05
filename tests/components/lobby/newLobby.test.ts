@@ -36,20 +36,25 @@ describe('newLobbyRoom', () => {
 
 describe('viewLobby', () => {
   const room = newLobbyRoom('ABC-DEF', 'Lobby', HOST);
+  const yuji = { id: 'Yuji', name: 'Yuji Itadori', avatar: null };
 
   it('montre le salon tel quel à son hôte', () => {
-    expect(viewLobby(room, HOST.id, false)).toBe(room);
+    expect(viewLobby(room, HOST, false)).toBe(room);
   });
 
   it('fait rejoindre un visiteur comme participant pas encore prêt', () => {
-    const seen = viewLobby(room, 'Yuji', false);
+    const seen = viewLobby(room, yuji, false);
     expect(viewerRole(seen, 'Yuji')).toBe('player');
-    expect(seen.participants.at(-1)).toMatchObject({ id: 'Yuji', ready: false });
+    expect(seen.participants.at(-1)).toMatchObject({ id: 'Yuji', name: 'Yuji Itadori', ready: false });
   });
 
   it('met le visiteur en spectateur s’il le demande ou si le salon est plein', () => {
-    expect(viewerRole(viewLobby(room, 'Yuji', true), 'Yuji')).toBe('spectator');
+    expect(viewerRole(viewLobby(room, yuji, true), 'Yuji')).toBe('spectator');
     const full = { ...room, settings: { ...room.settings, capacity: 1 } };
-    expect(viewerRole(viewLobby(full, 'Yuji', false), 'Yuji')).toBe('spectator');
+    expect(viewerRole(viewLobby(full, yuji, false), 'Yuji')).toBe('spectator');
+  });
+
+  it('montre le salon tel quel à un visiteur anonyme', () => {
+    expect(viewLobby(room, { id: '', name: '', avatar: null }, false)).toBe(room);
   });
 });

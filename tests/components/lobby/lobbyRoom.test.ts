@@ -5,6 +5,8 @@ import {
   MAX_CAPACITY,
   WORDS_MAX,
   WORDS_MIN,
+  isEmpty,
+  isSpectating,
   lobbyReducer,
   normalizePractice,
   readyCount,
@@ -199,5 +201,103 @@ describe('readyCount', () => {
   it("compte l'hôte et les bots comme prêts", () => {
     const withBot = lobbyReducer(room(), { type: 'addBot', by: 'Gojo', level: 'beginner' });
     expect(readyCount(withBot)).toBe(2);
+  });
+});
+
+const person = (id: string) => ({ id, name: id, avatar: null });
+
+describe('join', () => {
+  it('fait entrer un nouveau venu comme participant pas encore prêt', () => {
+    const next = lobbyReducer(room(), { type: 'join', person: person('Nobara'), spectate: false });
+    expect(next.participants.at(-1)).toEqual({ kind: 'human', id: 'Nobara', name: 'Nobara', avatar: null, ready: false });
+  });
+
+  it('le met en spectateur s’il le demande, si le salon est plein ou si la course est partie', () => {
+    expect(isSpectating(lobbyReducer(room(), { type: 'join', person: person('Nobara'), spectate: true }), 'Nobara')).toBe(true);
+    const full = room({ settings: { ...SETTINGS, capacity: 2 } });
+    expect(isSpectating(lobbyReducer(full, { type: 'join', person: person('Nobara'), spectate: false }), 'Nobara')).toBe(true);
+    expect(isSpectating(lobbyReducer(room({ status: 'racing' }), { type: 'join', person: person('Nobara'), spectate: false }), 'Nobara')).toBe(true);
+  });
+
+  it('ne change rien pour quelqu’un déjà dans le salon', () => {
+    const before = room();
+    expect(lobbyReducer(before, { type: 'join', person: person('Yuji'), spectate: true })).toBe(before);
+    expect(lobbyReducer(before, { type: 'join', person: person('Ijichi'), spectate: false })).toBe(before);
+  });
+});
+
+describe('leave', () => {
+  it('retire un participant ou un spectateur', () => {
+    expect(ids(lobbyReducer(room(), { type: 'leave', id: 'Yuji' }))).toEqual(['Gojo']);
+    expect(lobbyReducer(room(), { type: 'leave', id: 'Ijichi' }).spectators).toEqual([]);
+  });
+
+  it('passe le rôle d’hôte au plus ancien humain (H-18), même pendant la course', () => {
+    const next = lobbyReducer(room({ status: 'racing' }), { type: 'leave', id: 'Gojo' });
+    expect(next.hostId).toBe('Yuji');
+    expect(ids(next)).toEqual(['Yuji']);
+  });
+
+  it('passe le rôle d’hôte à un spectateur s’il ne reste aucun joueur humain', () => {
+    const next = lobbyReducer(room({ participants: [human('Gojo')] }), { type: 'leave', id: 'Gojo' });
+    expect(next.hostId).toBe('Ijichi');
+  });
+
+  it('ignore quelqu’un qui n’est pas dans le salon', () => {
+    const before = room();
+    expect(lobbyReducer(before, { type: 'leave', id: 'Inconnu' })).toBe(before);
+  });
+});
+
+describe('isEmpty', () => {
+  it('est vrai quand il ne reste que des bots', () => {
+    const withBot = lobbyReducer(room({ participants: [human('Gojo')], spectators: [] }), { type: 'addBot', by: 'Gojo', level: 'expert' });
+    expect(isEmpty(withBot)).toBe(false);
+    expect(isEmpty(lobbyReducer(withBot, { type: 'leave', id: 'Gojo' }))).toBe(true);
+  });
+});
+
+describe('setSpectating', () => {
+  it('fait passer un joueur en spectateur et inversement', () => {
+    const watching = lobbyReducer(room({ participants: [human('Gojo', true), human('Yuji', true)] }), { type: 'setSpectating', id: 'Yuji', spectating: true });
+    expect(ids(watching)).toEqual(['Gojo']);
+    expect(watching.spectators.at(-1)).toEqual({ id: 'Yuji', name: 'Yuji', avatar: null });
+
+    const back = lobbyReducer(watching, { type: 'setSpectating', id: 'Yuji', spectating: false });
+    expect(back.participants.at(-1)).toMatchObject({ id: 'Yuji', ready: false });
+    expect(isSpectating(back, 'Yuji')).toBe(false);
+  });
+
+  it('laisse l’hôte regarder sans perdre son rôle', () => {
+    const next = lobbyReducer(room(), { type: 'setSpectating', id: 'Gojo', spectating: true });
+    expect(next.hostId).toBe('Gojo');
+    expect(viewerRole(next, 'Gojo')).toBe('host');
+    expect(isSpectating(next, 'Gojo')).toBe(true);
+  });
+
+  it('ne fait pas rejoindre un salon plein ni une course partie', () => {
+    const full = room({ settings: { ...SETTINGS, capacity: 2 } });
+    expect(lobbyReducer(full, { type: 'setSpectating', id: 'Ijichi', spectating: false })).toBe(full);
+    const racing = room({ status: 'racing' });
+    expect(lobbyReducer(racing, { type: 'setSpectating', id: 'Yuji', spectating: true })).toBe(racing);
+  });
+});
+
+describe('start / finish (LOB-7)', () => {
+  const ready = room({ participants: [human('Gojo', true), human('Yuji', true)] });
+
+  it("lance la course quand l'hôte le demande et que tout le monde est prêt", () => {
+    expect(lobbyReducer(ready, { type: 'start', by: 'Gojo' }).status).toBe('racing');
+    expect(lobbyReducer(ready, { type: 'start', by: 'Yuji' })).toBe(ready);
+    const notReady = room();
+    expect(lobbyReducer(notReady, { type: 'start', by: 'Gojo' })).toBe(notReady);
+  });
+
+  it("rouvre le salon après la course : chacun redit qu'il est prêt", () => {
+    const racing = lobbyReducer(ready, { type: 'start', by: 'Gojo' });
+    const next = lobbyReducer(racing, { type: 'finish' });
+    expect(next.status).toBe('waiting');
+    expect(next.participants[1]).toMatchObject({ id: 'Yuji', ready: false });
+    expect(lobbyReducer(ready, { type: 'finish' })).toBe(ready);
   });
 });

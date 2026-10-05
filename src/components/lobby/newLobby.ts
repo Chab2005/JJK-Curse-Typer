@@ -2,7 +2,7 @@
 // qu'en a chaque visiteur (LOB-3, LOB-4, LOB-5).
 import { PIN_ALPHABET } from '@/components/home/join';
 import type { CharacterId } from '@/components/shared/characters';
-import type { LobbyRoom, LobbySettings } from './lobbyRoom';
+import { lobbyReducer, type LobbyRoom, type LobbySettings, type Spectator } from './lobbyRoom';
 
 /** Réglages d'un nouveau lobby ; l'hôte les change ensuite dans le salon d'attente. */
 export const DEFAULT_LOBBY_SETTINGS: LobbySettings = {
@@ -41,12 +41,11 @@ export function newLobbyRoom(code: string, name: string, host: { id: string; nam
   };
 }
 
-/** Le lobby vu par `viewer` : il le rejoint s'il reste de la place, sinon (ou avec `spectate`) il le regarde. */
-export function viewLobby(room: LobbyRoom, viewer: string, spectate: boolean): LobbyRoom {
-  if (room.participants.some((p) => p.id === viewer) || room.spectators.some((s) => s.id === viewer)) return room;
-  const person = { id: viewer, name: viewer, avatar: null };
-  const joinable = !spectate && room.status === 'waiting' && room.participants.length < room.settings.capacity;
-  return joinable
-    ? { ...room, participants: [...room.participants, { kind: 'human', ...person, ready: false }] }
-    : { ...room, spectators: [...room.spectators, person] };
+/**
+ * Aperçu du lobby tel que `viewer` le verra une fois entré : participant s'il reste de la place, spectateur sinon
+ * (ou avec `spectate`). Rien n'est enregistré : l'entrée elle-même passe par une action serveur. Un visiteur anonyme voit le salon tel quel.
+ */
+export function viewLobby(room: LobbyRoom, viewer: Spectator, spectate: boolean): LobbyRoom {
+  if (!viewer.id) return room;
+  return lobbyReducer(room, { type: 'join', person: viewer, spectate });
 }

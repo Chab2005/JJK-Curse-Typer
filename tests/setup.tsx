@@ -11,8 +11,11 @@ afterEach(() => {
   cleanup();
   routerMock.push.mockReset();
   routerMock.replace.mockReset();
+  routerMock.refresh.mockReset();
   lobbyActionsMock.createLobbyAction.mockReset();
   lobbyActionsMock.updateLobbyAction.mockReset();
+  lobbyActionsMock.joinLobbyAction.mockReset();
+  lobbyActionsMock.leaveLobbyAction.mockReset();
   lobbyActionsMock.createInviteAction.mockReset();
   authActionsMock.setGuestNameAction.mockReset().mockResolvedValue(null);
   window.history.replaceState(null, '', '/');

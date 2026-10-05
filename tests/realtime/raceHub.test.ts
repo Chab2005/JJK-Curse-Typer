@@ -7,8 +7,10 @@ const SEATS: RacerSeat[] = [
   { id: 'bot-1', name: '1', avatar: null, kind: 'bot', level: 'expert' },
 ];
 
+const onEnd = vi.fn();
+
 const create = (code: string, now: number) =>
-  code === 'ABC-DEF' ? { race: createRace({ seats: SEATS, text: 'ab', mode: 'block', timerMs: 0, bonus: false, now, seed: 1 }), preferredSeat: 'me' } : null;
+  code === 'ABC-DEF' ? { race: createRace({ seats: SEATS, text: 'ab', mode: 'block', timerMs: 0, bonus: false, now, seed: 1 }), preferredSeat: 'me', onEnd } : null;
 
 const conn = () => ({ send: vi.fn() });
 
@@ -16,6 +18,7 @@ let hub: RaceHub;
 
 beforeEach(() => {
   vi.useFakeTimers();
+  onEnd.mockReset();
   hub = new RaceHub(create);
 });
 
@@ -65,5 +68,36 @@ describe('RaceHub', () => {
     vi.advanceTimersByTime(TICK_MS);
     expect(hub.size).toBe(0);
     expect(hub.open('ABC-DEF')).not.toBe(room);
+  });
+
+  function finishedRoom() {
+    const room = hub.open('ABC-DEF')!;
+    const c = conn();
+    room.connect(c);
+    room.receive(c, JSON.stringify({ type: 'join', guest: 'guest-aaaaaaaa' }));
+    vi.advanceTimersByTime(COUNTDOWN_MS + TICK_MS);
+    room.receive(c, JSON.stringify({ type: 'abandon' }));
+    vi.advanceTimersByTime(30_000);
+    return room;
+  }
+
+  it('prévient le lobby une seule fois quand la course se termine', () => {
+    finishedRoom();
+    vi.advanceTimersByTime(TICK_MS * 10);
+    expect(onEnd).toHaveBeenCalledTimes(1);
+  });
+
+  it('prévient aussi le lobby d’une course fermée faute de joueurs', () => {
+    hub.open('ABC-DEF');
+    vi.advanceTimersByTime(EMPTY_ROOM_TTL_MS + TICK_MS * 2);
+    expect(onEnd).toHaveBeenCalledTimes(1);
+  });
+
+  it('remplace une course terminée quand le lobby en relance une', () => {
+    const old = finishedRoom();
+    expect(hub.size).toBe(1);
+    const next = hub.open('ABC-DEF');
+    expect(next).not.toBe(old);
+    expect(next?.phase).toBe('countdown');
   });
 });

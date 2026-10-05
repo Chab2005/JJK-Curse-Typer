@@ -1,5 +1,5 @@
 // Logique pure du salon d'attente d'un lobby (LOB-1, LOB-5 à LOB-9, LOB-11) : état + action → nouvel état.
-// La room temps réel (phase 2) rejouera ce réducteur ; en attendant, la page s'en sert en local.
+// Le serveur (src/lib/lobbies.ts) le rejoue sur les lobbies créés ; la page s'en sert aussi pour un retour immédiat.
 import type { CharacterId } from '@/components/shared/characters';
 import type { CharKind, TextLanguage } from '@/components/lobbies/lobbySearch';
 import { BOT_LEVELS, type BotLevel } from '@/game/bots';
@@ -79,7 +79,15 @@ export type LobbyAction =
   | { type: 'updateSettings'; by: string; patch: Partial<LobbySettings> }
   | { type: 'addBot'; by: string; level: BotLevel }
   | { type: 'kick'; by: string; id: string }
-  | { type: 'transferHost'; by: string; id: string };
+  | { type: 'transferHost'; by: string; id: string }
+  /** Arrivée dans le salon : participant s'il reste de la place, spectateur sinon ou s'il le demande. */
+  | { type: 'join'; person: Spectator; spectate: boolean }
+  | { type: 'leave'; id: string }
+  /** Un humain (hôte compris) passe de joueur à spectateur, ou l'inverse. */
+  | { type: 'setSpectating'; id: string; spectating: boolean }
+  | { type: 'start'; by: string }
+  /** Fin de la course : le salon rouvre. */
+  | { type: 'finish' };
 
 export type ViewerRole = 'host' | 'player' | 'spectator';
 
@@ -87,6 +95,13 @@ export function viewerRole(room: LobbyRoom, viewerId: string): ViewerRole {
   if (room.hostId === viewerId) return 'host';
   return room.participants.some((p) => p.id === viewerId) ? 'player' : 'spectator';
 }
+
+export const isSpectating = (room: LobbyRoom, id: string) => room.spectators.some((s) => s.id === id);
+
+/** Plus aucun humain, joueur ou spectateur : le lobby peut être oublié. */
+export const isEmpty = (room: LobbyRoom) => room.spectators.length === 0 && !room.participants.some((p) => p.kind === 'human');
+
+const isInside = (room: LobbyRoom, id: string) => room.participants.some((p) => p.id === id) || isSpectating(room, id);
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, Math.round(value)));
 
@@ -134,9 +149,50 @@ function setReady(room: LobbyRoom, id: string, ready: boolean): LobbyRoom {
   return { ...room, participants: room.participants.map((p) => (p.kind === 'human' && p.id === id ? { ...p, ready } : p)) };
 }
 
+function join(room: LobbyRoom, person: Spectator, spectate: boolean): LobbyRoom {
+  if (isInside(room, person.id)) return room;
+  const { id, name, avatar } = person;
+  const joinable = !spectate && room.status === 'waiting' && room.participants.length < room.settings.capacity;
+  return joinable
+    ? { ...room, participants: [...room.participants, { kind: 'human', id, name, avatar, ready: false }] }
+    : { ...room, spectators: [...room.spectators, { id, name, avatar }] };
+}
+
+function leave(room: LobbyRoom, id: string): LobbyRoom {
+  if (!isInside(room, id)) return room;
+  const left = { ...room, participants: room.participants.filter((p) => p.id !== id), spectators: room.spectators.filter((s) => s.id !== id) };
+  if (id !== room.hostId) return left;
+  // Le plus ancien joueur humain succède à l'hôte (H-18), sinon le plus ancien spectateur.
+  const successor = left.participants.find((p) => p.kind === 'human') ?? left.spectators[0];
+  return { ...left, hostId: successor?.id ?? '' };
+}
+
+function setSpectating(room: LobbyRoom, id: string, spectating: boolean): LobbyRoom {
+  if (spectating) {
+    const player = room.participants.find((p) => p.kind === 'human' && p.id === id);
+    if (player?.kind !== 'human') return room;
+    const { name, avatar } = player;
+    return { ...room, participants: room.participants.filter((p) => p.id !== id), spectators: [...room.spectators, { id, name, avatar }] };
+  }
+  const spectator = room.spectators.find((s) => s.id === id);
+  if (!spectator || room.participants.length >= room.settings.capacity) return room;
+  return { ...room, spectators: room.spectators.filter((s) => s.id !== id), participants: [...room.participants, { kind: 'human', ...spectator, ready: false }] };
+}
+
+/** Le salon rouvre après la course ; chaque joueur redit qu'il est prêt pour la suivante. */
+function finish(room: LobbyRoom): LobbyRoom {
+  if (room.status !== 'racing') return room;
+  return { ...room, status: 'waiting', participants: room.participants.map((p) => (p.kind === 'human' ? { ...p, ready: p.id === room.hostId } : p)) };
+}
+
 export function lobbyReducer(room: LobbyRoom, action: LobbyAction): LobbyRoom {
+  // Arrivées, départs et fin de course valent aussi pendant la course.
+  if (action.type === 'join') return join(room, action.person, action.spectate);
+  if (action.type === 'leave') return leave(room, action.id);
+  if (action.type === 'finish') return finish(room);
   if (room.status !== 'waiting') return room;
   if (action.type === 'setReady') return setReady(room, action.id, action.ready);
+  if (action.type === 'setSpectating') return setSpectating(room, action.id, action.spectating);
   // Les autres actions sont réservées à l'hôte (LOB-5, LOB-8, LOB-11).
   if (action.by !== room.hostId) return room;
   switch (action.type) {
@@ -148,6 +204,8 @@ export function lobbyReducer(room: LobbyRoom, action: LobbyAction): LobbyRoom {
       return kick(room, action.id);
     case 'transferHost':
       return transferHost(room, action.id);
+    case 'start':
+      return startBlocker(room) === null ? { ...room, status: 'racing' } : room;
   }
 }
 
