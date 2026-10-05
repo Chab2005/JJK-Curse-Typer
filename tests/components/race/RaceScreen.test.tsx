@@ -42,7 +42,7 @@ class FakeWebSocket {
 const SEATS: RacerSeat[] = [
   { id: 'Megumi_Shadows', name: 'Megumi_Shadows', avatar: 'megumi', kind: 'human', level: null },
   { id: 'Yuji_BlackFlash', name: 'Yuji_BlackFlash', avatar: 'yuji', kind: 'human', level: null },
-  { id: 'bot-1', name: '1', avatar: null, kind: 'bot', level: 'expert' },
+  { id: 'bot-1', name: '1', avatar: null, kind: 'bot', level: 'grade_1' },
 ];
 
 const race = (overrides: Partial<RaceSnapshot> = {}): RaceSnapshot => ({

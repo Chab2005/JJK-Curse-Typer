@@ -240,9 +240,12 @@
       "add": "Add a bot",
       "full": "The lobby is full.",
       "levels": {
-        "beginner": "Beginner",
-        "intermediate": "Intermediate",
-        "expert": "Expert"
+        "grade_4": "Grade 4",
+        "grade_3": "Grade 3",
+        "grade_2": "Grade 2",
+        "grade_1": "Grade 1",
+        "special_grade": "Special Grade",
+        "calamity_grade": "Calamity Grade"
       }
     },
     "spectators": {

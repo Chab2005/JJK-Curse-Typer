@@ -3,7 +3,7 @@ import { randomStream, type Seed } from './random';
 import { CHARS_PER_WORD } from './scoring';
 import { BACKSPACE, type Keystroke, type TypingState } from './typing';
 
-export const BOT_LEVELS = ['beginner', 'intermediate', 'expert'] as const;
+export const BOT_LEVELS = ['grade_4', 'grade_3', 'grade_2', 'grade_1', 'special_grade', 'calamity_grade'] as const;
 export type BotLevel = (typeof BOT_LEVELS)[number];
 
 export interface BotProfile {
@@ -14,9 +14,12 @@ export interface BotProfile {
 }
 
 export const BOT_PROFILES: Record<BotLevel, BotProfile> = {
-  beginner: { wpm: 32, errorRate: 0.07 },
-  intermediate: { wpm: 58, errorRate: 0.035 },
-  expert: { wpm: 95, errorRate: 0.012 },
+  grade_4: { wpm: 15, errorRate: 0.12 },
+  grade_3: { wpm: 27, errorRate: 0.08 },
+  grade_2: { wpm: 47, errorRate: 0.05 },
+  grade_1: { wpm: 85, errorRate: 0.02 },
+  special_grade: { wpm: 140, errorRate: 0.005 },
+  calamity_grade: { wpm: 180, errorRate: 0.0001 },
 };
 
 export interface BotState {

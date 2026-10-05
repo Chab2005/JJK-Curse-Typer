@@ -124,28 +124,28 @@ describe('normalizePractice', () => {
 
 describe('addBot (LOB-8)', () => {
   it('ajoute un bot du niveau choisi, numéroté à la suite', () => {
-    let next = lobbyReducer(room(), { type: 'addBot', by: 'Gojo', level: 'expert' });
-    next = lobbyReducer(next, { type: 'addBot', by: 'Gojo', level: 'beginner' });
+    let next = lobbyReducer(room(), { type: 'addBot', by: 'Gojo', level: 'grade_1' });
+    next = lobbyReducer(next, { type: 'addBot', by: 'Gojo', level: 'grade_4' });
     expect(next.participants.slice(2)).toEqual([
-      { kind: 'bot', id: 'bot-1', level: 'expert', number: 1 },
-      { kind: 'bot', id: 'bot-2', level: 'beginner', number: 2 },
+      { kind: 'bot', id: 'bot-1', level: 'grade_1', number: 1 },
+      { kind: 'bot', id: 'bot-2', level: 'grade_4', number: 2 },
     ]);
   });
 
   it("ne dépasse pas la capacité", () => {
     const full = room({ settings: { ...SETTINGS, capacity: 2 } });
-    expect(lobbyReducer(full, { type: 'addBot', by: 'Gojo', level: 'expert' })).toBe(full);
+    expect(lobbyReducer(full, { type: 'addBot', by: 'Gojo', level: 'grade_1' })).toBe(full);
   });
 
   it("est réservé à l'hôte", () => {
     const before = room();
-    expect(lobbyReducer(before, { type: 'addBot', by: 'Yuji', level: 'expert' })).toBe(before);
+    expect(lobbyReducer(before, { type: 'addBot', by: 'Yuji', level: 'grade_1' })).toBe(before);
   });
 });
 
 describe('kick (LOB-8)', () => {
   it('retire un participant, un bot ou un spectateur', () => {
-    const withBot = lobbyReducer(room(), { type: 'addBot', by: 'Gojo', level: 'intermediate' });
+    const withBot = lobbyReducer(room(), { type: 'addBot', by: 'Gojo', level: 'grade_2' });
     expect(ids(lobbyReducer(withBot, { type: 'kick', by: 'Gojo', id: 'Yuji' }))).toEqual(['Gojo', 'bot-1']);
     expect(ids(lobbyReducer(withBot, { type: 'kick', by: 'Gojo', id: 'bot-1' }))).toEqual(['Gojo', 'Yuji']);
     expect(lobbyReducer(withBot, { type: 'kick', by: 'Gojo', id: 'Ijichi' }).spectators).toEqual([]);
@@ -167,7 +167,7 @@ describe('transferHost (LOB-11)', () => {
   });
 
   it("refuse un bot ou un spectateur comme hôte", () => {
-    const withBot = lobbyReducer(room(), { type: 'addBot', by: 'Gojo', level: 'expert' });
+    const withBot = lobbyReducer(room(), { type: 'addBot', by: 'Gojo', level: 'grade_1' });
     expect(lobbyReducer(withBot, { type: 'transferHost', by: 'Gojo', id: 'bot-1' })).toBe(withBot);
     expect(lobbyReducer(withBot, { type: 'transferHost', by: 'Gojo', id: 'Ijichi' })).toBe(withBot);
   });
@@ -177,7 +177,7 @@ describe('course en cours', () => {
   it("fige le salon d'attente", () => {
     const racing = room({ status: 'racing' });
     expect(lobbyReducer(racing, { type: 'setReady', id: 'Yuji', ready: true })).toBe(racing);
-    expect(lobbyReducer(racing, { type: 'addBot', by: 'Gojo', level: 'expert' })).toBe(racing);
+    expect(lobbyReducer(racing, { type: 'addBot', by: 'Gojo', level: 'grade_1' })).toBe(racing);
   });
 });
 
@@ -192,14 +192,14 @@ describe('startBlocker (LOB-7)', () => {
   });
 
   it("permet une course entre l'hôte et des bots (H-17)", () => {
-    const withBot = lobbyReducer(room({ participants: [human('Gojo')] }), { type: 'addBot', by: 'Gojo', level: 'beginner' });
+    const withBot = lobbyReducer(room({ participants: [human('Gojo')] }), { type: 'addBot', by: 'Gojo', level: 'grade_4' });
     expect(startBlocker(withBot)).toBeNull();
   });
 });
 
 describe('readyCount', () => {
   it("compte l'hôte et les bots comme prêts", () => {
-    const withBot = lobbyReducer(room(), { type: 'addBot', by: 'Gojo', level: 'beginner' });
+    const withBot = lobbyReducer(room(), { type: 'addBot', by: 'Gojo', level: 'grade_4' });
     expect(readyCount(withBot)).toBe(2);
   });
 });
@@ -251,7 +251,7 @@ describe('leave', () => {
 
 describe('isEmpty', () => {
   it('est vrai quand il ne reste que des bots', () => {
-    const withBot = lobbyReducer(room({ participants: [human('Gojo')], spectators: [] }), { type: 'addBot', by: 'Gojo', level: 'expert' });
+    const withBot = lobbyReducer(room({ participants: [human('Gojo')], spectators: [] }), { type: 'addBot', by: 'Gojo', level: 'grade_1' });
     expect(isEmpty(withBot)).toBe(false);
     expect(isEmpty(lobbyReducer(withBot, { type: 'leave', id: 'Gojo' }))).toBe(true);
   });

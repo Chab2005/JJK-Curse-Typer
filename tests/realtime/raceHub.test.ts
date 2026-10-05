@@ -4,7 +4,7 @@ import { EMPTY_ROOM_TTL_MS, RaceHub, TICK_MS } from '@/realtime/raceHub';
 
 const SEATS: RacerSeat[] = [
   { id: 'me', name: 'Me', avatar: null, kind: 'human', level: null },
-  { id: 'bot-1', name: '1', avatar: null, kind: 'bot', level: 'expert' },
+  { id: 'bot-1', name: '1', avatar: null, kind: 'bot', level: 'grade_1' },
 ];
 
 const onEnd = vi.fn();

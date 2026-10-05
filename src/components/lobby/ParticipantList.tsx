@@ -98,10 +98,12 @@ function ParticipantRow({
           {isRoomHost && <Tag icon="crown" className="text-gold">{t('host')}</Tag>}
           {participant.id === viewerId && <Tag className="text-primary">{t('you')}</Tag>}
           {participant.kind === 'bot' && <Tag icon="smart_toy" className="text-secondary">{t('bot', { level: tBots(`levels.${participant.level}`) })}</Tag>}
-          {/* L'état est écrit en toutes lettres, pas seulement porté par la couleur (UI-8). */}
-          <Tag icon={ready ? 'check_circle' : 'hourglass_empty'} className={ready ? 'text-tertiary' : 'text-outline'}>
-            {ready ? t('readyState') : t('notReady')}
-          </Tag>
+          {/* L'état est écrit en toutes lettres, pas seulement porté par la couleur (UI-8). Les bots, toujours prêts, n'en ont pas. */}
+          {participant.kind === 'human' && (
+            <Tag icon={ready ? 'check_circle' : 'hourglass_empty'} className={ready ? 'text-tertiary' : 'text-outline'}>
+              {ready ? t('readyState') : t('notReady')}
+            </Tag>
+          )}
         </p>
       </div>
 
@@ -130,7 +132,7 @@ function Tag({ icon, className, children }: { icon?: string; className: string; 
 
 function BotAdder({ full, onAdd }: { full: boolean; onAdd: (level: BotLevel) => void }) {
   const t = useTranslations('Lobby.bots');
-  const [level, setLevel] = useState<BotLevel>('intermediate');
+  const [level, setLevel] = useState<BotLevel>('grade_2');
 
   return (
     <div className="flex flex-wrap items-center gap-3 border border-dashed border-outline-variant px-4 py-3">

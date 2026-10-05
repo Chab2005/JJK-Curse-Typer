@@ -14,7 +14,7 @@ const ROOM: LobbyRoom = {
   participants: [
     { kind: 'human', id: 'Satoru_Infinity', name: 'Satoru_Infinity', avatar: 'gojo', ready: true },
     { kind: 'human', id: 'Yuji_BlackFlash', name: 'Yuji_BlackFlash', avatar: 'yuji', ready: false },
-    { kind: 'bot', id: 'bot-1', level: 'expert', number: 1 },
+    { kind: 'bot', id: 'bot-1', level: 'grade_1', number: 1 },
   ],
   spectators: [{ id: 'Ijichi_Driver', name: 'Ijichi_Driver', avatar: null }],
   settings: { languages: ['fr'], content: 'sentences', words: 60, chars: ['uppercase'], practice: '', timer: 0, errorMode: 'accumulate', bonus: true, capacity: 4, visibility: 'public' },
@@ -32,6 +32,14 @@ describe('WaitingRoom (LOB-9)', () => {
     expect(participants().getByText('Cursed corpse 1')).toBeInTheDocument();
     expect(screen.getByText('3/4')).toBeInTheDocument();
     expect(screen.getByText('2 ready')).toBeInTheDocument();
+  });
+
+  it('shows no ready tag on bots, they are always ready', () => {
+    renderWithIntl(<WaitingRoom initialRoom={ROOM} viewerId="Yuji_BlackFlash" />);
+
+    const bot = participants().getByText('Cursed corpse 1').closest('li')!;
+    expect(within(bot).queryByText('Ready')).not.toBeInTheDocument();
+    expect(participants().getAllByText(/^(Ready|Not ready)$/)).toHaveLength(2);
   });
 
   it('lets a player toggle their ready state', async () => {
@@ -58,11 +66,11 @@ describe('WaitingRoom host controls (LOB-8, LOB-11)', () => {
     const { user } = renderWithIntl(<WaitingRoom initialRoom={ROOM} viewerId="Satoru_Infinity" />);
 
     await user.click(screen.getByRole('combobox', { name: 'Bot level' }));
-    await user.click(screen.getByRole('option', { name: 'Beginner' }));
+    await user.click(screen.getByRole('option', { name: 'Grade 4' }));
     await user.click(screen.getByRole('button', { name: 'Add a bot' }));
 
     expect(participants().getByText('Cursed corpse 2')).toBeInTheDocument();
-    expect(participants().getByText('Bot · Beginner')).toBeInTheDocument();
+    expect(participants().getByText('Bot · Grade 4')).toBeInTheDocument();
     expect(screen.getByRole('status')).toHaveTextContent('Cursed corpse 2 joined the lobby.');
     expect(screen.getByRole('button', { name: 'Add a bot' })).toBeDisabled();
     expect(screen.getByText('The lobby is full.')).toBeInTheDocument();
@@ -116,7 +124,7 @@ describe('WaitingRoom host controls (LOB-8, LOB-11)', () => {
     const { user } = renderWithIntl(<WaitingRoom initialRoom={ROOM} viewerId="Satoru_Infinity" />);
 
     await user.click(screen.getByRole('button', { name: 'Add a bot' }));
-    expect(lobbyActionsMock.updateLobbyAction).toHaveBeenCalledWith('SHJ-60S', { type: 'addBot', by: 'Satoru_Infinity', level: 'intermediate' });
+    expect(lobbyActionsMock.updateLobbyAction).toHaveBeenCalledWith('SHJ-60S', { type: 'addBot', by: 'Satoru_Infinity', level: 'grade_2' });
   });
 
   it('edits the race settings (LOB-5)', async () => {
@@ -224,7 +232,7 @@ describe('WaitingRoom of a created lobby (realtime)', () => {
     expect(FakeEventSource.instances[0].url).toBe('/api/lobbies/ABC-DEF/events');
 
     // The host adds a bot and changes a setting: everyone sees it.
-    const update = { ...joined, participants: [...joined.participants, { kind: 'bot' as const, id: 'bot-2', level: 'beginner' as const, number: 2 }], settings: { ...joined.settings, bonus: false } };
+    const update = { ...joined, participants: [...joined.participants, { kind: 'bot' as const, id: 'bot-2', level: 'grade_4' as const, number: 2 }], settings: { ...joined.settings, bonus: false } };
     act(() => FakeEventSource.instances[0].onmessage!({ data: JSON.stringify(update) }));
     expect(participants().getByText('Cursed corpse 2')).toBeInTheDocument();
   });

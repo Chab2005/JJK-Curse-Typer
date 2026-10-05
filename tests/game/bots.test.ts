@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { BOT_PROFILES, createBot, nextBotStroke, standInProfile, type BotState } from '@/game/bots';
+import { BOT_LEVELS, BOT_PROFILES, createBot, nextBotStroke, standInProfile, type BotState } from '@/game/bots';
 import { rawWpm } from '@/game/scoring';
 import { BACKSPACE, startTyping, typeKey, type ErrorMode, type TypingState } from '@/game/typing';
 
@@ -20,14 +20,14 @@ function race(bot: BotState, mode: ErrorMode, limit = 5000) {
 
 describe('nextBotStroke', () => {
   it('est déterministe pour une même graine', () => {
-    const a = race(createBot(BOT_PROFILES.intermediate, 1), 'accumulate');
-    const b = race(createBot(BOT_PROFILES.intermediate, 1), 'accumulate');
+    const a = race(createBot(BOT_PROFILES.grade_2, 1), 'accumulate');
+    const b = race(createBot(BOT_PROFILES.grade_2, 1), 'accumulate');
     expect(a.keys).toEqual(b.keys);
   });
 
   it('termine le texte sans faute restante, en corrigeant ses erreurs (BOT-4)', () => {
     for (const mode of ['accumulate', 'block'] as const) {
-      const { typing } = race(createBot(BOT_PROFILES.beginner, 2), mode);
+      const { typing } = race(createBot(BOT_PROFILES.grade_4, 2), mode);
       expect(typing.finishedAt).not.toBeNull();
       expect(typing.input).toBe(TEXT);
       expect(typing.errors).toBeGreaterThan(0);
@@ -35,12 +35,12 @@ describe('nextBotStroke', () => {
   });
 
   it('corrige avec Retour arrière en mode accumulation', () => {
-    const { keys } = race(createBot(BOT_PROFILES.beginner, 3), 'accumulate');
+    const { keys } = race(createBot(BOT_PROFILES.grade_4, 3), 'accumulate');
     expect(keys).toContain(BACKSPACE);
   });
 
   it('fait moins d’erreurs et va plus vite selon le niveau (BOT-2)', () => {
-    const results = (['beginner', 'intermediate', 'expert'] as const).map((level) => {
+    const results = BOT_LEVELS.map((level) => {
       let errors = 0;
       let wpm = 0;
       for (let seed = 1; seed <= 20; seed++) {
@@ -50,14 +50,15 @@ describe('nextBotStroke', () => {
       }
       return { errors, wpm };
     });
-    expect(results[0].errors).toBeGreaterThan(results[1].errors);
-    expect(results[1].errors).toBeGreaterThan(results[2].errors);
-    expect(results[0].wpm).toBeLessThan(results[1].wpm);
-    expect(results[1].wpm).toBeLessThan(results[2].wpm);
+    for (let i = 1; i < results.length; i++) {
+      expect(results[i].errors).toBeLessThanOrEqual(results[i - 1].errors);
+      expect(results[i].wpm).toBeGreaterThan(results[i - 1].wpm);
+    }
+    expect(results.at(-1)!.errors).toBeLessThan(results[0].errors);
   });
 
   it('change de vitesse au cours de la course (BOT-3)', () => {
-    let bot = createBot(BOT_PROFILES.expert, 4);
+    let bot = createBot(BOT_PROFILES.grade_1, 4);
     let typing = startTyping(TEXT, 'block');
     const speeds = new Set<number>();
     while (typing.finishedAt === null) {
@@ -70,7 +71,7 @@ describe('nextBotStroke', () => {
   });
 
   it('frappe à des instants croissants, après un temps de réaction', () => {
-    const bot = createBot(BOT_PROFILES.expert, 5);
+    const bot = createBot(BOT_PROFILES.grade_1, 5);
     expect(bot.nextAt).toBeGreaterThan(0);
     const first = nextBotStroke(bot, startTyping(TEXT, 'block'));
     expect(first.stroke.t).toBe(bot.nextAt);

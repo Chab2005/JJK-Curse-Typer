@@ -22,7 +22,7 @@ const TEXT = 'abc def';
 const SEATS: RacerSeat[] = [
   { id: 'ann', name: 'Ann', avatar: null, kind: 'human', level: null },
   { id: 'bob', name: 'Bob', avatar: 'gojo', kind: 'human', level: null },
-  { id: 'bot-1', name: 'Bot', avatar: null, kind: 'bot', level: 'expert' },
+  { id: 'bot-1', name: 'Bot', avatar: null, kind: 'bot', level: 'grade_1' },
 ];
 
 const newRace = (overrides: Partial<Parameters<typeof createRace>[0]> = {}) =>
