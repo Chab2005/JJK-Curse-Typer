@@ -85,7 +85,7 @@ function ParticipantRow({
   return (
     <li className={`flex items-center gap-3 border-l-[3px] bg-surface-container-low py-2.5 pr-1.5 pl-3 ${ready ? 'border-tertiary' : 'border-outline-variant'}`}>
       {participant.kind === 'human' ? (
-        <Avatar avatar={participant.avatar} name={participant.name} size={40} />
+        <Avatar avatar={participant.avatar} name={participant.name} src={participant.photo} size={40} />
       ) : (
         <span className="flex size-10 shrink-0 items-center justify-center rounded-[50%] bg-secondary-container text-on-secondary-container">
           <span aria-hidden="true" className="material-symbols-outlined text-[22px]">smart_toy</span>

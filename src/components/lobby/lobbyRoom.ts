@@ -45,6 +45,8 @@ export interface HumanParticipant {
   id: string;
   name: string;
   avatar: CharacterId | null;
+  /** URL de la photo téléversée (PROF-5) ; prime sur `avatar`. */
+  photo?: string | null;
   ready: boolean;
 }
 
@@ -61,6 +63,8 @@ export interface Spectator {
   id: string;
   name: string;
   avatar: CharacterId | null;
+  /** URL de la photo téléversée (PROF-5) ; prime sur `avatar`. */
+  photo?: string | null;
 }
 
 export interface LobbyRoom {
@@ -151,11 +155,11 @@ function setReady(room: LobbyRoom, id: string, ready: boolean): LobbyRoom {
 
 function join(room: LobbyRoom, person: Spectator, spectate: boolean): LobbyRoom {
   if (isInside(room, person.id)) return room;
-  const { id, name, avatar } = person;
+  const { id, name, avatar, photo = null } = person;
   const joinable = !spectate && room.status === 'waiting' && room.participants.length < room.settings.capacity;
   return joinable
-    ? { ...room, participants: [...room.participants, { kind: 'human', id, name, avatar, ready: false }] }
-    : { ...room, spectators: [...room.spectators, { id, name, avatar }] };
+    ? { ...room, participants: [...room.participants, { kind: 'human', id, name, avatar, photo, ready: false }] }
+    : { ...room, spectators: [...room.spectators, { id, name, avatar, photo }] };
 }
 
 function leave(room: LobbyRoom, id: string): LobbyRoom {
@@ -171,8 +175,8 @@ function setSpectating(room: LobbyRoom, id: string, spectating: boolean): LobbyR
   if (spectating) {
     const player = room.participants.find((p) => p.kind === 'human' && p.id === id);
     if (player?.kind !== 'human') return room;
-    const { name, avatar } = player;
-    return { ...room, participants: room.participants.filter((p) => p.id !== id), spectators: [...room.spectators, { id, name, avatar }] };
+    const { name, avatar, photo = null } = player;
+    return { ...room, participants: room.participants.filter((p) => p.id !== id), spectators: [...room.spectators, { id, name, avatar, photo }] };
   }
   const spectator = room.spectators.find((s) => s.id === id);
   if (!spectator || room.participants.length >= room.settings.capacity) return room;
