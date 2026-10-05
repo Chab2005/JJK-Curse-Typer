@@ -3,10 +3,17 @@ import { describe, expect, it } from 'vitest';
 import ProfileAvatar from '@/components/layout/ProfileAvatar';
 import { renderWithIntl } from '../../render';
 
-describe('ProfileAvatar (smoke)', () => {
-  it('renders the profile picture with its alt text', () => {
-    renderWithIntl(<ProfileAvatar />);
+describe('ProfileAvatar', () => {
+  it('shows the first two letters of the name without an uploaded picture', () => {
+    renderWithIntl(<ProfileAvatar account={{ username: 'megumi', displayName: 'Megumi', avatarUrl: null }} />);
 
-    expect(screen.getByRole('img', { name: 'My profile' })).toBeInTheDocument();
+    expect(screen.getByText('ME')).toBeInTheDocument();
+  });
+
+  it('shows the uploaded picture when there is one', () => {
+    const { container } = renderWithIntl(<ProfileAvatar account={{ username: 'megumi', displayName: 'Megumi', avatarUrl: '/api/avatar/megumi?v=1' }} />);
+
+    expect(container.querySelector('img')).toHaveAttribute('src', '/api/avatar/megumi?v=1');
+    expect(screen.queryByText('ME')).not.toBeInTheDocument();
   });
 });

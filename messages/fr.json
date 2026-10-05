@@ -16,7 +16,9 @@
     "menu": {
       "open": "Ouvrir le menu",
       "close": "Fermer le menu"
-    }
+    },
+    "login": "Connexion",
+    "logout": "Déconnexion"
   },
   "LanguageSwitcher": {
     "label": "Langue"
@@ -45,9 +47,16 @@
     "nameLabel": "Nom d'exorciste",
     "randomName": "Aléatoire",
     "submit": "Déployer le domaine",
-    "createPrivate": "Créer un salon privé avec vos propres textes",
+    "createLobby": "Créer un nouveau lobby",
+    "createFailed": "Impossible de créer le lobby. Réessayez.",
+    "newLobbyName": "Lobby de {host}",
     "syncing": "Synchronisation des barrières occultes en cours... Domaine : <highlight>{pin}</highlight>",
-    "connected": "Connexion établie au Domaine <highlight>{pin}</highlight> ! Téléportation de {name}..."
+    "connected": "Connexion établie au Domaine <highlight>{pin}</highlight> ! Téléportation de {name}...",
+    "createLobbyGuest": "Se connecter pour créer un lobby",
+    "nameError": {
+      "length": "Ton nom doit faire de {min} à {max} caractères.",
+      "characters": "Uniquement des lettres, chiffres, _ et -."
+    }
   },
   "PublicLobbies": {
     "title": "Salons publics",
@@ -67,7 +76,8 @@
       "startsIn": "Départ dans {seconds}s",
       "waitingSquad": "En attente d'escouade",
       "readyToLaunch": "Prêt à lancer"
-    }
+    },
+    "noLobbies": "Aucune salle publique n'est ouverte pour le moment."
   },
   "GameSystem": {
     "eyebrow": "Système de jeu",
@@ -75,10 +85,22 @@
     "titleLine2": "Les malédictions font le reste.",
     "intro": "Un texte, un départ synchronisé, et chaque frappe juste fait avancer votre exorciste sur la piste. Les derniers reçoivent des bonus pour viser les meneurs.",
     "facts": {
-      "players": { "value": "60", "label": "exorcistes par course" },
-      "timer": { "value": "3:00", "label": "minutes au plus" },
-      "bots": { "value": "3", "label": "niveaux de bots" },
-      "languages": { "value": "FR · EN", "label": "textes au choix" }
+      "players": {
+        "value": "60",
+        "label": "exorcistes par course"
+      },
+      "timer": {
+        "value": "3:00",
+        "label": "minutes au plus"
+      },
+      "bots": {
+        "value": "3",
+        "label": "niveaux de bots"
+      },
+      "languages": {
+        "value": "FR · EN",
+        "label": "textes au choix"
+      }
     }
   },
   "Characters": {
@@ -103,7 +125,8 @@
     "title": "Grade spécial",
     "cta": "Classement complet",
     "wpm": "MPM",
-    "profileLabel": "Voir le profil de {name}"
+    "profileLabel": "Voir le profil de {name}",
+    "empty": "Personne n'est encore classé. Termine des courses pour prendre la première place."
   },
   "Footer": {
     "nav": "Pied de page",
@@ -169,6 +192,143 @@
       "spectateLabel": "Regarder {name} en spectateur"
     }
   },
+  "Lobby": {
+    "metaTitle": "{name} · Salon d'attente",
+    "eyebrow": "Salon d'attente",
+    "hostedBy": "Hôte : {host}",
+    "status": {
+      "waiting": "En attente de joueurs",
+      "racing": "Course en cours"
+    },
+    "invite": {
+      "title": "Inviter des exorcistes",
+      "code": "Code du lobby",
+      "copyCode": "Copier le code",
+      "copyLink": "Copier le lien d'invitation",
+      "copied": "Copié !",
+      "copyFailed": "Copie impossible",
+      "newLink": "Nouveau lien d'invitation",
+      "link": "Lien d'invitation",
+      "noLinkYet": "Aucun lien pour l'instant",
+      "hostOnlyField": "Réservé à l'hôte",
+      "privateCode": "Lobby privé : accès par lien uniquement",
+      "urlNote": "Toute personne qui a ce lien rejoint le lobby.",
+      "oneTime": "Chaque lien d'invitation ne sert qu'à une seule personne.",
+      "hostOnly": "Seul l'hôte peut partager un lien d'invitation."
+    },
+    "spectating": {
+      "title": "Mode spectateur",
+      "waiting": "Vous regardez ce lobby. Vous suivrez la course dès son départ.",
+      "racing": "Une course est en cours. Vous la regardez en spectateur."
+    },
+    "participants": {
+      "title": "Exorcistes",
+      "count": "{count}/{capacity}",
+      "ready": "{count, plural, one {# prêt} other {# prêts}}",
+      "host": "Hôte",
+      "you": "Vous",
+      "bot": "Bot · {level}",
+      "botName": "Cadavre maudit {number}",
+      "readyState": "Prêt",
+      "notReady": "Pas prêt",
+      "makeHost": "Faire de {name} l'hôte",
+      "kick": "Expulser {name}",
+      "removeBot": "Retirer {name}"
+    },
+    "bots": {
+      "level": "Niveau du bot",
+      "add": "Ajouter un bot",
+      "full": "Le lobby est complet.",
+      "levels": {
+        "beginner": "Débutant",
+        "intermediate": "Intermédiaire",
+        "expert": "Expert"
+      }
+    },
+    "spectators": {
+      "title": "Spectateurs",
+      "empty": "Aucun spectateur.",
+      "kick": "Expulser {name}"
+    },
+    "actions": {
+      "ready": "Je suis prêt",
+      "unready": "Je ne suis plus prêt",
+      "start": "Lancer la course",
+      "blockers": {
+        "notEnoughPlayers": "Une course demande au moins deux participants : ajoutez un bot ou attendez un joueur.",
+        "notReady": "En attente que chaque exorciste soit prêt."
+      },
+      "waitHost": "L'hôte lance la course quand tout le monde est prêt.",
+      "spectator": "Les spectateurs ne participent pas à la course.",
+      "leave": "Quitter le lobby"
+    },
+    "announce": {
+      "kicked": "{name} a été expulsé.",
+      "botAdded": "{name} a rejoint le lobby.",
+      "botRemoved": "{name} a quitté le lobby.",
+      "newHost": "{name} est maintenant l'hôte."
+    },
+    "settings": {
+      "title": "Paramètres de course",
+      "readOnly": "Seul l'hôte peut modifier ces paramètres.",
+      "edit": "Modifier les paramètres",
+      "save": "Enregistrer",
+      "cancel": "Annuler",
+      "close": "Fermer",
+      "decrease": "Diminuer : {field}",
+      "increase": "Augmenter : {field}",
+      "language": "Langue du texte",
+      "content": "Type de texte",
+      "contents": {
+        "sentences": "Vrai texte",
+        "words": "Mots aléatoires"
+      },
+      "words": "Longueur (mots)",
+      "wordsValue": "{count} mots",
+      "wordsHint": "Entre {min} et {max} mots.",
+      "chars": "Caractères",
+      "lowercase": "Minuscules seulement",
+      "practice": "Caractères à pratiquer",
+      "practiceHint": "Plus fréquents dans le texte, ex. , . / z",
+      "practiceNone": "Aucun",
+      "timer": "Timer de course",
+      "timerOff": "Sans timer",
+      "errorMode": "Erreurs",
+      "errorModes": {
+        "accumulate": "Continuer",
+        "block": "Bloquer jusqu'à correction"
+      },
+      "errorHints": {
+        "accumulate": "Les fautes restent dans le texte et coûtent des points.",
+        "block": "Impossible d'avancer sans taper le bon caractère."
+      },
+      "bonus": "Bonus",
+      "bonusToggle": "Activer les bonus",
+      "bonusOn": "Activés",
+      "bonusOff": "Désactivés",
+      "capacity": "Capacité",
+      "capacityHint": "Entre {min} et {max} participants.",
+      "capacityValue": "{count} participants",
+      "visibility": "Accès",
+      "visibilities": {
+        "public": "Public",
+        "code": "Code",
+        "private": "Privé"
+      },
+      "visibilityHints": {
+        "public": "Affiché dans la liste des lobbies. Tout le monde peut rejoindre.",
+        "code": "Absent de la liste des lobbies. On rejoint avec le code ou un lien d'invitation.",
+        "private": "Absent de la liste des lobbies. On rejoint seulement avec un lien d'invitation."
+      }
+    },
+    "notFound": {
+      "metaTitle": "Lobby introuvable",
+      "eyebrow": "Lobby introuvable",
+      "title": "Ce lobby n'existe pas",
+      "text": "Vérifiez le code : il est peut-être mal tapé, ou le lobby a fermé.",
+      "back": "Entrer un code"
+    }
+  },
   "Leaderboard": {
     "metaTitle": "Classement",
     "eyebrow": "Meilleurs exorcistes",
@@ -203,7 +363,8 @@
     "profileLabel": "Voir le profil de {name}",
     "empty": "Aucun exorciste ne porte ce nom.",
     "pagination": "Pages du classement",
-    "eligibility": "Les joueurs apparaissent après {games} courses terminées. Le score moyen porte sur leurs 5 dernières courses."
+    "eligibility": "Les joueurs apparaissent après {games} courses terminées. Le score moyen porte sur leurs 5 dernières courses.",
+    "noPlayers": "Personne n'est encore classé. Termine des courses pour prendre la première place."
   },
   "Profile": {
     "eyebrow": "Profil d'exorciste",
@@ -285,6 +446,185 @@
         "github": "Entrez un lien de profil GitHub, comme github.com/votre-pseudo.",
         "discord": "Entrez un nom Discord (2 à 32 minuscules, chiffres, _ ou .) ou un lien discord.com."
       }
+    },
+    "games": "{games, plural, one {# course jouée} other {# courses jouées}}",
+    "editSettings": "Paramètres du compte",
+    "empty": {
+      "label": "Statistiques",
+      "own": "Aucune course pour l'instant. Tes statistiques apparaîtront ici après ta première course.",
+      "other": "Cet exorciste n'a pas encore couru.",
+      "cta": "Trouver une arène"
+    }
+  },
+  "Race": {
+    "metaTitle": "{name} · Course",
+    "title": "Course · {name}",
+    "connection": {
+      "connecting": "Connexion à la course…",
+      "lost": "Connexion perdue, reconnexion…"
+    },
+    "countdown": {
+      "label": "Décompte",
+      "go": "Partez !"
+    },
+    "track": {
+      "label": "Piste de course",
+      "finish": "Ligne d'arrivée",
+      "standings": "Classement en direct",
+      "row": "{rank}. {name}{you, select, true { (vous)} other {}} : {percent} % · {wpm} MPM · {status}",
+      "leader": "Meneur",
+      "you": "Vous"
+    },
+    "banner": {
+      "waiting": "La course va commencer",
+      "lead": "Vous menez de {gap, plural, one {# caractère} other {# caractères}}",
+      "leader": "{name} mène la course",
+      "passed": "Vous avez dépassé {names} !",
+      "passedBy": "{names} vous a dépassé",
+      "newLeader": "{name} prend la tête !",
+      "youLead": "Vous prenez la tête !",
+      "winner": "{name} remporte la course !",
+      "youWin": "Vous remportez la course !"
+    },
+    "energy": {
+      "label": "Énergie",
+      "value": "{value} / {max} EP",
+      "full": "Énergie au maximum !"
+    },
+    "hud": {
+      "wpm": "MPM",
+      "accuracy": "Précision",
+      "accuracyValue": "{value} %",
+      "position": "Position",
+      "positionValue": "{rank}/{total}",
+      "elapsed": "Temps",
+      "remaining": "Temps restant",
+      "abandon": "Abandonner"
+    },
+    "typing": {
+      "label": "Tapez le texte",
+      "focus": "Cliquez ici pour taper"
+    },
+    "spectator": {
+      "title": "Mode spectateur",
+      "body": "La course avait déjà commencé à votre arrivée : vous la regardez."
+    },
+    "status": {
+      "racing": "En course",
+      "finished": "Arrivé",
+      "timeout": "Temps écoulé",
+      "abandoned": "Abandon"
+    },
+    "summary": {
+      "finished": "Arrivé !",
+      "abandoned": "Vous avez abandonné la course",
+      "timeout": "Temps écoulé !",
+      "position": "Position {rank} sur {total}",
+      "stats": "{wpm} MPM · précision de {accuracy} %",
+      "waiting": "{count, plural, one {# exorciste est encore} other {# exorcistes sont encore}} en course…",
+      "over": "Course terminée",
+      "results": "Résultats",
+      "rank": "Rang",
+      "name": "Exorciste",
+      "wpm": "MPM",
+      "accuracy": "Précision",
+      "state": "État",
+      "you": "(vous)",
+      "backToLobby": "Retour au lobby"
+    },
+    "leave": {
+      "title": "Quitter la course ?",
+      "body": "Quitter cette page abandonne la course : votre partie ne comptera pas.",
+      "stay": "Continuer la course",
+      "confirm": "Abandonner et quitter"
+    },
+    "abandon": {
+      "title": "Abandonner la course ?",
+      "body": "Vous arrêtez de courir, mais vous pouvez continuer à regarder les autres.",
+      "confirm": "Abandonner"
+    },
+    "footer": "Restez concentré, exorciste."
+  },
+  "Auth": {
+    "username": "Nom d'utilisateur",
+    "password": "Mot de passe",
+    "or": "ou",
+    "usernameHint": "{min} à {max} caractères",
+    "passwordHint": "{min} caractères min.",
+    "showPassword": "Afficher le mot de passe",
+    "hidePassword": "Masquer le mot de passe",
+    "lossWarning": "Il n'existe aucune récupération de mot de passe. Si tu le perds, le compte et toutes ses statistiques sont perdus pour de bon.",
+    "submit": {
+      "login": "Se connecter",
+      "register": "Créer le compte",
+      "oauth": "Créer le compte"
+    },
+    "oauth": {
+      "login": "Se connecter avec {provider}",
+      "register": "S'inscrire avec {provider}"
+    },
+    "errors": {
+      "username": "Ton nom d'utilisateur doit faire de {min} à {max} caractères.",
+      "usernameChars": "Uniquement des lettres, chiffres, _ et -.",
+      "password": "Ton mot de passe doit faire au moins {passwordMin} caractères.",
+      "taken": "Ce nom d'utilisateur est déjà pris.",
+      "invalid": "Nom d'utilisateur ou mot de passe incorrect.",
+      "blocked": "Trop de tentatives. Réessaie dans quelques minutes.",
+      "expired": "Ta connexion a expiré. Recommence depuis la page d'inscription.",
+      "oauthFailed": "La connexion avec ce service a échoué. Réessaie.",
+      "oauthUnavailable": "Ce service n'est pas disponible pour le moment."
+    },
+    "login": {
+      "eyebrow": "Retour",
+      "title": "Connexion",
+      "intro": "Reprends tes statistiques là où tu les avais laissées.",
+      "noAccount": "Pas encore de compte ?",
+      "createOne": "Crée-en un"
+    },
+    "register": {
+      "eyebrow": "Rejoindre",
+      "title": "Créer un compte",
+      "intro": "Un nom d'utilisateur et un mot de passe. Rien d'autre, pas même un courriel.",
+      "haveAccount": "Déjà inscrit ?",
+      "logIn": "Se connecter"
+    },
+    "oauthComplete": {
+      "eyebrow": "Presque fini",
+      "title": "Choisis ton nom",
+      "intro": "Choisis le nom d'utilisateur et le mot de passe de ton compte. Le courriel de ton compte Discord ou GitHub n'est jamais lu."
+    }
+  },
+  "Settings": {
+    "eyebrow": "Compte",
+    "title": "Paramètres",
+    "saved": "Enregistré.",
+    "avatar": {
+      "title": "Photo de profil",
+      "choose": "Choisir une image",
+      "hint": "JPEG, PNG ou WebP, 2 Mo max. Elle est recadrée en carré et redimensionnée.",
+      "upload": "Téléverser",
+      "remove": "Retirer"
+    },
+    "displayName": {
+      "label": "Nom affiché",
+      "hint": "Montré sur ton profil et en course. Tu te connectes toujours avec {username}.",
+      "save": "Enregistrer"
+    },
+    "errors": {
+      "displayName": "Ton nom affiché doit faire de 1 à 32 caractères.",
+      "avatarType": "Seules les images JPEG, PNG ou WebP sont acceptées.",
+      "avatarSize": "L'image doit faire 2 Mo ou moins.",
+      "avatarInvalid": "Cette image n'a pas pu être lue.",
+      "auth": "Connecte-toi pour modifier ton profil.",
+      "github": "Saisis ton nom d'utilisateur GitHub, comme ton-nom.",
+      "discord": "Saisis un nom Discord (2 à 32 minuscules, chiffres, _ ou .) ou un lien discord.com."
+    },
+    "links": {
+      "github": "Nom d'utilisateur GitHub",
+      "githubPlaceholder": "ton-nom",
+      "discord": "Discord (lien ou nom)",
+      "discordPlaceholder": "nom ou https://discord.com/users/…",
+      "save": "Enregistrer les liens"
     }
   }
 }

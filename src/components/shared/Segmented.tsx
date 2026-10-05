@@ -1,6 +1,6 @@
 'use client';
 
-// Groupe de boutons à choix unique (période du graphique, mode et disposition du clavier).
+// Groupe de boutons à choix unique (graphique et clavier du profil, paramètres du lobby).
 export default function Segmented<T extends string>({ label, options, value, onChange, optionLabel }: { label: string; options: readonly T[]; value: T; onChange: (value: T) => void; optionLabel: (option: T) => string }) {
   return (
     <div role="group" aria-label={label} className="flex border border-surface-container-highest bg-surface-container-lowest p-0.5">

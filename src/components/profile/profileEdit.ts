@@ -14,10 +14,14 @@ const DISCORD_URL = /^https:\/\/(?:www\.)?(?:discord\.com\/users\/\d+|discord\.g
 /** Nom d'utilisateur Discord : 2 à 32 caractères, minuscules, chiffres, `_` et `.`. */
 const DISCORD_NAME = /^[a-z0-9_.]{2,32}$/;
 
-/** Lien GitHub complété en `https://` ; chaîne vide si rien n'est saisi. */
+const GITHUB_HANDLE = /^[A-Za-z0-9-]{1,39}$/;
+
+/** Lien GitHub complété : un simple pseudo (`megumi` ou `@megumi`) devient `https://github.com/megumi`, un lien reçoit son `https://` ; chaîne vide si rien n'est saisi. */
 export function normalizeGithub(input: string): string {
   const value = input.trim();
   if (!value) return '';
+  const bare = value.replace(/^@/, '');
+  if (GITHUB_HANDLE.test(bare)) return `https://github.com/${bare}`;
   return /^https?:\/\//.test(value) ? value.replace(/^http:/, 'https:') : `https://${value}`;
 }
 
@@ -31,16 +35,22 @@ export function discordHref(value: string): string | null {
   return DISCORD_URL.test(value) ? value : null;
 }
 
-export function validateProfileEdit({ username, github, discord }: ProfileEditInput): ProfileEditErrors {
-  const errors: ProfileEditErrors = {};
-  const name = username.trim();
-  if (name.length < 3 || name.length > 20) errors.username = 'length';
-  else if (!USERNAME_CHARS.test(name)) errors.username = 'characters';
-
+/** Liens GitHub et Discord seuls (page des paramètres) : un lien vide est valide. */
+export function validateLinks({ github, discord }: Pick<ProfileEditInput, 'github' | 'discord'>): Pick<ProfileEditErrors, 'github' | 'discord'> {
+  const errors: Pick<ProfileEditErrors, 'github' | 'discord'> = {};
   if (github.trim() && !githubHandle(normalizeGithub(github))) errors.github = 'invalid';
 
   const contact = discord.trim();
   if (contact && !discordHref(contact) && !DISCORD_NAME.test(contact.toLowerCase())) errors.discord = 'invalid';
 
   return errors;
+}
+
+export function validateProfileEdit({ username, github, discord }: ProfileEditInput): ProfileEditErrors {
+  const errors: ProfileEditErrors = {};
+  const name = username.trim();
+  if (name.length < 3 || name.length > 20) errors.username = 'length';
+  else if (!USERNAME_CHARS.test(name)) errors.username = 'characters';
+
+  return { ...errors, ...validateLinks({ github, discord }) };
 }

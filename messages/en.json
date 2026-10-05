@@ -16,7 +16,9 @@
     "menu": {
       "open": "Open menu",
       "close": "Close menu"
-    }
+    },
+    "login": "Log in",
+    "logout": "Log out"
   },
   "LanguageSwitcher": {
     "label": "Language"
@@ -45,9 +47,16 @@
     "nameLabel": "Exorcist name",
     "randomName": "Random",
     "submit": "Expand the domain",
-    "createPrivate": "Create a private room with your own texts",
+    "createLobby": "Create a new lobby",
+    "createFailed": "Couldn't create the lobby. Try again.",
+    "newLobbyName": "{host}'s lobby",
     "syncing": "Syncing the occult barriers... Domain: <highlight>{pin}</highlight>",
-    "connected": "Connected to Domain <highlight>{pin}</highlight>! Teleporting {name}..."
+    "connected": "Connected to Domain <highlight>{pin}</highlight>! Teleporting {name}...",
+    "createLobbyGuest": "Log in to create a lobby",
+    "nameError": {
+      "length": "Your name must be {min} to {max} characters long.",
+      "characters": "Use only letters, digits, _ and -."
+    }
   },
   "PublicLobbies": {
     "title": "Public rooms",
@@ -67,7 +76,8 @@
       "startsIn": "Starts in {seconds}s",
       "waitingSquad": "Waiting for squad",
       "readyToLaunch": "Ready to launch"
-    }
+    },
+    "noLobbies": "No public room is open right now."
   },
   "GameSystem": {
     "eyebrow": "How it works",
@@ -75,10 +85,22 @@
     "titleLine2": "The curses do the rest.",
     "intro": "One text, a synchronized start, and every correct keystroke moves your exorcist down the track. Those at the back get bonuses to strike the leaders.",
     "facts": {
-      "players": { "value": "60", "label": "exorcists per race" },
-      "timer": { "value": "3:00", "label": "minutes at most" },
-      "bots": { "value": "3", "label": "bot levels" },
-      "languages": { "value": "FR · EN", "label": "text languages" }
+      "players": {
+        "value": "60",
+        "label": "exorcists per race"
+      },
+      "timer": {
+        "value": "3:00",
+        "label": "minutes at most"
+      },
+      "bots": {
+        "value": "3",
+        "label": "bot levels"
+      },
+      "languages": {
+        "value": "FR · EN",
+        "label": "text languages"
+      }
     }
   },
   "Characters": {
@@ -103,7 +125,8 @@
     "title": "Special grade",
     "cta": "Full rankings",
     "wpm": "WPM",
-    "profileLabel": "View {name}'s profile"
+    "profileLabel": "View {name}'s profile",
+    "empty": "No one is ranked yet. Finish races to claim the first spot."
   },
   "Footer": {
     "nav": "Footer",
@@ -169,6 +192,143 @@
       "spectateLabel": "Watch {name} as a spectator"
     }
   },
+  "Lobby": {
+    "metaTitle": "{name} · Waiting room",
+    "eyebrow": "Waiting room",
+    "hostedBy": "Hosted by {host}",
+    "status": {
+      "waiting": "Waiting for players",
+      "racing": "Race in progress"
+    },
+    "invite": {
+      "title": "Invite exorcists",
+      "code": "Lobby code",
+      "copyCode": "Copy code",
+      "copyLink": "Copy invite link",
+      "copied": "Copied!",
+      "copyFailed": "Copy failed",
+      "newLink": "New invite link",
+      "link": "Invite link",
+      "noLinkYet": "No link yet",
+      "hostOnlyField": "Host only",
+      "privateCode": "Private lobby: invite link only",
+      "urlNote": "Anyone with this link joins the lobby.",
+      "oneTime": "Each invite link works for one person only.",
+      "hostOnly": "Only the host can share an invite link."
+    },
+    "spectating": {
+      "title": "Spectator mode",
+      "waiting": "You're watching this lobby. You'll follow the race when it starts.",
+      "racing": "A race is in progress. You're watching it as a spectator."
+    },
+    "participants": {
+      "title": "Exorcists",
+      "count": "{count}/{capacity}",
+      "ready": "{count} ready",
+      "host": "Host",
+      "you": "You",
+      "bot": "Bot · {level}",
+      "botName": "Cursed corpse {number}",
+      "readyState": "Ready",
+      "notReady": "Not ready",
+      "makeHost": "Make {name} the host",
+      "kick": "Kick {name}",
+      "removeBot": "Remove {name}"
+    },
+    "bots": {
+      "level": "Bot level",
+      "add": "Add a bot",
+      "full": "The lobby is full.",
+      "levels": {
+        "beginner": "Beginner",
+        "intermediate": "Intermediate",
+        "expert": "Expert"
+      }
+    },
+    "spectators": {
+      "title": "Spectators",
+      "empty": "No spectators.",
+      "kick": "Kick {name}"
+    },
+    "actions": {
+      "ready": "I'm ready",
+      "unready": "Not ready anymore",
+      "start": "Start the race",
+      "blockers": {
+        "notEnoughPlayers": "A race needs at least two participants: add a bot or wait for a player.",
+        "notReady": "Waiting for every exorcist to be ready."
+      },
+      "waitHost": "The host starts the race once everyone is ready.",
+      "spectator": "Spectators don't take part in the race.",
+      "leave": "Leave the lobby"
+    },
+    "announce": {
+      "kicked": "{name} was kicked.",
+      "botAdded": "{name} joined the lobby.",
+      "botRemoved": "{name} left the lobby.",
+      "newHost": "{name} is now the host."
+    },
+    "settings": {
+      "title": "Race settings",
+      "readOnly": "Only the host can change these settings.",
+      "edit": "Edit settings",
+      "save": "Save",
+      "cancel": "Cancel",
+      "close": "Close",
+      "decrease": "Decrease {field}",
+      "increase": "Increase {field}",
+      "language": "Text language",
+      "content": "Text type",
+      "contents": {
+        "sentences": "Real text",
+        "words": "Random words"
+      },
+      "words": "Length (words)",
+      "wordsValue": "{count} words",
+      "wordsHint": "Between {min} and {max} words.",
+      "chars": "Characters",
+      "lowercase": "Lowercase only",
+      "practice": "Characters to practise",
+      "practiceHint": "Shown more often in the text, e.g. , . / z",
+      "practiceNone": "None",
+      "timer": "Race timer",
+      "timerOff": "No timer",
+      "errorMode": "Errors",
+      "errorModes": {
+        "accumulate": "Keep going",
+        "block": "Block until fixed"
+      },
+      "errorHints": {
+        "accumulate": "Mistakes stay in the text and cost points.",
+        "block": "You can't go on until you type the right character."
+      },
+      "bonus": "Bonuses",
+      "bonusToggle": "Enable bonuses",
+      "bonusOn": "Enabled",
+      "bonusOff": "Disabled",
+      "capacity": "Capacity",
+      "capacityHint": "Between {min} and {max} participants.",
+      "capacityValue": "{count} participants",
+      "visibility": "Access",
+      "visibilities": {
+        "public": "Public",
+        "code": "Code",
+        "private": "Private"
+      },
+      "visibilityHints": {
+        "public": "Listed in the lobby list. Anyone can join.",
+        "code": "Hidden from the lobby list. Join with the code or an invite link.",
+        "private": "Hidden from the lobby list. Join only with an invite link."
+      }
+    },
+    "notFound": {
+      "metaTitle": "Lobby not found",
+      "eyebrow": "Lobby not found",
+      "title": "This lobby doesn't exist",
+      "text": "Check the code: it may be mistyped, or the lobby has closed.",
+      "back": "Enter a code"
+    }
+  },
   "Leaderboard": {
     "metaTitle": "Rankings",
     "eyebrow": "Top exorcists",
@@ -203,7 +363,8 @@
     "profileLabel": "View {name}'s profile",
     "empty": "No exorcist goes by that name.",
     "pagination": "Ranking pages",
-    "eligibility": "Players appear after {games} finished races. The average score covers their last 5 races."
+    "eligibility": "Players appear after {games} finished races. The average score covers their last 5 races.",
+    "noPlayers": "No one is ranked yet. Finish races to claim the first spot."
   },
   "Profile": {
     "eyebrow": "Exorcist profile",
@@ -285,6 +446,185 @@
         "github": "Enter a GitHub profile link, like github.com/your-name.",
         "discord": "Enter a Discord name (2 to 32 lowercase letters, digits, _ or .) or a discord.com link."
       }
+    },
+    "games": "{games, plural, one {# race played} other {# races played}}",
+    "editSettings": "Account settings",
+    "empty": {
+      "label": "Statistics",
+      "own": "No races yet. Your stats appear here after your first race.",
+      "other": "This exorcist has not raced yet.",
+      "cta": "Find an arena"
+    }
+  },
+  "Race": {
+    "metaTitle": "{name} · Race",
+    "title": "Race · {name}",
+    "connection": {
+      "connecting": "Connecting to the race…",
+      "lost": "Connection lost, reconnecting…"
+    },
+    "countdown": {
+      "label": "Countdown",
+      "go": "Go!"
+    },
+    "track": {
+      "label": "Race track",
+      "finish": "Finish line",
+      "standings": "Live standings",
+      "row": "{rank}. {name}{you, select, true { (you)} other {}}: {percent}% · {wpm} WPM · {status}",
+      "leader": "Leader",
+      "you": "You"
+    },
+    "banner": {
+      "waiting": "The race is about to begin",
+      "lead": "You lead by {gap, plural, one {# character} other {# characters}}",
+      "leader": "{name} leads the race",
+      "passed": "You passed {names}!",
+      "passedBy": "{names} passed you",
+      "newLeader": "{name} takes the lead!",
+      "youLead": "You take the lead!",
+      "winner": "{name} wins the race!",
+      "youWin": "You win the race!"
+    },
+    "energy": {
+      "label": "Energy",
+      "value": "{value} / {max} EP",
+      "full": "Full energy!"
+    },
+    "hud": {
+      "wpm": "WPM",
+      "accuracy": "Accuracy",
+      "accuracyValue": "{value}%",
+      "position": "Position",
+      "positionValue": "{rank}/{total}",
+      "elapsed": "Time",
+      "remaining": "Time left",
+      "abandon": "Abandon"
+    },
+    "typing": {
+      "label": "Type the text",
+      "focus": "Click here to type"
+    },
+    "spectator": {
+      "title": "Spectator mode",
+      "body": "The race had already started when you arrived: you're watching it."
+    },
+    "status": {
+      "racing": "Racing",
+      "finished": "Finished",
+      "timeout": "Time's up",
+      "abandoned": "Abandoned"
+    },
+    "summary": {
+      "finished": "Finished!",
+      "abandoned": "You abandoned the race",
+      "timeout": "Time's up!",
+      "position": "Position {rank} of {total}",
+      "stats": "{wpm} WPM · {accuracy}% accuracy",
+      "waiting": "{count, plural, one {# exorcist is} other {# exorcists are}} still racing…",
+      "over": "Race over",
+      "results": "Results",
+      "rank": "Rank",
+      "name": "Exorcist",
+      "wpm": "WPM",
+      "accuracy": "Accuracy",
+      "state": "Status",
+      "you": "(you)",
+      "backToLobby": "Back to the lobby"
+    },
+    "leave": {
+      "title": "Leave the race?",
+      "body": "Leaving this page abandons the race: your run won't count.",
+      "stay": "Keep racing",
+      "confirm": "Abandon and leave"
+    },
+    "abandon": {
+      "title": "Abandon the race?",
+      "body": "You stop racing, but you can keep watching the others.",
+      "confirm": "Abandon"
+    },
+    "footer": "Stay focused, exorcist."
+  },
+  "Auth": {
+    "username": "Username",
+    "password": "Password",
+    "or": "or",
+    "usernameHint": "{min}-{max} characters",
+    "passwordHint": "{min}+ characters",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "lossWarning": "There is no password recovery. If you lose your password, the account and all its stats are lost for good.",
+    "submit": {
+      "login": "Log in",
+      "register": "Create account",
+      "oauth": "Create account"
+    },
+    "oauth": {
+      "login": "Log in with {provider}",
+      "register": "Sign up with {provider}"
+    },
+    "errors": {
+      "username": "Your username must be {min} to {max} characters long.",
+      "usernameChars": "Use only letters, digits, _ and -.",
+      "password": "Your password must be at least {passwordMin} characters long.",
+      "taken": "That username is already taken.",
+      "invalid": "Wrong username or password.",
+      "blocked": "Too many attempts. Try again in a few minutes.",
+      "expired": "Your sign-in expired. Start again from the sign-up page.",
+      "oauthFailed": "The sign-in with that service failed. Try again.",
+      "oauthUnavailable": "That service isn't available right now."
+    },
+    "login": {
+      "eyebrow": "Return",
+      "title": "Log in",
+      "intro": "Pick up your stats where you left off.",
+      "noAccount": "No account yet?",
+      "createOne": "Create one"
+    },
+    "register": {
+      "eyebrow": "Join",
+      "title": "Create account",
+      "intro": "A username and a password. Nothing else, not even an email.",
+      "haveAccount": "Already registered?",
+      "logIn": "Log in"
+    },
+    "oauthComplete": {
+      "eyebrow": "Almost there",
+      "title": "Choose your name",
+      "intro": "Pick the username and password of your account. Your Discord or GitHub email is never read."
+    }
+  },
+  "Settings": {
+    "eyebrow": "Account",
+    "title": "Settings",
+    "saved": "Saved.",
+    "avatar": {
+      "title": "Profile picture",
+      "choose": "Choose a picture",
+      "hint": "JPEG, PNG or WebP, 2 MB max. It is cropped to a square and resized.",
+      "upload": "Upload",
+      "remove": "Remove"
+    },
+    "displayName": {
+      "label": "Display name",
+      "hint": "Shown on your profile and in races. You still log in as {username}.",
+      "save": "Save"
+    },
+    "errors": {
+      "displayName": "Your display name must be 1 to 32 characters long.",
+      "avatarType": "Only JPEG, PNG or WebP pictures are accepted.",
+      "avatarSize": "The picture must be 2 MB or less.",
+      "avatarInvalid": "That picture couldn't be read.",
+      "auth": "Log in to change your profile.",
+      "github": "Enter your GitHub username, like your-name.",
+      "discord": "Enter a Discord name (2 to 32 lowercase letters, digits, _ or .) or a discord.com link."
+    },
+    "links": {
+      "github": "GitHub username",
+      "githubPlaceholder": "your-name",
+      "discord": "Discord (link or name)",
+      "discordPlaceholder": "name or https://discord.com/users/…",
+      "save": "Save links"
     }
   }
 }

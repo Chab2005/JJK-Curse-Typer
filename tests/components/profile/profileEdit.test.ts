@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { discordHref, githubHandle, normalizeGithub, validateProfileEdit } from '@/components/profile/profileEdit';
+import { discordHref, githubHandle, normalizeGithub, validateLinks, validateProfileEdit } from '@/components/profile/profileEdit';
 
 const valid = { username: 'Megumi_Shadows', github: '', discord: '' };
 
@@ -16,6 +16,12 @@ describe('validateProfileEdit', () => {
   it('n’accepte dans le nom que lettres, chiffres, _ et -', () => {
     expect(validateProfileEdit({ ...valid, username: 'Megumi Shadows' }).username).toBe('characters');
     expect(validateProfileEdit({ ...valid, username: 'Yuji-Itadori_2' }).username).toBeUndefined();
+  });
+
+  it('accepte un simple pseudo GitHub et refuse un pseudo invalide', () => {
+    expect(validateProfileEdit({ ...valid, github: 'megumi' }).github).toBeUndefined();
+    expect(validateProfileEdit({ ...valid, github: 'not valid!' }).github).toBe('invalid');
+    expect(validateProfileEdit({ ...valid, github: 'a'.repeat(40) }).github).toBe('invalid');
   });
 
   it('refuse un lien GitHub qui ne mène pas à un profil', () => {
@@ -40,6 +46,11 @@ describe('normalizeGithub et githubHandle', () => {
     expect(normalizeGithub(' github.com/megumi ')).toBe('https://github.com/megumi');
   });
 
+  it('complète un simple pseudo en lien de profil, avec ou sans @', () => {
+    expect(normalizeGithub('megumi')).toBe('https://github.com/megumi');
+    expect(normalizeGithub(' @Megumi-S ')).toBe('https://github.com/Megumi-S');
+  });
+
   it('renvoie une chaîne vide si rien n’est saisi', () => {
     expect(normalizeGithub('  ')).toBe('');
   });
@@ -56,5 +67,16 @@ describe('discordHref', () => {
 
   it('ne fait pas de lien pour un simple nom', () => {
     expect(discordHref('megumi.shadows')).toBeNull();
+  });
+});
+
+describe('validateLinks', () => {
+  it('accepts empty links, a GitHub profile and a Discord name', () => {
+    expect(validateLinks({ github: '', discord: '' })).toEqual({});
+    expect(validateLinks({ github: 'github.com/megumi', discord: 'megumi.shadows' })).toEqual({});
+  });
+
+  it('flags a bad GitHub link and a bad Discord name', () => {
+    expect(validateLinks({ github: 'https://gitlab.com/x', discord: 'No Spaces' })).toEqual({ github: 'invalid', discord: 'invalid' });
   });
 });

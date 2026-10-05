@@ -13,3 +13,11 @@ describe('Hero (smoke)', () => {
     expect(screen.getByRole('link', { name: /Join with a code/ })).toHaveAttribute('href', '#join');
   });
 });
+
+describe('Hero without an online count', () => {
+  it('shows no online badge when there is no real count', () => {
+    renderWithIntl(<Hero onlineCount={null} />);
+
+    expect(screen.queryByText(/online/)).not.toBeInTheDocument();
+  });
+});

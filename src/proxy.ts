@@ -38,6 +38,6 @@ export default function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // Tout sauf les routes d'API, les fichiers internes de Next et les fichiers statiques.
-  matcher: '/((?!api|_next|_vercel|.*\\..*).*)',
+  // Tout sauf les routes d'API, les WebSocket de course, les fichiers internes de Next et les fichiers statiques.
+  matcher: '/((?!api|ws/|_next|_vercel|.*\\..*).*)',
 };

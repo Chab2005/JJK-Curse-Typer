@@ -1,8 +1,9 @@
 import { useTranslations } from 'next-intl';
+import type { LobbySummary } from '@/components/lobbies/lobbySearch';
 import JoinForm from './JoinForm';
 import PublicLobbies from './PublicLobbies';
 
-export default function JoinSection() {
+export default function JoinSection({ publicLobbies, accountName = null, showSamples = true }: { publicLobbies?: LobbySummary[]; accountName?: string | null; showSamples?: boolean }) {
   const t = useTranslations('JoinSection');
 
   return (
@@ -16,8 +17,8 @@ export default function JoinSection() {
           <h2 id="join-title" className="text-[clamp(36px,4.5vw,56px)] leading-tight uppercase tracking-[0.08em]">{t('title')}</h2>
         </div>
         <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,440px),1fr))] items-start gap-7">
-          <JoinForm />
-          <PublicLobbies />
+          <JoinForm accountName={accountName} />
+          <PublicLobbies created={publicLobbies} showSamples={showSamples} />
         </div>
       </div>
     </section>

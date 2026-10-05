@@ -12,3 +12,13 @@ describe('TopExorcists (smoke)', () => {
     expect(screen.getByRole('link', { name: "View Satoru_Infinity's profile" })).toHaveAttribute('href', '/profile/Satoru_Infinity');
   });
 });
+
+describe('TopExorcists without sample data', () => {
+  it('keeps the section and says nobody is ranked yet', () => {
+    renderWithIntl(<TopExorcists showSamples={false} />);
+
+    expect(screen.getByRole('heading', { level: 2, name: 'Special grade' })).toBeInTheDocument();
+    expect(screen.queryAllByRole('listitem')).toHaveLength(0);
+    expect(screen.getByText('No one is ranked yet. Finish races to claim the first spot.')).toBeInTheDocument();
+  });
+});

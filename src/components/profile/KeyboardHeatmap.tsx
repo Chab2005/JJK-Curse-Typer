@@ -2,7 +2,7 @@
 
 import { useFormatter, useTranslations } from 'next-intl';
 import { useState } from 'react';
-import Segmented from './Segmented';
+import Segmented from '@/components/shared/Segmented';
 import { type HeatKey, type HeatmapMode, type KeyStat, type KeyTone, LAYOUTS, type LayoutName, heatmap, weakestKeys } from './keyboard';
 
 // Couleurs validées pour le daltonisme sur fond sombre ; encre foncée sur les trois (contraste AA).

@@ -4,7 +4,8 @@ import { Link } from '@/i18n/navigation';
 import BlackFlash from './BlackFlash';
 import SmoothScrollLink from './SmoothScrollLink';
 
-export default function Hero({ onlineCount }: { onlineCount: number }) {
+// `onlineCount` : `null` tant qu'il n'existe pas de vrai compteur (le chiffre de démonstration est masqué en production).
+export default function Hero({ onlineCount }: { onlineCount: number | null }) {
   const t = useTranslations('Hero');
 
   return (
@@ -57,9 +58,11 @@ export default function Hero({ onlineCount }: { onlineCount: number }) {
 
         <p className="leading-snug text-[clamp(24px,2.8vw,32px)] uppercase tracking-widest text-on-primary-container">
           {t('arenasOpen')}{' '}
-          <span className="font-label-code align-middle text-[0.5em] tracking-widest text-tertiary">
-            {t('online', { count: onlineCount })}
-          </span>
+          {onlineCount !== null && (
+            <span className="font-label-code align-middle text-[0.5em] tracking-widest text-tertiary">
+              {t('online', { count: onlineCount })}
+            </span>
+          )}
         </p>
 
         <div className="flex flex-wrap justify-center gap-4">

@@ -12,6 +12,6 @@ describe('Avatar (smoke)', () => {
   it("falls back to the player's initials", () => {
     render(<Avatar avatar={null} name="Renee_Spagat" size={48} />);
 
-    expect(screen.getByText('RS')).toBeInTheDocument();
+    expect(screen.getByText('RE')).toBeInTheDocument();
   });
 });

@@ -1,11 +1,12 @@
 'use client';
 
-import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { Link, usePathname } from '@/i18n/navigation';
+import Brand from './Brand';
 import LanguageSwitcher from './LanguageSwitcher';
 import MobileMenu, { type NavItem } from './MobileMenu';
-import ProfileAvatar from './ProfileAvatar';
+import AccountControls from './AccountControls';
+import type { HeaderAccount } from './ProfileAvatar';
 
 const NAV = [
   { href: '/', key: 'home' },
@@ -14,7 +15,7 @@ const NAV = [
   { href: '/profile', key: 'archives' },
 ] as const;
 
-export default function Header() {
+export default function Header({ account = null }: { account?: HeaderAccount | null }) {
   const t = useTranslations('Header');
   const pathname = usePathname();
 
@@ -29,22 +30,7 @@ export default function Header() {
       <div className="h-19 w-full px-space-lg lg:px-margin flex items-center justify-between gap-space-md">
         {/* Logo */}
         <Link href="/" aria-label={t('home')} className="flex items-center gap-3 shrink-0 text-on-surface hover:text-on-surface">
-          <span className="relative block w-[150px] sm:w-[170px]">
-            <span
-              aria-hidden="true"
-              className="pointer-events-none absolute -inset-x-[8%] -inset-y-[30%] bg-[radial-gradient(ellipse_50%_50%_at_50%_50%,rgb(245_215_122/0.28),transparent_72%)] blur-[4px]"
-            />
-            <Image
-              src="/images/jjk-logo.png"
-              alt="Jujutsu Kaisen"
-              width={1164}
-              height={271}
-              sizes="170px"
-              priority
-              className="relative h-auto w-full [filter:drop-shadow(0_0_1px_#f5d77a)_drop-shadow(0_0_2px_#c9972f)]"
-            />
-          </span>
-          <span className="text-[21px] tracking-[0.04em] whitespace-nowrap text-primary">Curse Typer</span>
+          <Brand />
         </Link>
 
         {/* Navigation */}
@@ -61,10 +47,10 @@ export default function Header() {
               <LanguageSwitcher />
             </div>
           </div>
-          <Link href="/profile" aria-label={t('profileAlt')} className="hidden lg:flex rounded-full ring-1 ring-primary-container ring-offset-2 ring-offset-surface-container-lowest">
-            <ProfileAvatar />
-          </Link>
-          <MobileMenu items={navItems} />
+          <div className="hidden lg:flex">
+            <AccountControls account={account} />
+          </div>
+          <MobileMenu items={navItems} account={account} />
         </div>
       </div>
     </header>

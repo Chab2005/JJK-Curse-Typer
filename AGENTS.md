@@ -13,11 +13,15 @@ Multiplayer typing-race game (MonkeyType-like), school project (Web V). Requirem
 ```bash
 docker compose up -d      # local Postgres 17 on :5432 (db "monkeytyper")
 cp .env.example .env      # DATABASE_URL for local Postgres
-npm run dev               # Next.js dev server on :3000
+npm run dev               # server.ts: Next.js dev + race WebSockets (/ws/race/<code>) on :3000
+npm run dev:next          # plain `next dev`, without race sockets
+npm start                 # production: same server.ts (run `npm run build` first)
 npm run build
 npm run lint              # ESLint 9 flat config (next core-web-vitals + typescript)
 npm run typecheck         # tsc --noEmit on all .ts/.tsx files
 npm test                  # Vitest: unit (*.test.ts) + component (*.test.tsx) tests in tests/
+npm run test:e2e          # Playwright E2E tests in e2e/ (reuses `npm run dev` on :3000, needs Postgres)
+npm run screenshots       # full-page screenshots of every page (en/fr, desktop/mobile) into e2e/screenshots/
 
 npm run db:generate       # drizzle-kit: generate SQL migration from src/db/schema.ts into drizzle/
 npm run db:migrate        # apply migrations
@@ -32,24 +36,30 @@ Tests live in the top-level `tests/` folder, which mirrors `src/` (`src/componen
 - `unit`: `*.test.ts` in Node, for pure logic.
 - `components`: `*.test.tsx` in jsdom with Testing Library. `tests/setup.tsx` mocks `next/image`, `@/i18n/navigation` and `next/navigation` (search params are read from `window.location`). Render with `renderWithIntl` from `tests/render.tsx`, which wraps the real English messages and returns a `user` (user-event). Interactive components get behaviour tests; static ones get a smoke test (renders, one key element).
 
-CI (`.github/workflows/test.yml`) runs typecheck + tests on push/PR to `main` and `dev`. Playwright (E2E, multi-tab races) is still to do.
+CI (`.github/workflows/test.yml`) runs typecheck + tests on push/PR to `main` and `dev`.
+
+Playwright (`playwright.config.ts`, projects `desktop` and `mobile`) runs specs from `e2e/`; `e2e/pages.ts` lists the pages the screenshot script visits, add new pages there. To look at the site, run `npm run screenshots` and read the PNGs, or use the Playwright MCP server from `.mcp.json`. Layout-stability checks (an element keeps its box after a click) belong in `e2e/`, since jsdom has no layout. Multi-tab race E2E is still to do.
 
 ## Stack notes
 
 - **Next.js 16 App Router, React 19, React Compiler on** (`reactCompiler: true`), Tailwind CSS 4 (CSS-first config via `@theme` in `src/app/globals.css`, no `tailwind.config`). Next 16 has breaking changes from older versions (e.g. global `LayoutProps<"/">` / `PageProps` types). The docs matching the installed version are in `node_modules/next/dist/docs/`, so check there rather than relying on memory.
 - Path alias `@/*` → `src/*`.
 - **DB**: Drizzle ORM + `pg`. `src/db/index.ts` is `server-only` and caches the `Pool` on `globalThis` in dev to survive HMR. Import `db` from `@/db` only in server code (route handlers, server components, server actions). Schema in `src/db/schema.ts`; the current `users`/`results` tables are a placeholder to be replaced by the model in PLAN.md §2. Commit generated migrations in `drizzle/`.
-- Deployed on Vercel (pushes to `main` go to prod). Postgres on Neon in prod.
+- Deployed on Railway as one long-running Node service: `npm run build`, then `npm start` (listens on `PORT`). Postgres on Neon in prod.
 
-## Target architecture (from PLAN.md, mostly not built yet)
+## Architecture
 
-- **Realtime runs outside Vercel**: PartyKit / PartyServer (Cloudflare Durable Objects) in `party/`. One room per lobby holds authoritative state (countdown, keystroke validation, bots, bonuses, timers via alarms), plus one index room that lists public lobbies. Rooms broadcast an aggregated 5 Hz `tick`. Lobby state is **never** stored in Postgres. At race end the room POSTs signed results to `/api/races/complete`.
+- **Realtime is self-hosted, no third-party service**: `server.ts` is a custom Next server that also accepts WebSockets on `/ws/race/<code>` (`src/realtime/attach.ts`; `src/proxy.ts` skips `ws/`). `RaceHub` keeps one `RaceRoom` per lobby with a 5 Hz timer; the room is the only source of truth: it validates client messages with zod (`src/game/protocol.ts`), replays keystrokes through `src/game/race.ts`, runs bots and timers, and broadcasts an aggregated `tick`. Lobby state is **never** stored in Postgres. Rooms live in memory, so prod runs a single instance.
+- Lobbies created from the landing page live in an in-memory registry on `globalThis` (`src/lib/lobbies.ts`, shared by Next and the race server, 24 h TTL); server actions in `src/app/actions/lobbies.ts` create them and replay waiting-room actions through `lobbyReducer`. `findLobby` checks the registry, then the sample lobbies.
+- Lobby access (LOB-1 to LOB-4) is the `visibility` setting: `public` (listed by `listPublicLobbies`), `code` (hidden, joinable by code or invite link) or `private` (invite link only). Only the host shares a link (`inviteLinkMode`): the lobby URL when public, a one-time link otherwise; other players can only copy the code, and never in a private lobby. Pure rules in `src/components/lobby/lobbyAccess.ts`; pages go through `openLobby` (`src/lib/openLobby.ts`), which answers 404 when access is refused. Invite links are one-time: the token belongs to the first IP that opens it (`X-Real-IP`, else `X-Forwarded-For`), kicking the person revokes it. They are the one exception to "no lobby state in Postgres": table `lobby_invites`, accessed in `src/lib/invites.ts`.
+- For now a race is seeded from that lobby (`src/realtime/seed.ts`): each browser tab is a guest (id in `sessionStorage`) that takes a free human seat during the countdown, empty seats are driven by the bot sim, late arrivals spectate. Still to do: the waiting room on the server, and POSTing results to `/api/races/complete`.
 - **Pure, shared game logic in `src/game/`**: reducers (`state + event → new state`) with no I/O, imported by both the client (instant local feedback) and the room (server truth / anti-cheat replay of keystrokes). This is a core course requirement (functional programming). Keep I/O, React and network code out of `src/game/`.
-- Planned libs: `zod` for WS message and form validation, custom DB sessions + `@node-rs/argon2` + `arctic` (Discord/GitHub OAuth, no email stored), `next-themes`.
+- Planned libs: `zod` for form validation (already used for WS messages), custom DB sessions + `@node-rs/argon2` + `arctic` (Discord/GitHub OAuth, no email stored), `next-themes`.
 
 ## UI / design
 
 - `templates/*.html` are static design mockups (Tailwind CDN, French UI copy). Their inline `tailwind.config` defines the design tokens: Material-style colors (`surface`, `on-surface`, `primary-container`…), spacing (`space-sm`, `space-md`, `margin`, `gutter`…) and type scales (`headline-sm`, `display-hero`, `label-code`, `typing-stream`…), using Space Grotesk / JetBrains Mono / Fondamento.
+- The UI must not move or resize when the user interacts (new invite link, changing a setting, copy feedback). Give changing blocks a fixed size, or stack every variant with `src/components/shared/Reserve.tsx` so the box takes the size of the largest one.
 - `src/components/` are React ports of those mockups and use those token class names, split by page (`home/`) or shared (`layout/`). The tokens are ported into Tailwind 4 `@theme` in `src/app/globals.css`, with fonts loaded via `next/font` in `src/app/[locale]/layout.tsx`. The home page (`src/app/[locale]/page.tsx`) is built from `templates/index.html`.
 
 ## i18n (GEN-3)

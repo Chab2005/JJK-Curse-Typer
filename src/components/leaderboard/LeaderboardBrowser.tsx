@@ -38,6 +38,10 @@ export default function LeaderboardBrowser({ players }: { players: PlayerStats[]
   const sortBy = (next: LeaderboardCategory) => writeSearch(leaderboardQuery({ category: next, query: draft }, 1), 'push');
   const goToPage = (next: number) => writeSearch(leaderboardQuery({ category, query: draft }, next), 'push');
 
+  if (players.length === 0) {
+    return <p className="border border-dashed border-outline-variant px-6 py-12 text-center text-lg text-on-surface-variant">{t('noPlayers')}</p>;
+  }
+
   return (
     <div className="flex flex-col gap-8">
       <div className="flex flex-col gap-3">

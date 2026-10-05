@@ -1,7 +1,8 @@
 import { useTranslations } from 'next-intl';
+import type { LobbySummary } from '@/components/lobbies/lobbySearch';
 import { Link } from '@/i18n/navigation';
 
-// Données de démonstration en attendant la room d'index des lobbies publics (LOB-2).
+// Lobbies publics créés par les joueurs, puis données de démonstration en attendant la room d'index (LOB-2).
 type LobbyMode = { kind: 'sprint'; seconds: number } | { kind: 'words'; count: number };
 type LobbyParticipants = { kind: 'exorcists' | 'ready'; current: number; max: number };
 type LobbyStatus = { kind: 'startsIn'; seconds: number } | { kind: 'waitingSquad' } | { kind: 'readyToLaunch' };
@@ -42,18 +43,34 @@ const LOBBIES: LobbyItem[] = [
   },
 ];
 
-export default function PublicLobbies() {
+const ACCENTS = ['border-primary-container', 'border-secondary', 'border-tertiary'];
+/** Lobbies affichés sur l'accueil ; la liste complète est sur /lobbies. */
+const SHOWN = 3;
+
+const toItem = (lobby: LobbySummary, index: number): LobbyItem => ({
+  name: lobby.name,
+  mode: { kind: 'words', count: lobby.words },
+  participants: { kind: 'exorcists', current: lobby.players, max: lobby.capacity },
+  status: { kind: 'waitingSquad' },
+  accent: ACCENTS[index % ACCENTS.length],
+  joinCode: lobby.code,
+});
+
+export default function PublicLobbies({ created = [], showSamples = true }: { created?: LobbySummary[]; showSamples?: boolean }) {
   const t = useTranslations('PublicLobbies');
+  const lobbies = [...created.map(toItem), ...(showSamples ? LOBBIES : [])];
 
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-baseline justify-between gap-2 border-b border-surface-container-highest pb-2.5">
         <h3 className="text-[22px] uppercase tracking-[0.12em]">{t('title')}</h3>
-        <p className="font-label-code text-[11px] uppercase tracking-[0.12em] text-tertiary">{t('openCount', { count: LOBBIES.length })}</p>
+        <p className="font-label-code text-[11px] uppercase tracking-[0.12em] text-tertiary">{t('openCount', { count: lobbies.length })}</p>
       </div>
 
+      {lobbies.length === 0 && <p className="border border-dashed border-outline-variant px-6 py-10 text-center text-on-surface-variant">{t('noLobbies')}</p>}
+
       <ul className="flex flex-col gap-3">
-        {LOBBIES.map((lobby) => (
+        {lobbies.slice(0, SHOWN).map((lobby) => (
           <li key={lobby.joinCode} className={`flex items-stretch border-l-[3px] bg-surface-container-low transition-colors hover:bg-surface-container-high ${lobby.accent}`}>
             <div className="flex min-w-0 flex-grow flex-col gap-1.5 px-4 py-3.5">
               <div className="flex flex-wrap items-baseline gap-2.5">
