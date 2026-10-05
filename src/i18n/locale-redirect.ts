@@ -5,8 +5,9 @@
 //   préférée (cookie de choix explicite, sinon Accept-Language).
 // - `?lang=xx` (sélecteur de langue) : le choix est mémorisé dans un cookie
 //   du domaine racine, puis le visiteur est envoyé sur le domaine de la langue.
-// - Hôte inconnu (preview Vercel, IP) : pas de sous-domaine, la langue passe
-//   par le préfixe de chemin (`/fr/...`) géré par next-intl.
+// - Hôte inconnu (preview Vercel, Railway, IP) : pas de sous-domaine, la langue
+//   passe par le préfixe de chemin (`/fr/...`) géré par next-intl ; le choix
+//   est mémorisé dans un cookie de cet hôte pour remettre le préfixe.
 
 import {
   LANG_PARAM,
@@ -71,13 +72,24 @@ export function resolveLocaleRedirect(req: LocaleRequest, root: string): LocaleD
   const hostLocale = localeForHost(req.host, root);
   const requested = new URLSearchParams(req.search).get(LANG_PARAM);
 
+  if (hostLocale === undefined) {
+    if (isLocale(requested)) {
+      const pathname = withLocalePrefix(stripLocalePrefix(req.pathname), requested);
+      return { type: 'redirect', host: req.host, pathname, search: withoutLangParam(req.search), setCookie: requested };
+    }
+    // Les liens next-intl n'ont jamais de préfixe (chaque langue est la langue
+    // par défaut de son domaine) : le cookie de choix rétablit `/fr/...`.
+    const unprefixed = stripLocalePrefix(req.pathname) === req.pathname;
+    if (unprefixed && isLocale(req.cookieLocale) && req.cookieLocale !== defaultLocale) {
+      const pathname = withLocalePrefix(req.pathname, req.cookieLocale);
+      return { type: 'redirect', host: req.host, pathname, search: req.search };
+    }
+    return { type: 'next' };
+  }
+
   if (isLocale(requested)) {
     const search = withoutLangParam(req.search);
 
-    if (hostLocale === undefined) {
-      const pathname = withLocalePrefix(stripLocalePrefix(req.pathname), requested);
-      return { type: 'redirect', host: req.host, pathname, search };
-    }
     if (hostLocale !== defaultLocale) {
       // Le cookie de choix vit sur le domaine racine : on y passe d'abord.
       return { type: 'redirect', host: root, pathname: req.pathname, search: req.search };

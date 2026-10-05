@@ -125,13 +125,32 @@ describe('resolveLocaleRedirect — sélecteur de langue (?lang=)', () => {
     const host = 'jjktyper.vercel.app';
     expect(
       resolveLocaleRedirect(request({ host, pathname: '/stats', search: '?lang=fr' }), ROOT),
-    ).toEqual({ type: 'redirect', host, pathname: '/fr/stats', search: '' });
+    ).toEqual({ type: 'redirect', host, pathname: '/fr/stats', search: '', setCookie: 'fr' });
     expect(
       resolveLocaleRedirect(request({ host, pathname: '/fr/stats', search: '?lang=en' }), ROOT),
-    ).toEqual({ type: 'redirect', host, pathname: '/stats', search: '' });
+    ).toEqual({ type: 'redirect', host, pathname: '/stats', search: '', setCookie: 'en' });
     expect(
       resolveLocaleRedirect(request({ host, pathname: '/fr', search: '?lang=en' }), ROOT),
-    ).toEqual({ type: 'redirect', host, pathname: '/', search: '' });
+    ).toEqual({ type: 'redirect', host, pathname: '/', search: '', setCookie: 'en' });
+  });
+
+  it('sur un hôte inconnu : le cookie remet le préfixe sur les liens sans langue', () => {
+    const host = 'jjktyper.vercel.app';
+    expect(
+      resolveLocaleRedirect(request({ host, pathname: '/lobbies', search: '?q=1', cookieLocale: 'fr' }), ROOT),
+    ).toEqual({ type: 'redirect', host, pathname: '/fr/lobbies', search: '?q=1' });
+    expect(resolveLocaleRedirect(request({ host, pathname: '/', cookieLocale: 'fr' }), ROOT)).toEqual({
+      type: 'redirect',
+      host,
+      pathname: '/fr',
+      search: '',
+    });
+    expect(resolveLocaleRedirect(request({ host, pathname: '/fr/lobbies', cookieLocale: 'fr' }), ROOT)).toEqual({
+      type: 'next',
+    });
+    expect(resolveLocaleRedirect(request({ host, pathname: '/lobbies', cookieLocale: 'en' }), ROOT)).toEqual({
+      type: 'next',
+    });
   });
 
   it('ignore une valeur de ?lang inconnue', () => {
