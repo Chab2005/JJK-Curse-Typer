@@ -1,7 +1,6 @@
 // Logique pure d'un lobby créé depuis l'accueil : son code, ses réglages par défaut et la vue
 // qu'en a chaque visiteur (LOB-3, LOB-4, LOB-5).
 import { PIN_ALPHABET } from '@/components/home/join';
-import type { CharacterId } from '@/components/shared/characters';
 import { lobbyReducer, type LobbyRoom, type LobbySettings, type Spectator } from './lobbyRoom';
 
 /** Réglages d'un nouveau lobby ; l'hôte les change ensuite dans le salon d'attente. */
@@ -29,7 +28,7 @@ export function newLobbyCode(taken: ReadonlySet<string>, random: () => number = 
   return code;
 }
 
-export function newLobbyRoom(code: string, name: string, host: { id: string; name: string; avatar: CharacterId | null }): LobbyRoom {
+export function newLobbyRoom(code: string, name: string, host: Spectator): LobbyRoom {
   return {
     code,
     name,

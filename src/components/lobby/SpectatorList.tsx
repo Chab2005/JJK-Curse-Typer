@@ -21,7 +21,7 @@ export default function SpectatorList({ spectators, viewerId, isHost, onKick }: 
         <ul aria-labelledby="spectators-title" className="flex flex-wrap gap-2">
           {spectators.map((spectator) => (
             <li key={spectator.id} className="flex min-h-11 items-center gap-2 bg-surface-container-low py-1 pr-1 pl-1.5">
-              <Avatar avatar={spectator.avatar} name={spectator.name} size={28} />
+              <Avatar avatar={spectator.avatar} name={spectator.name} src={spectator.photo} size={28} />
               <span className="font-grotesk text-[14px] text-on-surface">{spectator.name}</span>
               {spectator.id === viewerId && <span className="font-label-code pr-2 text-[12px] text-primary">{tParticipants('you')}</span>}
               {isHost && spectator.id !== viewerId && <IconButton icon="person_remove" label={t('kick', { name: spectator.name })} onClick={() => onKick(spectator)} />}

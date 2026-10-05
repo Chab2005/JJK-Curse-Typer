@@ -17,7 +17,7 @@ export async function createLobbyAction(): Promise<string | null> {
   const viewer = await getViewer();
   if (viewer?.kind !== 'user') return null;
   const t = await getTranslations('JoinForm');
-  const { code } = createLobby((host) => t('newLobbyName', { host }), { id: viewer.id, name: viewer.name, avatar: null });
+  const { code } = createLobby((host) => t('newLobbyName', { host }), { id: viewer.id, name: viewer.name, avatar: null, photo: viewer.photo });
   // Un code peut resservir après l'expiration d'un lobby : ses anciens liens ne doivent pas ouvrir le nouveau.
   await deleteInvites(code);
   return code;
@@ -35,7 +35,7 @@ export async function joinLobbyAction(code: string, options: { spectate?: boolea
     const invite = options?.invite;
     if (!isInviteToken(invite) || !(await claimInvite(invite, room.code, clientIp(await headers()), viewer.id))) return null;
   }
-  const joined = updateLobby(room.code, { type: 'join', person: { id: viewer.id, name: viewer.name, avatar: null }, spectate: options?.spectate === true });
+  const joined = updateLobby(room.code, { type: 'join', person: { id: viewer.id, name: viewer.name, avatar: null, photo: viewer.photo }, spectate: options?.spectate === true });
   // Sans page du lobby ouverte dans le délai de grâce, le visiteur en ressort (src/lib/lobbyPresence.ts).
   if (joined) expectViewer(room.code, viewer.id);
   return storedLobby(room.code);

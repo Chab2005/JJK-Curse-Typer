@@ -28,6 +28,8 @@ export interface RacerSeat {
   id: string;
   name: string;
   avatar: CharacterId | null;
+  /** URL de la photo téléversée (PROF-5) ; prime sur `avatar`. */
+  photo?: string | null;
   kind: 'human' | 'bot';
   level: BotLevel | null;
 }

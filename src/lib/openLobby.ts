@@ -21,5 +21,5 @@ export async function openLobby(code: string, { spectate = false, invite }: { sp
   const viewer = await getViewer();
   const stored = storedLobby(code);
   if (stored && needsInvite(stored, viewer?.id ?? '') && !(await inviteValid(invite, stored.code))) return null;
-  return findLobby(code, viewer ? { id: viewer.id, name: viewer.name, avatar: null } : '', spectate);
+  return findLobby(code, viewer ? { id: viewer.id, name: viewer.name, avatar: null, photo: viewer.photo } : '', spectate);
 }

@@ -209,7 +209,15 @@ const person = (id: string) => ({ id, name: id, avatar: null });
 describe('join', () => {
   it('fait entrer un nouveau venu comme participant pas encore prêt', () => {
     const next = lobbyReducer(room(), { type: 'join', person: person('Nobara'), spectate: false });
-    expect(next.participants.at(-1)).toEqual({ kind: 'human', id: 'Nobara', name: 'Nobara', avatar: null, ready: false });
+    expect(next.participants.at(-1)).toEqual({ kind: 'human', id: 'Nobara', name: 'Nobara', avatar: null, photo: null, ready: false });
+  });
+
+  it('garde la photo téléversée du nouveau venu, joueur ou spectateur (PROF-5)', () => {
+    const photo = '/api/avatar/Nobara?v=2';
+    const playing = lobbyReducer(room(), { type: 'join', person: { ...person('Nobara'), photo }, spectate: false });
+    expect(playing.participants.at(-1)).toMatchObject({ id: 'Nobara', photo });
+    const watching = lobbyReducer(room(), { type: 'join', person: { ...person('Nobara'), photo }, spectate: true });
+    expect(watching.spectators.at(-1)).toMatchObject({ id: 'Nobara', photo });
   });
 
   it('le met en spectateur s’il le demande, si le salon est plein ou si la course est partie', () => {
@@ -261,11 +269,20 @@ describe('setSpectating', () => {
   it('fait passer un joueur en spectateur et inversement', () => {
     const watching = lobbyReducer(room({ participants: [human('Gojo', true), human('Yuji', true)] }), { type: 'setSpectating', id: 'Yuji', spectating: true });
     expect(ids(watching)).toEqual(['Gojo']);
-    expect(watching.spectators.at(-1)).toEqual({ id: 'Yuji', name: 'Yuji', avatar: null });
+    expect(watching.spectators.at(-1)).toEqual({ id: 'Yuji', name: 'Yuji', avatar: null, photo: null });
 
     const back = lobbyReducer(watching, { type: 'setSpectating', id: 'Yuji', spectating: false });
     expect(back.participants.at(-1)).toMatchObject({ id: 'Yuji', ready: false });
     expect(isSpectating(back, 'Yuji')).toBe(false);
+  });
+
+  it('garde la photo téléversée en passant de joueur à spectateur et inversement (PROF-5)', () => {
+    const photo = '/api/avatar/Yuji?v=1';
+    const start = room({ participants: [human('Gojo', true), { ...human('Yuji', true), photo }] });
+    const watching = lobbyReducer(start, { type: 'setSpectating', id: 'Yuji', spectating: true });
+    expect(watching.spectators.at(-1)).toMatchObject({ id: 'Yuji', photo });
+    const back = lobbyReducer(watching, { type: 'setSpectating', id: 'Yuji', spectating: false });
+    expect(back.participants.at(-1)).toMatchObject({ id: 'Yuji', photo });
   });
 
   it('laisse l’hôte regarder sans perdre son rôle', () => {

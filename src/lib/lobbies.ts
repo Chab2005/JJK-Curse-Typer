@@ -10,7 +10,6 @@ import { BOT_LEVELS, CONTENT_MODES, ERROR_MODES, LOBBY_VISIBILITIES, isEmpty, lo
 import { newLobbyCode, newLobbyRoom, viewLobby } from '@/components/lobby/newLobby';
 import { showSampleData } from '@/lib/sampleData';
 import { findSampleRoom } from '@/components/lobby/sampleRooms';
-import type { CharacterId } from '@/components/shared/characters';
 
 /** Un lobby créé est oublié au bout de 24 h. */
 export const LOBBY_TTL_MS = 24 * 60 * 60 * 1000;
@@ -55,7 +54,7 @@ export function subscribeLobby(code: string, listener: LobbyListener): () => voi
 }
 
 /** Ouvre un lobby privé (LOB-4) dont `host` est l'hôte ; `name` reçoit le nom de l'hôte. */
-export function createLobby(name: (host: string) => string, host: { id: string; name: string; avatar: CharacterId | null }, now = Date.now()): LobbyRoom {
+export function createLobby(name: (host: string) => string, host: Spectator, now = Date.now()): LobbyRoom {
   const lobbies = dropExpired(now);
 
   // Les codes de démonstration restent réservés même masqués : un lobby créé ne doit jamais les reprendre.

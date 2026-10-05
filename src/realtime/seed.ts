@@ -29,7 +29,7 @@ export function raceFromLobby(code: string, now: number): SeededRace | null {
 
   const seats = lobby.participants.map((p): RacerSeat =>
     p.kind === 'human'
-      ? { id: p.id, name: p.name, avatar: p.avatar, kind: 'human', level: null }
+      ? { id: p.id, name: p.name, avatar: p.avatar, photo: p.photo ?? null, kind: 'human', level: null }
       : // Le nom d'un bot est son numéro : chaque écran le traduit (« Cadavre maudit 2 »).
         { id: p.id, name: String(p.number), avatar: null, kind: 'bot', level: p.level },
   );
