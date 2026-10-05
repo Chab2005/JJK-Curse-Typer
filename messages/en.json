@@ -94,7 +94,7 @@
         "label": "minutes at most"
       },
       "bots": {
-        "value": "3",
+        "value": "6",
         "label": "bot levels"
       },
       "languages": {
