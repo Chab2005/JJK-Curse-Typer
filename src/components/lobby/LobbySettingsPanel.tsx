@@ -37,6 +37,7 @@ export default function LobbySettingsPanel({ settings, participantCount, editabl
 }
 
 // <dialog> natif : focus piégé, Échap ou clic à côté pour annuler, retour du focus sur le bouton.
+// La fenêtre ne bouge jamais : seul son corps défile (`overflow-clip` empêche le navigateur de faire défiler la fenêtre elle-même).
 function SettingsDialog({ settings, participantCount, onSave }: { settings: LobbySettings; participantCount: number; onSave: (patch: Patch) => void }) {
   const t = useTranslations('Lobby.settings');
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -75,7 +76,7 @@ function SettingsDialog({ settings, participantCount, onSave }: { settings: Lobb
         ref={dialogRef}
         aria-labelledby="settings-dialog-title"
         onClick={(e) => e.target === e.currentTarget && close()}
-        className="m-auto w-[min(calc(100vw-32px),560px)] bg-transparent p-0 text-on-surface backdrop:bg-black/70 backdrop:backdrop-blur-sm"
+        className="m-auto w-[min(calc(100vw-32px),560px)] overflow-clip bg-transparent p-0 text-on-surface backdrop:bg-black/70 backdrop:backdrop-blur-sm"
       >
         <div className="bevel flex max-h-[calc(100dvh-112px)] flex-col bg-linear-160 from-primary-container via-outline-variant via-40% to-secondary-container p-px">
           <div className="bevel flex min-h-0 flex-col bg-surface-container-low">
@@ -259,9 +260,11 @@ function Group({ legend, children }: { legend: string; children: React.ReactNode
 
 // Case à cocher en pastille biseautée : la vraie case reste là (masquée) pour le clavier et les lecteurs d'écran.
 // La coche garde sa place décochée, pour que la pastille ne change pas de taille.
+// `relative` : la case masquée (absolue) reste dans la pastille ; sinon elle se place par rapport à la fenêtre,
+// sous le corps défilant, et le focus au clic fait défiler toute la fenêtre.
 function Check({ checked, onChange, disabled = false, children }: { checked: boolean; onChange: (checked: boolean) => void; disabled?: boolean; children: React.ReactNode }) {
   return (
-    <label className="group bevel flex cursor-pointer bg-outline-variant p-px transition-colors hover:bg-primary has-checked:bg-primary-container has-checked:hover:bg-primary has-focus-visible:bg-primary has-disabled:cursor-not-allowed has-disabled:hover:bg-primary-container">
+    <label className="group bevel relative flex cursor-pointer bg-outline-variant p-px transition-colors hover:bg-primary has-checked:bg-primary-container has-checked:hover:bg-primary has-focus-visible:bg-primary has-disabled:cursor-not-allowed has-disabled:hover:bg-primary-container">
       <input type="checkbox" checked={checked} disabled={disabled} onChange={(e) => onChange(e.target.checked)} className="sr-only" />
       <span className="bevel flex min-h-10 flex-1 items-center gap-2 bg-surface-container-lowest pr-4 pl-3 text-[14px] text-on-surface-variant transition-colors group-has-checked:bg-surface-container-high group-has-checked:text-on-surface">
         <span aria-hidden="true" className="material-symbols-outlined text-[16px]! text-primary invisible group-has-checked:visible">check</span>

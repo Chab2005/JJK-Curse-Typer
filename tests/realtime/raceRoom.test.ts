@@ -10,7 +10,7 @@ const TEXT = 'abc def';
 const SEATS: RacerSeat[] = [
   { id: 'host', name: 'Host', avatar: null, kind: 'human', level: null },
   { id: 'me', name: 'Me', avatar: 'megumi', kind: 'human', level: null },
-  { id: 'bot-1', name: '1', avatar: null, kind: 'bot', level: 'expert' },
+  { id: 'bot-1', name: '1', avatar: null, kind: 'bot', level: 'grade_1' },
 ];
 
 class FakeConnection implements Connection {

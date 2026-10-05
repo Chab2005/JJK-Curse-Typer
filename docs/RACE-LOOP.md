@@ -129,7 +129,7 @@ Persistance en BD et pages de résultats hors périmètre ; la boucle doit seule
 | Annexe A, MPM net | **non conforme** | `scoring.ts` (`netWpm`) | Calcul actuel : brut − erreurs/min (H-21). **L'énoncé impose correctement tapés ÷ 5 ÷ min.** |
 | Annexe A, précision | fait | `scoring.ts` (`accuracy`) | Ratio 0–1 (×100 à l'affichage). |
 | Annexe A, progression | partiel | `race.ts` (`Standing.progress`) | Nombre de caractères justes, **pas un ratio** sur la longueur (nécessaire avec BONUS-04). |
-| BOT-01 | partiel | `bots.ts` (`BOT_LEVELS`) | **3 niveaux** (`beginner`, `intermediate`, `expert`) au lieu de 5. Valeurs à aligner. |
+| BOT-01 | fait | `bots.ts` (`BOT_LEVELS`, `BOT_PROFILES`) | **6 niveaux** : `grade_4` (15 MPM, 12 %), `grade_3` (27, 8 %), `grade_2` (47, 5 %), `grade_1` (85, 2 %), `special_grade` (140, 0,5 %), `calamity_grade` (180, 0,01 %). Couvre les 5 plages de l'énoncé, plus un niveau au-delà d'« Impossible ». |
 | BOT-02 | partiel | `bots.ts` (`fluctuate`) | Vitesse tirée à chaque mot. **Pas de ralentissement sur les mots difficiles**, pas d'hésitation. |
 | BOT-03 | fait | `bots.ts` (`nextBotStroke`) | — |
 | BOT-04 | partiel | — | Bots identifiés. Bonus pas encore faits. |
@@ -152,7 +152,7 @@ Règle : **l'énoncé de l'enseignant l'emporte, sauf pour les bonus**. À consi
 | Reprise après coupure | 60 s (H-4) | **Énoncé** : 30 s |
 | Timer max | 3 min | **Énoncé** : aucun, ou 30 s à 10 min |
 | Capacité | 60 | **Énoncé** : 2 à 30 |
-| Niveaux de bots | 3 | **Énoncé** : 5 (Noob, Débutant, Intermédiaire, Expert, Impossible) |
+| Niveaux de bots | 6 (grade 4 → grade calamité) | **Énoncé** : 5 (Noob, Débutant, Intermédiaire, Expert, Impossible) |
 | Décompte | 5 s | **Énoncé** : 3, 2, 1 |
 | Départ | ≥ 2 participants | **Énoncé** : ≥ 2 participants dont ≥ 1 humain |
 | Bonus | jauge d'énergie, moitié arrière (BON-*) | **Cahier v3** (voir section 6) |

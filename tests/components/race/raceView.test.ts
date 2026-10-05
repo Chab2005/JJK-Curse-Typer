@@ -3,7 +3,7 @@ import type { RaceSnapshot, ServerMessage } from '@/game/protocol';
 import type { RacerSeat, Standing } from '@/game/race';
 import { charState, formatClock, initialRaceView, raceViewReducer, splitWords, trackRunners } from '@/components/race/raceView';
 
-const seat = (id: string, kind: 'human' | 'bot' = 'human'): RacerSeat => ({ id, name: id, avatar: null, kind, level: kind === 'bot' ? 'expert' : null });
+const seat = (id: string, kind: 'human' | 'bot' = 'human'): RacerSeat => ({ id, name: id, avatar: null, kind, level: kind === 'bot' ? 'grade_1' : null });
 const SEATS = [seat('me'), seat('ann'), seat('bot-1', 'bot')];
 
 const SNAPSHOT: RaceSnapshot = { phase: 'countdown', startsIn: 5000, timerMs: 0, bonus: true, text: 'abcdefghij', mode: 'accumulate', seats: SEATS };
