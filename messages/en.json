@@ -608,18 +608,18 @@
   "Settings": {
     "eyebrow": "Account",
     "title": "Settings",
-    "saved": "Saved.",
+    "save": "Save",
+    "saving": "Saving…",
     "avatar": {
       "title": "Profile picture",
       "choose": "Choose a picture",
       "hint": "JPEG, PNG or WebP, 2 MB max. It is cropped to a square and resized.",
-      "upload": "Upload",
-      "remove": "Remove"
+      "remove": "Remove",
+      "keep": "Keep picture"
     },
     "displayName": {
       "label": "Display name",
-      "hint": "Shown on your profile and in races. You still log in as {username}.",
-      "save": "Save"
+      "hint": "Shown on your profile and in races. You still log in as {username}."
     },
     "errors": {
       "displayName": "Your display name must be 1 to 32 characters long.",
@@ -634,8 +634,7 @@
       "github": "GitHub username",
       "githubPlaceholder": "your-name",
       "discord": "Discord (link or name)",
-      "discordPlaceholder": "name or https://discord.com/users/…",
-      "save": "Save links"
+      "discordPlaceholder": "name or https://discord.com/users/…"
     }
   }
 }

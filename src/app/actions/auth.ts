@@ -7,19 +7,20 @@ import { cookies } from 'next/headers';
 import sharp from 'sharp';
 import { db } from '@/db';
 import { oauthPending, users } from '@/db/schema';
-import { normalizeGithub, validateLinks } from '@/components/profile/profileEdit';
+import { normalizeGithub } from '@/components/profile/profileEdit';
+import { validateSettings, type SettingsErrors } from '@/components/settings/settingsValidation';
 import { redirect } from '@/i18n/navigation';
 import type { Locale } from '@/i18n/config';
 import { attachGuestGames, createAccount, findUserByUsername } from '@/lib/auth/accounts';
 import { anyBlocked, attemptKeys, clearFailures, recordFailure } from '@/lib/auth/attempts';
-import { AVATAR_SIZE, validateAvatarFile } from '@/lib/auth/avatar';
+import { AVATAR_SIZE } from '@/lib/auth/avatar';
 import { OAUTH_PENDING_COOKIE } from '@/lib/auth/config';
 import { clearGuest, countryFromHeaders, getGuest, setGuest } from '@/lib/auth/guestCookie';
 import { dummyVerify, verifyPassword } from '@/lib/auth/password';
 import { createSession, destroySession, getSessionUser } from '@/lib/auth/session';
-import { validateDisplayName, validatePassword, validateUsername } from '@/lib/auth/validation';
+import { validatePassword, validateUsername } from '@/lib/auth/validation';
 
-// Actions serveur de l'authentification (AUTH-1 à AUTH-8) et du profil (PROF-3, PROF-5).
+// Actions serveur de l'authentification (AUTH-1 à AUTH-8) et du profil (PROF-3 à PROF-5).
 // Elles répondent par un code d'erreur que l'interface traduit ; en cas de succès, elles redirigent.
 
 export type AuthState = { error?: 'username' | 'usernameChars' | 'password' | 'taken' | 'invalid' | 'blocked' | 'expired'; username?: string } | null;
@@ -120,56 +121,37 @@ export async function setGuestNameAction(name: string): Promise<'length' | 'char
 }
 
 // `values` : ce que le formulaire a envoyé, pour le réafficher (React vide les champs après une action).
-export type ProfileState = { values?: Record<string, string>; ok?: boolean; error?: 'displayName' | 'github' | 'discord' | 'avatarType' | 'avatarSize' | 'avatarInvalid' | 'auth' } | null;
+export type SettingsState = { values?: Record<string, string>; errors?: SettingsErrors & { auth?: 'auth' } } | null;
 
-/** Nom affiché, distinct de l'identifiant de connexion (PROF-3). */
-export async function updateDisplayNameAction(_prev: ProfileState, form: FormData): Promise<ProfileState> {
+/**
+ * Enregistre tous les paramètres d'un coup : nom affiché (PROF-3), liens (PROF-4) et photo (PROF-5), puis renvoie au profil.
+ * Rien n'est écrit tant qu'un champ est invalide. La photo, JPEG, PNG ou WebP de 2 Mo au plus, est recadrée et redimensionnée.
+ */
+export async function saveSettingsAction(_prev: SettingsState, form: FormData): Promise<SettingsState> {
   const user = await getSessionUser();
-  if (!user) return { error: 'auth' };
-  const displayName = text(form, 'displayName').trim();
-  if (validateDisplayName(displayName)) return { error: 'displayName', values: { displayName } };
-  await db.update(users).set({ displayName }).where(eq(users.id, user.id));
-  return { ok: true, values: { displayName } };
-}
-
-/** Liens GitHub et Discord affichés sur le profil (PROF-4) ; vides, ils disparaissent. */
-export async function updateLinksAction(_prev: ProfileState, form: FormData): Promise<ProfileState> {
-  const user = await getSessionUser();
-  if (!user) return { error: 'auth' };
-  const input = { github: text(form, 'github'), discord: text(form, 'discord') };
-  const errors = validateLinks(input);
-  const values = { github: input.github, discord: input.discord };
-  if (errors.github) return { error: 'github', values };
-  if (errors.discord) return { error: 'discord', values };
-  await db.update(users).set({ github: normalizeGithub(input.github), discord: input.discord.trim() }).where(eq(users.id, user.id));
-  return { ok: true, values };
-}
-
-/** Téléverse une photo de profil (PROF-5) : JPEG, PNG ou WebP de 2 Mo au plus, recadrée et redimensionnée avant stockage. */
-export async function uploadAvatarAction(_prev: ProfileState, form: FormData): Promise<ProfileState> {
-  const user = await getSessionUser();
-  if (!user) return { error: 'auth' };
+  if (!user) return { errors: { auth: 'auth' } };
+  const values = { displayName: text(form, 'displayName').trim(), github: text(form, 'github'), discord: text(form, 'discord') };
   const file = form.get('avatar');
-  if (!(file instanceof File)) return { error: 'avatarSize' };
-  const bytes = new Uint8Array(await file.arrayBuffer());
-  const problem = validateAvatarFile(bytes);
-  if (problem) return { error: problem === 'size' ? 'avatarSize' : 'avatarType' };
+  // Sans fichier choisi, le navigateur envoie un fichier vide.
+  const bytes = file instanceof File && file.size > 0 ? new Uint8Array(await file.arrayBuffer()) : null;
+  const errors = validateSettings({ ...values, avatar: bytes });
+  if (Object.keys(errors).length) return { errors, values };
 
-  let avatar: Buffer;
-  try {
-    avatar = await sharp(bytes, { limitInputPixels: 40_000_000 })
-      .rotate()
-      .resize(AVATAR_SIZE, AVATAR_SIZE, { fit: 'cover' })
-      .webp({ quality: 82 })
-      .toBuffer();
-  } catch {
-    return { error: 'avatarInvalid' };
+  const update: Partial<typeof users.$inferInsert> = { displayName: values.displayName, github: normalizeGithub(values.github), discord: values.discord.trim() };
+  if (bytes) {
+    try {
+      update.avatar = await sharp(bytes, { limitInputPixels: 40_000_000 })
+        .rotate()
+        .resize(AVATAR_SIZE, AVATAR_SIZE, { fit: 'cover' })
+        .webp({ quality: 82 })
+        .toBuffer();
+    } catch {
+      return { errors: { avatar: 'avatarInvalid' }, values };
+    }
+  } else if (form.get('removeAvatar') === '1') {
+    update.avatar = null;
   }
-  await db.update(users).set({ avatar, avatarVersion: user.avatarVersion + 1 }).where(eq(users.id, user.id));
-  return { ok: true };
-}
-
-export async function removeAvatarAction(): Promise<void> {
-  const user = await getSessionUser();
-  if (user) await db.update(users).set({ avatar: null, avatarVersion: user.avatarVersion + 1 }).where(eq(users.id, user.id));
+  if ('avatar' in update) update.avatarVersion = user.avatarVersion + 1;
+  await db.update(users).set(update).where(eq(users.id, user.id));
+  return redirect({ href: `/profile/${encodeURIComponent(user.username)}`, locale: (await getLocale()) as Locale });
 }

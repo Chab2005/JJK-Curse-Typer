@@ -608,18 +608,18 @@
   "Settings": {
     "eyebrow": "Compte",
     "title": "Paramètres",
-    "saved": "Enregistré.",
+    "save": "Enregistrer",
+    "saving": "Enregistrement…",
     "avatar": {
       "title": "Photo de profil",
       "choose": "Choisir une image",
       "hint": "JPEG, PNG ou WebP, 2 Mo max. Elle est recadrée en carré et redimensionnée.",
-      "upload": "Téléverser",
-      "remove": "Retirer"
+      "remove": "Retirer",
+      "keep": "Garder la photo"
     },
     "displayName": {
       "label": "Nom affiché",
-      "hint": "Montré sur ton profil et en course. Tu te connectes toujours avec {username}.",
-      "save": "Enregistrer"
+      "hint": "Montré sur ton profil et en course. Tu te connectes toujours avec {username}."
     },
     "errors": {
       "displayName": "Ton nom affiché doit faire de 1 à 32 caractères.",
@@ -634,8 +634,7 @@
       "github": "Nom d'utilisateur GitHub",
       "githubPlaceholder": "ton-nom",
       "discord": "Discord (lien ou nom)",
-      "discordPlaceholder": "nom ou https://discord.com/users/…",
-      "save": "Enregistrer les liens"
+      "discordPlaceholder": "nom ou https://discord.com/users/…"
     }
   }
 }
