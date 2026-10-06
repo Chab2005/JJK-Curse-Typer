@@ -1,12 +1,13 @@
 import { expect, test } from '@playwright/test';
 import sharp from 'sharp';
-import { register } from './auth';
+import { openAccountControls, register } from './auth';
 
 // Comptes et invités (AUTH-1 à AUTH-8, PROF-3, PROF-5). Les comptes créés ici restent en base de développement.
 
 
-test('registers, logs out, logs back in, and rejects a wrong password', async ({ page }) => {
+test('registers, logs out, logs back in, and rejects a wrong password', async ({ page, isMobile }) => {
   const { username, password } = await register(page);
+  await openAccountControls(page, isMobile);
   await expect(page.getByRole('button', { name: 'Log out' })).toBeVisible();
 
   await page.getByRole('button', { name: 'Log out' }).click();
@@ -21,6 +22,7 @@ test('registers, logs out, logs back in, and rejects a wrong password', async ({
   await page.getByLabel(/^Password/).fill(password);
   await page.getByRole('button', { name: 'Log in', exact: true }).click();
   await page.waitForURL('/');
+  await openAccountControls(page, isMobile);
   await expect(page.getByRole('button', { name: 'Log out' })).toBeVisible();
 });
 
@@ -39,10 +41,8 @@ test('keeps the login name and shows the display name on the profile (PROF-3)', 
   const { username } = await register(page);
   await page.goto('/settings');
   await page.getByLabel('Display name').fill('Gojo の Satoru');
+  // Le bouton unique enregistre et renvoie au profil.
   await page.getByRole('button', { name: 'Save', exact: true }).click();
-  await expect(page.getByRole('status').filter({ hasText: 'Saved.' })).toBeVisible();
-
-  await page.goto('/profile');
   await expect(page).toHaveURL(new RegExp(`/profile/${username}$`));
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Gojo の Satoru');
   await expect(page.getByText(`@${username}`)).toBeVisible();
@@ -53,15 +53,16 @@ test('uploads a profile picture (PROF-5) and rejects other file types and sizes'
   await page.goto('/settings');
 
   await page.getByLabel('Choose a picture').setInputFiles({ name: 'a.gif', mimeType: 'image/gif', buffer: Buffer.from('GIF89a......') });
-  await page.getByRole('button', { name: 'Upload' }).click();
+  await page.getByRole('button', { name: 'Save', exact: true }).click();
   await expect(page.getByRole('alert').filter({ hasText: 'Only JPEG, PNG or WebP' })).toBeVisible();
 
   await page.getByLabel('Choose a picture').setInputFiles({ name: 'big.png', mimeType: 'image/png', buffer: Buffer.alloc(2 * 1024 * 1024 + 1) });
   await expect(page.getByRole('alert').filter({ hasText: '2 MB or less' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Save', exact: true })).toBeDisabled();
 
   await page.getByLabel('Choose a picture').setInputFiles({ name: 'ok.png', mimeType: 'image/png', buffer: await sharp({ create: { width: 600, height: 300, channels: 3, background: '#c33' } }).png().toBuffer() });
-  await page.getByRole('button', { name: 'Upload' }).click();
-  await expect(page.getByRole('status').filter({ hasText: 'Saved.' })).toBeVisible();
+  await page.getByRole('button', { name: 'Save', exact: true }).click();
+  await expect(page).toHaveURL(new RegExp(`/profile/${username}$`));
 
   const res = await page.request.get(`/api/avatar/${username}`);
   expect(res.status()).toBe(200);
@@ -95,14 +96,12 @@ test('shows the GitHub and Discord links set in the settings on the profile (PRO
   await page.goto('/settings');
   await page.getByLabel('GitHub username').fill('megumi');
   await page.getByLabel('Discord (link or name)').fill('not valid!');
-  await page.getByRole('button', { name: 'Save links' }).click();
+  await page.getByRole('button', { name: 'Save', exact: true }).click();
   await expect(page.getByRole('alert').filter({ hasText: 'Discord name' })).toBeVisible();
 
   await page.getByLabel('Discord (link or name)').fill('megumi.s');
-  await page.getByRole('button', { name: 'Save links' }).click();
-  await expect(page.getByRole('status').filter({ hasText: 'Saved.' })).toBeVisible();
-
-  await page.goto(`/profile/${username}`);
+  await page.getByRole('button', { name: 'Save', exact: true }).click();
+  await expect(page).toHaveURL(new RegExp(`/profile/${username}$`));
   await expect(page.getByRole('link', { name: /megumi/ })).toHaveAttribute('href', 'https://github.com/megumi');
   await expect(page.getByText(/megumi\.s/)).toBeVisible();
 });
