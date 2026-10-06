@@ -58,4 +58,20 @@ describe('attachRaceServer', () => {
     await new Promise((resolve) => socket.once('error', resolve));
     expect(seenByOthers).toBe(true);
   });
+
+  it('cache les WebSocket de course à Next, qui fermerait celles dont l’URL correspond à une page', async () => {
+    // Comme Next quand la 404 attrape-tout [locale]/[...rest] correspond à /ws/race/<code>.
+    let seenByOthers = false;
+    server.on('upgrade', (_req, socket) => {
+      seenByOthers = true;
+      socket.end();
+    });
+    const socket = new WebSocket(`${base}/ws/race/TKY-HGH`);
+    await new Promise((resolve) => socket.once('open', resolve));
+    const welcome = firstMessage(socket);
+    socket.send(JSON.stringify({ type: 'join', guest: 'guest-aaaaaaaa' }));
+    expect(await welcome).toMatchObject({ type: 'welcome' });
+    expect(seenByOthers).toBe(false);
+    socket.close();
+  });
 });
