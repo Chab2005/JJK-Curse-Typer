@@ -16,7 +16,7 @@ export default function Hero({ onlineCount }: { onlineCount: number | null }) {
       {/* Énergie occulte : halo, éclairs Black Flash et taches */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_40%_45%_at_50%_50%,rgb(225_29_72/0.4),rgb(147_0_10/0.18)_45%,transparent_75%)]" />
       <BlackFlash />
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_78%,rgb(147_0_10/0.35),transparent_22%),radial-gradient(circle_at_86%_22%,rgb(49_49_192/0.28),transparent_24%),radial-gradient(circle_at_78%_88%,rgb(147_0_10/0.25),transparent_18%)]" />
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_78%,rgb(147_0_10/0.35),transparent_22%),radial-gradient(circle_at_86%_22%,rgb(147_0_10/0.3),transparent_24%),radial-gradient(circle_at_14%_22%,rgb(147_0_10/0.3),transparent_24%),radial-gradient(circle_at_78%_88%,rgb(147_0_10/0.25),transparent_18%)]" />
       <p aria-hidden="true" className="hidden lg:block absolute left-10 top-1/2 -translate-y-1/2 [writing-mode:vertical-rl] whitespace-nowrap font-label-code text-[11px] uppercase tracking-[0.5em] text-outline-variant">
         {t('sideLeft')}
       </p>
@@ -31,10 +31,6 @@ export default function Hero({ onlineCount }: { onlineCount: number | null }) {
 
         <h1 id="hero-title" className="flex flex-col items-center gap-5">
           <span className="relative block w-[min(92vw,860px)] py-7">
-            <span
-              aria-hidden="true"
-              className="pointer-events-none absolute -inset-x-[6%] -inset-y-[10%] bg-[radial-gradient(ellipse_50%_50%_at_50%_50%,rgb(245_215_122/0.42),rgb(201_151_47/0.18)_45%,transparent_72%)] blur-[6px]"
-            />
             <Image
               src="/images/jjk-logo.png"
               alt={t('logoAlt')}
