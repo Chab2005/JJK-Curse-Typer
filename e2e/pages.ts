@@ -10,6 +10,7 @@ export const PAGES = [
   { name: 'lobby', path: '/lobby/SHJ-60S' },
   { name: 'lobby-spectate', path: '/lobby/SHJ-60S?spectate=1' },
   { name: 'race', path: '/lobby/SHJ-60S/race' },
+  { name: 'not-found', path: '/FOOBAR' },
 ] as const;
 
 /** Origine de chaque langue : anglais sur le domaine racine, français sur fr. (GEN-3). */
