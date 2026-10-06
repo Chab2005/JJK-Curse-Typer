@@ -2,6 +2,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { connection } from 'next/server';
 import { Suspense } from 'react';
 import Footer from '@/components/layout/Footer';
+import { getSessionUser } from '@/lib/auth/session';
 import SiteHeader from '@/components/layout/SiteHeader';
 import LobbyBrowser from '@/components/lobbies/LobbyBrowser';
 import { showSampleData } from '@/lib/sampleData';
@@ -25,6 +26,7 @@ export default async function LobbiesPage({ params }: PageProps<'/[locale]/lobbi
   await connection();
   // Seuls les lobbies publics sont listés ; ceux à code ou privés restent cachés (LOB-2, LOB-3).
   const lobbies = [...listPublicLobbies(), ...(showSampleData() ? SAMPLE_LOBBIES : [])];
+  const user = await getSessionUser();
 
   return (
     <>
@@ -38,7 +40,7 @@ export default async function LobbiesPage({ params }: PageProps<'/[locale]/lobbi
           <div className="min-h-[752px] sm:min-h-[656px]">
             {/* useSearchParams : la liste se rend côté client, avec l'état lu dans l'URL. */}
             <Suspense fallback={null}>
-              <LobbyBrowser lobbies={lobbies} />
+              <LobbyBrowser lobbies={lobbies} signedIn={Boolean(user)} />
             </Suspense>
           </div>
         </section>

@@ -17,7 +17,5 @@ export const authActionsMock = {
   loginAction: vi.fn(async () => null),
   registerAction: vi.fn(async () => null),
   completeOAuthAction: vi.fn(async () => null),
-  updateDisplayNameAction: vi.fn(async () => null),
-  uploadAvatarAction: vi.fn(async () => null),
-  removeAvatarAction: vi.fn(async () => {}),
+  saveSettingsAction: vi.fn(async () => null),
 };

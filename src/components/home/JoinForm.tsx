@@ -163,11 +163,12 @@ export default function JoinForm({ accountName = null }: { accountName?: string 
           </span>
         </button>
 
+        {/* Masqué sur téléphone (sous `sm`) : la création de lobby ne s'y propose pas. */}
         <button
           type="button"
           onClick={createLobby}
           disabled={isCreating}
-          className="group flex min-h-8 items-center gap-2 self-center text-sm text-outline transition-colors hover:text-primary disabled:opacity-60"
+          className="group hidden min-h-8 items-center gap-2 self-center sm:flex text-sm text-outline transition-colors hover:text-primary disabled:opacity-60"
         >
           <span aria-hidden="true" className={`material-symbols-outlined text-[17px] text-primary ${isCreating ? 'animate-spin' : ''}`}>{isCreating ? 'progress_activity' : 'add'}</span>
           <span className="underline decoration-primary/40 underline-offset-4 group-hover:decoration-primary">{accountName ? t('createLobby') : t('createLobbyGuest')}</span>

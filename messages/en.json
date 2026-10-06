@@ -150,6 +150,9 @@
     "resultCount": "{count, plural, one {# lobby found} other {# lobbies found}}",
     "empty": "No lobby matches your search.",
     "clear": "Clear search and filters",
+    "create": "Create a lobby",
+    "createGuest": "Log in to create a lobby",
+    "createFailed": "Couldn't create the lobby. Try again.",
     "pagination": "Lobby pages",
     "filters": {
       "button": "Filters",
@@ -326,13 +329,6 @@
         "code": "Hidden from the lobby list. Join with the code or an invite link.",
         "private": "Hidden from the lobby list. Join only with an invite link."
       }
-    },
-    "notFound": {
-      "metaTitle": "Lobby not found",
-      "eyebrow": "Lobby not found",
-      "title": "This lobby doesn't exist",
-      "text": "Check the code: it may be mistyped, or the lobby has closed.",
-      "back": "Enter a code"
     },
     "guest": {
       "title": "Choose a name",
@@ -535,10 +531,13 @@
       "waiting": "{count, plural, one {# exorcist is} other {# exorcists are}} still racing…",
       "over": "Race over",
       "results": "Results",
+      "podium": "Race podium",
       "rank": "Rank",
       "name": "Exorcist",
       "wpm": "WPM",
       "accuracy": "Accuracy",
+      "detail": "{status} · {accuracy} accuracy",
+      "wpmValue": "{value} WPM",
       "state": "Status",
       "you": "(you)",
       "backToLobby": "Back to the lobby"
@@ -608,18 +607,18 @@
   "Settings": {
     "eyebrow": "Account",
     "title": "Settings",
-    "saved": "Saved.",
+    "save": "Save",
+    "saving": "Saving…",
     "avatar": {
       "title": "Profile picture",
       "choose": "Choose a picture",
       "hint": "JPEG, PNG or WebP, 2 MB max. It is cropped to a square and resized.",
-      "upload": "Upload",
-      "remove": "Remove"
+      "remove": "Remove",
+      "keep": "Keep picture"
     },
     "displayName": {
       "label": "Display name",
-      "hint": "Shown on your profile and in races. You still log in as {username}.",
-      "save": "Save"
+      "hint": "Shown on your profile and in races. You still log in as {username}."
     },
     "errors": {
       "displayName": "Your display name must be 1 to 32 characters long.",
@@ -634,8 +633,37 @@
       "github": "GitHub username",
       "githubPlaceholder": "your-name",
       "discord": "Discord (link or name)",
-      "discordPlaceholder": "name or https://discord.com/users/…",
-      "save": "Save links"
+      "discordPlaceholder": "name or https://discord.com/users/…"
+    }
+  },
+  "NotFound": {
+    "page": {
+      "metaTitle": "Page not found",
+      "eyebrow": "Error 404",
+      "title": "This page doesn't exist",
+      "text": "The link may be broken, or the page has moved.",
+      "back": "Back to home"
+    },
+    "profile": {
+      "metaTitle": "Player not found",
+      "eyebrow": "Player not found",
+      "title": "This player doesn't exist",
+      "text": "Check the username: it may be mistyped, or the account no longer exists.",
+      "back": "See the rankings"
+    },
+    "settings": {
+      "metaTitle": "Settings not found",
+      "eyebrow": "Settings not found",
+      "title": "There are no secret settings",
+      "text": "Everything you can change is on the settings page.",
+      "back": "Back to settings"
+    },
+    "lobby": {
+      "metaTitle": "Lobby not found",
+      "eyebrow": "Lobby not found",
+      "title": "This lobby doesn't exist",
+      "text": "Check the code: it may be mistyped, or the lobby has closed.",
+      "back": "Enter a code"
     }
   }
 }

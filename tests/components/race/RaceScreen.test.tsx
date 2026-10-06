@@ -177,8 +177,8 @@ describe('RaceScreen', () => {
     });
 
     expect(screen.getByText('Yuji_BlackFlash wins the race!')).toBeInTheDocument();
-    const table = screen.getByRole('table', { name: 'Results' });
-    expect(within(table).getByText('Cursed corpse 1')).toBeInTheDocument();
+    const podium = screen.getByRole('region', { name: 'Race podium' });
+    expect(within(podium).getByText('Cursed corpse 1')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Back to the lobby' })).toBeInTheDocument();
   });
 });

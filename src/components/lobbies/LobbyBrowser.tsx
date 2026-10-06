@@ -7,6 +7,7 @@ import Pagination from '@/components/shared/Pagination';
 import SearchField from '@/components/shared/SearchField';
 import { writeSearch } from '@/components/shared/urlSearch';
 import { paginate } from '@/lib/pagination';
+import CreateLobbyButton from './CreateLobbyButton';
 import LobbyFilters from './LobbyFilters';
 import LobbyTable from './LobbyTable';
 import { DEFAULT_LOBBY_FILTERS, type LobbyFilters as Filters, type LobbySummary, filterLobbies, lobbySearchQuery, parseLobbySearch } from './lobbySearch';
@@ -14,7 +15,8 @@ import { DEFAULT_LOBBY_FILTERS, type LobbyFilters as Filters, type LobbySummary,
 const PER_PAGE = 8;
 
 // Recherche, filtres et pagination des lobbies publics ; l'état vit dans l'URL (?q=…&page=2).
-export default function LobbyBrowser({ lobbies }: { lobbies: LobbySummary[] }) {
+// Le bouton de création s'aligne sur le compteur, ou passe sous « Effacer » quand rien ne correspond.
+export default function LobbyBrowser({ lobbies, signedIn }: { lobbies: LobbySummary[]; signedIn: boolean }) {
   const t = useTranslations('Lobbies');
   const { filters, page } = parseLobbySearch(useSearchParams());
 
@@ -45,9 +47,12 @@ export default function LobbyBrowser({ lobbies }: { lobbies: LobbySummary[] }) {
         <LobbyFilters filters={current} onChange={applyFilters} />
       </div>
 
-      <p aria-live="polite" className="font-label-code text-[12px] uppercase tracking-[0.16em] text-tertiary">
-        {t('resultCount', { count: results.length })}
-      </p>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p aria-live="polite" className="font-label-code text-[12px] uppercase tracking-[0.16em] text-tertiary">
+          {t('resultCount', { count: results.length })}
+        </p>
+        {results.length > 0 && <CreateLobbyButton signedIn={signedIn} />}
+      </div>
 
       {results.length > 0 ? (
         <LobbyTable lobbies={view.items} />
@@ -64,6 +69,7 @@ export default function LobbyBrowser({ lobbies }: { lobbies: LobbySummary[] }) {
           >
             {t('clear')}
           </button>
+          <CreateLobbyButton signedIn={signedIn} align="center" />
         </div>
       )}
 
