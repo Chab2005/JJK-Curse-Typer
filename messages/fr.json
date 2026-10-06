@@ -150,6 +150,9 @@
     "resultCount": "{count, plural, one {# lobby trouvé} other {# lobbies trouvés}}",
     "empty": "Aucun lobby ne correspond à votre recherche.",
     "clear": "Effacer la recherche et les filtres",
+    "create": "Créer un lobby",
+    "createGuest": "Se connecter pour créer un lobby",
+    "createFailed": "Impossible de créer le lobby. Réessayez.",
     "pagination": "Pages des lobbies",
     "filters": {
       "button": "Filtres",
