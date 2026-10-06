@@ -150,6 +150,9 @@
     "resultCount": "{count, plural, one {# lobby trouvé} other {# lobbies trouvés}}",
     "empty": "Aucun lobby ne correspond à votre recherche.",
     "clear": "Effacer la recherche et les filtres",
+    "create": "Créer un lobby",
+    "createGuest": "Se connecter pour créer un lobby",
+    "createFailed": "Impossible de créer le lobby. Réessayez.",
     "pagination": "Pages des lobbies",
     "filters": {
       "button": "Filtres",
@@ -326,13 +329,6 @@
         "code": "Absent de la liste des lobbies. On rejoint avec le code ou un lien d'invitation.",
         "private": "Absent de la liste des lobbies. On rejoint seulement avec un lien d'invitation."
       }
-    },
-    "notFound": {
-      "metaTitle": "Lobby introuvable",
-      "eyebrow": "Lobby introuvable",
-      "title": "Ce lobby n'existe pas",
-      "text": "Vérifiez le code : il est peut-être mal tapé, ou le lobby a fermé.",
-      "back": "Entrer un code"
     },
     "guest": {
       "title": "Choisissez un pseudo",
@@ -535,10 +531,13 @@
       "waiting": "{count, plural, one {# exorciste est encore} other {# exorcistes sont encore}} en course…",
       "over": "Course terminée",
       "results": "Résultats",
+      "podium": "Podium de la course",
       "rank": "Rang",
       "name": "Exorciste",
       "wpm": "MPM",
       "accuracy": "Précision",
+      "detail": "{status} · précision de {accuracy}",
+      "wpmValue": "{value} MPM",
       "state": "État",
       "you": "(vous)",
       "backToLobby": "Retour au lobby"
@@ -608,18 +607,18 @@
   "Settings": {
     "eyebrow": "Compte",
     "title": "Paramètres",
-    "saved": "Enregistré.",
+    "save": "Enregistrer",
+    "saving": "Enregistrement…",
     "avatar": {
       "title": "Photo de profil",
       "choose": "Choisir une image",
       "hint": "JPEG, PNG ou WebP, 2 Mo max. Elle est recadrée en carré et redimensionnée.",
-      "upload": "Téléverser",
-      "remove": "Retirer"
+      "remove": "Retirer",
+      "keep": "Garder la photo"
     },
     "displayName": {
       "label": "Nom affiché",
-      "hint": "Montré sur ton profil et en course. Tu te connectes toujours avec {username}.",
-      "save": "Enregistrer"
+      "hint": "Montré sur ton profil et en course. Tu te connectes toujours avec {username}."
     },
     "errors": {
       "displayName": "Ton nom affiché doit faire de 1 à 32 caractères.",
@@ -634,8 +633,37 @@
       "github": "Nom d'utilisateur GitHub",
       "githubPlaceholder": "ton-nom",
       "discord": "Discord (lien ou nom)",
-      "discordPlaceholder": "nom ou https://discord.com/users/…",
-      "save": "Enregistrer les liens"
+      "discordPlaceholder": "nom ou https://discord.com/users/…"
+    }
+  },
+  "NotFound": {
+    "page": {
+      "metaTitle": "Page introuvable",
+      "eyebrow": "Erreur 404",
+      "title": "Cette page n'existe pas",
+      "text": "Le lien est peut-être cassé, ou la page a été déplacée.",
+      "back": "Retour à l'accueil"
+    },
+    "profile": {
+      "metaTitle": "Joueur introuvable",
+      "eyebrow": "Joueur introuvable",
+      "title": "Ce joueur n'existe pas",
+      "text": "Vérifiez le nom d'utilisateur : il est peut-être mal tapé, ou le compte n'existe plus.",
+      "back": "Voir le classement"
+    },
+    "settings": {
+      "metaTitle": "Paramètres introuvables",
+      "eyebrow": "Paramètres introuvables",
+      "title": "Il n'y a pas de paramètres secrets",
+      "text": "Tout ce que vous pouvez modifier se trouve sur la page des paramètres.",
+      "back": "Retour aux paramètres"
+    },
+    "lobby": {
+      "metaTitle": "Lobby introuvable",
+      "eyebrow": "Lobby introuvable",
+      "title": "Ce lobby n'existe pas",
+      "text": "Vérifiez le code : il est peut-être mal tapé, ou le lobby a fermé.",
+      "back": "Entrer un code"
     }
   }
 }

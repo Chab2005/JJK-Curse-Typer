@@ -4,7 +4,8 @@ import { Link } from '@/i18n/navigation';
 import type { LeaderboardCategory, RankedPlayer } from './leaderboard';
 import { useMetric } from './useMetric';
 
-const PLACES = [
+/** Cadre, encre et anneau des trois places ; partagés avec le podium de fin de course. */
+export const PLACES = [
   { frame: 'bg-linear-135 from-gold to-gold-deep', ink: 'text-gold', ring: 'ring-gold' },
   { frame: 'bg-secondary/60', ink: 'text-secondary', ring: 'ring-secondary' },
   { frame: 'bg-tertiary/60', ink: 'text-tertiary', ring: 'ring-tertiary' },

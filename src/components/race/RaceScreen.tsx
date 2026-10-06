@@ -168,7 +168,17 @@ export default function RaceScreen({
     const isYou = s.id === you;
     // Le serveur confirme au tick suivant : en attendant, l'écran montre déjà l'arrivée ou l'abandon.
     const status = isYou && s.status === 'racing' ? (abandoned ? 'abandoned' : typing?.finishedAt != null ? 'finished' : s.status) : s.status;
-    return { id: s.id, rank: s.rank, name: seat ? nameOf(seat) : s.id, wpm: s.wpm, accuracy: s.accuracy, status, you: isYou };
+    return {
+      id: s.id,
+      rank: s.rank,
+      name: seat ? nameOf(seat) : s.id,
+      avatar: seat?.avatar ?? null,
+      photo: seat?.photo ?? null,
+      wpm: s.wpm,
+      accuracy: s.accuracy,
+      status,
+      you: isYou,
+    };
   });
 
   return (

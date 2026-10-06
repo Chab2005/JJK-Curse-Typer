@@ -11,3 +11,8 @@ export async function register(page: Page, prefix = 'e2e'): Promise<{ username: 
   await page.waitForURL('/');
   return { username, password };
 }
+
+/** Sous `lg`, la zone compte (déconnexion, connexion) est dans le menu hamburger : l'ouvre d'abord. */
+export async function openAccountControls(page: Page, isMobile: boolean): Promise<void> {
+  if (isMobile) await page.getByRole('button', { name: 'Open menu' }).click();
+}

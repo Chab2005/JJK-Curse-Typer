@@ -10,9 +10,10 @@ import { openLobby } from '@/lib/openLobby';
 
 export async function generateMetadata({ params, searchParams }: PageProps<'/[locale]/lobby/[code]'>) {
   const { locale, code } = await params;
-  const t = await getTranslations({ locale: locale as Locale, namespace: 'Lobby' });
   const room = await openLobby(decodeURIComponent(code), { invite: (await searchParams).invite });
-  return { title: room ? t('metaTitle', { name: room.name }) : t('notFound.metaTitle') };
+  if (!room) return { title: (await getTranslations({ locale: locale as Locale, namespace: 'NotFound' }))('lobby.metaTitle') };
+  const t = await getTranslations({ locale: locale as Locale, namespace: 'Lobby' });
+  return { title: t('metaTitle', { name: room.name }) };
 }
 
 // Salon d'attente d'un lobby (LOB-5 à LOB-9, LOB-11) ; ?spectate=1 pour y entrer en spectateur,
