@@ -15,4 +15,8 @@ describe('guest', () => {
     expect(parseGuest({ name: 'abc', country: 'zz9', games: [{ nope: 1 }, game(1)] })).toEqual({ name: 'abc', country: null, games: [game(1)] });
     expect(parseGuest('x')).toBeNull();
   });
+  it('parseGuest garde le rang et les erreurs d’une course, facultatifs pour les anciens cookies', () => {
+    const full = { ...game(1), rank: 1, players: 3, errors: 2, keystrokes: 120 };
+    expect(parseGuest({ name: 'abc', country: null, games: [full, game(2)] })?.games).toEqual([full, game(2)]);
+  });
 });
