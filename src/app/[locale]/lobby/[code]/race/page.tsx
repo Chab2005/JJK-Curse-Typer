@@ -13,7 +13,7 @@ import { seatTicket } from '@/realtime/ticket';
 export async function generateMetadata({ params, searchParams }: PageProps<'/[locale]/lobby/[code]/race'>) {
   const { locale, code } = await params;
   const room = await openLobby(decodeURIComponent(code), { invite: (await searchParams).invite });
-  if (!room) return { title: (await getTranslations({ locale: locale as Locale, namespace: 'Lobby' }))('notFound.metaTitle') };
+  if (!room) return { title: (await getTranslations({ locale: locale as Locale, namespace: 'NotFound' }))('lobby.metaTitle') };
   const t = await getTranslations({ locale: locale as Locale, namespace: 'Race' });
   return { title: t('metaTitle', { name: room.name }) };
 }

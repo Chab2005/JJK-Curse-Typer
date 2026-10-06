@@ -330,13 +330,6 @@
         "private": "Absent de la liste des lobbies. On rejoint seulement avec un lien d'invitation."
       }
     },
-    "notFound": {
-      "metaTitle": "Lobby introuvable",
-      "eyebrow": "Lobby introuvable",
-      "title": "Ce lobby n'existe pas",
-      "text": "Vérifiez le code : il est peut-être mal tapé, ou le lobby a fermé.",
-      "back": "Entrer un code"
-    },
     "guest": {
       "title": "Choisissez un pseudo",
       "text": "Choisissez un nom d'exorciste pour rejoindre ce lobby.",
@@ -641,6 +634,36 @@
       "githubPlaceholder": "ton-nom",
       "discord": "Discord (lien ou nom)",
       "discordPlaceholder": "nom ou https://discord.com/users/…"
+    }
+  },
+  "NotFound": {
+    "page": {
+      "metaTitle": "Page introuvable",
+      "eyebrow": "Erreur 404",
+      "title": "Cette page n'existe pas",
+      "text": "Le lien est peut-être cassé, ou la page a été déplacée.",
+      "back": "Retour à l'accueil"
+    },
+    "profile": {
+      "metaTitle": "Joueur introuvable",
+      "eyebrow": "Joueur introuvable",
+      "title": "Ce joueur n'existe pas",
+      "text": "Vérifiez le nom d'utilisateur : il est peut-être mal tapé, ou le compte n'existe plus.",
+      "back": "Voir le classement"
+    },
+    "settings": {
+      "metaTitle": "Paramètres introuvables",
+      "eyebrow": "Paramètres introuvables",
+      "title": "Il n'y a pas de paramètres secrets",
+      "text": "Tout ce que vous pouvez modifier se trouve sur la page des paramètres.",
+      "back": "Retour aux paramètres"
+    },
+    "lobby": {
+      "metaTitle": "Lobby introuvable",
+      "eyebrow": "Lobby introuvable",
+      "title": "Ce lobby n'existe pas",
+      "text": "Vérifiez le code : il est peut-être mal tapé, ou le lobby a fermé.",
+      "back": "Entrer un code"
     }
   }
 }

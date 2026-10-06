@@ -330,13 +330,6 @@
         "private": "Hidden from the lobby list. Join only with an invite link."
       }
     },
-    "notFound": {
-      "metaTitle": "Lobby not found",
-      "eyebrow": "Lobby not found",
-      "title": "This lobby doesn't exist",
-      "text": "Check the code: it may be mistyped, or the lobby has closed.",
-      "back": "Enter a code"
-    },
     "guest": {
       "title": "Choose a name",
       "text": "Pick an exorcist name to join this lobby.",
@@ -641,6 +634,36 @@
       "githubPlaceholder": "your-name",
       "discord": "Discord (link or name)",
       "discordPlaceholder": "name or https://discord.com/users/…"
+    }
+  },
+  "NotFound": {
+    "page": {
+      "metaTitle": "Page not found",
+      "eyebrow": "Error 404",
+      "title": "This page doesn't exist",
+      "text": "The link may be broken, or the page has moved.",
+      "back": "Back to home"
+    },
+    "profile": {
+      "metaTitle": "Player not found",
+      "eyebrow": "Player not found",
+      "title": "This player doesn't exist",
+      "text": "Check the username: it may be mistyped, or the account no longer exists.",
+      "back": "See the rankings"
+    },
+    "settings": {
+      "metaTitle": "Settings not found",
+      "eyebrow": "Settings not found",
+      "title": "There are no secret settings",
+      "text": "Everything you can change is on the settings page.",
+      "back": "Back to settings"
+    },
+    "lobby": {
+      "metaTitle": "Lobby not found",
+      "eyebrow": "Lobby not found",
+      "title": "This lobby doesn't exist",
+      "text": "Check the code: it may be mistyped, or the lobby has closed.",
+      "back": "Enter a code"
     }
   }
 }
