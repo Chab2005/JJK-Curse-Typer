@@ -22,7 +22,7 @@ export default function AccountControls({ account }: { account: HeaderAccount | 
 
   return (
     <div className="flex items-center gap-2">
-      <Link href="/profile" aria-label={t('profileAlt')} className="flex rounded-full ring-1 ring-primary-container ring-offset-2 ring-offset-surface-container-lowest">
+      <Link href="/profile" aria-label={t('profileAlt')} className="group flex">
         <ProfileAvatar account={account} />
       </Link>
       <form action={logoutAction}>
