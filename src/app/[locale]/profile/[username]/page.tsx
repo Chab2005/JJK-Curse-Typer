@@ -15,6 +15,8 @@ import type { Locale } from '@/i18n/config';
 import { Link } from '@/i18n/navigation';
 import { getSessionUser } from '@/lib/auth/session';
 import { findAccountProfile } from '@/lib/auth/profile';
+import { accountGames } from '@/lib/stats';
+import { summarizeGames } from '@/game/stats';
 
 export async function generateMetadata({ params }: PageProps<'/[locale]/profile/[username]'>) {
   const { username } = await params;
@@ -31,10 +33,12 @@ export default async function ProfilePage({ params }: PageProps<'/[locale]/profi
   const t = await getTranslations('Profile');
   const viewer = await getSessionUser();
 
-  // Compte réel : nom affiché, photo et nombre de courses ; les statistiques détaillées viendront avec les courses en base.
+  // Compte réel : nom affiché, photo, et ses courses enregistrées (STAT-1, STAT-2). La carte de chaleur attend les stats par touche (STAT-3).
   if (!profile) {
     const account = await findAccountProfile(name);
     if (!account) notFound();
+    const games = await accountGames(account.id);
+    const stats = summarizeGames(games);
     return (
       <>
         <SiteHeader />
@@ -47,7 +51,9 @@ export default async function ProfilePage({ params }: PageProps<'/[locale]/profi
                 <h1 id="profile-title" className="font-grotesk text-[clamp(30px,4vw,42px)] leading-tight font-semibold break-words">{account.displayName}</h1>
                 <ProfileLinks github={account.github} discord={account.discord} />
                 <p className="font-label-code text-[14px] text-outline">@{account.username}{account.country ? ` · ${account.country}` : ''}</p>
-                <p className="font-label-code text-[12px] text-outline">{t('games', { games: account.games })}</p>
+                <p className="font-label-code text-[12px] text-outline">
+                  {stats ? t('summary', { games: stats.games, wins: stats.wins, best: stats.bestWpm }) : t('games', { games: 0 })}
+                </p>
                 {viewer?.id === account.id && (
                   <Link href="/settings" className="font-label-code mt-2 inline-flex min-h-8 items-center gap-2 self-start text-[14px] text-primary hover:text-primary-fixed">
                     <span aria-hidden="true" className="material-symbols-outlined text-[18px]">edit</span>
@@ -56,7 +62,14 @@ export default async function ProfilePage({ params }: PageProps<'/[locale]/profi
                 )}
               </div>
             </section>
-            {account.games === 0 && <EmptyStats own={viewer?.id === account.id} />}
+            {stats ? (
+              <>
+                <WpmChart races={games.map((g) => ({ date: g.at, wpm: g.wpm }))} now={now.toISOString()} />
+                <StatTiles profile={stats} />
+              </>
+            ) : (
+              <EmptyStats own={viewer?.id === account.id} />
+            )}
           </div>
         </main>
         <Footer />

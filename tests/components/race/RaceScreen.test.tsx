@@ -4,6 +4,7 @@ import RaceScreen from '@/components/race/RaceScreen';
 import type { ClientMessage, RaceSnapshot, ServerMessage } from '@/game/protocol';
 import type { RacerSeat, Standing } from '@/game/race';
 import { startTyping } from '@/game/typing';
+import { raceActionsMock } from '../../actions';
 import { renderWithIntl } from '../../render';
 import { routerMock } from '../../router';
 
@@ -69,6 +70,7 @@ function start(welcome: Partial<Extract<ServerMessage, { type: 'welcome' }>> = {
 }
 
 beforeEach(() => {
+  raceActionsMock.claimRaceResultsAction.mockClear();
   FakeWebSocket.instances = [];
   vi.stubGlobal('WebSocket', FakeWebSocket);
 });
@@ -180,5 +182,34 @@ describe('RaceScreen', () => {
     const podium = screen.getByRole('region', { name: 'Race podium' });
     expect(within(podium).getByText('Cursed corpse 1')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Back to the lobby' })).toBeInTheDocument();
+  });
+
+  const finish = () =>
+    socket.receive({
+      type: 'tick',
+      phase: 'finished',
+      elapsed: 30_000,
+      standings: [standing('Megumi_Shadows', 1, 'finished'), standing('bot-1', 2, 'finished'), standing('Yuji_BlackFlash', 3, 'timeout')],
+    });
+
+  it('a seated guest claims its result for its cookie once the race is over, only once (STAT-6)', () => {
+    renderWithIntl(<RaceScreen code="ABC-DEF" lobbyName="Lobby" live ticket="t" />);
+    socket = FakeWebSocket.instances.at(-1)!;
+    socket.open();
+    socket.receive({ type: 'welcome', you: 'Megumi_Shadows', race: race(), typing: null });
+    expect(raceActionsMock.claimRaceResultsAction).not.toHaveBeenCalled();
+
+    finish();
+    finish();
+    expect(raceActionsMock.claimRaceResultsAction).toHaveBeenCalledTimes(1);
+  });
+
+  it('an account claims nothing: the race server already saved its result (STAT-8)', () => {
+    renderWithIntl(<RaceScreen code="ABC-DEF" lobbyName="Lobby" live ticket="t" account={{ username: 'megumi', displayName: 'Megumi', avatarUrl: null }} />);
+    socket = FakeWebSocket.instances.at(-1)!;
+    socket.open();
+    socket.receive({ type: 'welcome', you: 'Megumi_Shadows', race: race(), typing: null });
+    finish();
+    expect(raceActionsMock.claimRaceResultsAction).not.toHaveBeenCalled();
   });
 });

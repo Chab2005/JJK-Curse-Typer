@@ -8,9 +8,10 @@ const SEATS: RacerSeat[] = [
 ];
 
 const onEnd = vi.fn();
+const onFinish = vi.fn();
 
 const create = (code: string, now: number) =>
-  code === 'ABC-DEF' ? { race: createRace({ seats: SEATS, text: 'ab', mode: 'block', timerMs: 0, bonus: false, now, seed: 1 }), preferredSeat: 'me', onEnd } : null;
+  code === 'ABC-DEF' ? { race: createRace({ seats: SEATS, text: 'ab', mode: 'block', timerMs: 0, bonus: false, now, seed: 1 }), preferredSeat: 'me', onEnd, onFinish } : null;
 
 const conn = () => ({ send: vi.fn() });
 
@@ -19,6 +20,7 @@ let hub: RaceHub;
 beforeEach(() => {
   vi.useFakeTimers();
   onEnd.mockReset();
+  onFinish.mockReset();
   hub = new RaceHub(create);
 });
 
@@ -91,6 +93,21 @@ describe('RaceHub', () => {
     hub.open('ABC-DEF');
     vi.advanceTimersByTime(EMPTY_ROOM_TTL_MS + TICK_MS * 2);
     expect(onEnd).toHaveBeenCalledTimes(1);
+    expect(onFinish).not.toHaveBeenCalled();
+  });
+
+  it('remet une seule fois les résultats d’une course finie, sans les bots (STAT-8, BOT-5)', () => {
+    const room = hub.open('ABC-DEF')!;
+    const c = conn();
+    room.connect(c);
+    room.receive(c, JSON.stringify({ type: 'join', guest: 'guest-aaaaaaaa' }));
+    vi.advanceTimersByTime(COUNTDOWN_MS + TICK_MS);
+    room.receive(c, JSON.stringify({ type: 'keys', strokes: [{ key: 'a', t: 100 }, { key: 'b', t: 200 }] }));
+    vi.advanceTimersByTime(30_000);
+    expect(room.phase).toBe('finished');
+    vi.advanceTimersByTime(TICK_MS * 10);
+    expect(onFinish).toHaveBeenCalledTimes(1);
+    expect(onFinish.mock.calls[0][0]).toEqual([expect.objectContaining({ seat: 'me', status: 'finished', keystrokes: 2, players: 2 })]);
   });
 
   it('remplace une course terminée quand le lobby en relance une', () => {

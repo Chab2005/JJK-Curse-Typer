@@ -46,6 +46,7 @@ vi.mock('@/i18n/navigation', async () => {
 // Server actions run on the Next server: components only see these stubs.
 vi.mock('@/app/actions/lobbies', async () => (await import('./actions')).lobbyActionsMock);
 vi.mock('@/app/actions/auth', async () => (await import('./actions')).authActionsMock);
+vi.mock('@/app/actions/races', async () => (await import('./actions')).raceActionsMock);
 
 // The browsers (lobbies, leaderboard) read their state from the URL, written with history.pushState.
 vi.mock('next/navigation', () => ({
