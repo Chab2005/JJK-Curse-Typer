@@ -12,6 +12,11 @@ const gameSchema = z.object({
   accuracy: z.number().finite().min(0).max(100),
   durationSeconds: z.number().int().min(1).max(3600),
   at: z.number().int(),
+  /** Rang et taille de la course, erreurs et frappes : absents des cookies d'avant leur ajout. */
+  rank: z.number().int().min(1).max(100).optional(),
+  players: z.number().int().min(1).max(100).optional(),
+  errors: z.number().int().min(0).optional(),
+  keystrokes: z.number().int().min(0).optional(),
 });
 
 export type GuestGame = z.infer<typeof gameSchema>;

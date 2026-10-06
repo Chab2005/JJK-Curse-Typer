@@ -2,7 +2,7 @@ import 'server-only';
 import { and, eq } from 'drizzle-orm';
 import { db } from '@/db';
 import { oauthAccounts, results, users } from '@/db/schema';
-import type { Guest } from './guest';
+import type { Guest, GuestGame } from './guest';
 import { hashPassword } from './password';
 import { usernameKey } from './validation';
 
@@ -18,6 +18,19 @@ export const findUserByOauth = async (provider: string, providerUserId: string) 
       .where(and(eq(oauthAccounts.provider, provider), eq(oauthAccounts.providerUserId, providerUserId)))
       .limit(1)
   )[0] ?? null;
+
+/** Ligne de `results` d'une course d'invité ; rang et frappes manquent dans les anciens cookies. */
+const guestGameRow = (userId: number, g: GuestGame) => ({
+  userId,
+  wpm: g.wpm,
+  accuracy: g.accuracy,
+  durationSeconds: g.durationSeconds,
+  rank: g.rank ?? null,
+  players: g.players ?? null,
+  errors: g.errors ?? 0,
+  keystrokes: g.keystrokes ?? 0,
+  createdAt: new Date(g.at),
+});
 
 export type CreateAccountResult = { ok: true; userId: number } | { ok: false; error: 'taken' };
 
@@ -44,7 +57,7 @@ export async function createAccount(input: {
       const games = input.guest?.games ?? [];
       if (games.length > 0) {
         await tx.insert(results).values(
-          games.map((g) => ({ userId: user.id, wpm: g.wpm, accuracy: g.accuracy, durationSeconds: g.durationSeconds, createdAt: new Date(g.at) })),
+          games.map((g) => guestGameRow(user.id, g)),
         );
       }
       return user.id;
@@ -60,6 +73,6 @@ export async function createAccount(input: {
 export async function attachGuestGames(userId: number, guest: Guest | null): Promise<void> {
   if (!guest || guest.games.length === 0) return;
   await db.insert(results).values(
-    guest.games.map((g) => ({ userId, wpm: g.wpm, accuracy: g.accuracy, durationSeconds: g.durationSeconds, createdAt: new Date(g.at) })),
+    guest.games.map((g) => guestGameRow(userId, g)),
   );
 }

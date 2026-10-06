@@ -7,6 +7,7 @@ import { leaderGap, type RacerSeat } from '@/game/race';
 import { typingScore } from '@/game/scoring';
 import { startTyping, typeKey, typeKeys, type Keystroke, type TypingState } from '@/game/typing';
 import { useRouter } from '@/i18n/navigation';
+import { claimRaceResultsAction } from '@/app/actions/races';
 import ConfirmDialog from './ConfirmDialog';
 import Countdown from './Countdown';
 import EnergyBar from './EnergyBar';
@@ -99,6 +100,16 @@ export default function RaceScreen({
   const mine = standings.find((s) => s.id === you);
   const done = abandoned || typing?.finishedAt != null || (mine !== undefined && mine.status !== 'racing');
   const racing = race !== null && you !== null && phase !== 'finished' && elapsed >= 0 && !timeUp && !done;
+
+  // Un invité assis dans un lobby créé : la room a gardé son résultat, il le réclame pour son cookie (STAT-6).
+  // Un compte n'a rien à faire, la room l'a déjà écrit en base (STAT-8).
+  const claimed = useRef(false);
+  const claimResult = live && account === null && you !== null && phase === 'finished';
+  useEffect(() => {
+    if (!claimResult || claimed.current) return;
+    claimed.current = true;
+    void claimRaceResultsAction();
+  }, [claimResult]);
 
   // Un lot ne quitte la file qu'une fois parti : pendant une coupure, les frappes attendent la reconnexion.
   useEffect(() => {

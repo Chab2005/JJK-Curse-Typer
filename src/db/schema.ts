@@ -53,14 +53,26 @@ export const loginAttempts = pgTable("login_attempts", {
   windowStart: timestamp("window_start").notNull(),
 });
 
-export const results = pgTable("results", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id, { onDelete: "cascade" }),
-  wpm: real("wpm").notNull(),
-  accuracy: real("accuracy").notNull(),
-  durationSeconds: integer("duration_seconds").notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-});
+// Une course finie par un compte (STAT-8), écrite par la room de course ou rattachée d'un invité (STAT-7). Bots exclus (BOT-5).
+export const results = pgTable(
+  "results",
+  {
+    id: serial("id").primaryKey(),
+    userId: integer("user_id").references(() => users.id, { onDelete: "cascade" }),
+    /** MPM net (H-21). */
+    wpm: real("wpm").notNull(),
+    /** Précision en pourcentage, de 0 à 100. */
+    accuracy: real("accuracy").notNull(),
+    durationSeconds: integer("duration_seconds").notNull(),
+    /** Rang et nombre de participants (bots compris) ; `null` pour une course enregistrée avant leur ajout. */
+    rank: integer("rank"),
+    players: integer("players"),
+    errors: integer("errors").default(0).notNull(),
+    keystrokes: integer("keystrokes").default(0).notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => [index("results_user_id_idx").on(table.userId)],
+);
 
 
 

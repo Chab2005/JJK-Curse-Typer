@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
+import type { GameRecord } from '@/game/stats';
 import {
+  playerFromGames,
   type PlayerStats,
   leaderboardQuery,
   leaderboardView,
@@ -99,5 +101,26 @@ describe('parseLeaderboardSearch et leaderboardQuery', () => {
     const query = leaderboardQuery({ category: 'errors', query: 'nobara' }, 2);
     expect(query).toBe('q=nobara&by=errors&page=2');
     expect(parseLeaderboardSearch(new URLSearchParams(query))).toEqual({ category: 'errors', query: 'nobara', page: 2 });
+  });
+});
+
+describe('playerFromGames', () => {
+  const game = (wpm: number): GameRecord => ({ wpm, accuracy: 0.95, errors: 1, keystrokes: 50, rank: 1, players: 2, at: '2026-10-01T00:00:00.000Z' });
+
+  it('fait une ligne du classement à partir des parties d’un compte (STAT-8)', () => {
+    expect(playerFromGames({ username: 'Yuji', photo: '/api/avatar/Yuji?v=1' }, [game(40), game(60)])).toEqual({
+      username: 'Yuji',
+      avatar: null,
+      photo: '/api/avatar/Yuji?v=1',
+      games: 2,
+      wpm: 50,
+      accuracy: 0.95,
+      averageScore: 50,
+      errorsPer100: 10,
+    });
+  });
+
+  it('renvoie null sans partie', () => {
+    expect(playerFromGames({ username: 'Yuji', photo: null }, [])).toBeNull();
   });
 });

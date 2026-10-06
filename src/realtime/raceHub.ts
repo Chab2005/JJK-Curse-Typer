@@ -12,6 +12,8 @@ interface Entry {
   emptySince: number | null;
   /** Prévient le lobby, une seule fois, que la course est finie ou abandonnée. */
   end: () => void;
+  /** Remet, une seule fois, les résultats d'une course allée au bout, s'il y a un joueur à enregistrer. */
+  finish: () => void;
 }
 
 export class RaceHub {
@@ -41,7 +43,14 @@ export class RaceHub {
       ended = true;
       seeded.onEnd?.();
     };
-    const entry: Entry = { room, emptySince: null, end, timer: setInterval(() => this.step(code, entry), TICK_MS) };
+    let finished = false;
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      const results = room.results();
+      if (results.length > 0) seeded.onFinish?.(results);
+    };
+    const entry: Entry = { room, emptySince: null, end, finish, timer: setInterval(() => this.step(code, entry), TICK_MS) };
     this.rooms.set(code, entry);
     return room;
   }
@@ -52,7 +61,10 @@ export class RaceHub {
 
   private step(code: string, entry: Entry) {
     entry.room.tick();
-    if (entry.room.phase === 'finished') entry.end();
+    if (entry.room.phase === 'finished') {
+      entry.finish();
+      entry.end();
+    }
     if (entry.room.connections > 0) {
       entry.emptySince = null;
       return;
