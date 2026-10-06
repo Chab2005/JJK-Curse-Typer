@@ -1,4 +1,5 @@
 import { useTranslations } from 'next-intl';
+import BevelFrame, { goldFrame } from '@/components/shared/BevelFrame';
 import { Link } from '@/i18n/navigation';
 import { type LobbySummary, isJoinable, lobbyHref, textCharsLabel } from './lobbySearch';
 
@@ -61,25 +62,23 @@ function LobbyRow({ lobby }: { lobby: LobbySummary }) {
       </td>
       <td className={`${cell} font-label-code hidden text-[13px] text-on-surface-variant lg:table-cell`}>{textCharsLabel(lobby.chars)}</td>
       <td className={`${cell} w-0 pr-2.5 pl-1 text-right sm:pr-4 sm:pl-3`}>
-        <Link
+        <BevelFrame
+          as={Link}
           href={lobbyHref(lobby)}
           aria-label={joinable ? t('joinLabel', { name: lobby.name }) : t('spectateLabel', { name: lobby.name })}
-          className={`group/btn bevel inline-flex p-px transition-transform hover:-translate-y-0.5 ${joinable ? 'bg-linear-135 from-gold to-gold-deep' : 'bg-outline'}`}
+          frame={`group/btn inline-flex transition-transform hover:-translate-y-0.5 ${joinable ? goldFrame : 'bg-outline'}`}
+          className={`flex min-h-11 items-center gap-2 px-4 text-[13px] whitespace-nowrap uppercase tracking-[0.12em] transition-colors sm:px-5 ${
+            joinable
+              ? 'bg-primary-container text-on-primary-container group-hover/btn:bg-inverse-primary'
+              : 'bg-surface-container-lowest text-on-surface group-hover/btn:bg-surface-container-high'
+          }`}
         >
-          <span
-            className={`bevel flex min-h-11 items-center gap-2 px-4 text-[13px] whitespace-nowrap uppercase tracking-[0.12em] transition-colors sm:px-5 ${
-              joinable
-                ? 'bg-primary-container text-on-primary-container group-hover/btn:bg-inverse-primary'
-                : 'bg-surface-container-lowest text-on-surface group-hover/btn:bg-surface-container-high'
-            }`}
-          >
-            {/* L'icône Material force `display`, d'où l'enveloppe qui la masque sur téléphone. */}
-            <span aria-hidden="true" className="hidden sm:inline-flex">
-              <span className="material-symbols-outlined text-[18px]">{joinable ? 'swords' : 'visibility'}</span>
-            </span>
-            {joinable ? t('join') : t('spectate')}
+          {/* L'icône Material force `display`, d'où l'enveloppe qui la masque sur téléphone. */}
+          <span aria-hidden="true" className="hidden sm:inline-flex">
+            <span className="material-symbols-outlined text-[18px]">{joinable ? 'swords' : 'visibility'}</span>
           </span>
-        </Link>
+          {joinable ? t('join') : t('spectate')}
+        </BevelFrame>
       </td>
     </tr>
   );

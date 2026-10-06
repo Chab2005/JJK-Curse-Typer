@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { useRef, useState, useSyncExternalStore } from 'react';
 import { createInviteAction } from '@/app/actions/lobbies';
+import BevelFrame, { cardFrame } from '@/components/shared/BevelFrame';
 import Reserve from '@/components/shared/Reserve';
 import { canCopyCode, inviteLinkMode, inviteUrl } from './lobbyAccess';
 import type { LobbyVisibility } from './lobbyRoom';
@@ -46,56 +47,54 @@ export default function InviteCard({ code, visibility, isHost }: { code: string;
   };
 
   return (
-    <div className="bevel bg-linear-160 from-primary-container via-outline-variant via-40% to-secondary-container p-px">
-      <div className="bevel flex flex-col gap-4 bg-surface-container-low px-6 pt-5 pb-6">
-        <h2 className="text-[13px] uppercase tracking-[0.14em] text-on-surface-variant">{t('title')}</h2>
+    <BevelFrame frame={cardFrame} className="flex flex-col gap-4 bg-surface-container-low px-6 pt-5 pb-6">
+      <h2 className="text-[13px] uppercase tracking-[0.14em] text-on-surface-variant">{t('title')}</h2>
 
-        <div className="flex flex-col gap-1">
-          <p className="font-label-code text-[11px] uppercase tracking-[0.2em] text-outline">{t('code')}</p>
-          <div className="flex h-11 items-center justify-between gap-3">
-            {canCopyCode(visibility) ? (
-              <>
-                <p className="font-label-code text-[34px] leading-tight font-bold tracking-[0.2em] text-primary">{code}</p>
-                <CopyButton iconOnly icon="content_copy" label={t('copyCode')} copy={async () => code} />
-              </>
-            ) : (
-              <p className="flex items-center gap-2 text-[14px] leading-5 text-on-surface-variant">
-                <span aria-hidden="true" className="material-symbols-outlined w-[18px] shrink-0 overflow-hidden text-[18px]! text-outline">lock</span>
-                {t('privateCode')}
-              </p>
-            )}
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <label htmlFor="invite-link" className="font-label-code text-[11px] uppercase tracking-[0.2em] text-outline">{t('link')}</label>
-          <input
-            id="invite-link"
-            readOnly
-            disabled={mode === 'hostOnly'}
-            value={shownLink}
-            placeholder={mode === 'hostOnly' ? t('hostOnlyField') : t('noLinkYet')}
-            onFocus={(e) => e.target.select()}
-            className="font-label-code h-10 w-full text-ellipsis border border-surface-container-highest bg-surface-container-lowest px-3 text-[13px] text-on-surface placeholder:text-outline focus:border-primary-container focus:outline-none disabled:cursor-not-allowed"
-          />
-          {/* Le libellé suit l'accès, même pour un joueur à qui le bouton reste désactivé. */}
-          {visibility === 'public' ? (
-            <CopyButton key="url" icon="link" label={t('copyLink')} copy={async () => lobbyUrl()} disabled={mode === 'hostOnly'} />
+      <div className="flex flex-col gap-1">
+        <p className="font-label-code text-[11px] uppercase tracking-[0.2em] text-outline">{t('code')}</p>
+        <div className="flex h-11 items-center justify-between gap-3">
+          {canCopyCode(visibility) ? (
+            <>
+              <p className="font-label-code text-[34px] leading-tight font-bold tracking-[0.2em] text-primary">{code}</p>
+              <CopyButton iconOnly icon="content_copy" label={t('copyCode')} copy={async () => code} />
+            </>
           ) : (
-            <CopyButton key="oneTime" icon="add_link" label={t('newLink')} copy={createLink} disabled={mode === 'hostOnly'} />
+            <p className="flex items-center gap-2 text-[14px] leading-5 text-on-surface-variant">
+              <span aria-hidden="true" className="material-symbols-outlined w-[18px] shrink-0 overflow-hidden text-[18px]! text-outline">lock</span>
+              {t('privateCode')}
+            </p>
           )}
         </div>
-
-        <Reserve
-          active={mode}
-          variants={{
-            url: <Note>{t('urlNote')}</Note>,
-            oneTime: <Note>{t('oneTime')}</Note>,
-            hostOnly: <Note>{t('hostOnly')}</Note>,
-          }}
-        />
       </div>
-    </div>
+
+      <div className="flex flex-col gap-2">
+        <label htmlFor="invite-link" className="font-label-code text-[11px] uppercase tracking-[0.2em] text-outline">{t('link')}</label>
+        <input
+          id="invite-link"
+          readOnly
+          disabled={mode === 'hostOnly'}
+          value={shownLink}
+          placeholder={mode === 'hostOnly' ? t('hostOnlyField') : t('noLinkYet')}
+          onFocus={(e) => e.target.select()}
+          className="font-label-code h-10 w-full text-ellipsis border border-surface-container-highest bg-surface-container-lowest px-3 text-[13px] text-on-surface placeholder:text-outline focus:border-primary-container focus:outline-none disabled:cursor-not-allowed"
+        />
+        {/* Le libellé suit l'accès, même pour un joueur à qui le bouton reste désactivé. */}
+        {visibility === 'public' ? (
+          <CopyButton key="url" icon="link" label={t('copyLink')} copy={async () => lobbyUrl()} disabled={mode === 'hostOnly'} />
+        ) : (
+          <CopyButton key="oneTime" icon="add_link" label={t('newLink')} copy={createLink} disabled={mode === 'hostOnly'} />
+        )}
+      </div>
+
+      <Reserve
+        active={mode}
+        variants={{
+          url: <Note>{t('urlNote')}</Note>,
+          oneTime: <Note>{t('oneTime')}</Note>,
+          hostOnly: <Note>{t('hostOnly')}</Note>,
+        }}
+      />
+    </BevelFrame>
   );
 }
 

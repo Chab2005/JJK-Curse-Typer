@@ -1,11 +1,8 @@
 'use client';
 
 import { useEffect, useId, useRef, useState } from 'react';
+import BevelFrame from './BevelFrame';
 import Reserve from './Reserve';
-
-/** Cadre biseauté d'un rouge uni des champs de formulaire (listes, champs numériques). */
-export const bevelFrame = 'bevel bg-primary-container p-px';
-const frame = bevelFrame;
 
 /** Hauteur de la liste ouverte : une option fait 40px (min-h-10), plus py-2, le cadre et mt-1/mb-1. */
 const listHeight = (count: number) => count * 40 + 16 + 2 + 4;
@@ -104,7 +101,8 @@ export default function BevelSelect<T extends string | number>({
 
   return (
     <div ref={rootRef} className="relative">
-      <button
+      <BevelFrame
+        as="button"
         id={buttonId}
         type="button"
         role="combobox"
@@ -116,19 +114,18 @@ export default function BevelSelect<T extends string | number>({
         onClick={() => (open ? setOpen(false) : show())}
         onKeyDown={onKeyDown}
         onBlur={() => setOpen(false)}
-        className={`group ${frame} flex focus-visible:outline-none`}
+        frame="group flex bg-primary-container focus-visible:outline-none"
+        className="flex min-h-11 flex-1 items-center gap-3 bg-surface-container-lowest pr-3 pl-4 text-[14px] text-on-surface transition-colors group-hover:bg-surface-container-high group-focus-visible:bg-surface-container-high"
       >
-        <span className="bevel flex min-h-11 flex-1 items-center gap-3 bg-surface-container-lowest pr-3 pl-4 text-[14px] text-on-surface transition-colors group-hover:bg-surface-container-high group-focus-visible:bg-surface-container-high">
-          {/* Largeur de l'option la plus longue : changer d'option ne redimensionne pas le bouton. */}
-          <Reserve active={String(value)} variants={labels} className="font-label-code text-left" />
-          <span aria-hidden="true" className={`material-symbols-outlined text-[20px]! text-primary transition-transform ${open ? 'rotate-180' : ''}`}>expand_more</span>
-        </span>
-      </button>
+        {/* Largeur de l'option la plus longue : changer d'option ne redimensionne pas le bouton. */}
+        <Reserve active={String(value)} variants={labels} className="font-label-code text-left" />
+        <span aria-hidden="true" className={`material-symbols-outlined text-[20px]! text-primary transition-transform ${open ? 'rotate-180' : ''}`}>expand_more</span>
+      </BevelFrame>
 
       <div hidden={!open} className={`absolute left-0 z-30 min-w-full ${upward ? 'bottom-full mb-1' : 'top-full mt-1'} drop-shadow-[0_16px_24px_rgb(0_0_0/0.55)]`}>
-        <div className={frame}>
+        <BevelFrame frame="bg-primary-container" className="bg-surface-container-low">
           {/* mousedown sans effet : le focus reste sur le bouton pendant le clic. */}
-          <ul id={`${id}-listbox`} role="listbox" aria-labelledby={labelId} onMouseDown={(e) => e.preventDefault()} className="bevel flex flex-col bg-surface-container-low py-2">
+          <ul id={`${id}-listbox`} role="listbox" aria-labelledby={labelId} onMouseDown={(e) => e.preventDefault()} className="flex flex-col py-2">
             {options.map((option, index) => (
               <li
                 key={option}
@@ -144,7 +141,7 @@ export default function BevelSelect<T extends string | number>({
               </li>
             ))}
           </ul>
-        </div>
+        </BevelFrame>
       </div>
     </div>
   );

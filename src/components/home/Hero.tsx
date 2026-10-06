@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
+import BevelFrame, { goldFrame } from '@/components/shared/BevelFrame';
 import { Link } from '@/i18n/navigation';
 import BlackFlash from './BlackFlash';
 import SmoothScrollLink from './SmoothScrollLink';
@@ -62,18 +63,24 @@ export default function Hero({ onlineCount }: { onlineCount: number | null }) {
         </p>
 
         <div className="flex flex-wrap justify-center gap-4">
-          <Link href="/lobbies" className="group bevel inline-flex bg-linear-135 from-gold to-gold-deep p-px transition-transform hover:-translate-y-0.5">
-            <span className="bevel flex min-h-[58px] items-center gap-3 bg-primary-container px-[34px] text-[19px] uppercase tracking-[0.12em] text-on-primary-container transition-colors group-hover:bg-inverse-primary">
-              <span aria-hidden="true" className="material-symbols-outlined text-[22px]">swords</span>
-              {t('play')}
-            </span>
-          </Link>
-          <SmoothScrollLink href="#join" className="group bevel inline-flex bg-outline p-px transition-transform hover:-translate-y-0.5">
-            <span className="bevel flex min-h-[58px] items-center gap-2.5 bg-surface-container-lowest px-[30px] text-[17px] uppercase tracking-[0.12em] text-on-surface transition-colors group-hover:bg-surface-container-high">
-              <span aria-hidden="true" className="material-symbols-outlined text-[20px] text-primary">pin</span>
-              {t('joinByCode')}
-            </span>
-          </SmoothScrollLink>
+          <BevelFrame
+            as={Link}
+            href="/lobbies"
+            frame={`group inline-flex ${goldFrame} transition-transform hover:-translate-y-0.5`}
+            className="flex min-h-[58px] items-center gap-3 bg-primary-container px-[34px] text-[19px] uppercase tracking-[0.12em] text-on-primary-container transition-colors group-hover:bg-inverse-primary"
+          >
+            <span aria-hidden="true" className="material-symbols-outlined text-[22px]">swords</span>
+            {t('play')}
+          </BevelFrame>
+          <BevelFrame
+            as={SmoothScrollLink}
+            href="#join"
+            frame="group inline-flex bg-outline transition-transform hover:-translate-y-0.5"
+            className="flex min-h-[58px] items-center gap-2.5 bg-surface-container-lowest px-[30px] text-[17px] uppercase tracking-[0.12em] text-on-surface transition-colors group-hover:bg-surface-container-high"
+          >
+            <span aria-hidden="true" className="material-symbols-outlined text-[20px] text-primary">pin</span>
+            {t('joinByCode')}
+          </BevelFrame>
         </div>
       </div>
     </section>

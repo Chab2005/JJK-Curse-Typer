@@ -3,7 +3,8 @@
 import { useFormatter, useTranslations } from 'next-intl';
 import { useRef, useState } from 'react';
 import { CHAR_KINDS, TEXT_LANGUAGES, textCharsLabel } from '@/components/lobbies/lobbySearch';
-import BevelSelect, { bevelFrame } from '@/components/shared/BevelSelect';
+import BevelFrame, { cardFrame, goldFrame } from '@/components/shared/BevelFrame';
+import BevelSelect from '@/components/shared/BevelSelect';
 import Reserve from '@/components/shared/Reserve';
 import Segmented from '@/components/shared/Segmented';
 import { CONTENT_MODES, ERROR_MODES, LOBBY_VISIBILITIES, type LobbySettings, MAX_CAPACITY, MIN_PARTICIPANTS, TIMER_OPTIONS, WORDS_MAX, WORDS_MIN } from './lobbyRoom';
@@ -23,16 +24,14 @@ export default function LobbySettingsPanel({ settings, participantCount, editabl
   const t = useTranslations('Lobby.settings');
 
   return (
-    <section aria-labelledby="settings-title" className="bevel bg-linear-160 from-primary-container via-outline-variant via-40% to-secondary-container p-px">
-      <div className="bevel flex flex-col gap-5 bg-surface-container-low px-6 pt-6 pb-7">
-        <div className="flex flex-col gap-1">
-          <h2 id="settings-title" className="text-xl uppercase tracking-[0.12em]">{t('title')}</h2>
-          {!editable && <p className="text-[14px] text-outline">{t('readOnly')}</p>}
-        </div>
-        <SettingsSummary settings={settings} />
-        {editable && <SettingsDialog settings={settings} participantCount={participantCount} onSave={onChange} />}
+    <BevelFrame as="section" aria-labelledby="settings-title" frame={cardFrame} className="flex flex-col gap-5 bg-surface-container-low px-6 pt-6 pb-7">
+      <div className="flex flex-col gap-1">
+        <h2 id="settings-title" className="text-xl uppercase tracking-[0.12em]">{t('title')}</h2>
+        {!editable && <p className="text-[14px] text-outline">{t('readOnly')}</p>}
       </div>
-    </section>
+      <SettingsSummary settings={settings} />
+      {editable && <SettingsDialog settings={settings} participantCount={participantCount} onSave={onChange} />}
+    </BevelFrame>
   );
 }
 
@@ -78,36 +77,32 @@ function SettingsDialog({ settings, participantCount, onSave }: { settings: Lobb
         onClick={(e) => e.target === e.currentTarget && close()}
         className="m-auto w-[min(calc(100vw-32px),560px)] overflow-clip bg-transparent p-0 text-on-surface backdrop:bg-black/70 backdrop:backdrop-blur-sm"
       >
-        <div className="bevel flex max-h-[calc(100dvh-112px)] flex-col bg-linear-160 from-primary-container via-outline-variant via-40% to-secondary-container p-px">
-          <div className="bevel flex min-h-0 flex-col bg-surface-container-low">
-            <div className="flex items-center justify-between gap-3 px-6 pt-6 pb-4 sm:px-8">
-              <h2 id="settings-dialog-title" className="text-[22px] uppercase tracking-[0.12em]">{t('title')}</h2>
-              <button type="button" onClick={close} aria-label={t('close')} className="flex size-10 items-center justify-center text-on-surface-variant transition-colors hover:text-primary">
-                <span aria-hidden="true" className="material-symbols-outlined text-[22px]">close</span>
-              </button>
-            </div>
-
-            <div ref={bodyRef} className="min-h-0 overflow-y-auto px-6 pb-2 sm:px-8">
-              <SettingsForm settings={draft} participantCount={participantCount} onChange={(patch) => setDraft((d) => ({ ...d, ...patch }))} />
-            </div>
-
-            <div className="grid grid-cols-2 gap-3 border-t border-surface-container-highest px-6 pt-4 pb-6 sm:px-8">
-              <button
-                type="button"
-                onClick={close}
-                className="min-h-13 border border-surface-container-highest text-[15px] uppercase tracking-[0.12em] text-on-surface transition-colors hover:border-primary hover:text-primary"
-              >
-                {t('cancel')}
-              </button>
-              <button type="button" onClick={save} className="group bevel flex bg-linear-135 from-gold to-gold-deep p-px">
-                <span className="bevel flex min-h-[50px] flex-1 items-center justify-center gap-2 bg-primary-container text-[15px] uppercase tracking-[0.12em] text-on-primary-container transition-colors group-hover:bg-inverse-primary">
-                  <span aria-hidden="true" className="material-symbols-outlined text-[19px]">save</span>
-                  {t('save')}
-                </span>
-              </button>
-            </div>
+        <BevelFrame frame={`flex max-h-[calc(100dvh-112px)] flex-col ${cardFrame}`} className="flex min-h-0 flex-col bg-surface-container-low">
+          <div className="flex items-center justify-between gap-3 px-6 pt-6 pb-4 sm:px-8">
+            <h2 id="settings-dialog-title" className="text-[22px] uppercase tracking-[0.12em]">{t('title')}</h2>
+            <button type="button" onClick={close} aria-label={t('close')} className="flex size-10 items-center justify-center text-on-surface-variant transition-colors hover:text-primary">
+              <span aria-hidden="true" className="material-symbols-outlined text-[22px]">close</span>
+            </button>
           </div>
-        </div>
+
+          <div ref={bodyRef} className="min-h-0 overflow-y-auto px-6 pb-2 sm:px-8">
+            <SettingsForm settings={draft} participantCount={participantCount} onChange={(patch) => setDraft((d) => ({ ...d, ...patch }))} />
+          </div>
+
+          <div className="grid grid-cols-2 gap-3 border-t border-surface-container-highest px-6 pt-4 pb-6 sm:px-8">
+            <button
+              type="button"
+              onClick={close}
+              className="min-h-13 border border-surface-container-highest text-[15px] uppercase tracking-[0.12em] text-on-surface transition-colors hover:border-primary hover:text-primary"
+            >
+              {t('cancel')}
+            </button>
+            <BevelFrame as="button" type="button" onClick={save} frame={`group flex ${goldFrame}`} className="flex min-h-[50px] flex-1 items-center justify-center gap-2 bg-primary-container text-on-primary-container transition-colors group-hover:bg-inverse-primary text-[15px] uppercase tracking-[0.12em]">
+              <span aria-hidden="true" className="material-symbols-outlined text-[19px]">save</span>
+              {t('save')}
+            </BevelFrame>
+          </div>
+        </BevelFrame>
       </dialog>
     </>
   );
@@ -264,13 +259,15 @@ function Group({ legend, children }: { legend: string; children: React.ReactNode
 // sous le corps défilant, et le focus au clic fait défiler toute la fenêtre.
 function Check({ checked, onChange, disabled = false, children }: { checked: boolean; onChange: (checked: boolean) => void; disabled?: boolean; children: React.ReactNode }) {
   return (
-    <label className="group bevel relative flex cursor-pointer bg-outline-variant p-px transition-colors hover:bg-primary has-checked:bg-primary-container has-checked:hover:bg-primary has-focus-visible:bg-primary has-disabled:cursor-not-allowed has-disabled:hover:bg-primary-container">
+    <BevelFrame
+      as="label"
+      frame="group relative flex cursor-pointer bg-outline-variant transition-colors hover:bg-primary has-checked:bg-primary-container has-checked:hover:bg-primary has-focus-visible:bg-primary has-disabled:cursor-not-allowed has-disabled:hover:bg-primary-container"
+      className="flex min-h-10 flex-1 items-center gap-2 bg-surface-container-lowest pr-4 pl-3 text-[14px] text-on-surface-variant transition-colors group-has-checked:bg-surface-container-high group-has-checked:text-on-surface"
+    >
       <input type="checkbox" checked={checked} disabled={disabled} onChange={(e) => onChange(e.target.checked)} className="sr-only" />
-      <span className="bevel flex min-h-10 flex-1 items-center gap-2 bg-surface-container-lowest pr-4 pl-3 text-[14px] text-on-surface-variant transition-colors group-has-checked:bg-surface-container-high group-has-checked:text-on-surface">
-        <span aria-hidden="true" className="material-symbols-outlined text-[16px]! text-primary invisible group-has-checked:visible">check</span>
-        {children}
-      </span>
-    </label>
+      <span aria-hidden="true" className="material-symbols-outlined text-[16px]! text-primary invisible group-has-checked:visible">check</span>
+      {children}
+    </BevelFrame>
   );
 }
 
@@ -302,25 +299,23 @@ function NumberField({ id, label, hint, value, min, max, onCommit }: { id: strin
   return (
     <div className="flex flex-col gap-2">
       <Label htmlFor={id}>{label}</Label>
-      <div className={`${bevelFrame} flex self-start transition-colors focus-within:bg-primary`}>
-        <div className="bevel flex min-h-11 bg-surface-container-lowest">
-          <StepButton icon="remove" label={t('decrease', { field: label })} disabled={value <= min} onClick={() => step(-1)} />
-          <input
-            id={id}
-            type="number"
-            inputMode="numeric"
-            min={min}
-            max={max}
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            onBlur={commit}
-            onKeyDown={(e) => e.key === 'Enter' && commit()}
-            aria-describedby={`${id}-hint`}
-            className="font-label-code w-16 appearance-none bg-transparent text-center text-[16px] text-on-surface focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [-moz-appearance:textfield]"
-          />
-          <StepButton icon="add" label={t('increase', { field: label })} disabled={value >= max} onClick={() => step(1)} />
-        </div>
-      </div>
+      <BevelFrame frame="flex self-start bg-primary-container transition-colors focus-within:bg-primary" className="flex min-h-11 bg-surface-container-lowest">
+        <StepButton icon="remove" label={t('decrease', { field: label })} disabled={value <= min} onClick={() => step(-1)} />
+        <input
+          id={id}
+          type="number"
+          inputMode="numeric"
+          min={min}
+          max={max}
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onBlur={commit}
+          onKeyDown={(e) => e.key === 'Enter' && commit()}
+          aria-describedby={`${id}-hint`}
+          className="font-label-code w-16 appearance-none bg-transparent text-center text-[16px] text-on-surface focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [-moz-appearance:textfield]"
+        />
+        <StepButton icon="add" label={t('increase', { field: label })} disabled={value >= max} onClick={() => step(1)} />
+      </BevelFrame>
       <p id={`${id}-hint`} className="text-[13px] text-outline">{hint}</p>
     </div>
   );

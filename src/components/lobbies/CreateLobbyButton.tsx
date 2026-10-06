@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { useState, useTransition } from 'react';
 import { createLobbyAction } from '@/app/actions/lobbies';
+import BevelFrame, { goldFrame } from '@/components/shared/BevelFrame';
 import { useRouter } from '@/i18n/navigation';
 
 // Ouvre un nouveau lobby privé dont on est l'hôte (LOB-4) ; un invité passe d'abord par la connexion.
@@ -32,17 +33,17 @@ export default function CreateLobbyButton({ signedIn, align = 'end' }: { signedI
 
   return (
     <div className={`hidden flex-col gap-2 sm:flex ${align === 'end' ? 'items-end' : 'items-center'}`}>
-      <button
+      <BevelFrame
+        as="button"
         type="button"
         onClick={create}
         disabled={isCreating}
-        className="group bevel inline-flex bg-linear-135 from-gold to-gold-deep p-px transition-transform hover:-translate-y-0.5 disabled:pointer-events-none disabled:opacity-70"
+        frame={`group inline-flex ${goldFrame} transition-transform hover:-translate-y-0.5 disabled:pointer-events-none disabled:opacity-70`}
+        className="flex min-h-11 items-center gap-2 bg-primary-container px-5 text-[13px] whitespace-nowrap uppercase tracking-[0.12em] text-on-primary-container transition-colors group-hover:bg-inverse-primary"
       >
-        <span className="bevel flex min-h-11 items-center gap-2 bg-primary-container px-5 text-[13px] whitespace-nowrap uppercase tracking-[0.12em] text-on-primary-container transition-colors group-hover:bg-inverse-primary">
-          <span aria-hidden="true" className={`material-symbols-outlined text-[18px] ${isCreating ? 'animate-spin' : ''}`}>{isCreating ? 'progress_activity' : 'add'}</span>
-          {signedIn ? t('create') : t('createGuest')}
-        </span>
-      </button>
+        <span aria-hidden="true" className={`material-symbols-outlined text-[18px] ${isCreating ? 'animate-spin' : ''}`}>{isCreating ? 'progress_activity' : 'add'}</span>
+        {signedIn ? t('create') : t('createGuest')}
+      </BevelFrame>
       {failed && (
         <p role="alert" className="text-[14px] text-error">
           {t('createFailed')}

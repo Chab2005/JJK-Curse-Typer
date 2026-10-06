@@ -1,4 +1,5 @@
 import { useTranslations } from 'next-intl';
+import BevelFrame, { goldFrame } from '@/components/shared/BevelFrame';
 import { Link } from '@/i18n/navigation';
 
 export type NotFoundVariant = 'page' | 'profile' | 'settings' | 'lobby';
@@ -23,12 +24,15 @@ export default function NotFound({ variant }: { variant: NotFoundVariant }) {
       <p className="font-label-code relative text-[12px] font-bold uppercase tracking-[0.32em] text-primary-container">{t(`${variant}.eyebrow`)}</p>
       <h1 id="not-found-title" className="relative text-[clamp(34px,4.5vw,56px)] leading-tight uppercase tracking-[0.08em]">{t(`${variant}.title`)}</h1>
       <p className="relative max-w-[520px] text-lg leading-7 text-on-surface-variant">{t(`${variant}.text`)}</p>
-      <Link href={back.href} className="group bevel relative mt-3 flex bg-linear-135 from-gold to-gold-deep p-px transition-transform hover:-translate-y-0.5">
-        <span className="bevel flex min-h-14 items-center gap-3 bg-primary-container px-8 text-[17px] uppercase tracking-[0.12em] text-on-primary-container transition-colors group-hover:bg-inverse-primary">
-          <span aria-hidden="true" className="material-symbols-outlined text-[22px]">{back.icon}</span>
-          {t(`${variant}.back`)}
-        </span>
-      </Link>
+      <BevelFrame
+        as={Link}
+        href={back.href}
+        frame={`group relative mt-3 flex ${goldFrame} transition-transform hover:-translate-y-0.5`}
+        className="flex min-h-14 items-center gap-3 bg-primary-container px-8 text-[17px] uppercase tracking-[0.12em] text-on-primary-container transition-colors group-hover:bg-inverse-primary"
+      >
+        <span aria-hidden="true" className="material-symbols-outlined text-[22px]">{back.icon}</span>
+        {t(`${variant}.back`)}
+      </BevelFrame>
     </section>
   );
 }
