@@ -2,7 +2,7 @@ import { useFormatter, useTranslations } from 'next-intl';
 import type { Profile } from './sampleProfiles';
 
 // Statistiques principales du joueur (STAT-2, PROF-4).
-export default function StatTiles({ profile }: { profile: Profile }) {
+export default function StatTiles({ profile }: { profile: Pick<Profile, 'wpm' | 'accuracy' | 'errorsPer100' | 'averageScore'> }) {
   const t = useTranslations('Profile.stats');
   const format = useFormatter();
 
