@@ -2,6 +2,7 @@
 // au réducteur pur de src/game/race.ts et diffuse le classement. Les minuteries vivent dans RaceHub.
 import { parseClientMessage, type RaceSnapshot, type ServerMessage } from '@/game/protocol';
 import { applyKeys, elapsedAt, raceReducer, standings, type RaceEvent, type RaceState } from '@/game/race';
+import { raceResults, type RaceResult } from '@/game/results';
 
 /** Une connexion WebSocket, réduite à ce dont la room a besoin. */
 export interface Connection {
@@ -39,6 +40,11 @@ export class RaceRoom {
 
   get connections() {
     return this.clients.size;
+  }
+
+  /** Résultats des joueurs une fois la course finie (STAT-8). */
+  results(): RaceResult[] {
+    return raceResults(this.race, this.now());
   }
 
   connect(conn: Connection) {

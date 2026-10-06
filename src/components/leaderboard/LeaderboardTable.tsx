@@ -45,7 +45,7 @@ export default function LeaderboardTable({ players, category }: { players: Ranke
                   aria-label={t('profileLabel', { name: player.username })}
                   className="flex min-w-0 items-center gap-3 text-on-surface after:absolute after:inset-0 hover:text-on-surface"
                 >
-                  <Avatar avatar={player.avatar} name={player.username} size={34} />
+                  <Avatar avatar={player.avatar} name={player.username} src={player.photo} size={34} />
                   <span className="font-grotesk truncate text-[17px]">{player.username}</span>
                 </Link>
               </td>

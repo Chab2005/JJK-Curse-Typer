@@ -1,5 +1,6 @@
 // Logique pure du classement général (STAT-8) : tri par catégorie, podium, recherche, état dans l'URL.
 import type { CharacterId } from '@/components/shared/characters';
+import { summarizeGames, type GameRecord } from '@/game/stats';
 import { parsePage } from '@/lib/pagination';
 
 export const CATEGORIES = ['wpm', 'accuracy', 'score', 'errors'] as const;
@@ -11,6 +12,8 @@ export const MIN_RANKED_GAMES = 5;
 export interface PlayerStats {
   username: string;
   avatar: CharacterId | null;
+  /** URL de la photo téléversée (PROF-5) ; prime sur `avatar`. */
+  photo?: string | null;
   games: number;
   /** MPM net moyen. */
   wpm: number;
@@ -19,6 +22,14 @@ export interface PlayerStats {
   /** Moyenne des scores des 5 dernières parties (voir `averageScore`). */
   averageScore: number;
   errorsPer100: number;
+}
+
+/** Ligne du classement d'un compte à partir de ses parties, de la plus ancienne à la plus récente (STAT-8) ; `null` sans partie. */
+export function playerFromGames(player: { username: string; photo: string | null }, games: readonly GameRecord[]): PlayerStats | null {
+  const summary = summarizeGames(games);
+  if (!summary) return null;
+  const { wpm, accuracy, averageScore, errorsPer100 } = summary;
+  return { username: player.username, avatar: null, photo: player.photo, games: summary.games, wpm, accuracy, averageScore, errorsPer100 };
 }
 
 export interface RankedPlayer extends PlayerStats {

@@ -10,6 +10,11 @@ export const lobbyActionsMock = {
   createInviteAction: vi.fn<(code: string) => Promise<string | null>>(async () => null),
 };
 
+// Race screen actions (@/app/actions/races).
+export const raceActionsMock = {
+  claimRaceResultsAction: vi.fn(async () => {}),
+};
+
 // Auth actions (@/app/actions/auth): the pieces components call directly.
 export const authActionsMock = {
   setGuestNameAction: vi.fn<(name: string) => Promise<'length' | 'characters' | 'account' | null>>(async () => null),
