@@ -535,10 +535,13 @@
       "waiting": "{count, plural, one {# exorcist is} other {# exorcists are}} still racing…",
       "over": "Race over",
       "results": "Results",
+      "podium": "Race podium",
       "rank": "Rank",
       "name": "Exorcist",
       "wpm": "WPM",
       "accuracy": "Accuracy",
+      "detail": "{status} · {accuracy} accuracy",
+      "wpmValue": "{value} WPM",
       "state": "Status",
       "you": "(you)",
       "backToLobby": "Back to the lobby"

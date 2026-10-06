@@ -535,10 +535,13 @@
       "waiting": "{count, plural, one {# exorciste est encore} other {# exorcistes sont encore}} en course…",
       "over": "Course terminée",
       "results": "Résultats",
+      "podium": "Podium de la course",
       "rank": "Rang",
       "name": "Exorciste",
       "wpm": "MPM",
       "accuracy": "Précision",
+      "detail": "{status} · précision de {accuracy}",
+      "wpmValue": "{value} MPM",
       "state": "État",
       "you": "(vous)",
       "backToLobby": "Retour au lobby"
