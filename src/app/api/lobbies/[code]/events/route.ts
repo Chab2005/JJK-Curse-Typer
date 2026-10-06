@@ -5,8 +5,6 @@ import { getViewerId } from '@/lib/currentUser';
 import { storedLobby, subscribeLobby } from '@/lib/lobbies';
 import { connectViewer } from '@/lib/lobbyPresence';
 
-export const dynamic = 'force-dynamic';
-
 /** Commentaire envoyé régulièrement : un proxy ne coupe pas un flux resté muet. */
 const HEARTBEAT_MS = 25_000;
 
