@@ -413,7 +413,7 @@
         "errors": "Erreurs",
         "speed": "Vitesse"
       },
-      "layout": "Disposition du clavier",
+      "shift": "Maj",
       "legend": "Légende",
       "tones": {
         "weak": "À travailler",

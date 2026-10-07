@@ -413,7 +413,7 @@
         "errors": "Errors",
         "speed": "Speed"
       },
-      "layout": "Keyboard layout",
+      "shift": "Shift",
       "legend": "Legend",
       "tones": {
         "weak": "Needs work",

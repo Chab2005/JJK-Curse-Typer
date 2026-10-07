@@ -139,7 +139,7 @@ Chaque phase se termine par une démo déployée. ✅ = critère de sortie.
 
 ### Phase 4 — Statistiques
 - [ ] Tableau de bord : meilleur MPM, moyenne, précision, nombre de courses, victoires, courbe d'évolution (STAT-1, STAT-2)
-- [ ] **Carte de chaleur du clavier** (disposition AZERTY-CA / QWERTY selon la langue), accessible : valeurs lisibles, pas seulement la couleur (STAT-3, UI-8)
+- [x] **Carte de chaleur du clavier** (QWERTY, case Maj pour la couche majuscules et symboles), accessible : valeurs lisibles, pas seulement la couleur (STAT-3, UI-8)
 - [ ] Points à travailler, progression récente (STAT-4)
 - [ ] Historique complet et classement général (STAT-8)
 - ✅ E2E : inscription → course → tableau de bord (QA-2)

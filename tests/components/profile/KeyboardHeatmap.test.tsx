@@ -4,31 +4,32 @@ import type { KeyStat } from '@/components/profile/keyboard';
 import KeyboardHeatmap from '@/components/profile/KeyboardHeatmap';
 import { renderWithIntl } from '../../render';
 
-// One key per tone, so the colours are predictable: a is weak, s average, d strong.
+// One key per tone, so the colours are predictable: a is weak, s average, d strong. A is only typed with Shift.
 const STATS: KeyStat[] = [
-  { key: 'a', hits: 100, errors: 30, totalLatencyMs: 30000 },
-  { key: 's', hits: 100, errors: 10, totalLatencyMs: 20000 },
-  { key: 'd', hits: 100, errors: 0, totalLatencyMs: 10000 },
+  { char: 'a', errorRate: 30, avgMs: 300 },
+  { char: 's', errorRate: 10, avgMs: 200 },
+  { char: 'd', errorRate: 0, avgMs: 100 },
+  { char: 'A', errorRate: 40, avgMs: 350 },
 ];
 
 const homeRow = () => within(screen.getByRole('list', { name: 'Row 3' }));
 
 describe('KeyboardHeatmap (STAT-3)', () => {
-  it('shows error rates on a QWERTY keyboard by default', () => {
+  it('shows error rates of unshifted keys by default', () => {
     renderWithIntl(<KeyboardHeatmap stats={STATS} />);
 
     expect(screen.getByRole('button', { name: 'Errors' })).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByRole('button', { name: 'qwerty' })).toHaveAttribute('aria-pressed', 'true');
-    expect(homeRow().getByLabelText('A: 30%, Needs work')).toBeInTheDocument();
-    expect(homeRow().getByLabelText('D: 0%, Good')).toBeInTheDocument();
-    expect(homeRow().getByLabelText('F: never typed')).toBeInTheDocument();
+    expect(screen.getByRole('checkbox', { name: 'Shift' })).not.toBeChecked();
+    expect(homeRow().getByLabelText('a: 30%, Needs work')).toBeInTheDocument();
+    expect(homeRow().getByLabelText('d: 0%, Good')).toBeInTheDocument();
+    expect(homeRow().getByLabelText('f: never typed')).toBeInTheDocument();
   });
 
   it('lists the weakest keys', () => {
     renderWithIntl(<KeyboardHeatmap stats={STATS} />);
 
     expect(screen.getByText('Keys to work on:')).toBeInTheDocument();
-    expect(screen.getByText('A · 30%')).toBeInTheDocument();
+    expect(screen.getByText('a · 30%')).toBeInTheDocument();
   });
 
   it('switches to average delay per key', async () => {
@@ -37,16 +38,16 @@ describe('KeyboardHeatmap (STAT-3)', () => {
     await user.click(screen.getByRole('button', { name: 'Speed' }));
 
     expect(screen.getByText('value = average delay')).toBeInTheDocument();
-    expect(homeRow().getByLabelText('A: 300 ms, Needs work')).toBeInTheDocument();
+    expect(homeRow().getByLabelText('a: 300 ms, Needs work')).toBeInTheDocument();
   });
 
-  it('switches to the AZERTY layout', async () => {
+  it('shows the Shift layer when Shift is checked', async () => {
     const { user } = renderWithIntl(<KeyboardHeatmap stats={STATS} />);
 
-    await user.click(screen.getByRole('button', { name: 'azerty' }));
+    await user.click(screen.getByRole('checkbox', { name: 'Shift' }));
 
-    const firstKey = within(screen.getByRole('list', { name: 'Row 2' })).getAllByRole('listitem')[0];
-    expect(firstKey).toHaveAccessibleName('A: 30%, Needs work');
-    expect(homeRow().getAllByRole('listitem')[0]).toHaveAccessibleName('Q: never typed');
+    expect(homeRow().getAllByRole('listitem')[0]).toHaveAccessibleName('A: 40%, Needs work');
+    expect(homeRow().getByLabelText('S: never typed')).toBeInTheDocument();
+    expect(within(screen.getByRole('list', { name: 'Row 1' })).getAllByRole('listitem')[0]).toHaveAccessibleName('!: never typed');
   });
 });

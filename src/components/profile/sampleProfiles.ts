@@ -1,6 +1,6 @@
 import { SAMPLE_PLAYERS } from '@/components/leaderboard/samplePlayers';
 import type { CharacterId } from '@/components/shared/characters';
-import type { KeyStat } from './keyboard';
+import { type KeyStat, QWERTY } from './keyboard';
 import type { RaceWpm } from './wpmHistory';
 
 // Données de démonstration en attendant les statistiques en base (STAT-1 à STAT-4).
@@ -23,7 +23,7 @@ export interface Profile {
 }
 
 const DAY = 24 * 60 * 60 * 1000;
-const TYPED = [...'abcdefghijklmnopqrstuvwxyz0123456789.,;:!?\'"-()éèàçù '];
+const TYPED = QWERTY.flat().flatMap((key) => key.chars);
 
 /** Nombre stable dans [0, 1) tiré d'une chaîne. */
 function noise(text: string): number {
@@ -46,11 +46,11 @@ export function findSampleProfile(username: string, now: Date): Profile | null {
     };
   });
 
-  const keyStats = TYPED.map((key): KeyStat => {
-    const hits = key === ' ' ? 4000 : /[a-z]/.test(key) ? 300 + Math.round(noise(key) * 900) : 40 + Math.round(noise(key) * 120);
-    const errorRate = (1 - player.accuracy) * (0.3 + 2.2 * noise(player.username + key));
-    const latency = 60000 / (player.wpm * 5) * (0.75 + 0.9 * noise(key + player.username));
-    return { key, hits, errors: Math.round(hits * errorRate), totalLatencyMs: Math.round(hits * latency) };
+  // Les symboles les plus rares ne sont jamais assez tapés pour figurer sur la carte.
+  const keyStats = TYPED.filter((char) => /[a-zA-Z0-9 .,;'!?]/.test(char) || noise(player.username + char) > 0.5).map((char): KeyStat => {
+    const errorRate = (1 - player.accuracy) * (0.3 + 2.2 * noise(player.username + char)) * 100;
+    const avgMs = (60000 / (player.wpm * 5)) * (0.75 + 0.9 * noise(char + player.username));
+    return { char, errorRate: Math.round(errorRate * 10) / 10, avgMs: Math.round(avgMs) };
   });
 
   const handle = player.username.toLowerCase().replace(/_/g, '-');

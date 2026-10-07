@@ -15,7 +15,7 @@ import type { Locale } from '@/i18n/config';
 import { Link } from '@/i18n/navigation';
 import { getSessionUser } from '@/lib/auth/session';
 import { findAccountProfile } from '@/lib/auth/profile';
-import { accountGames } from '@/lib/stats';
+import { accountGames, accountKeyStats } from '@/lib/stats';
 import { summarizeGames } from '@/game/stats';
 
 export async function generateMetadata({ params }: PageProps<'/[locale]/profile/[username]'>) {
@@ -33,11 +33,11 @@ export default async function ProfilePage({ params }: PageProps<'/[locale]/profi
   const t = await getTranslations('Profile');
   const viewer = await getSessionUser();
 
-  // Compte réel : nom affiché, photo, et ses courses enregistrées (STAT-1, STAT-2). La carte de chaleur attend les stats par touche (STAT-3).
+  // Compte réel : nom affiché, photo, ses courses enregistrées (STAT-1, STAT-2) et sa carte de chaleur (STAT-3).
   if (!profile) {
     const account = await findAccountProfile(name);
     if (!account) notFound();
-    const games = await accountGames(account.id);
+    const [games, keys] = await Promise.all([accountGames(account.id), accountKeyStats(account.id)]);
     const stats = summarizeGames(games);
     return (
       <>
@@ -66,6 +66,7 @@ export default async function ProfilePage({ params }: PageProps<'/[locale]/profi
               <>
                 <WpmChart races={games.map((g) => ({ date: g.at, wpm: g.wpm }))} now={now.toISOString()} />
                 <StatTiles profile={stats} />
+                {keys.length > 0 && <KeyboardHeatmap stats={keys} />}
               </>
             ) : (
               <EmptyStats own={viewer?.id === account.id} />
