@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useId, useRef, useState } from 'react';
+import BevelFrame, { cardFrame } from '@/components/shared/BevelFrame';
 
 // Bouton « Filtres » qui ouvre un panneau sous lui ; Échap ou un clic à l'extérieur le ferment.
 export default function FilterPopover({
@@ -67,30 +68,33 @@ export default function FilterPopover({
         </span>
       </button>
 
+      {/* L'ombre est un filtre sur l'enveloppe : posée sur le cadre, son clip-path la couperait. */}
       <div
         id={panelId}
         hidden={!open}
-        className="absolute top-full left-0 z-30 mt-2 sm:right-0 sm:left-auto w-[min(calc(100vw-48px),380px)] border border-surface-container-highest bg-surface-container-low p-5 shadow-[0_24px_40px_rgb(0_0_0/0.55)]"
+        className="absolute top-full left-0 z-30 mt-2 sm:right-0 sm:left-auto w-[min(calc(100vw-48px),380px)] drop-shadow-[0_24px_40px_rgb(0_0_0/0.55)]"
       >
-        {children}
-        <div className="mt-5 flex gap-3 border-t border-surface-container-highest pt-4">
-          {onReset && (
+        <BevelFrame frame={cardFrame} className="bg-surface-container-low p-5">
+          {children}
+          <div className="mt-5 flex gap-3 border-t border-surface-container-highest pt-4">
+            {onReset && (
+              <button
+                type="button"
+                onClick={onReset}
+                className="min-h-11 flex-1 border border-surface-container-highest text-[13px] uppercase tracking-[0.12em] text-on-surface-variant transition-colors hover:border-primary hover:text-primary"
+              >
+                {resetLabel}
+              </button>
+            )}
             <button
               type="button"
-              onClick={onReset}
-              className="min-h-11 flex-1 border border-surface-container-highest text-[13px] uppercase tracking-[0.12em] text-on-surface-variant transition-colors hover:border-primary hover:text-primary"
+              onClick={close}
+              className="min-h-11 flex-1 bg-primary-container text-[13px] uppercase tracking-[0.12em] text-on-primary-container transition-colors hover:bg-inverse-primary"
             >
-              {resetLabel}
+              {closeLabel}
             </button>
-          )}
-          <button
-            type="button"
-            onClick={close}
-            className="min-h-11 flex-1 bg-primary-container text-[13px] uppercase tracking-[0.12em] text-on-primary-container transition-colors hover:bg-inverse-primary"
-          >
-            {closeLabel}
-          </button>
-        </div>
+          </div>
+        </BevelFrame>
       </div>
     </div>
   );
