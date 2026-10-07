@@ -74,6 +74,22 @@ export const results = pgTable(
   (table) => [index("results_user_id_idx").on(table.userId)],
 );
 
+// Heatmap du clavier QWERTY, une ligne par compte et par caractère. Aucun historique : après chaque course,
+// valeur stockée = (valeur stockée + valeur de la course) / 2 ; un caractère absent de la course n'est pas touché.
+export const keyStats = pgTable(
+  "key_stats",
+  {
+    userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    /** Un seul caractère tel que tapé : 'a', ';', ' '. */
+    char: text("char").notNull(),
+    /** Taux d'erreur en pourcentage, de 0 à 100. */
+    errorRate: real("error_rate").notNull(),
+    /** Temps moyen pour taper ce caractère, en millisecondes. */
+    avgMs: real("avg_ms").notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.userId, table.char] })],
+);
+
 
 
 

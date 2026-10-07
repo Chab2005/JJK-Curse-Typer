@@ -1,5 +1,6 @@
 // Résultats d'une course finie à enregistrer (STAT-5, STAT-8). Fonction pure : la room les calcule,
 // le serveur les écrit. Seuls les joueurs qui ont vraiment tapé comptent : ni bots (BOT-5), ni sièges simulés, ni abandons.
+import { raceKeyStats, type KeyStat } from './keyStats';
 import { standings, type RaceState } from './race';
 
 export interface RaceResult {
@@ -16,6 +17,8 @@ export interface RaceResult {
   keystrokes: number;
   durationMs: number;
   status: 'finished' | 'timeout';
+  /** Touches assez tapées pour la heatmap du clavier. */
+  keys: KeyStat[];
 }
 
 /** Résultats des joueurs humains d'une course finie ; vide tant qu'elle court. */
@@ -23,7 +26,7 @@ export function raceResults(race: RaceState, now: number): RaceResult[] {
   if (race.phase !== 'finished') return [];
   const table = standings(race, now);
   return race.racers.flatMap((racer): RaceResult[] => {
-    const { seat, driver, status, typing, endedAt } = racer;
+    const { seat, driver, status, typing, keys, endedAt } = racer;
     if (seat.kind !== 'human' || driver !== 'player' || (status !== 'finished' && status !== 'timeout')) return [];
     if (typing.keystrokes === 0 || endedAt === null || endedAt <= 0) return [];
     const row = table.find((r) => r.id === seat.id)!;
@@ -38,6 +41,7 @@ export function raceResults(race: RaceState, now: number): RaceResult[] {
         keystrokes: typing.keystrokes,
         durationMs: endedAt,
         status,
+        keys: raceKeyStats(keys),
       },
     ];
   });

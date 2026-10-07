@@ -3,6 +3,7 @@
 import type { CharacterId } from '@/components/shared/characters';
 import { BOT_PROFILES, createBot, nextBotStroke, standInProfile, type BotLevel, type BotState } from './bots';
 import { energyAfter } from './energy';
+import { startKeyTally, tallyKey, type KeyTally } from './keyStats';
 import { hashSeed, type Seed } from './random';
 import { rawWpm, typingScore } from './scoring';
 import { correctChars, isValidKey, startTyping, typeKey, type ErrorMode, type Keystroke, type TypingState } from './typing';
@@ -39,6 +40,8 @@ export interface Racer {
   /** Qui tape : un joueur connecté, ou la simulation (bots, et sièges humains vides en démo). */
   driver: 'player' | 'sim';
   typing: TypingState;
+  /** Erreurs et vitesse par caractère, pour la heatmap du clavier. */
+  keys: KeyTally;
   energy: number;
   status: RacerStatus;
   /** Fin de sa course, en ms depuis le départ. */
@@ -86,6 +89,7 @@ export function createRace({ seats, text, mode, timerMs, bonus, now, seed }: Rac
       seat,
       driver: 'sim',
       typing: startTyping(text, mode),
+      keys: startKeyTally(),
       energy: 0,
       status: 'racing',
       endedAt: null,
@@ -106,12 +110,13 @@ const updateRacer = (race: RaceState, id: string, update: (racer: Racer) => Race
   racers: race.racers.map((racer) => (racer.seat.id === id ? update(racer) : racer)),
 });
 
-/** Applique une frappe : saisie, énergie si les bonus sont activés, fin de course au dernier caractère. */
+/** Applique une frappe : saisie, décompte par touche, énergie si les bonus sont activés, fin de course au dernier caractère. */
 function strike(racer: Racer, stroke: Keystroke, bonus: boolean): Racer {
   const typing = typeKey(racer.typing, stroke);
+  const keys = tallyKey(racer.keys, racer.typing, typing, stroke);
   const energy = bonus ? energyAfter(racer.energy, racer.typing, typing) : racer.energy;
   const done = typing.finishedAt !== null;
-  return { ...racer, typing, energy, status: done ? 'finished' : racer.status, endedAt: done ? typing.finishedAt : racer.endedAt };
+  return { ...racer, typing, keys, energy, status: done ? 'finished' : racer.status, endedAt: done ? typing.finishedAt : racer.endedAt };
 }
 
 function strokesAreValid(racer: Racer, strokes: readonly Keystroke[], latest: number): boolean {
