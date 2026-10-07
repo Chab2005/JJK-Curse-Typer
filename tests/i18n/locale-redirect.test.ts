@@ -95,10 +95,19 @@ describe('resolveLocaleRedirect — détection sur le domaine racine', () => {
     ).toEqual({ type: 'next' });
   });
 
-  it('ne fait rien sur un hôte inconnu sans ?lang', () => {
+  it('sur un hôte inconnu sans cookie : préfixe la langue du navigateur (I18N-02)', () => {
+    const host = 'jjkcursetyper-production.up.railway.app';
     expect(
-      resolveLocaleRedirect(request({ host: 'jjktyper.vercel.app', acceptLanguage: 'fr' }), ROOT),
-    ).toEqual({ type: 'next' });
+      resolveLocaleRedirect(request({ host, pathname: '/lobbies', search: '?q=1', acceptLanguage: 'fr-CA,fr;q=0.9' }), ROOT),
+    ).toEqual({ type: 'redirect', host, pathname: '/fr/lobbies', search: '?q=1' });
+    expect(resolveLocaleRedirect(request({ host, acceptLanguage: 'en-US' }), ROOT)).toEqual({ type: 'next' });
+    expect(resolveLocaleRedirect(request({ host, acceptLanguage: 'de-DE' }), ROOT)).toEqual({ type: 'next' });
+    expect(resolveLocaleRedirect(request({ host, pathname: '/fr', acceptLanguage: 'en' }), ROOT)).toEqual({ type: 'next' });
+  });
+
+  it('sur un hôte inconnu : le choix explicite en cookie passe avant le navigateur', () => {
+    const host = 'jjkcursetyper-production.up.railway.app';
+    expect(resolveLocaleRedirect(request({ host, acceptLanguage: 'fr', cookieLocale: 'en' }), ROOT)).toEqual({ type: 'next' });
   });
 });
 

@@ -78,10 +78,12 @@ export function resolveLocaleRedirect(req: LocaleRequest, root: string): LocaleD
       return { type: 'redirect', host: req.host, pathname, search: withoutLangParam(req.search), setCookie: requested };
     }
     // Les liens next-intl n'ont jamais de préfixe (chaque langue est la langue
-    // par défaut de son domaine) : le cookie de choix rétablit `/fr/...`.
+    // par défaut de son domaine) : le cookie de choix, sinon la langue du
+    // navigateur (I18N-02), rétablit `/fr/...`.
     const unprefixed = stripLocalePrefix(req.pathname) === req.pathname;
-    if (unprefixed && isLocale(req.cookieLocale) && req.cookieLocale !== defaultLocale) {
-      const pathname = withLocalePrefix(req.pathname, req.cookieLocale);
+    const preferred = isLocale(req.cookieLocale) ? req.cookieLocale : matchAcceptLanguage(req.acceptLanguage);
+    if (unprefixed && preferred !== undefined && preferred !== defaultLocale) {
+      const pathname = withLocalePrefix(req.pathname, preferred);
       return { type: 'redirect', host: req.host, pathname, search: req.search };
     }
     return { type: 'next' };
