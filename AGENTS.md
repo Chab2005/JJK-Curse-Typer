@@ -38,7 +38,7 @@ Tests live in the top-level `tests/` folder, which mirrors `src/` (`src/componen
 
 CI (`.github/workflows/test.yml`) runs typecheck + tests on push/PR to `main` and `dev`.
 
-Playwright (`playwright.config.ts`, projects `desktop` and `mobile`) runs specs from `e2e/`; `e2e/pages.ts` lists the pages the screenshot script visits, add new pages there. To look at the site, run `npm run screenshots` and read the PNGs, or use the Playwright MCP server from `.mcp.json`. Layout-stability checks (an element keeps its box after a click) belong in `e2e/`, since jsdom has no layout. `e2e/lobby-realtime.spec.ts` drives two players in two browser contexts.
+Playwright (`playwright.config.ts`, projects `desktop`, `mobile` and `firefox`) runs specs from `e2e/`; `e2e/pages.ts` lists the pages the screenshot script visits, add new pages there. To look at the site, run `npm run screenshots` and read the PNGs, or use the Playwright MCP server from `.mcp.json`. Layout-stability checks (an element keeps its box after a click) belong in `e2e/`, since jsdom has no layout. `e2e/lobby-realtime.spec.ts` drives two players in two browser contexts.
 
 ## Stack notes
 
