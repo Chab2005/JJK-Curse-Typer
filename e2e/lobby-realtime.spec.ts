@@ -110,3 +110,27 @@ test('a player who leaves disappears from the lobby for everyone', async ({ brow
   await guest.waitForURL(/\/lobbies$/);
   await expect(participants(host).getByText('Megumi_e2e')).toBeHidden();
 });
+
+test('a guest types the code on the home page and the host sees them arrive (JOIN-01)', async ({ browser }) => {
+  const { host } = await hostLobby(browser);
+  await setAccess(host, 'Code');
+  const code = host.url().split('/lobby/')[1];
+
+  const guest = await newPage(browser);
+  await guest.goto('/');
+  await guest.locator('#roomPinInput').fill(code);
+  await guest.getByLabel('Exorcist name').fill('Inumaki_e2e');
+  await guest.getByRole('button', { name: 'Expand the domain' }).click();
+  await guest.waitForURL(new RegExp(`/lobby/${code}$`));
+  await expect(participants(guest).getByText('Inumaki_e2e')).toBeVisible();
+  await expect(participants(host).getByText('Inumaki_e2e')).toBeVisible();
+});
+
+test('the code alone does not open a private lobby (SALLE-04)', async ({ browser }) => {
+  const { host } = await hostLobby(browser);
+  const code = host.url().split('/lobby/')[1];
+
+  const guest = await newPage(browser);
+  const response = await guest.goto(`/lobby/${code}`);
+  expect(response?.status()).toBe(404);
+});
