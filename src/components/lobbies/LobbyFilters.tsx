@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 import BevelCheck from '@/components/shared/BevelCheck';
 import FilterPopover from '@/components/shared/FilterPopover';
-import { CHAR_KINDS, DEFAULT_LOBBY_FILTERS, type LobbyFilters as Filters, TEXT_LANGUAGES, activeFilterCount } from './lobbySearch';
+import { CHAR_KINDS, DEFAULT_LOBBY_FILTERS, type LobbyFilters as Filters, TEXT_LANGUAGES } from './lobbySearch';
 
 /** Ajoute ou retire `item` de la liste selon `checked`. */
 const toggle = <T,>(list: readonly T[], item: T, checked: boolean): T[] => (checked ? [...list, item] : list.filter((x) => x !== item));
@@ -15,7 +15,6 @@ export default function LobbyFilters({ filters, onChange }: { filters: Filters; 
   return (
     <FilterPopover
       label={t('button')}
-      badge={activeFilterCount(filters)}
       resetLabel={t('reset')}
       onReset={() => onChange({ ...DEFAULT_LOBBY_FILTERS, query: filters.query })}
       closeLabel={t('close')}

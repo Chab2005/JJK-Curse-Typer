@@ -7,7 +7,6 @@ import BevelFrame, { cardFrame } from '@/components/shared/BevelFrame';
 export default function FilterPopover({
   label,
   icon = 'tune',
-  badge = 0,
   resetLabel,
   onReset,
   closeLabel,
@@ -15,8 +14,6 @@ export default function FilterPopover({
 }: {
   label: string;
   icon?: string;
-  /** Nombre de filtres actifs affiché dans une pastille (masquée à 0). */
-  badge?: number;
   /** Bouton « Réinitialiser » du pied du panneau, affiché si `onReset` est fourni. */
   resetLabel?: string;
   onReset?: () => void;
@@ -64,7 +61,6 @@ export default function FilterPopover({
         <span className="diamond-ends flex min-h-[50px] items-center gap-2.5 bg-surface-container-lowest px-6 text-sm uppercase tracking-[0.14em] text-on-surface transition-colors group-hover:bg-surface-container-high">
           <span aria-hidden="true" className="material-symbols-outlined text-lg text-primary">{icon}</span>
           {label}
-          {badge > 0 && <span className="font-label-code bg-primary-container px-1.5 text-[11px] text-on-primary-container">{badge}</span>}
         </span>
       </button>
 

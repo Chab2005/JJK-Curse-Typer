@@ -40,10 +40,10 @@ describe('LobbyFilters (LOB-2)', () => {
     expect(onChange).toHaveBeenNthCalledWith(2, { ...FILTERS, chars: ['uppercase', 'punctuation', 'accents'] });
   });
 
-  it('counts the active filter groups on the button', () => {
+  it('shows no active filter count on the button', () => {
     renderWithIntl(<LobbyFilters filters={{ ...FILTERS, bonusOnly: true, languages: ['fr'] }} onChange={() => {}} />);
 
-    expect(screen.getByRole('button', { name: /^Filters/ })).toContainElement(screen.getByText('2'));
+    expect(screen.getByRole('button', { name: /^Filters/ })).toHaveTextContent(/^tuneFilters$/);
   });
 
   it('resets every filter but keeps the search text', async () => {

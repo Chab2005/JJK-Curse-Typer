@@ -63,15 +63,6 @@ export function filterLobbies(lobbies: readonly LobbySummary[], filters: LobbyFi
 
 const sameSet = <T>(a: readonly T[], b: readonly T[]) => a.length === b.length && a.every((x) => b.includes(x));
 
-/** Nombre de groupes de filtres qui diffèrent des valeurs par défaut (la recherche n'en est pas un). */
-export function activeFilterCount(filters: LobbyFilters): number {
-  return [
-    filters.bonusOnly,
-    !sameSet(filters.languages, TEXT_LANGUAGES),
-    !sameSet(filters.chars, CHAR_KINDS),
-  ].filter(Boolean).length;
-}
-
 /** Liste `a,b` lue dans l'URL, sans valeurs inconnues ; `fallback` si le paramètre est absent. */
 function parseList<T extends string>(value: string | null, allowed: readonly T[], fallback: readonly T[]): T[] {
   if (value === null) return [...fallback];

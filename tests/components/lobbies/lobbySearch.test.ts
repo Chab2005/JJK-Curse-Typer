@@ -3,7 +3,6 @@ import {
   DEFAULT_LOBBY_FILTERS,
   type LobbyFilters,
   type LobbySummary,
-  activeFilterCount,
   filterLobbies,
   isJoinable,
   lobbyHref,
@@ -86,16 +85,6 @@ describe('filterLobbies', () => {
 
   it('cache un lobby qui utilise un type de caractère décoché', () => {
     expect(codes(filterLobbies(all, filters({ chars: ['uppercase', 'digits', 'accents'] })))).not.toContain('PCT-007');
-  });
-});
-
-describe('activeFilterCount', () => {
-  it('vaut 0 avec les filtres par défaut, même avec une recherche', () => {
-    expect(activeFilterCount(filters({ query: 'gojo' }))).toBe(0);
-  });
-
-  it('compte chaque groupe de filtres modifié', () => {
-    expect(activeFilterCount(filters({ bonusOnly: true, languages: ['fr'], chars: [] }))).toBe(3);
   });
 });
 
