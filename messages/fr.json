@@ -519,6 +519,7 @@
       "racing": "En course",
       "finished": "Arrivé",
       "timeout": "Temps écoulé",
+      "stopped": "Arrêté",
       "abandoned": "Abandon"
     },
     "summary": {

@@ -31,8 +31,8 @@ test('a finished race is saved and shows on the player profile', async ({ page }
   await page.waitForTimeout(5500);
   await field.focus();
   await field.pressSequentially(text, { delay: 80 });
-  // La course finit quand le bot arrive aussi.
-  await expect(page.getByRole('link', { name: 'Back to the lobby' })).toBeVisible({ timeout: 60_000 });
+  // Seul humain face au bot : la course finit dès son arrivée, sans attendre le bot.
+  await expect(page.getByRole('link', { name: 'Back to the lobby' })).toBeVisible({ timeout: 5000 });
 
   await page.goto(`/profile/${username}`);
   await expect(page.getByText(/^1 races · [01] wins · best: \d+ WPM$/)).toBeVisible();

@@ -519,6 +519,7 @@
       "racing": "Racing",
       "finished": "Finished",
       "timeout": "Time's up",
+      "stopped": "Stopped",
       "abandoned": "Abandoned"
     },
     "summary": {

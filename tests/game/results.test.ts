@@ -68,6 +68,16 @@ describe('raceResults', () => {
     expect(raceResults(race, START + 600_000)[0].keys).toEqual([{ char: 'a', errorRate: 0, avgMs: 100 }]);
   });
 
+  it('rend le résultat du seul humain dès son arrivée, sans attendre les bots', () => {
+    const solo = createRace({ seats: [SEATS[0], SEATS[2]], text: TEXT, mode: 'accumulate', timerMs: 0, bonus: false, now: T0, seed: 1 });
+    const race = reduce(solo, { type: 'claim', id: 'ann', now: T0 }, { type: 'tick', now: START }, { type: 'keys', id: 'ann', strokes: keys(TEXT), now: START + 800 }, {
+      type: 'tick',
+      now: START + 1000,
+    });
+    expect(race.phase).toBe('finished');
+    expect(raceResults(race, START + 1000)).toEqual([expect.objectContaining({ seat: 'ann', rank: 1, players: 2, status: 'finished', durationMs: 700 })]);
+  });
+
   it('ne rend rien tant que la course n’est pas finie', () => {
     const race = reduce(claimed(0, 'ann'), { type: 'keys', id: 'ann', strokes: keys(TEXT), now: START + 800 });
     expect(race.phase).toBe('racing');

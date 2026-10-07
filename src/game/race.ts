@@ -22,7 +22,8 @@ const PLAUSIBILITY_MIN_KEYS = 20;
 export const CLOCK_SLACK_MS = 1500;
 
 export type RacePhase = 'countdown' | 'racing' | 'finished';
-export type RacerStatus = 'racing' | 'finished' | 'abandoned' | 'timeout';
+/** `stopped` : bot arrêté en route parce que tous les humains avaient fini. */
+export type RacerStatus = 'racing' | 'finished' | 'abandoned' | 'timeout' | 'stopped';
 
 /** Ce qu'on montre d'un participant : fixé au départ. */
 export interface RacerSeat {
@@ -156,6 +157,16 @@ function simulate(racer: Racer, until: number, bonus: boolean): Racer {
   return current;
 }
 
+/**
+ * Arrivée du dernier humain, quand tous les sièges humains sont tenus par des joueurs qui ont fini (ou abandonné) :
+ * la course s'arrête là, sans attendre les bots. `null` tant qu'un humain court ou qu'un siège humain est simulé.
+ */
+function humansEnd(race: RaceState): number | null {
+  const humans = race.racers.filter((racer) => racer.seat.kind === 'human');
+  if (humans.length === 0 || humans.some((human) => human.driver !== 'player' || human.status === 'racing')) return null;
+  return Math.max(...humans.map((human) => human.endedAt ?? 0));
+}
+
 function tick(race: RaceState, now: number): RaceState {
   if (race.phase === 'finished') return race;
   if (race.phase === 'countdown' && now < race.startAt) return race;
@@ -164,13 +175,19 @@ function tick(race: RaceState, now: number): RaceState {
   const limit = limitAt(race, now);
   const timeUp = race.timerMs > 0 && elapsed >= race.timerMs;
   const idle = now - race.lastActivityAt > INACTIVITY_MS;
+  const humanEnd = humansEnd(race);
+  // Les bots s'arrêtent là où ils en étaient quand le dernier humain a fini : leur score est figé à cet instant.
+  const cutoff = humanEnd === null ? limit : Math.min(limit, humanEnd);
 
   const racers = race.racers.map((racer): Racer => {
     if (racer.status !== 'racing') return racer;
-    let next = racer.driver === 'sim' ? simulate(racer, limit, race.bonus) : racer;
+    let next = racer.driver === 'sim' ? simulate(racer, cutoff, race.bonus) : racer;
     if (next.status !== 'racing') return next;
     if (next.driver === 'player' && next.disconnectedAt !== null && now - next.disconnectedAt > RECONNECT_GRACE_MS) {
       next = { ...next, status: 'abandoned', endedAt: elapsed };
+    } else if (humanEnd !== null) {
+      // Un tick précédent a pu faire taper le bot un peu après l'arrivée de l'humain.
+      next = { ...next, status: 'stopped', endedAt: Math.max(cutoff, next.typing.lastT) };
     } else if (timeUp || idle) {
       next = { ...next, status: 'timeout', endedAt: limit };
     }
@@ -222,7 +239,7 @@ export interface Standing {
   endedAt: number | null;
 }
 
-const GROUP: Record<RacerStatus, number> = { finished: 0, racing: 1, timeout: 1, abandoned: 2 };
+const GROUP: Record<RacerStatus, number> = { finished: 0, racing: 1, timeout: 1, stopped: 1, abandoned: 2 };
 
 /** Classement : arrivés par temps, puis les autres par progression, abandons en dernier (RACE-3, RACE-14). */
 export function standings(race: RaceState, now: number): Standing[] {
