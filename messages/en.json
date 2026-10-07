@@ -30,6 +30,8 @@
     "arenasOpen": "Arenas open",
     "online": "● {count} online",
     "play": "Play now",
+    "needAccount": "No open lobby right now. To host one, you need an account. <login>Log in</login>",
+    "playFailed": "Couldn't find a lobby. Try again.",
     "joinByCode": "Join with a code",
     "sideLeft": "Tokyo Jujutsu High · Typing arena",
     "sideRight": "Curse Typer · Multiplayer"

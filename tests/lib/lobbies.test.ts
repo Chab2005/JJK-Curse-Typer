@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { viewerRole } from '@/components/lobby/lobbyRoom';
-import { LOBBY_TTL_MS, clearLobbies, createLobby, findLobby, listPublicLobbies, parseLobbyAction, storedLobby, subscribeLobby, updateLobby } from '@/lib/lobbies';
+import { LOBBY_TTL_MS, clearLobbies, createLobby, findLobby, findQuickLobby, listPublicLobbies, parseLobbyAction, storedLobby, subscribeLobby, updateLobby } from '@/lib/lobbies';
 
 const HOST = { id: 'Megumi_Shadows', name: 'Megumi_Shadows', avatar: 'megumi' as const };
 const name = (host: string) => `Lobby de ${host}`;
@@ -45,6 +45,31 @@ describe('storedLobby', () => {
   it('renvoie null pour un lobby de démonstration ou inconnu', () => {
     expect(storedLobby('TKY-HGH')).toBeNull();
     expect(storedLobby('ZZZ-ZZZ')).toBeNull();
+  });
+});
+
+describe('findQuickLobby', () => {
+  const open = (players: number) => {
+    const room = createLobby(name, HOST, 1000);
+    updateLobby(room.code, { type: 'updateSettings', by: HOST.id, patch: { visibility: 'public' } });
+    for (let i = 1; i < players; i++) updateLobby(room.code, { type: 'addBot', by: HOST.id, level: 'grade_1' });
+    return room.code;
+  };
+
+  it('renvoie null sans lobby public ouvert', () => {
+    createLobby(name, HOST, 1000);
+    expect(findQuickLobby(1000)).toBeNull();
+  });
+
+  it('choisit le lobby public ouvert le plus rempli', () => {
+    open(2);
+    const fullest = open(3);
+    expect(findQuickLobby(1000)?.code).toBe(fullest);
+  });
+
+  it('ignore les lobbies expirés', () => {
+    open(2);
+    expect(findQuickLobby(1000 + LOBBY_TTL_MS + 1)).toBeNull();
   });
 });
 

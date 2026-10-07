@@ -2,11 +2,12 @@
 
 import { headers } from 'next/headers';
 import { getTranslations } from 'next-intl/server';
+import type { QuickPlayResult } from '@/components/home/quickPlay';
 import { canInvite, clientIp, isInviteToken, needsInvite } from '@/components/lobby/lobbyAccess';
 import type { LobbyRoom } from '@/components/lobby/lobbyRoom';
-import { getViewer, getViewerId } from '@/lib/currentUser';
+import { getViewer, getViewerId, type Viewer } from '@/lib/currentUser';
 import { claimInvite, createInvite, deleteInvites, revokeInvites } from '@/lib/invites';
-import { createLobby, parseLobbyAction, storedLobby, updateLobby } from '@/lib/lobbies';
+import { createLobby, findQuickLobby, parseLobbyAction, storedLobby, updateLobby } from '@/lib/lobbies';
 import { expectViewer } from '@/lib/lobbyPresence';
 
 // Actions serveur des lobbies créés depuis l'accueil. L'auteur est toujours l'utilisateur courant,
@@ -16,6 +17,26 @@ import { expectViewer } from '@/lib/lobbyPresence';
 export async function createLobbyAction(): Promise<string | null> {
   const viewer = await getViewer();
   if (viewer?.kind !== 'user') return null;
+  return hostLobby(viewer);
+}
+
+/**
+ * « Jouer maintenant » : le lobby public ouvert le plus rempli ; s'il n'y en a aucun, un compte en ouvre un, public cette fois
+ * pour que les joueurs suivants y tombent. Un invité sans pseudo doit d'abord en choisir un, et seul un compte peut héberger.
+ */
+export async function quickPlayAction(): Promise<QuickPlayResult> {
+  const viewer = await getViewer();
+  const open = findQuickLobby();
+  if (open) return viewer ? { code: open.code } : { error: 'name' };
+  if (viewer?.kind !== 'user') return { error: 'account' };
+  const code = await hostLobby(viewer);
+  updateLobby(code, { type: 'updateSettings', by: viewer.id, patch: { visibility: 'public' } });
+  // Un lobby public dont l'hôte n'ouvre jamais la page ne doit pas rester listé.
+  expectViewer(code, viewer.id);
+  return { code };
+}
+
+async function hostLobby(viewer: Viewer): Promise<string> {
   const t = await getTranslations('JoinForm');
   const { code } = createLobby((host) => t('newLobbyName', { host }), { id: viewer.id, name: viewer.name, avatar: null, photo: viewer.photo });
   // Un code peut resservir après l'expiration d'un lobby : ses anciens liens ne doivent pas ouvrir le nouveau.

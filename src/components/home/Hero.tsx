@@ -1,8 +1,8 @@
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
-import BevelFrame, { goldFrame } from '@/components/shared/BevelFrame';
-import { Link } from '@/i18n/navigation';
+import BevelFrame from '@/components/shared/BevelFrame';
 import BlackFlash from './BlackFlash';
+import PlayNowButton from './PlayNowButton';
 import SmoothScrollLink from './SmoothScrollLink';
 
 // `onlineCount` : `null` tant qu'il n'existe pas de vrai compteur (le chiffre de démonstration est masqué en production).
@@ -62,16 +62,8 @@ export default function Hero({ onlineCount }: { onlineCount: number | null }) {
           )}
         </p>
 
-        <div className="flex flex-wrap justify-center gap-4">
-          <BevelFrame
-            as={Link}
-            href="/lobbies"
-            frame={`group inline-flex ${goldFrame} transition-transform hover:-translate-y-0.5`}
-            className="flex min-h-[58px] items-center gap-3 bg-primary-container px-[34px] text-[19px] uppercase tracking-[0.12em] text-on-primary-container transition-colors group-hover:bg-inverse-primary"
-          >
-            <span aria-hidden="true" className="material-symbols-outlined text-[22px]">swords</span>
-            {t('play')}
-          </BevelFrame>
+        <div className="relative flex flex-wrap justify-center gap-4">
+          <PlayNowButton />
           <BevelFrame
             as={SmoothScrollLink}
             href="#join"
