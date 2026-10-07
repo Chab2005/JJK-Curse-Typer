@@ -3,13 +3,13 @@ import { initials } from '@/lib/initials';
 import { faceCrop } from './characterImages';
 import { CHARACTERS, type CharacterId } from './characters';
 
-// Avatar rond : photo téléversée (PROF-5), sinon visage du personnage choisi (PROF-1), sinon les deux premières lettres du pseudo.
-export default function Avatar({ avatar, name, size, src = null, className = '' }: { avatar: CharacterId | null; name: string; size: number; src?: string | null; className?: string }) {
+// Avatar rond (ou biseauté) : photo téléversée (PROF-5), sinon visage du personnage choisi (PROF-1), sinon les deux premières lettres du pseudo.
+export default function Avatar({ avatar, name, size, src = null, shape = 'round', className = '' }: { avatar: CharacterId | null; name: string; size: number; src?: string | null; shape?: 'round' | 'bevel'; className?: string }) {
   const character = CHARACTERS.find((c) => c.id === avatar);
 
   return (
     <span
-      className={`relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-[50%] bg-surface-container-highest ${className}`}
+      className={`relative inline-flex shrink-0 items-center justify-center overflow-hidden bg-surface-container-highest ${shape === 'bevel' ? 'bevel' : 'rounded-[50%]'} ${className}`}
       style={{ width: size, height: size }}
     >
       {src ? (

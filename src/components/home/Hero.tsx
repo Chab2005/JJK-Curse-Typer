@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
+import BevelFrame, { goldFrame } from '@/components/shared/BevelFrame';
 import { Link } from '@/i18n/navigation';
 import BlackFlash from './BlackFlash';
 import SmoothScrollLink from './SmoothScrollLink';
@@ -16,7 +17,7 @@ export default function Hero({ onlineCount }: { onlineCount: number | null }) {
       {/* Énergie occulte : halo, éclairs Black Flash et taches */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_40%_45%_at_50%_50%,rgb(225_29_72/0.4),rgb(147_0_10/0.18)_45%,transparent_75%)]" />
       <BlackFlash />
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_78%,rgb(147_0_10/0.35),transparent_22%),radial-gradient(circle_at_86%_22%,rgb(49_49_192/0.28),transparent_24%),radial-gradient(circle_at_78%_88%,rgb(147_0_10/0.25),transparent_18%)]" />
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_78%,rgb(147_0_10/0.35),transparent_22%),radial-gradient(circle_at_86%_22%,rgb(147_0_10/0.3),transparent_24%),radial-gradient(circle_at_14%_22%,rgb(147_0_10/0.3),transparent_24%),radial-gradient(circle_at_78%_88%,rgb(147_0_10/0.25),transparent_18%)]" />
       <p aria-hidden="true" className="hidden lg:block absolute left-10 top-1/2 -translate-y-1/2 [writing-mode:vertical-rl] whitespace-nowrap font-label-code text-[11px] uppercase tracking-[0.5em] text-outline-variant">
         {t('sideLeft')}
       </p>
@@ -31,10 +32,6 @@ export default function Hero({ onlineCount }: { onlineCount: number | null }) {
 
         <h1 id="hero-title" className="flex flex-col items-center gap-5">
           <span className="relative block w-[min(92vw,860px)] py-7">
-            <span
-              aria-hidden="true"
-              className="pointer-events-none absolute -inset-x-[6%] -inset-y-[10%] bg-[radial-gradient(ellipse_50%_50%_at_50%_50%,rgb(245_215_122/0.42),rgb(201_151_47/0.18)_45%,transparent_72%)] blur-[6px]"
-            />
             <Image
               src="/images/jjk-logo.png"
               alt={t('logoAlt')}
@@ -66,18 +63,24 @@ export default function Hero({ onlineCount }: { onlineCount: number | null }) {
         </p>
 
         <div className="flex flex-wrap justify-center gap-4">
-          <Link href="/lobbies" className="group bevel inline-flex bg-linear-135 from-gold to-gold-deep p-px transition-transform hover:-translate-y-0.5">
-            <span className="bevel flex min-h-[58px] items-center gap-3 bg-primary-container px-[34px] text-[19px] uppercase tracking-[0.12em] text-on-primary-container transition-colors group-hover:bg-inverse-primary">
-              <span aria-hidden="true" className="material-symbols-outlined text-[22px]">swords</span>
-              {t('play')}
-            </span>
-          </Link>
-          <SmoothScrollLink href="#join" className="group bevel inline-flex bg-outline p-px transition-transform hover:-translate-y-0.5">
-            <span className="bevel flex min-h-[58px] items-center gap-2.5 bg-surface-container-lowest px-[30px] text-[17px] uppercase tracking-[0.12em] text-on-surface transition-colors group-hover:bg-surface-container-high">
-              <span aria-hidden="true" className="material-symbols-outlined text-[20px] text-primary">pin</span>
-              {t('joinByCode')}
-            </span>
-          </SmoothScrollLink>
+          <BevelFrame
+            as={Link}
+            href="/lobbies"
+            frame={`group inline-flex ${goldFrame} transition-transform hover:-translate-y-0.5`}
+            className="flex min-h-[58px] items-center gap-3 bg-primary-container px-[34px] text-[19px] uppercase tracking-[0.12em] text-on-primary-container transition-colors group-hover:bg-inverse-primary"
+          >
+            <span aria-hidden="true" className="material-symbols-outlined text-[22px]">swords</span>
+            {t('play')}
+          </BevelFrame>
+          <BevelFrame
+            as={SmoothScrollLink}
+            href="#join"
+            frame="group inline-flex bg-outline transition-transform hover:-translate-y-0.5"
+            className="flex min-h-[58px] items-center gap-2.5 bg-surface-container-lowest px-[30px] text-[17px] uppercase tracking-[0.12em] text-on-surface transition-colors group-hover:bg-surface-container-high"
+          >
+            <span aria-hidden="true" className="material-symbols-outlined text-[20px] text-primary">pin</span>
+            {t('joinByCode')}
+          </BevelFrame>
         </div>
       </div>
     </section>

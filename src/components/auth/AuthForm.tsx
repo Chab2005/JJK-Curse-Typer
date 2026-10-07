@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { useActionState, useState } from 'react';
 import type { AuthState } from '@/app/actions/auth';
+import BevelFrame from '@/components/shared/BevelFrame';
 import { PASSWORD_MAX, PASSWORD_MIN, USERNAME_MAX, USERNAME_MIN } from '@/lib/auth/validation';
 
 export type AuthMode = 'login' | 'register' | 'oauth';
@@ -94,12 +95,16 @@ export default function AuthForm({
         {error ? t(`errors.${error}`, { min: USERNAME_MIN, max: USERNAME_MAX, passwordMin: PASSWORD_MIN }) : ''}
       </p>
 
-      <button type="submit" disabled={pending} className="group bevel flex bg-primary p-px transition-transform hover:-translate-y-0.5 disabled:pointer-events-none disabled:opacity-80">
-        <span className="bevel flex min-h-15 flex-grow items-center justify-center gap-3 bg-primary-container text-[19px] uppercase tracking-[0.12em] text-on-primary-container transition-colors group-hover:bg-inverse-primary">
-          <span aria-hidden="true" className={`material-symbols-outlined text-[22px] ${pending ? 'animate-spin' : ''}`}>{pending ? 'progress_activity' : mode === 'login' ? 'login' : 'person_add'}</span>
-          {t(`submit.${mode}`)}
-        </span>
-      </button>
+      <BevelFrame
+        as="button"
+        type="submit"
+        disabled={pending}
+        frame="group flex bg-primary transition-transform hover:-translate-y-0.5 disabled:pointer-events-none disabled:opacity-80"
+        className="flex min-h-15 flex-grow items-center justify-center gap-3 bg-primary-container text-[19px] uppercase tracking-[0.12em] text-on-primary-container transition-colors group-hover:bg-inverse-primary"
+      >
+        <span aria-hidden="true" className={`material-symbols-outlined text-[22px] ${pending ? 'animate-spin' : ''}`}>{pending ? 'progress_activity' : mode === 'login' ? 'login' : 'person_add'}</span>
+        {t(`submit.${mode}`)}
+      </BevelFrame>
     </form>
   );
 }

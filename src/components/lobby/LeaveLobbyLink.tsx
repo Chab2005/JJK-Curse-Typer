@@ -1,4 +1,5 @@
 import { useTranslations } from 'next-intl';
+import BevelFrame from '@/components/shared/BevelFrame';
 import { Link, useRouter } from '@/i18n/navigation';
 import { primaryFace, primaryFrame } from './ReadyPanel';
 
@@ -16,11 +17,9 @@ export default function LeaveLobbyLink({ onLeave }: { onLeave?: () => Promise<vo
   };
 
   return (
-    <Link href="/lobbies" onClick={leave} className={primaryFrame}>
-      <span className={primaryFace}>
-        <span aria-hidden="true" className="material-symbols-outlined text-[22px]">logout</span>
-        {t('leave')}
-      </span>
-    </Link>
+    <BevelFrame as={Link} href="/lobbies" onClick={leave} frame={primaryFrame} className={primaryFace}>
+      <span aria-hidden="true" className="material-symbols-outlined text-[22px]">logout</span>
+      {t('leave')}
+    </BevelFrame>
   );
 }

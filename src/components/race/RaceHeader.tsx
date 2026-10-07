@@ -24,7 +24,7 @@ export default function RaceHeader({ onLeave, account = null }: { onLeave: ((hre
           <Brand />
         </Link>
         {account && (
-          <Link href="/profile" onClick={guard('/profile')} aria-label={t('profileAlt')} className="flex rounded-full ring-1 ring-primary-container ring-offset-2 ring-offset-surface-container-lowest">
+          <Link href="/profile" onClick={guard('/profile')} aria-label={t('profileAlt')} className="group flex">
             <ProfileAvatar account={account} />
           </Link>
         )}

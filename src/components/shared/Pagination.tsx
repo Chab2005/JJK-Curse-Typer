@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import BevelFrame from '@/components/shared/BevelFrame';
 
 // Flèches précédente / suivante autour du numéro de page (lobbies, classement).
 export default function Pagination({ label, page, pageCount, onChange }: { label: string; page: number; pageCount: number; onChange: (page: number) => void }) {
@@ -19,16 +20,16 @@ export default function Pagination({ label, page, pageCount, onChange }: { label
 
 function ArrowButton({ icon, label, disabled, onClick }: { icon: string; label: string; disabled: boolean; onClick: () => void }) {
   return (
-    <button
+    <BevelFrame
+      as="button"
       type="button"
       onClick={onClick}
       disabled={disabled}
       aria-label={label}
-      className="group bevel flex bg-outline-variant p-px transition-colors hover:bg-primary disabled:pointer-events-none disabled:opacity-40"
+      frame="group flex bg-outline-variant transition-colors hover:bg-primary disabled:pointer-events-none disabled:opacity-40"
+      className="flex size-11 items-center justify-center bg-surface-container-lowest text-on-surface-variant transition-colors group-hover:bg-surface-container-high group-hover:text-primary"
     >
-      <span className="bevel flex size-11 items-center justify-center bg-surface-container-lowest text-on-surface-variant transition-colors group-hover:bg-surface-container-high group-hover:text-primary">
-        <span aria-hidden="true" className="material-symbols-outlined text-xl">{icon}</span>
-      </span>
-    </button>
+      <span aria-hidden="true" className="material-symbols-outlined text-xl">{icon}</span>
+    </BevelFrame>
   );
 }

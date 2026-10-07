@@ -1,4 +1,5 @@
 import { useTranslations } from 'next-intl';
+import BevelFrame, { goldFrame } from '@/components/shared/BevelFrame';
 import Reserve from '@/components/shared/Reserve';
 import type { StartBlocker, ViewerRole } from './lobbyRoom';
 
@@ -118,23 +119,23 @@ function Blocker({ id, children }: { id?: string; children: React.ReactNode }) {
 }
 
 /** Habillage du bouton principal (cadre doré biseauté), partagé avec le lien pour quitter le lobby. */
-export const primaryFrame = 'group bevel flex bg-linear-135 from-gold to-gold-deep p-px transition-transform hover:-translate-y-0.5';
+export const primaryFrame = `group flex ${goldFrame} transition-transform hover:-translate-y-0.5`;
 export const primaryFace =
-  'bevel flex min-h-15 flex-grow items-center justify-center gap-3 bg-primary-container text-[17px] uppercase tracking-[0.12em] text-on-primary-container transition-colors group-hover:bg-inverse-primary';
+  'flex min-h-15 flex-grow items-center justify-center gap-3 bg-primary-container text-[17px] uppercase tracking-[0.12em] text-on-primary-container transition-colors group-hover:bg-inverse-primary';
 
 function PrimaryButton({ icon, disabled, describedBy, onClick, children }: { icon: string; disabled?: boolean; describedBy?: string; onClick: () => void; children: React.ReactNode }) {
   return (
-    <button
+    <BevelFrame
+      as="button"
       type="button"
       disabled={disabled}
       aria-describedby={describedBy}
       onClick={onClick}
-      className={`${primaryFrame} disabled:pointer-events-none disabled:bg-none disabled:bg-outline-variant`}
+      frame={`${primaryFrame} disabled:pointer-events-none disabled:bg-none disabled:bg-outline-variant`}
+      className={`${primaryFace} group-disabled:bg-surface-container-high group-disabled:text-outline`}
     >
-      <span className={`${primaryFace} group-disabled:bg-surface-container-high group-disabled:text-outline`}>
-        <span aria-hidden="true" className="material-symbols-outlined text-[22px]">{icon}</span>
-        {children}
-      </span>
-    </button>
+      <span aria-hidden="true" className="material-symbols-outlined text-[22px]">{icon}</span>
+      {children}
+    </BevelFrame>
   );
 }
