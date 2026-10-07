@@ -9,7 +9,7 @@ describe('Hero (smoke)', () => {
 
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Curse Typer');
     expect(screen.getByText('● 42 online')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /Play now/ })).toHaveAttribute('href', '/lobbies');
+    expect(screen.getByRole('button', { name: /Play now/ })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Join with a code/ })).toHaveAttribute('href', '#join');
   });
 });

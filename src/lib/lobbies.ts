@@ -3,6 +3,7 @@
 // les pages de Next et les rooms de course, chargées par deux chargeurs de modules différents, partagent ainsi le même processus et la même vérité.
 // Pas de `server-only` ici : la room de course l'importe hors de Next.
 import { z } from 'zod';
+import { pickQuickLobby } from '@/components/home/quickPlay';
 import { CHAR_KINDS, type LobbySummary, TEXT_LANGUAGES } from '@/components/lobbies/lobbySearch';
 import { SAMPLE_LOBBIES } from '@/components/lobbies/sampleLobbies';
 import { isListed, lobbySummary } from '@/components/lobby/lobbyAccess';
@@ -80,6 +81,11 @@ export function storedLobby(code: string): LobbyRoom | null {
 /** Lobbies créés rendus publics, pour la liste (LOB-2) ; les lobbies à code ou privés n'y sont jamais. */
 export function listPublicLobbies(now = Date.now()): LobbySummary[] {
   return [...dropExpired(now).values()].map((entry) => entry.room).filter(isListed).map(lobbySummary);
+}
+
+/** Lobby où « Jouer maintenant » fait entrer : le plus rempli des lobbies publics ouverts, `null` s'il n'y en a aucun. */
+export function findQuickLobby(now = Date.now()): LobbyRoom | null {
+  return pickQuickLobby([...dropExpired(now).values()].map((entry) => entry.room));
 }
 
 /**

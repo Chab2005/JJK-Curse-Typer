@@ -30,6 +30,8 @@
     "arenasOpen": "Arènes ouvertes",
     "online": "● {count} en ligne",
     "play": "Jouer maintenant",
+    "needAccount": "Aucun lobby ouvert pour l'instant. Pour en héberger un, il vous faut un compte. <login>Se connecter</login>",
+    "playFailed": "Impossible de trouver un lobby. Réessayez.",
     "joinByCode": "Rejoindre par code",
     "sideLeft": "Tokyo Jujutsu High · Arène de frappe",
     "sideRight": "Curse Typer · Multijoueur"

@@ -17,6 +17,7 @@ afterEach(() => {
   lobbyActionsMock.joinLobbyAction.mockReset();
   lobbyActionsMock.leaveLobbyAction.mockReset();
   lobbyActionsMock.createInviteAction.mockReset();
+  lobbyActionsMock.quickPlayAction.mockReset();
   authActionsMock.setGuestNameAction.mockReset().mockResolvedValue(null);
   window.history.replaceState(null, '', '/');
 });
