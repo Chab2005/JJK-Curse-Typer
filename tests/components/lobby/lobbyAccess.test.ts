@@ -1,5 +1,21 @@
 import { describe, expect, it } from 'vitest';
-import { canCopyCode, canInvite, clientIp, type Invite, inviteDecision, inviteLinkMode, inviteUrl, isInviteToken, isListed, lobbySummary, needsInvite } from '@/components/lobby/lobbyAccess';
+import {
+  canCopyCode,
+  canInvite,
+  clientIp,
+  type Invite,
+  inviteDecision,
+  inviteLinkMode,
+  invitesToCreate,
+  inviteStatus,
+  inviteToClaim,
+  inviteUrl,
+  isInviteToken,
+  isListed,
+  lobbySummary,
+  MAX_INVITES,
+  needsInvite,
+} from '@/components/lobby/lobbyAccess';
 import type { LobbyRoom, LobbySettings, LobbyVisibility } from '@/components/lobby/lobbyRoom';
 
 const SETTINGS: LobbySettings = {
@@ -110,6 +126,54 @@ describe('inviteDecision', () => {
 
   it('refuse d’attribuer un lien sans IP connue', () => {
     expect(inviteDecision(invite(), 'ABC-DEF', null)).toBe('deny');
+  });
+});
+
+describe('inviteToClaim', () => {
+  const TOKEN = 'abcdefghijklmnopqrstu_';
+
+  it('consomme le lien de celui qui entre, même dans un lobby à code où il n’est pas exigé', () => {
+    expect(inviteToClaim(room('private'), 'Nobara', TOKEN)).toBe(TOKEN);
+    expect(inviteToClaim(room('code'), 'Nobara', TOKEN)).toBe(TOKEN);
+  });
+
+  it('ne consomme pas le lien de quelqu’un déjà dans le salon, comme l’hôte qui teste le sien', () => {
+    expect(inviteToClaim(room('private'), 'Gojo', TOKEN)).toBeNull();
+    expect(inviteToClaim(room('code'), 'Ijichi', TOKEN)).toBeNull();
+  });
+
+  it('ignore un jeton absent ou mal formé', () => {
+    expect(inviteToClaim(room('private'), 'Nobara', undefined)).toBeNull();
+    expect(inviteToClaim(room('private'), 'Nobara', 'short')).toBeNull();
+  });
+});
+
+describe('invitesToCreate', () => {
+  it('crée le nombre demandé tant qu’il reste de la place', () => {
+    expect(invitesToCreate(0, 1)).toBe(1);
+    expect(invitesToCreate(3, 10)).toBe(10);
+  });
+
+  it(`ne dépasse jamais ${MAX_INVITES} liens par lobby`, () => {
+    expect(invitesToCreate(25, 10)).toBe(5);
+    expect(invitesToCreate(MAX_INVITES, 1)).toBe(0);
+    expect(invitesToCreate(MAX_INVITES + 2, 1)).toBe(0);
+  });
+
+  it('refuse un nombre invalide', () => {
+    expect(invitesToCreate(0, 0)).toBe(0);
+    expect(invitesToCreate(0, -3)).toBe(0);
+    expect(invitesToCreate(0, 2.5)).toBe(0);
+    expect(invitesToCreate(0, '4')).toBe(0);
+    expect(invitesToCreate(0, Number.NaN)).toBe(0);
+  });
+});
+
+describe('inviteStatus', () => {
+  it('distingue un lien libre, utilisé ou révoqué par une expulsion', () => {
+    expect(inviteStatus({ claimedBy: null, revoked: false })).toBe('unused');
+    expect(inviteStatus({ claimedBy: 'Nobara', revoked: false })).toBe('used');
+    expect(inviteStatus({ claimedBy: 'Nobara', revoked: true })).toBe('revoked');
   });
 });
 

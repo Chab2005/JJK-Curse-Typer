@@ -44,17 +44,23 @@ async function setAccess(page: Page, access: 'Public' | 'Code' | 'Private') {
   await expect(page.getByRole('dialog')).toBeHidden();
 }
 
-test('an invite link works, even after a link preview bot fetched it', async ({ browser, request }) => {
+test('an invite link works, even after a link preview bot fetched it, and the host sees who used it', async ({ browser, request }) => {
   const { host } = await hostLobby(browser);
-  await host.getByRole('button', { name: 'New invite link' }).click();
-  await expect(host.getByLabel('Invite link')).toHaveValue(/\?invite=[\w-]{22}$/);
-  const link = await host.getByLabel('Invite link').inputValue();
+  await host.getByRole('button', { name: 'Invite links' }).click();
+  const dialog = host.getByRole('dialog', { name: 'Invite links' });
+  await dialog.getByRole('button', { name: 'New invite link' }).click();
+  const row = dialog.getByRole('list', { name: 'Links' }).getByRole('listitem').first();
+  const link = (await row.getByText(/\?invite=[\w-]{22}$/).textContent()) ?? '';
+  await expect(row.getByText('Unused')).toBeVisible();
 
   // Robot d'aperçu (Discord, Slack…) : il charge la page depuis une autre IP, sans JavaScript.
   const preview = await request.get(link, { headers: { 'X-Real-IP': '203.0.113.9' } });
   expect(preview.status()).toBe(200);
 
   const guest = await joinAsGuest(browser, link, 'Nobara_e2e');
+  // La fenêtre restée ouverte se met à jour à l'arrivée de l'invité.
+  await expect(row.getByText('Used by Nobara_e2e')).toBeVisible();
+  await dialog.getByRole('button', { name: 'Close' }).click();
   await expect(participants(host).getByText('Nobara_e2e')).toBeVisible();
   // Une fois entré, la page n'a plus besoin du lien.
   await expect(guest).toHaveURL(/\/lobby\/[A-Z0-9]{3}-[A-Z0-9]{3}$/);

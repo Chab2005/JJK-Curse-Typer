@@ -100,6 +100,7 @@ erDiagram
     text lobby_code "salle en mémoire : pas de FK"
     text claimed_ip
     text claimed_by
+    text claimed_name "nom montré à l'hôte"
     timestamp created_at
     timestamp claimed_at
     timestamp revoked_at

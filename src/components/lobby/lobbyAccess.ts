@@ -54,6 +54,39 @@ export function inviteDecision(invite: Invite | null, code: string, ip: string |
   return invite.claimedIp === ip ? 'allow' : 'deny';
 }
 
+/** Liens d'invitation qu'un lobby peut garder à la fois, révoqués compris : l'hôte en supprime pour en refaire. */
+export const MAX_INVITES = 30;
+
+/** `unused` : personne ne l'a ouvert ; `used` : il appartient à quelqu'un ; `revoked` : son propriétaire a été expulsé. */
+export type InviteStatus = 'unused' | 'used' | 'revoked';
+
+/** Lien d'invitation tel que l'hôte le voit dans la fenêtre de gestion. */
+export interface InviteLink {
+  token: string;
+  status: InviteStatus;
+  /** Nom de celui qui l'a ouvert, `null` tant qu'il est libre. */
+  usedBy: string | null;
+}
+
+export function inviteStatus(invite: { claimedBy: string | null; revoked: boolean }): InviteStatus {
+  if (invite.revoked) return 'revoked';
+  return invite.claimedBy === null ? 'unused' : 'used';
+}
+
+/** Nombre de liens à créer pour une demande de `requested` quand le lobby en a déjà `existing` ; 0 si la demande est invalide. */
+export function invitesToCreate(existing: number, requested: unknown): number {
+  if (typeof requested !== 'number' || !Number.isInteger(requested) || requested < 1) return 0;
+  return Math.max(0, Math.min(requested, MAX_INVITES - existing));
+}
+
+/**
+ * Jeton à consommer quand `viewer` entre avec `token` : tout lien présenté par quelqu'un qui n'est pas encore dans le salon,
+ * même dans un lobby à code où il n'est pas exigé, pour que l'hôte voie qui l'a utilisé. `null` sinon.
+ */
+export function inviteToClaim(room: LobbyRoom, viewer: string, token: unknown): string | null {
+  return isInviteToken(token) && !isInside(room, viewer) ? token : null;
+}
+
 const TOKEN_PATTERN = /^[A-Za-z0-9_-]{22}$/;
 
 /** Jeton d'invitation : 16 octets aléatoires en base64url. */

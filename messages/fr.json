@@ -208,17 +208,36 @@
       "title": "Inviter des exorcistes",
       "code": "Code du lobby",
       "copyCode": "Copier le code",
-      "copyLink": "Copier le lien d'invitation",
       "copied": "Copié !",
       "copyFailed": "Copie impossible",
-      "newLink": "Nouveau lien d'invitation",
-      "link": "Lien d'invitation",
-      "noLinkYet": "Aucun lien pour l'instant",
-      "hostOnlyField": "Réservé à l'hôte",
       "privateCode": "Lobby privé : accès par lien uniquement",
+      "manage": "Liens d'invitation",
       "urlNote": "Toute personne qui a ce lien rejoint le lobby.",
       "oneTime": "Chaque lien d'invitation ne sert qu'à une seule personne.",
-      "hostOnly": "Seul l'hôte peut partager un lien d'invitation."
+      "hostOnly": "Seul l'hôte peut partager un lien d'invitation.",
+      "dialog": {
+        "title": "Liens d'invitation",
+        "close": "Fermer",
+        "lobbyLink": "Lien du lobby",
+        "copyLink": "Copier le lien d'invitation",
+        "newLink": "Nouveau lien d'invitation",
+        "batchCount": "Lot",
+        "createBatch": "Créer {count, plural, one {# lien} other {# liens}}",
+        "copiedNote": "Les nouveaux liens vont directement dans votre presse-papiers.",
+        "count": "{count} / {max} liens",
+        "full": "Limite atteinte : supprimez des liens pour en créer.",
+        "list": "Liens",
+        "empty": "Aucun lien pour l'instant.",
+        "loading": "Chargement des liens…",
+        "loadFailed": "Impossible de charger les liens.",
+        "copy": "Copier le lien",
+        "delete": "Supprimer le lien",
+        "status": {
+          "unused": "Libre",
+          "used": "Utilisé par {name}",
+          "revoked": "Révoqué : {name} a été expulsé"
+        }
+      }
     },
     "spectating": {
       "title": "Mode spectateur",

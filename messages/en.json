@@ -208,17 +208,36 @@
       "title": "Invite exorcists",
       "code": "Lobby code",
       "copyCode": "Copy code",
-      "copyLink": "Copy invite link",
       "copied": "Copied!",
       "copyFailed": "Copy failed",
-      "newLink": "New invite link",
-      "link": "Invite link",
-      "noLinkYet": "No link yet",
-      "hostOnlyField": "Host only",
       "privateCode": "Private lobby: invite link only",
+      "manage": "Invite links",
       "urlNote": "Anyone with this link joins the lobby.",
       "oneTime": "Each invite link works for one person only.",
-      "hostOnly": "Only the host can share an invite link."
+      "hostOnly": "Only the host can share an invite link.",
+      "dialog": {
+        "title": "Invite links",
+        "close": "Close",
+        "lobbyLink": "Lobby link",
+        "copyLink": "Copy invite link",
+        "newLink": "New invite link",
+        "batchCount": "Batch",
+        "createBatch": "Create {count, plural, one {# link} other {# links}}",
+        "copiedNote": "New links go straight to your clipboard.",
+        "count": "{count} / {max} links",
+        "full": "Limit reached: delete links to make new ones.",
+        "list": "Links",
+        "empty": "No links yet.",
+        "loading": "Loading links…",
+        "loadFailed": "Couldn't load the links.",
+        "copy": "Copy link",
+        "delete": "Delete link",
+        "status": {
+          "unused": "Unused",
+          "used": "Used by {name}",
+          "revoked": "Revoked: {name} was kicked"
+        }
+      }
     },
     "spectating": {
       "title": "Spectator mode",

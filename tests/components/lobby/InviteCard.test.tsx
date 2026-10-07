@@ -1,20 +1,13 @@
 import { screen } from '@testing-library/react';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import InviteCard from '@/components/lobby/InviteCard';
 import type { LobbyVisibility } from '@/components/lobby/lobbyRoom';
-import { lobbyActionsMock } from '../../actions';
 import { renderWithIntl } from '../../render';
-
-const TOKEN = 'abcdefghijklmnopqrstu_';
 
 /** Vrai si le texte est affiché, et non gardé caché par <Reserve> pour réserver sa place. */
 const isShown = (text: string) => screen.getByText(text).closest('[aria-hidden="true"]') === null;
 
 describe('InviteCard (LOB-3, LOB-4)', () => {
-  afterEach(() => {
-    vi.unstubAllGlobals();
-  });
-
   it('copies the lobby code', async () => {
     const { user } = renderWithIntl(<InviteCard code="SHJ-60S" visibility="public" isHost={false} />);
 
@@ -27,75 +20,17 @@ describe('InviteCard (LOB-3, LOB-4)', () => {
   it.each<LobbyVisibility>(['public', 'code', 'private'])('gives no link to a player who is not the host (%s)', (visibility) => {
     renderWithIntl(<InviteCard code="SHJ-60S" visibility={visibility} isHost={false} />);
 
-    expect(screen.getByRole('button', { name: /invite link/ })).toBeDisabled();
-    expect(screen.getByLabelText('Invite link')).toHaveValue('');
+    expect(screen.getByRole('button', { name: 'Invite links' })).toBeDisabled();
     expect(isShown('Only the host can share an invite link.')).toBe(true);
   });
 
-  it('shows and copies the public link without the query string', async () => {
-    window.history.replaceState(null, '', '/fr/lobby/SHJ-60S?spectate=1');
-    const { user } = renderWithIntl(<InviteCard code="SHJ-60S" visibility="public" isHost />);
-    const link = `${window.location.origin}/fr/lobby/SHJ-60S`;
-
-    expect(screen.getByLabelText('Invite link')).toHaveValue(link);
-    await user.click(screen.getByRole('button', { name: 'Copy invite link' }));
-
-    expect(await navigator.clipboard.readText()).toBe(link);
-    expect(screen.queryByRole('button', { name: 'New invite link' })).not.toBeInTheDocument();
-  });
-
-  it('gives the host a new one-time link for a code lobby', async () => {
-    window.history.replaceState(null, '', '/fr/lobby/SHJ-60S');
-    lobbyActionsMock.createInviteAction.mockResolvedValue(TOKEN);
+  it('opens the invite links window for the host', async () => {
     const { user } = renderWithIntl(<InviteCard code="SHJ-60S" visibility="code" isHost />);
 
-    expect(screen.getByText('SHJ-60S')).toBeInTheDocument();
-    expect(screen.getByLabelText('Invite link')).toHaveValue('');
-    await user.click(screen.getByRole('button', { name: 'New invite link' }));
-
-    const link = `${window.location.origin}/fr/lobby/SHJ-60S?invite=${TOKEN}`;
-    expect(lobbyActionsMock.createInviteAction).toHaveBeenCalledWith('SHJ-60S');
-    expect(await navigator.clipboard.readText()).toBe(link);
-    expect(screen.getByLabelText('Invite link')).toHaveValue(link);
     expect(isShown('Each invite link works for one person only.')).toBe(true);
-  });
+    await user.click(screen.getByRole('button', { name: 'Invite links' }));
 
-  // Safari only lets the click write to the clipboard: the write starts before the server answers.
-  it('starts the clipboard write during the click, before the new link exists', async () => {
-    vi.stubGlobal(
-      'ClipboardItem',
-      class {
-        constructor(readonly data: Record<string, Promise<Blob>>) {}
-        get types() {
-          return Object.keys(this.data);
-        }
-        getType(type: string) {
-          return this.data[type];
-        }
-      },
-    );
-    window.history.replaceState(null, '', '/fr/lobby/SHJ-60S');
-    let answer: (token: string) => void = () => {};
-    lobbyActionsMock.createInviteAction.mockReturnValue(new Promise<string>((resolve) => (answer = resolve)));
-    const { user } = renderWithIntl(<InviteCard code="SHJ-60S" visibility="code" isHost />);
-    const write = vi.spyOn(navigator.clipboard, 'write');
-
-    await user.click(screen.getByRole('button', { name: 'New invite link' }));
-    expect(write).toHaveBeenCalledOnce();
-
-    answer(TOKEN);
-    expect(await screen.findByRole('button', { name: 'Copied!' })).toBeInTheDocument();
-    expect(await navigator.clipboard.readText()).toBe(`${window.location.origin}/fr/lobby/SHJ-60S?invite=${TOKEN}`);
-  });
-
-  it('says so when the server refuses to create a link', async () => {
-    lobbyActionsMock.createInviteAction.mockResolvedValue(null);
-    const { user } = renderWithIntl(<InviteCard code="SHJ-60S" visibility="private" isHost />);
-
-    await user.click(screen.getByRole('button', { name: 'New invite link' }));
-
-    expect(screen.getByRole('button', { name: 'Copy failed' })).toBeInTheDocument();
-    expect(screen.getByLabelText('Invite link')).toHaveValue('');
+    expect(screen.getByRole('dialog', { name: 'Invite links' })).toBeInTheDocument();
   });
 
   it('hides the code of a private lobby', () => {
@@ -116,7 +51,6 @@ describe('InviteCard (LOB-3, LOB-4)', () => {
   ])('keeps the same blocks for a %s lobby (host: %s)', (visibility, isHost) => {
     renderWithIntl(<InviteCard code="SHJ-60S" visibility={visibility} isHost={isHost} />);
 
-    expect(screen.getByLabelText('Invite link')).toBeInTheDocument();
-    expect(screen.getAllByRole('button', { name: /invite link/ })).toHaveLength(1);
+    expect(screen.getAllByRole('button', { name: 'Invite links' })).toHaveLength(1);
   });
 });
