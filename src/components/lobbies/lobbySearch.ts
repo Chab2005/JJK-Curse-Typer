@@ -24,8 +24,6 @@ export interface LobbySummary {
 export interface LobbyFilters {
   /** Texte cherché dans le nom de l'hôte ou du lobby. */
   query: string;
-  /** Montre aussi les lobbies complets ou en course (à regarder en spectateur). */
-  showUnavailable: boolean;
   bonusOnly: boolean;
   /** Langues acceptées : un lobby passe s'il en partage au moins une. */
   languages: TextLanguage[];
@@ -35,7 +33,6 @@ export interface LobbyFilters {
 
 export const DEFAULT_LOBBY_FILTERS: LobbyFilters = {
   query: '',
-  showUnavailable: false,
   bonusOnly: false,
   languages: [...TEXT_LANGUAGES],
   chars: [...CHAR_KINDS],
@@ -53,7 +50,7 @@ export function lobbyHref(lobby: LobbySummary): string {
 
 function matches(lobby: LobbySummary, filters: LobbyFilters, query: string): boolean {
   if (query && !lobby.host.toLowerCase().includes(query) && !lobby.name.toLowerCase().includes(query)) return false;
-  if (!filters.showUnavailable && !isJoinable(lobby)) return false;
+  if (!isJoinable(lobby)) return false;
   if (filters.bonusOnly && !lobby.bonus) return false;
   if (!lobby.languages.some((language) => filters.languages.includes(language))) return false;
   return lobby.chars.every((kind) => filters.chars.includes(kind));
@@ -69,7 +66,6 @@ const sameSet = <T>(a: readonly T[], b: readonly T[]) => a.length === b.length &
 /** Nombre de groupes de filtres qui diffèrent des valeurs par défaut (la recherche n'en est pas un). */
 export function activeFilterCount(filters: LobbyFilters): number {
   return [
-    filters.showUnavailable,
     filters.bonusOnly,
     !sameSet(filters.languages, TEXT_LANGUAGES),
     !sameSet(filters.chars, CHAR_KINDS),
@@ -87,7 +83,6 @@ export function parseLobbySearch(params: Pick<URLSearchParams, 'get'>): { filter
   return {
     filters: {
       query: params.get('q') ?? '',
-      showUnavailable: params.get('all') === '1',
       bonusOnly: params.get('bonus') === '1',
       languages: parseList(params.get('langs'), TEXT_LANGUAGES, TEXT_LANGUAGES),
       chars: parseList(params.get('chars'), CHAR_KINDS, CHAR_KINDS),
@@ -100,7 +95,6 @@ export function parseLobbySearch(params: Pick<URLSearchParams, 'get'>): { filter
 export function lobbySearchQuery(filters: LobbyFilters, page: number): string {
   const params = new URLSearchParams();
   if (filters.query) params.set('q', filters.query);
-  if (filters.showUnavailable) params.set('all', '1');
   if (filters.bonusOnly) params.set('bonus', '1');
   if (!sameSet(filters.languages, TEXT_LANGUAGES)) params.set('langs', TEXT_LANGUAGES.filter((l) => filters.languages.includes(l)).join(','));
   if (!sameSet(filters.chars, CHAR_KINDS)) params.set('chars', CHAR_KINDS.filter((c) => filters.chars.includes(c)).join(','));
