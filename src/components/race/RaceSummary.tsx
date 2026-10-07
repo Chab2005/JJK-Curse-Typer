@@ -18,7 +18,8 @@ export interface SummaryRow {
   you: boolean;
 }
 
-const HEADING: Record<Exclude<RacerStatus, 'racing'>, 'finished' | 'abandoned' | 'timeout'> = {
+// Seuls les bots sont arrêtés (`stopped`) : un joueur n'a jamais cet en-tête.
+const HEADING: Record<Exclude<RacerStatus, 'racing' | 'stopped'>, 'finished' | 'abandoned' | 'timeout'> = {
   finished: 'finished',
   abandoned: 'abandoned',
   timeout: 'timeout',
@@ -32,7 +33,7 @@ export default function RaceSummary({ rows, you, over, lobbyCode }: { rows: Summ
   const t = useTranslations('Race.summary');
   const me = rows.find((row) => row.id === you);
   const racing = rows.filter((row) => row.status === 'racing').length;
-  const heading = me && me.status !== 'racing' ? HEADING[me.status] : null;
+  const heading = me && me.status !== 'racing' && me.status !== 'stopped' ? HEADING[me.status] : null;
   const waiting = !over && racing > 0;
 
   return (

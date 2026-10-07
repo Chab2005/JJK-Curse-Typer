@@ -36,9 +36,9 @@ Tests live in the top-level `tests/` folder, which mirrors `src/` (`src/componen
 - `unit`: `*.test.ts` in Node, for pure logic.
 - `components`: `*.test.tsx` in jsdom with Testing Library. `tests/setup.tsx` mocks `next/image`, `@/i18n/navigation` and `next/navigation` (search params are read from `window.location`). Render with `renderWithIntl` from `tests/render.tsx`, which wraps the real English messages and returns a `user` (user-event). Interactive components get behaviour tests; static ones get a smoke test (renders, one key element).
 
-CI (`.github/workflows/test.yml`) runs typecheck + tests on push/PR to `main` and `dev`.
+CI (`.github/workflows/test.yml`) runs lint + typecheck + tests on push/PR to `main` and `dev`.
 
-Playwright (`playwright.config.ts`, projects `desktop` and `mobile`) runs specs from `e2e/`; `e2e/pages.ts` lists the pages the screenshot script visits, add new pages there. To look at the site, run `npm run screenshots` and read the PNGs, or use the Playwright MCP server from `.mcp.json`. Layout-stability checks (an element keeps its box after a click) belong in `e2e/`, since jsdom has no layout. `e2e/lobby-realtime.spec.ts` drives two players in two browser contexts.
+Playwright (`playwright.config.ts`, projects `desktop`, `mobile` and `firefox`) runs specs from `e2e/`; `e2e/pages.ts` lists the pages the screenshot script visits, add new pages there. To look at the site, run `npm run screenshots` and read the PNGs, or use the Playwright MCP server from `.mcp.json`. Layout-stability checks (an element keeps its box after a click) belong in `e2e/`, since jsdom has no layout. `e2e/lobby-realtime.spec.ts` drives two players in two browser contexts.
 
 ## Stack notes
 

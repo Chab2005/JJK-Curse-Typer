@@ -2,28 +2,28 @@
 
 import { useFormatter, useTranslations } from 'next-intl';
 import { useState } from 'react';
+import BevelCheck from '@/components/shared/BevelCheck';
 import Segmented from '@/components/shared/Segmented';
-import { type HeatKey, type HeatmapMode, type KeyStat, type KeyTone, LAYOUTS, type LayoutName, heatmap, weakestKeys } from './keyboard';
+import { type HeatKey, type HeatmapMode, type KeyStat, type KeyTone, heatmap, weakestKeys } from './keyboard';
 
 // Couleurs validées pour le daltonisme sur fond sombre ; encre foncée sur les trois (contraste AA).
 const TONES: Record<KeyTone, string> = { weak: 'bg-[#d4364b]', average: 'bg-[#c9a23a]', strong: 'bg-[#3f9a63]' };
 /** Décalage de chaque rangée, en largeurs de touche, comme sur un vrai clavier. */
-const INDENTS: Record<LayoutName, number[]> = { qwerty: [0, 0.5, 0.75, 1.25, 3], azerty: [0, 0.5, 0.75, 0.25, 3] };
+const INDENTS = [0, 0.5, 0.75, 1.25, 3];
 const MODES = ['errors', 'speed'] as const;
-const LAYOUT_NAMES = Object.keys(LAYOUTS) as LayoutName[];
 
 // Carte de chaleur du clavier (STAT-3) : chaque touche affiche sa valeur, la couleur la situe par rapport au joueur (UI-8).
 export default function KeyboardHeatmap({ stats }: { stats: KeyStat[] }) {
   const t = useTranslations('Profile.heatmap');
   const format = useFormatter();
   const [mode, setMode] = useState<HeatmapMode>('errors');
-  const [layout, setLayout] = useState<LayoutName>('qwerty');
+  const [shift, setShift] = useState(false);
 
-  const rows = heatmap(LAYOUTS[layout], stats, mode);
+  const rows = heatmap(stats, mode, shift);
   const weakest = weakestKeys(rows, 4);
   const value = (key: HeatKey) =>
     key.value === null ? '—' : mode === 'errors' ? format.number(key.value, { style: 'percent', maximumFractionDigits: key.value < 0.1 ? 1 : 0 }) : t('ms', { value: Math.round(key.value) });
-  const keyName = (key: HeatKey) => (key.label === '␣' ? t('space') : key.label.toUpperCase());
+  const keyName = (key: HeatKey) => (key.char === ' ' ? t('space') : key.char);
   const describe = (key: HeatKey) => (key.tone ? t('keyLabel', { key: keyName(key), value: value(key), tone: t(`tones.${key.tone}`) }) : t('keyUnused', { key: keyName(key) }));
 
   return (
@@ -33,9 +33,11 @@ export default function KeyboardHeatmap({ stats }: { stats: KeyStat[] }) {
           <span aria-hidden="true" className="material-symbols-outlined text-lg text-primary">keyboard</span>
           {t('title')}
         </h2>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Segmented label={t('mode')} options={MODES} value={mode} onChange={setMode} optionLabel={(m) => t(`modes.${m}`)} />
-          <Segmented label={t('layout')} options={LAYOUT_NAMES} value={layout} onChange={setLayout} optionLabel={(l) => l} />
+          <BevelCheck checked={shift} onChange={setShift}>
+            <span className="font-label-code text-[12px] uppercase">{t('shift')}</span>
+          </BevelCheck>
         </div>
       </div>
 
@@ -53,7 +55,7 @@ export default function KeyboardHeatmap({ stats }: { stats: KeyStat[] }) {
       <div className="-mx-1 overflow-x-auto px-1 pb-2 [--u:2.6rem] sm:[--u:2.85rem]">
         <div className="flex w-max flex-col gap-1.5">
           {rows.map((row, r) => (
-            <ul key={r} aria-label={t('row', { number: r + 1 })} className="flex gap-1.5" style={{ paddingLeft: `calc(var(--u) * ${INDENTS[layout][r]})` }}>
+            <ul key={r} aria-label={t('row', { number: r + 1 })} className="flex gap-1.5" style={{ paddingLeft: `calc(var(--u) * ${INDENTS[r]})` }}>
               {row.map((key) => (
                 <li
                   key={key.label}

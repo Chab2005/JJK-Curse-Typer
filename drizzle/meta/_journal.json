@@ -36,6 +36,13 @@
       "when": 1791306423604,
       "tag": "0004_race_results",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1791392148580,
+      "tag": "0005_key_stats",
+      "breakpoints": true
     }
   ]
 }

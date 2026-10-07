@@ -55,18 +55,6 @@ describe('FilterPopover', () => {
     expect(screen.getByText('Panel content')).not.toBeVisible();
   });
 
-  it('shows the active filter count only when above zero', () => {
-    const { rerender } = renderPopover({ badge: 0 });
-    expect(screen.queryByText('0')).not.toBeInTheDocument();
-
-    rerender(
-      <FilterPopover label="Filters" closeLabel="Close" badge={2}>
-        <p>Panel content</p>
-      </FilterPopover>,
-    );
-    expect(screen.getByRole('button', { name: /^Filters/ })).toContainElement(screen.getByText('2'));
-  });
-
   it('shows a reset button only when onReset is given', async () => {
     const onReset = vi.fn();
     const { user, rerender } = renderPopover();

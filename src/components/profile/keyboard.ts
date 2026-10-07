@@ -1,14 +1,9 @@
-// Carte de chaleur du clavier (STAT-3) : dispositions QWERTY / AZERTY et coloration relative au joueur. Logique pure.
+// Carte de chaleur du clavier (STAT-3) : disposition QWERTY, couche Maj et coloration relative au joueur. Logique pure.
+import type { KeyStat } from '@/game/keyStats';
 
-/** Agrégat par caractère tapé, tel que stocké en base (table key_stats). */
-export interface KeyStat {
-  key: string;
-  hits: number;
-  errors: number;
-  totalLatencyMs: number;
-}
+export type { KeyStat };
 
-/** Une touche : son libellé, les caractères qu'elle produit et sa largeur (en touches). */
+/** Une touche : son libellé, ses caractères sans puis avec Maj, et sa largeur (en touches). */
 export interface KeyDef {
   label: string;
   chars: string[];
@@ -19,7 +14,9 @@ export type HeatmapMode = 'errors' | 'speed';
 export type KeyTone = 'weak' | 'average' | 'strong';
 
 export interface HeatKey extends KeyDef {
-  /** Taux d'erreur (0 à 1) ou délai moyen (ms) ; `null` si la touche n'a jamais été tapée. */
+  /** Caractère montré sur la touche pour la couche affichée. */
+  char: string;
+  /** Taux d'erreur (0 à 1) ou délai moyen (ms) ; `null` si le caractère n'a jamais assez été tapé. */
   value: number | null;
   tone: KeyTone | null;
 }
@@ -28,35 +25,24 @@ const letters = (row: string) => [...row].map((l): KeyDef => ({ label: l, chars:
 const keys = (...pairs: string[]) => pairs.map((pair): KeyDef => ({ label: pair[0], chars: [...pair] }));
 const SPACE: KeyDef = { label: '␣', chars: [' '], width: 6 };
 
-export const LAYOUTS = {
-  qwerty: [
-    keys('1!', '2@', '3#', '4$', '5%', '6^', '7&', '8*', '9(', '0)', '-_', '=+'),
-    [...letters('qwertyuiop'), ...keys('[{', ']}')],
-    [...letters('asdfghjkl'), ...keys(';:', '\'"')],
-    [...letters('zxcvbnm'), ...keys(',<', '.>', '/?')],
-    [SPACE],
-  ],
-  azerty: [
-    keys('&1', 'é2', '"3', '\'4', '(5', '-6', 'è7', '_8', 'ç9', 'à0', ')°', '=+'),
-    [...letters('azertyuiop'), ...keys('^¨', '$£')],
-    [...letters('qsdfghjklm'), ...keys('ù%', '*µ')],
-    [...keys('<>'), ...letters('wxcvbn'), ...keys(',?', ';.', ':/', '!§')],
-    [SPACE],
-  ],
-} satisfies Record<string, KeyDef[][]>;
+export const QWERTY: KeyDef[][] = [
+  keys('1!', '2@', '3#', '4$', '5%', '6^', '7&', '8*', '9(', '0)', '-_', '=+'),
+  [...letters('qwertyuiop'), ...keys('[{', ']}')],
+  [...letters('asdfghjkl'), ...keys(';:', '\'"')],
+  [...letters('zxcvbnm'), ...keys(',<', '.>', '/?')],
+  [SPACE],
+];
 
-export type LayoutName = keyof typeof LAYOUTS;
+/** Valeur de chaque touche pour la couche affichée (Maj ou non), colorée par tiers : pire tiers « weak », meilleur « strong ». */
+export function heatmap(stats: readonly KeyStat[], mode: HeatmapMode, shift: boolean): HeatKey[][] {
+  const byChar = new Map(stats.map((s) => [s.char, s]));
 
-/** Valeur de chaque touche (somme des caractères qu'elle produit), colorée par tiers : pire tiers « weak », meilleur « strong ». */
-export function heatmap(layout: readonly KeyDef[][], stats: readonly KeyStat[], mode: HeatmapMode): HeatKey[][] {
-  const byChar = new Map(stats.map((s) => [s.key, s]));
-
-  const valued = layout.map((row) =>
+  const valued = QWERTY.map((row) =>
     row.map((key) => {
-      const own = key.chars.flatMap((c) => byChar.get(c) ?? []);
-      const hits = own.reduce((sum, s) => sum + s.hits, 0);
-      const total = own.reduce((sum, s) => sum + (mode === 'errors' ? s.errors : s.totalLatencyMs), 0);
-      return { ...key, value: hits === 0 ? null : total / hits };
+      // La barre d'espace n'a pas de couche Maj : elle garde l'espace.
+      const char = key.chars[shift ? 1 : 0] ?? key.chars[0];
+      const stat = byChar.get(char);
+      return { ...key, char, value: stat ? (mode === 'errors' ? stat.errorRate / 100 : stat.avgMs) : null };
     }),
   );
 

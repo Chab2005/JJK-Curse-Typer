@@ -3,6 +3,7 @@
 import { useFormatter, useTranslations } from 'next-intl';
 import { useRef, useState } from 'react';
 import { CHAR_KINDS, TEXT_LANGUAGES, textCharsLabel } from '@/components/lobbies/lobbySearch';
+import BevelCheck from '@/components/shared/BevelCheck';
 import BevelFrame, { cardFrame, goldFrame } from '@/components/shared/BevelFrame';
 import BevelSelect from '@/components/shared/BevelSelect';
 import Reserve from '@/components/shared/Reserve';
@@ -155,7 +156,7 @@ function SettingsForm({ settings, participantCount, onChange }: { settings: Lobb
       <Group legend={t('language')}>
         <div className="flex flex-wrap gap-2">
           {TEXT_LANGUAGES.map((language) => (
-            <Check
+            <BevelCheck
               key={language}
               checked={settings.languages.includes(language)}
               // Le texte a toujours au moins une langue.
@@ -163,7 +164,7 @@ function SettingsForm({ settings, participantCount, onChange }: { settings: Lobb
               onChange={(checked) => onChange({ languages: toggle(TEXT_LANGUAGES, settings.languages, language, checked) })}
             >
               {tFilters(`languages.${language}`)}
-            </Check>
+            </BevelCheck>
           ))}
         </div>
       </Group>
@@ -177,9 +178,9 @@ function SettingsForm({ settings, participantCount, onChange }: { settings: Lobb
       <Group legend={t('chars')}>
         <div className="flex flex-wrap gap-2">
           {CHAR_KINDS.map((kind) => (
-            <Check key={kind} checked={settings.chars.includes(kind)} onChange={(checked) => onChange({ chars: toggle(CHAR_KINDS, settings.chars, kind, checked) })}>
+            <BevelCheck key={kind} checked={settings.chars.includes(kind)} onChange={(checked) => onChange({ chars: toggle(CHAR_KINDS, settings.chars, kind, checked) })}>
               {tFilters(`charKinds.${kind}`)}
-            </Check>
+            </BevelCheck>
           ))}
         </div>
       </Group>
@@ -212,7 +213,7 @@ function SettingsForm({ settings, participantCount, onChange }: { settings: Lobb
 
       <Group legend={t('bonus')}>
         <div className="flex">
-          <Check checked={settings.bonus} onChange={(bonus) => onChange({ bonus })}>{t('bonusToggle')}</Check>
+          <BevelCheck checked={settings.bonus} onChange={(bonus) => onChange({ bonus })}>{t('bonusToggle')}</BevelCheck>
         </div>
       </Group>
 
@@ -250,24 +251,6 @@ function Group({ legend, children }: { legend: string; children: React.ReactNode
       <legend className="font-label-code mb-2 text-[11px] font-bold uppercase tracking-[0.2em] text-primary">{legend}</legend>
       {children}
     </fieldset>
-  );
-}
-
-// Case à cocher en pastille biseautée : la vraie case reste là (masquée) pour le clavier et les lecteurs d'écran.
-// La coche garde sa place décochée, pour que la pastille ne change pas de taille.
-// `relative` : la case masquée (absolue) reste dans la pastille ; sinon elle se place par rapport à la fenêtre,
-// sous le corps défilant, et le focus au clic fait défiler toute la fenêtre.
-function Check({ checked, onChange, disabled = false, children }: { checked: boolean; onChange: (checked: boolean) => void; disabled?: boolean; children: React.ReactNode }) {
-  return (
-    <BevelFrame
-      as="label"
-      frame="group relative flex cursor-pointer bg-outline-variant transition-colors hover:bg-primary has-checked:bg-primary-container has-checked:hover:bg-primary has-focus-visible:bg-primary has-disabled:cursor-not-allowed has-disabled:hover:bg-primary-container"
-      className="flex min-h-10 flex-1 items-center gap-2 bg-surface-container-lowest pr-4 pl-3 text-[14px] text-on-surface-variant transition-colors group-has-checked:bg-surface-container-high group-has-checked:text-on-surface"
-    >
-      <input type="checkbox" checked={checked} disabled={disabled} onChange={(e) => onChange(e.target.checked)} className="sr-only" />
-      <span aria-hidden="true" className="material-symbols-outlined text-[16px]! text-primary invisible group-has-checked:visible">check</span>
-      {children}
-    </BevelFrame>
   );
 }
 

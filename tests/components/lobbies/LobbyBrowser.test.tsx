@@ -18,11 +18,11 @@ describe('LobbyBrowser (LOB-2)', () => {
   });
 
   it('reads filters and page from the URL', () => {
-    window.history.replaceState(null, '', '/lobbies?all=1&page=2');
+    window.history.replaceState(null, '', '/lobbies?chars=uppercase,digits,accents&page=2');
     renderWithIntl(<LobbyBrowser lobbies={SAMPLE_LOBBIES} signedIn />);
 
-    expect(screen.getByText('15 lobbies found')).toBeInTheDocument();
-    expect(rows()).toHaveLength(7);
+    expect(screen.getByText('9 lobbies found')).toBeInTheDocument();
+    expect(rows()).toHaveLength(1);
     expect(screen.getByRole('navigation', { name: 'Lobby pages' })).toHaveTextContent('Page 2 / 2');
   });
 

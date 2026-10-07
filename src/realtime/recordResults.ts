@@ -1,8 +1,8 @@
 // Écrit les résultats d'une course finie (STAT-6, STAT-8) : en base pour un compte, en attente pour un invité, dont
 // l'écran de course réclame ensuite le résultat pour son cookie. Une erreur de base n'arrête jamais la room.
-import { inArray } from 'drizzle-orm';
+import { inArray, sql } from 'drizzle-orm';
 import { getDb } from '@/db/client';
-import { results, users } from '@/db/schema';
+import { keyStats, results, users } from '@/db/schema';
 import type { RaceResult } from '@/game/results';
 import type { GuestGame } from '@/lib/auth/guest';
 import { usernameKey } from '@/lib/auth/validation';
@@ -39,13 +39,30 @@ export async function recordRaceResults(list: readonly RaceResult[], at: Date): 
       .from(users)
       .where(inArray(users.usernameKey, accounts.map((r) => usernameKey(r.seat))));
     const ids = new Map(found.map((user) => [user.key, user.id]));
-    const rows = accounts.flatMap((result) => {
+    const saved = accounts.flatMap((result) => {
       const userId = ids.get(usernameKey(result.seat));
-      if (userId === undefined) return [];
+      return userId === undefined ? [] : [{ userId, result }];
+    });
+    const rows = saved.map(({ userId, result }) => {
       const { wpm, accuracy, rank, players, errors, keystrokes } = toGuestGame(result, at);
-      return [{ userId, wpm, accuracy, durationSeconds: Math.max(1, Math.round(result.durationMs / 1000)), rank, players, errors, keystrokes, createdAt: at }];
+      return { userId, wpm, accuracy, durationSeconds: Math.max(1, Math.round(result.durationMs / 1000)), rank, players, errors, keystrokes, createdAt: at };
     });
     if (rows.length > 0) await db.insert(results).values(rows);
+
+    // Heatmap sans historique : valeur stockée = (valeur stockée + valeur de la course) / 2.
+    const keyRows = saved.flatMap(({ userId, result }) => result.keys.map(({ char, errorRate, avgMs }) => ({ userId, char, errorRate, avgMs })));
+    if (keyRows.length > 0) {
+      await db
+        .insert(keyStats)
+        .values(keyRows)
+        .onConflictDoUpdate({
+          target: [keyStats.userId, keyStats.char],
+          set: {
+            errorRate: sql`(${keyStats.errorRate} + excluded.error_rate) / 2`,
+            avgMs: sql`(${keyStats.avgMs} + excluded.avg_ms) / 2`,
+          },
+        });
+    }
   } catch (error) {
     console.error('[race] results not saved', error);
   }

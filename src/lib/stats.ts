@@ -1,8 +1,9 @@
 import 'server-only';
 import { asc, eq, isNotNull, sql } from 'drizzle-orm';
 import { db } from '@/db';
-import { results, users } from '@/db/schema';
+import { keyStats, results, users } from '@/db/schema';
 import { playerFromGames, type PlayerStats } from '@/components/leaderboard/leaderboard';
+import type { KeyStat } from '@/game/keyStats';
 import type { GameRecord } from '@/game/stats';
 import { avatarUrl } from '@/lib/auth/avatar';
 
@@ -34,6 +35,11 @@ const toRecord = (row: Row): GameRecord => ({
 export async function accountGames(userId: number): Promise<GameRecord[]> {
   const rows = await db.select(columns).from(results).where(eq(results.userId, userId)).orderBy(asc(results.createdAt), asc(results.id));
   return rows.map(toRecord);
+}
+
+/** Carte de chaleur du clavier d'un compte (STAT-3) : une ligne par caractère assez tapé. */
+export async function accountKeyStats(userId: number): Promise<KeyStat[]> {
+  return db.select({ char: keyStats.char, errorRate: keyStats.errorRate, avgMs: keyStats.avgMs }).from(keyStats).where(eq(keyStats.userId, userId));
 }
 
 /** Statistiques de chaque compte qui a couru, pour le classement général (STAT-8). */

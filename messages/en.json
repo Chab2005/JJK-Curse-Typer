@@ -156,8 +156,7 @@
     "pagination": "Lobby pages",
     "filters": {
       "button": "Filters",
-      "availability": "Availability",
-      "showUnavailable": "Show full or in-progress lobbies",
+      "bonus": "Bonuses",
       "bonusOnly": "Bonuses enabled only",
       "language": "Text language",
       "languages": {
@@ -414,7 +413,7 @@
         "errors": "Errors",
         "speed": "Speed"
       },
-      "layout": "Keyboard layout",
+      "shift": "Shift",
       "legend": "Legend",
       "tones": {
         "weak": "Needs work",
@@ -520,6 +519,7 @@
       "racing": "Racing",
       "finished": "Finished",
       "timeout": "Time's up",
+      "stopped": "Stopped",
       "abandoned": "Abandoned"
     },
     "summary": {

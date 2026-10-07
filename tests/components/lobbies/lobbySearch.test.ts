@@ -3,7 +3,6 @@ import {
   DEFAULT_LOBBY_FILTERS,
   type LobbyFilters,
   type LobbySummary,
-  activeFilterCount,
   filterLobbies,
   isJoinable,
   lobbyHref,
@@ -63,12 +62,8 @@ describe('filterLobbies', () => {
   const all = [open, full, racing, noBonus, english, both, punctuation];
   const codes = (list: LobbySummary[]) => list.map((l) => l.code);
 
-  it('cache par défaut les lobbies complets ou en course', () => {
+  it('cache les lobbies complets ou en course', () => {
     expect(codes(filterLobbies(all, DEFAULT_LOBBY_FILTERS))).toEqual(['OPN-001', 'NOB-004', 'ENG-005', 'BTH-006', 'PCT-007']);
-  });
-
-  it('montre les lobbies complets ou en course avec le filtre dédié', () => {
-    expect(codes(filterLobbies(all, filters({ showUnavailable: true })))).toEqual(codes(all));
   });
 
   it('cherche dans le nom de l’hôte ou du lobby, sans tenir compte de la casse', () => {
@@ -93,16 +88,6 @@ describe('filterLobbies', () => {
   });
 });
 
-describe('activeFilterCount', () => {
-  it('vaut 0 avec les filtres par défaut, même avec une recherche', () => {
-    expect(activeFilterCount(filters({ query: 'gojo' }))).toBe(0);
-  });
-
-  it('compte chaque groupe de filtres modifié', () => {
-    expect(activeFilterCount(filters({ showUnavailable: true, bonusOnly: true, languages: ['fr'], chars: [] }))).toBe(4);
-  });
-});
-
 describe('parseLobbySearch et lobbySearchQuery', () => {
   it('donne les filtres par défaut et la page 1 sans paramètre', () => {
     expect(parseLobbySearch(new URLSearchParams())).toEqual({ filters: DEFAULT_LOBBY_FILTERS, page: 1 });
@@ -117,7 +102,7 @@ describe('parseLobbySearch et lobbySearchQuery', () => {
   });
 
   it('relit exactement ce qu’il a écrit', () => {
-    const state = filters({ query: 'Black Flash', showUnavailable: true, bonusOnly: true, languages: [], chars: ['digits', 'accents'] });
+    const state = filters({ query: 'Black Flash', bonusOnly: true, languages: [], chars: ['digits', 'accents'] });
     expect(parseLobbySearch(new URLSearchParams(lobbySearchQuery(state, 3)))).toEqual({ filters: state, page: 3 });
   });
 

@@ -18,7 +18,6 @@ describe('LobbyFilters (LOB-2)', () => {
     await openFilters({ ...FILTERS, bonusOnly: true, languages: ['en'] });
 
     expect(screen.getByRole('checkbox', { name: 'Bonuses enabled only' })).toBeChecked();
-    expect(screen.getByRole('checkbox', { name: 'Show full or in-progress lobbies' })).not.toBeChecked();
     expect(screen.getByRole('checkbox', { name: 'English' })).toBeChecked();
     expect(screen.getByRole('checkbox', { name: 'French' })).not.toBeChecked();
   });
@@ -41,14 +40,14 @@ describe('LobbyFilters (LOB-2)', () => {
     expect(onChange).toHaveBeenNthCalledWith(2, { ...FILTERS, chars: ['uppercase', 'punctuation', 'accents'] });
   });
 
-  it('counts the active filter groups on the button', () => {
+  it('shows no active filter count on the button', () => {
     renderWithIntl(<LobbyFilters filters={{ ...FILTERS, bonusOnly: true, languages: ['fr'] }} onChange={() => {}} />);
 
-    expect(screen.getByRole('button', { name: /^Filters/ })).toContainElement(screen.getByText('2'));
+    expect(screen.getByRole('button', { name: /^Filters/ })).toHaveTextContent(/^tuneFilters$/);
   });
 
   it('resets every filter but keeps the search text', async () => {
-    const { user, onChange } = await openFilters({ ...FILTERS, bonusOnly: true, showUnavailable: true });
+    const { user, onChange } = await openFilters({ ...FILTERS, bonusOnly: true, chars: ['digits'] });
 
     await user.click(screen.getByRole('button', { name: 'Reset' }));
 

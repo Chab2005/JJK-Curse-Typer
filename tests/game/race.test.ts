@@ -105,6 +105,68 @@ describe('tick', () => {
     race = reduce(race, { type: 'tick', now: START + 60_000 });
     expect(race.phase).toBe('finished');
   });
+
+  describe('humains face aux bots', () => {
+    const LONG = 'abc def ghi jkl mno pqr stu vwx yz';
+    const solo = () =>
+      reduce(newRace({ seats: [SEATS[0], { ...SEATS[2], level: 'grade_4' }, { ...SEATS[2], id: 'bot-2', level: 'grade_3' }], text: LONG }), { type: 'claim', id: 'ann', now: T0 }, { type: 'tick', now: START });
+
+    it('termine la course dès que l’humain arrive, les bots figés à cet instant', () => {
+      let race = applyKeys(solo(), 'ann', keys(LONG, 100, 60), START + 2100).race;
+      const end = racer(race, 'ann').endedAt!;
+      race = reduce(race, { type: 'tick', now: START + 2200 });
+      expect(race.phase).toBe('finished');
+      for (const id of ['bot-1', 'bot-2']) {
+        const bot = racer(race, id);
+        expect(bot.status).toBe('stopped');
+        expect(bot.endedAt).toBe(Math.max(end, bot.typing.lastT));
+        expect(bot.typing.input.length).toBeLessThan(LONG.length);
+      }
+      expect(standings(race, START + 2200)[0]).toMatchObject({ id: 'ann', rank: 1, status: 'finished' });
+    });
+
+    it('termine aussi la course quand l’humain abandonne', () => {
+      const race = reduce(solo(), { type: 'abandon', id: 'ann', now: START + 500 }, { type: 'tick', now: START + 600 });
+      expect(race.phase).toBe('finished');
+    });
+
+    it('laisse courir les bots tant qu’un siège humain est simulé (personne connecté)', () => {
+      const race = reduce(newRace({ seats: [SEATS[0], SEATS[2]], text: LONG }), { type: 'tick', now: START + 600 });
+      expect(race.phase).toBe('racing');
+    });
+
+    it('termine la course quand tous les humains ont fini, et arrête les bots encore en route', () => {
+      const bots: RacerSeat[] = (['grade_4', 'grade_3', 'grade_2'] as const).map((level, i) => ({ id: `bot-${i + 1}`, name: String(i + 1), avatar: null, kind: 'bot', level }));
+      const now = START + 3500;
+      let race = racing({ seats: [SEATS[0], SEATS[1], ...bots], text: LONG });
+      race = applyKeys(race, 'ann', keys(LONG, 100, 60), START + 2100).race;
+      race = reduce(race, { type: 'tick', now: START + 2200 });
+      expect(race.phase).toBe('racing');
+      race = applyKeys(race, 'bob', keys(LONG, 200, 90), now - 100).race;
+      const lastHuman = racer(race, 'bob').endedAt!;
+      race = reduce(race, { type: 'tick', now });
+
+      expect(race.phase).toBe('finished');
+      for (const { id } of bots) {
+        const bot = racer(race, id);
+        expect(bot.status).toBe('stopped');
+        expect(bot.endedAt).toBe(Math.max(lastHuman, bot.typing.lastT));
+        expect(bot.typing.input.length).toBeLessThan(LONG.length);
+      }
+      // Classement final : les humains arrivés en tête, puis les bots arrêtés selon leur progression.
+      const table = standings(race, now);
+      expect(table.map((row) => row.id).slice(0, 2)).toEqual(['ann', 'bob']);
+      expect(table.slice(2).every((row) => row.status === 'stopped')).toBe(true);
+      expect(table.slice(2).map((row) => row.progress)).toEqual([...table.slice(2).map((row) => row.progress)].sort((a, b) => b - a));
+    });
+
+    it('attend les autres humains quand il y en a plusieurs', () => {
+      let race = applyKeys(racing({ text: LONG }), 'ann', keys(LONG, 100, 60), START + 2100).race;
+      race = reduce(race, { type: 'tick', now: START + 2200 });
+      expect(race.phase).toBe('racing');
+      expect(racer(race, 'bob').status).toBe('racing');
+    });
+  });
 });
 
 describe('applyKeys (RACE-14)', () => {

@@ -156,8 +156,7 @@
     "pagination": "Pages des lobbies",
     "filters": {
       "button": "Filtres",
-      "availability": "Disponibilité",
-      "showUnavailable": "Afficher les lobbies complets ou en course",
+      "bonus": "Bonus",
       "bonusOnly": "Bonus activés uniquement",
       "language": "Langue du texte",
       "languages": {
@@ -414,7 +413,7 @@
         "errors": "Erreurs",
         "speed": "Vitesse"
       },
-      "layout": "Disposition du clavier",
+      "shift": "Maj",
       "legend": "Légende",
       "tones": {
         "weak": "À travailler",
@@ -520,6 +519,7 @@
       "racing": "En course",
       "finished": "Arrivé",
       "timeout": "Temps écoulé",
+      "stopped": "Arrêté",
       "abandoned": "Abandon"
     },
     "summary": {
