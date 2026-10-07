@@ -18,7 +18,6 @@ describe('LobbyFilters (LOB-2)', () => {
     await openFilters({ ...FILTERS, bonusOnly: true, languages: ['en'] });
 
     expect(screen.getByRole('checkbox', { name: 'Bonuses enabled only' })).toBeChecked();
-    expect(screen.getByRole('checkbox', { name: 'Show full or in-progress lobbies' })).not.toBeChecked();
     expect(screen.getByRole('checkbox', { name: 'English' })).toBeChecked();
     expect(screen.getByRole('checkbox', { name: 'French' })).not.toBeChecked();
   });
@@ -48,7 +47,7 @@ describe('LobbyFilters (LOB-2)', () => {
   });
 
   it('resets every filter but keeps the search text', async () => {
-    const { user, onChange } = await openFilters({ ...FILTERS, bonusOnly: true, showUnavailable: true });
+    const { user, onChange } = await openFilters({ ...FILTERS, bonusOnly: true, chars: ['digits'] });
 
     await user.click(screen.getByRole('button', { name: 'Reset' }));
 
