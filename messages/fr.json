@@ -156,8 +156,7 @@
     "pagination": "Pages des lobbies",
     "filters": {
       "button": "Filtres",
-      "availability": "Disponibilité",
-      "showUnavailable": "Afficher les lobbies complets ou en course",
+      "bonus": "Bonus",
       "bonusOnly": "Bonus activés uniquement",
       "language": "Langue du texte",
       "languages": {
