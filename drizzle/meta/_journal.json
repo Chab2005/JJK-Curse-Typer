@@ -43,6 +43,13 @@
       "when": 1791392148580,
       "tag": "0005_key_stats",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1791398911276,
+      "tag": "0006_invite_claimed_name",
+      "breakpoints": true
     }
   ]
 }

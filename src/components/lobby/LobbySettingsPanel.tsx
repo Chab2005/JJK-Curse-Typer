@@ -256,7 +256,7 @@ function Group({ legend, children }: { legend: string; children: React.ReactNode
 
 // Champ numérique validé à la sortie du champ ou sur Entrée, pour ne pas borner pendant la frappe.
 // Les boutons − et + remplacent les flèches natives ; au clavier, ↑ et ↓ du champ font la même chose.
-function NumberField({ id, label, hint, value, min, max, onCommit }: { id: string; label: string; hint: string; value: number; min: number; max: number; onCommit: (value: number) => void }) {
+export function NumberField({ id, label, hint, value, min, max, onCommit }: { id: string; label: string; hint?: string; value: number; min: number; max: number; onCommit: (value: number) => void }) {
   const t = useTranslations('Lobby.settings');
   const [draft, setDraft] = useState(String(value));
   const [shown, setShown] = useState(value);
@@ -294,12 +294,12 @@ function NumberField({ id, label, hint, value, min, max, onCommit }: { id: strin
           onChange={(e) => setDraft(e.target.value)}
           onBlur={commit}
           onKeyDown={(e) => e.key === 'Enter' && commit()}
-          aria-describedby={`${id}-hint`}
+          aria-describedby={hint ? `${id}-hint` : undefined}
           className="font-label-code w-16 appearance-none bg-transparent text-center text-[16px] text-on-surface focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [-moz-appearance:textfield]"
         />
         <StepButton icon="add" label={t('increase', { field: label })} disabled={value >= max} onClick={() => step(1)} />
       </BevelFrame>
-      <p id={`${id}-hint`} className="text-[13px] text-outline">{hint}</p>
+      {hint && <p id={`${id}-hint`} className="text-[13px] text-outline">{hint}</p>}
     </div>
   );
 }

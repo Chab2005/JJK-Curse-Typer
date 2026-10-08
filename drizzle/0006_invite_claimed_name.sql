@@ -1,0 +1,1 @@
+ALTER TABLE "lobby_invites" ADD COLUMN "claimed_name" text;

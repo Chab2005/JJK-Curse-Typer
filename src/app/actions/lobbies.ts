@@ -3,10 +3,10 @@
 import { headers } from 'next/headers';
 import { getTranslations } from 'next-intl/server';
 import type { QuickPlayResult } from '@/components/home/quickPlay';
-import { canInvite, clientIp, isInviteToken, needsInvite } from '@/components/lobby/lobbyAccess';
+import { canInvite, clientIp, type InviteLink, inviteToClaim, isInviteToken, needsInvite } from '@/components/lobby/lobbyAccess';
 import type { LobbyRoom } from '@/components/lobby/lobbyRoom';
 import { getViewer, getViewerId, type Viewer } from '@/lib/currentUser';
-import { claimInvite, createInvite, deleteInvites, revokeInvites } from '@/lib/invites';
+import { claimInvite, createInvites, deleteInvite, deleteInvites, listInvites, revokeInvites } from '@/lib/invites';
 import { createLobby, findQuickLobby, parseLobbyAction, storedLobby, updateLobby } from '@/lib/lobbies';
 import { expectViewer } from '@/lib/lobbyPresence';
 
@@ -46,16 +46,16 @@ async function hostLobby(viewer: Viewer): Promise<string> {
 
 /**
  * Fait entrer l'utilisateur dans le lobby créé `code` : participant s'il reste de la place, spectateur sinon ou avec `spectate`.
- * Un lobby privé demande un lien d'invitation, attribué ici à l'IP du visiteur (LOB-4). Renvoie le lobby, ou `null` si l'entrée est refusée.
+ * Un lobby privé demande un lien d'invitation, attribué ici à l'IP du visiteur (LOB-4) ; un lien présenté ailleurs est aussi
+ * consommé, pour que l'hôte voie qui l'a utilisé. Renvoie le lobby, ou `null` si l'entrée est refusée.
  */
 export async function joinLobbyAction(code: string, options: { spectate?: boolean; invite?: string } = {}): Promise<LobbyRoom | null> {
   const viewer = await getViewer();
   const room = typeof code === 'string' ? storedLobby(code) : null;
   if (!viewer || !room) return null;
-  if (needsInvite(room, viewer.id)) {
-    const invite = options?.invite;
-    if (!isInviteToken(invite) || !(await claimInvite(invite, room.code, clientIp(await headers()), viewer.id))) return null;
-  }
+  const token = inviteToClaim(room, viewer.id, options?.invite);
+  const claimed = token !== null && (await claimInvite(token, room.code, clientIp(await headers()), viewer));
+  if (needsInvite(room, viewer.id) && !claimed) return null;
   const joined = updateLobby(room.code, { type: 'join', person: { id: viewer.id, name: viewer.name, avatar: null, photo: viewer.photo }, spectate: options?.spectate === true });
   // Sans page du lobby ouverte dans le délai de grâce, le visiteur en ressort (src/lib/lobbyPresence.ts).
   if (joined) expectViewer(room.code, viewer.id);
@@ -80,9 +80,28 @@ export async function updateLobbyAction(code: string, input: unknown): Promise<L
   return after && storedLobby(code);
 }
 
-/** Crée un lien d'invitation à usage unique (LOB-4) ; `null` si l'utilisateur n'est pas l'hôte d'un lobby privé ou à code. */
-export async function createInviteAction(code: string): Promise<string | null> {
+/** Lobby `code` si l'utilisateur en est l'hôte et peut y créer des liens d'invitation (privé ou à code), `null` sinon. */
+async function invitingLobby(code: unknown): Promise<LobbyRoom | null> {
   const room = typeof code === 'string' ? storedLobby(code) : null;
-  if (!room || !canInvite(room, await getViewerId())) return null;
-  return createInvite(room.code);
+  return room && canInvite(room, await getViewerId()) ? room : null;
+}
+
+/** Liens d'invitation du lobby, le plus récent d'abord (LOB-4) ; `null` si l'utilisateur n'est pas l'hôte d'un lobby privé ou à code. */
+export async function listInvitesAction(code: string): Promise<InviteLink[] | null> {
+  const room = await invitingLobby(code);
+  return room && listInvites(room.code);
+}
+
+/** Crée `count` liens à usage unique (LOB-4), sans dépasser `MAX_INVITES`, et renvoie leurs jetons ; `null` si l'utilisateur n'est pas l'hôte. */
+export async function createInvitesAction(code: string, count: number): Promise<string[] | null> {
+  const room = await invitingLobby(code);
+  return room && createInvites(room.code, count);
+}
+
+/** Supprime un lien d'invitation du lobby ; `false` si l'utilisateur n'est pas l'hôte. */
+export async function deleteInviteAction(code: string, token: string): Promise<boolean> {
+  const room = await invitingLobby(code);
+  if (!room || !isInviteToken(token)) return false;
+  await deleteInvite(room.code, token);
+  return true;
 }

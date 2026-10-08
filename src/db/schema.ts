@@ -103,6 +103,8 @@ export const lobbyInvites = pgTable(
     claimedIp: text("claimed_ip"),
     /** Visiteur qui a ouvert le lien : l'expulser révoque le lien (LOB-8). */
     claimedBy: text("claimed_by"),
+    /** Nom affiché de ce visiteur au moment où il a ouvert le lien, montré à l'hôte. */
+    claimedName: text("claimed_name"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     claimedAt: timestamp("claimed_at"),
     revokedAt: timestamp("revoked_at"),

@@ -45,6 +45,8 @@ export default function WaitingRoom({
   const host = room.participants.find((p) => p.id === room.hostId) ?? room.spectators.find((s) => s.id === room.hostId);
   const inside = viewerId !== '' && isInside(room, viewerId);
   const spectating = isSpectating(room, viewerId);
+  // Change à chaque arrivée, départ ou expulsion : la fenêtre des liens d'invitation relit alors qui les a utilisés.
+  const inviteRefreshKey = [...room.participants, ...room.spectators].map((p) => p.id).join(',');
 
   // Entrée dans le lobby créé : c'est ici, pas à l'affichage de la page, que la place est prise et le lien d'invitation consommé.
   useEffect(() => {
@@ -121,7 +123,7 @@ export default function WaitingRoom({
           />
         </div>
         <div className="w-full lg:w-[360px]">
-          <InviteCard code={room.code} visibility={room.settings.visibility} isHost={isHost} />
+          <InviteCard code={room.code} visibility={room.settings.visibility} isHost={isHost} refreshKey={inviteRefreshKey} />
         </div>
       </div>
 

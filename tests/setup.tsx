@@ -16,7 +16,9 @@ afterEach(() => {
   lobbyActionsMock.updateLobbyAction.mockReset();
   lobbyActionsMock.joinLobbyAction.mockReset();
   lobbyActionsMock.leaveLobbyAction.mockReset();
-  lobbyActionsMock.createInviteAction.mockReset();
+  lobbyActionsMock.listInvitesAction.mockReset().mockResolvedValue([]);
+  lobbyActionsMock.createInvitesAction.mockReset().mockResolvedValue(null);
+  lobbyActionsMock.deleteInviteAction.mockReset().mockResolvedValue(true);
   lobbyActionsMock.quickPlayAction.mockReset();
   authActionsMock.setGuestNameAction.mockReset().mockResolvedValue(null);
   window.history.replaceState(null, '', '/');

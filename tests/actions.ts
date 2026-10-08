@@ -1,5 +1,6 @@
 import { vi } from 'vitest';
 import type { QuickPlayResult } from '@/components/home/quickPlay';
+import type { InviteLink } from '@/components/lobby/lobbyAccess';
 import type { LobbyRoom } from '@/components/lobby/lobbyRoom';
 
 // Server actions shared by the @/app/actions/lobbies mock (tests/setup.tsx), so tests can stub and assert them.
@@ -8,7 +9,9 @@ export const lobbyActionsMock = {
   updateLobbyAction: vi.fn<(code: string, action: unknown) => Promise<LobbyRoom | null>>(async () => null),
   joinLobbyAction: vi.fn<(code: string, options?: { spectate?: boolean; invite?: string }) => Promise<LobbyRoom | null>>(async () => null),
   leaveLobbyAction: vi.fn<(code: string) => Promise<void>>(async () => {}),
-  createInviteAction: vi.fn<(code: string) => Promise<string | null>>(async () => null),
+  listInvitesAction: vi.fn<(code: string) => Promise<InviteLink[] | null>>(async () => []),
+  createInvitesAction: vi.fn<(code: string, count: number) => Promise<string[] | null>>(async () => null),
+  deleteInviteAction: vi.fn<(code: string, token: string) => Promise<boolean>>(async () => true),
   quickPlayAction: vi.fn(async (): Promise<QuickPlayResult> => ({ code: 'NEW-LBY' })),
 };
 
