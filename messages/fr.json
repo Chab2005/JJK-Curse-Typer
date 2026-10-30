@@ -21,7 +21,11 @@
     "logout": "Déconnexion"
   },
   "LanguageSwitcher": {
-    "label": "Langue"
+    "label": "Langue",
+    "names": {
+      "en": "English",
+      "fr": "Français"
+    }
   },
   "Hero": {
     "tagline": "Mettez votre énergie occulte au bout des doigts.",

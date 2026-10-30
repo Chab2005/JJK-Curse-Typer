@@ -292,3 +292,88 @@ kbd,
     animation: none;
   }
 }
+
+/* Bouton-flèche (ChevronButton) : plaque à bouts pointus en quatre couches (cadre, vide, filet, face),
+   flanquée de chevrons qui s'écartent au survol. --h = longueur des pointes de chaque couche. */
+@layer components {
+  .arw {
+    position: relative;
+    display: inline-flex;
+    align-items: stretch;
+    padding: 0 var(--cap-in);
+    background: none;
+    border: 0;
+    color: var(--color-on-surface);
+    text-decoration: none;
+    cursor: pointer;
+    transition: filter 0.3s;
+  }
+  .arw:hover {
+    filter: brightness(1.45) drop-shadow(0 0 10px rgb(225 29 72 / 0.35));
+  }
+  .arw:disabled {
+    pointer-events: none;
+    opacity: 0.8;
+  }
+  .arw-cap {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    width: var(--cap-w);
+    color: var(--color-primary-container);
+    transition: translate 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .arw-cap svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  .arw-cap-l { left: 0; }
+  .arw-cap-r { right: 0; transform: scaleX(-1); }
+  .arw:hover .arw-cap-l { translate: -22% 0; }
+  .arw:hover .arw-cap-r { translate: 22% 0; }
+  .arw-f, .arw-g, .arw-r, .arw-c {
+    clip-path: polygon(var(--h) 0, calc(100% - var(--h)) 0, 100% 50%, calc(100% - var(--h)) 100%, var(--h) 100%, 0 50%);
+  }
+  .arw-f { display: flex; flex: 1; padding: 1px; background: #8f1022; }
+  .arw-g { display: flex; flex: 1; padding: 3px; background: #0b0405; }
+  .arw-r { display: flex; flex: 1; padding: 1px; background: rgb(225 29 72 / 0.4); }
+  .arw-c {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: radial-gradient(120% 160% at 50% 0%, #3a0c14 0%, #170608 55%, #0c0304 100%);
+  }
+  .arw-p .arw-c {
+    background: linear-gradient(180deg, #e11d48 0%, #a3102f 55%, #6e0718 100%);
+    color: var(--color-on-primary-container);
+  }
+  .arw-sm { height: 40px; --cap-w: 20px; --cap-in: 12px; }
+  .arw-sm .arw-f { --h: 13px; }
+  .arw-sm .arw-g { --h: 12.5px; padding: 2px; }
+  .arw-sm .arw-r { --h: 11px; }
+  .arw-sm .arw-c { --h: 10.5px; padding: 0 24px; }
+  .arw-md { height: 56px; --cap-w: 28px; --cap-in: 17px; }
+  .arw-md .arw-f { --h: 18px; }
+  .arw-md .arw-g { --h: 17.5px; }
+  .arw-md .arw-r { --h: 16px; }
+  .arw-md .arw-c { --h: 15.5px; padding: 0 34px; }
+
+  /* Langues du sélecteur : glissent une à une depuis le dessous du bouton. */
+  .lang-drop li { animation: lang-drop 0.3s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+  .lang-drop li:nth-child(2) { animation-delay: 0.06s; }
+  .lang-drop li:nth-child(3) { animation-delay: 0.12s; }
+}
+
+@keyframes lang-drop {
+  from { transform: translateY(-110%); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .arw, .arw-cap { transition: none; }
+  .lang-drop li { animation: none; }
+}

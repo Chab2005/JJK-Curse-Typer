@@ -2,6 +2,7 @@ import { readdirSync } from 'node:fs';
 import path from 'node:path';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
+import ChevronButton from '@/components/shared/ChevronButton';
 import { Link } from '@/i18n/navigation';
 import { faceFrame, findCharacterImage } from '@/components/shared/characterImages';
 import { CHARACTERS, type CharacterId } from '@/components/shared/characters';
@@ -50,13 +51,10 @@ export default function Characters() {
             <p className="font-label-code text-[12px] font-bold uppercase tracking-[0.32em] text-primary-container">{t('eyebrow')}</p>
             <h2 id="characters-title" className="text-[clamp(36px,4.5vw,56px)] leading-tight uppercase tracking-[0.08em]">{t('title')}</h2>
           </div>
-          <Link
-            href="/lobbies"
-            className="flex min-h-12 items-center gap-2.5 border border-on-surface px-[22px] text-sm uppercase tracking-[0.16em] text-on-surface transition-colors hover:bg-on-surface hover:text-surface-container-lowest"
-          >
+          <ChevronButton as={Link} href="/lobbies" className="gap-2.5 text-sm uppercase tracking-[0.16em] whitespace-nowrap">
             {t('cta')}
             <span aria-hidden="true" className="material-symbols-outlined text-lg">arrow_forward</span>
-          </Link>
+          </ChevronButton>
         </div>
 
         <ul className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,260px),1fr))] gap-[18px]">

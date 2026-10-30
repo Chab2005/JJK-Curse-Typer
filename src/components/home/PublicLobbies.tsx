@@ -1,5 +1,6 @@
 import { useTranslations } from 'next-intl';
 import type { LobbySummary } from '@/components/lobbies/lobbySearch';
+import ChevronButton from '@/components/shared/ChevronButton';
 import { Link } from '@/i18n/navigation';
 
 // Lobbies publics créés par les joueurs, puis données de démonstration en attendant la room d'index (LOB-2).
@@ -94,13 +95,10 @@ export default function PublicLobbies({ created = [], showSamples = true }: { cr
         ))}
       </ul>
 
-      <Link
-        href="/lobbies"
-        className="mt-1.5 flex min-h-13 items-center justify-center gap-2.5 border border-on-surface text-[15px] uppercase tracking-[0.16em] text-on-surface transition-colors hover:bg-on-surface hover:text-surface-container-lowest"
-      >
+      <ChevronButton as={Link} href="/lobbies" frame="mt-1.5 w-full" className="gap-2.5 text-[15px] uppercase tracking-[0.16em]">
         {t('all')}
         <span aria-hidden="true" className="material-symbols-outlined text-lg">arrow_forward</span>
-      </Link>
+      </ChevronButton>
     </div>
   );
 }

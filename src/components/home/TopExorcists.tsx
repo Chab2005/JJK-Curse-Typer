@@ -1,4 +1,5 @@
 import { useFormatter, useTranslations } from 'next-intl';
+import ChevronButton from '@/components/shared/ChevronButton';
 import { Link } from '@/i18n/navigation';
 
 // Données de démonstration en attendant le classement général (STAT-8).
@@ -22,13 +23,10 @@ export default function TopExorcists({ showSamples = true }: { showSamples?: boo
             <p className="font-label-code text-[12px] font-bold uppercase tracking-[0.32em] text-primary-container">{t('eyebrow')}</p>
             <h2 id="top-title" className="text-[clamp(34px,4.2vw,52px)] leading-tight uppercase tracking-[0.08em]">{t('title')}</h2>
           </div>
-          <Link
-            href="/leaderboard"
-            className="flex min-h-12 items-center gap-2.5 border border-on-surface px-[22px] text-sm uppercase tracking-[0.16em] text-on-surface transition-colors hover:bg-on-surface hover:text-surface-container-lowest"
-          >
+          <ChevronButton as={Link} href="/leaderboard" className="gap-2.5 text-sm uppercase tracking-[0.16em] whitespace-nowrap">
             {t('cta')}
             <span aria-hidden="true" className="material-symbols-outlined text-lg">arrow_forward</span>
-          </Link>
+          </ChevronButton>
         </div>
 
         {!showSamples && <p className="border border-dashed border-outline-variant px-6 py-12 text-center text-lg text-on-surface-variant">{t('empty')}</p>}

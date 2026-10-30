@@ -21,7 +21,11 @@
     "logout": "Log out"
   },
   "LanguageSwitcher": {
-    "label": "Language"
+    "label": "Language",
+    "names": {
+      "en": "English",
+      "fr": "Français"
+    }
   },
   "Hero": {
     "tagline": "Channel your cursed energy into your fingertips.",
