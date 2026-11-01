@@ -24,12 +24,26 @@ export function spriteBox({ w, h }: FrameSize) {
   return { width, height: Math.round(h * SPRITE_SCALE), sheetWidth: width * 8 };
 }
 
-// Le personnage court en pixel art dans le petit cadre en bas à droite des cartes (bande de 8 images, 7 jouées
-// comme sur la fiche personnage), réduit à RUNNER_SCALE de la taille du fichier. L'animation reste en pause tant que
-// --sprite-play ne vaut pas `running` (RUNNER_PLAY, posé au survol ou au focus de la carte `group`).
+// Le personnage en pixel art du petit cadre en bas à droite des cartes, réduit à RUNNER_SCALE de la taille du fichier :
+// il joue sa bande idle (8 images, comme sur la fiche personnage) et passe à la course (7 images jouées) au survol
+// ou au focus de la carte `group` (RUNNER_IDLE / RUNNER_RUN).
 const RUNNER_SCALE = 0.196;
 
-export const RUNNER_PLAY = 'group-hover:[--sprite-play:running] group-focus-visible:[--sprite-play:running]';
+export const RUNNER_IDLE = 'group-hover:hidden group-focus-visible:hidden';
+export const RUNNER_RUN = 'hidden group-hover:block group-focus-visible:block';
+
+export function runnerIdleStyle(id: CharacterId): CSSProperties {
+  const { w, h } = SPRITES[id].idle;
+  const width = Math.round(w * RUNNER_SCALE);
+  const height = Math.round(h * RUNNER_SCALE);
+  return {
+    width,
+    height,
+    background: `url(/images/characters/anim/${id}-idle.png) 0 0 / ${width * 8}px ${height}px no-repeat`,
+    animation: 'sprite-idle 0.9s steps(8) infinite',
+    '--sprite-end': `-${width * 8}px`,
+  } as CSSProperties;
+}
 
 export function runnerStyle(id: CharacterId): CSSProperties {
   const { w, h } = SPRITES[id].running;
@@ -40,7 +54,6 @@ export function runnerStyle(id: CharacterId): CSSProperties {
     height,
     background: `url(/images/characters/anim/${id}-running.png) 0 0 / ${width * 8}px ${height}px no-repeat`,
     animation: 'sprite-running 0.875s steps(7) infinite reverse',
-    animationPlayState: 'var(--sprite-play, paused)',
     '--sprite-end': `-${width * 7}px`,
   } as CSSProperties;
 }

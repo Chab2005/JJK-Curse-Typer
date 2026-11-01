@@ -6,7 +6,7 @@ import ChevronButton from '@/components/shared/ChevronButton';
 import { Link } from '@/i18n/navigation';
 import { faceFrame, findCharacterImage } from '@/components/shared/characterImages';
 import { CHARACTERS, type CharacterId } from '@/components/shared/characters';
-import { RUNNER_PLAY, runnerStyle } from '@/components/characters/characterSprites';
+import { RUNNER_IDLE, RUNNER_RUN, runnerIdleStyle, runnerStyle } from '@/components/characters/characterSprites';
 
 // Illustration en pied du personnage : public/images/characters/<id>.webp (ou .png, .jpg…),
 // agrandie et cadrée sur le visage (`face`, en fractions de l'illustration).
@@ -92,7 +92,8 @@ export default function Characters() {
                         </div>
                         <div aria-hidden="true" className="cut-asym absolute right-3.5 bottom-3.5 bg-primary-container p-px [--b:10px]">
                           <div className="cut-asym relative h-[67px] w-[70px] overflow-hidden bg-[rgb(12_3_4/0.85)] [--b:9.5px]">
-                            <span className={`absolute right-[3px] bottom-0 block motion-reduce:[animation:none]! ${RUNNER_PLAY}`} style={runnerStyle(character.id)} />
+                            <span className={`absolute bottom-0 left-1/2 block -translate-x-1/2 motion-reduce:[animation:none]! ${RUNNER_IDLE}`} style={runnerIdleStyle(character.id)} />
+                            <span className={`absolute right-[3px] bottom-0 motion-reduce:[animation:none]! ${RUNNER_RUN}`} style={runnerStyle(character.id)} />
                           </div>
                         </div>
                       </div>
