@@ -3,11 +3,9 @@ import { Suspense } from 'react';
 import Footer from '@/components/layout/Footer';
 import SiteHeader from '@/components/layout/SiteHeader';
 import LeaderboardBrowser from '@/components/leaderboard/LeaderboardBrowser';
-import { showSampleData } from '@/lib/sampleData';
-import { SAMPLE_PLAYERS } from '@/components/leaderboard/samplePlayers';
 import PageIntro from '@/components/shared/PageIntro';
 import type { Locale } from '@/i18n/config';
-import { accountPlayers } from '@/lib/stats';
+import { leaderboardPlayers } from '@/lib/stats';
 
 // Lit la base à chaque requête : la page ne doit pas être prérendue au build (la base n'est pas joignable à ce moment-là).
 export const dynamic = 'force-dynamic';
@@ -23,10 +21,7 @@ export default async function LeaderboardPage({ params }: PageProps<'/[locale]/l
   const { locale } = await params;
   setRequestLocale(locale as Locale);
   const t = await getTranslations('Leaderboard');
-  // Comptes réels, et en développement les joueurs de démonstration dont aucun compte ne porte le nom.
-  const accounts = await accountPlayers();
-  const taken = new Set(accounts.map((p) => p.username.toLowerCase()));
-  const players = [...accounts, ...(showSampleData() ? SAMPLE_PLAYERS.filter((p) => !taken.has(p.username.toLowerCase())) : [])];
+  const players = await leaderboardPlayers();
 
   return (
     <>

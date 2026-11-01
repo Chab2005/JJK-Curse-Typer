@@ -1,11 +1,13 @@
 import { screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import TopExorcists from '@/components/home/TopExorcists';
+import { rankPlayers } from '@/components/leaderboard/leaderboard';
+import { SAMPLE_PLAYERS } from '@/components/leaderboard/samplePlayers';
 import { renderWithIntl } from '../../render';
 
 describe('TopExorcists (smoke)', () => {
-  it('renders the top 5 linked to their profiles', () => {
-    renderWithIntl(<TopExorcists />);
+  it('renders the given players linked to their profiles', () => {
+    renderWithIntl(<TopExorcists players={rankPlayers(SAMPLE_PLAYERS, 'wpm').slice(0, 5)} />);
 
     expect(screen.getByRole('heading', { level: 2, name: 'Special grade' })).toBeInTheDocument();
     expect(screen.getAllByRole('listitem')).toHaveLength(5);
@@ -13,9 +15,9 @@ describe('TopExorcists (smoke)', () => {
   });
 });
 
-describe('TopExorcists without sample data', () => {
+describe('TopExorcists without ranked players', () => {
   it('keeps the section and says nobody is ranked yet', () => {
-    renderWithIntl(<TopExorcists showSamples={false} />);
+    renderWithIntl(<TopExorcists players={[]} />);
 
     expect(screen.getByRole('heading', { level: 2, name: 'Special grade' })).toBeInTheDocument();
     expect(screen.queryAllByRole('listitem')).toHaveLength(0);

@@ -2,24 +2,18 @@ import { useFormatter, useTranslations } from 'next-intl';
 import Avatar from '@/components/shared/Avatar';
 import ChevronButton, { Chevrons } from '@/components/shared/ChevronButton';
 import SpearArrow from '@/components/shared/SpearArrow';
-import type { CharacterId } from '@/components/shared/characters';
+import type { RankedPlayer } from '@/components/leaderboard/leaderboard';
 import { Link } from '@/i18n/navigation';
 
-// Données de démonstration en attendant le classement général (STAT-8).
-const TOP: { name: string; avatar: CharacterId | null; wpm: number; accuracy: number; color: string }[] = [
-  { name: 'Satoru_Infinity', avatar: 'gojo', wpm: 182, accuracy: 0.991, color: 'text-gold' },
-  { name: 'Yuta_Rika', avatar: 'yuji', wpm: 171, accuracy: 0.987, color: 'text-secondary' },
-  { name: 'Maki_Heavenly', avatar: 'maki', wpm: 165, accuracy: 0.982, color: 'text-tertiary' },
-  { name: 'Renee_Spagat', avatar: null, wpm: 150, accuracy: 0.97, color: 'text-outline' },
-  { name: 'Nobara_Resonance', avatar: 'nobara', wpm: 146, accuracy: 0.978, color: 'text-outline' },
-];
+/** Couleur du losange selon le rang : or, argent, bronze, puis neutre. */
+const RANK_COLORS = ['text-gold', 'text-secondary', 'text-tertiary'];
 
 const DIAMOND = '[clip-path:polygon(50%_0,100%_50%,50%_100%,0_50%)]';
 
 // Section « classement » de l'accueil (canvas « Accueil · style flèches ») : titre centré souligné de deux lances,
 // photo de profil dans un losange de la couleur du rang, chevrons en bout de rangée et bouton-flèche vers le classement complet.
 // Le fond passe du noir à une lueur rouge sombre vers le bas, comme dans le canvas.
-export default function TopExorcists({ showSamples = true }: { showSamples?: boolean }) {
+export default function TopExorcists({ players }: { players: readonly RankedPlayer[] }) {
   const t = useTranslations('TopExorcists');
   const format = useFormatter();
 
@@ -36,20 +30,20 @@ export default function TopExorcists({ showSamples = true }: { showSamples?: boo
           </span>
         </div>
 
-        {!showSamples && <p className="w-full border border-dashed border-outline-variant px-6 py-12 text-center text-lg text-on-surface-variant">{t('empty')}</p>}
+        {players.length === 0 && <p className="w-full border border-dashed border-outline-variant px-6 py-12 text-center text-lg text-on-surface-variant">{t('empty')}</p>}
 
         <ol className="w-full">
-          {(showSamples ? TOP : []).map((player) => (
-            <li key={player.name} className="border-b border-[#2a1416]">
+          {players.map((player, i) => (
+            <li key={player.username} className="border-b border-[#2a1416]">
               <Link
-                href={`/profile/${player.name}`}
-                aria-label={t('profileLabel', { name: player.name })}
+                href={`/profile/${player.username}`}
+                aria-label={t('profileLabel', { name: player.username })}
                 className="flex min-h-18 items-center gap-5 px-2 py-3.5 text-on-surface transition-[filter] duration-300 hover:brightness-135 focus-visible:brightness-135 motion-reduce:transition-none"
               >
-                <span className={`flex size-13 shrink-0 bg-current p-0.5 ${DIAMOND} ${player.color}`}>
-                  <Avatar avatar={player.avatar} name={player.name} size={48} className={DIAMOND} />
+                <span className={`flex size-13 shrink-0 bg-current p-0.5 ${DIAMOND} ${RANK_COLORS[i] ?? 'text-outline'}`}>
+                  <Avatar avatar={player.avatar} name={player.username} src={player.photo} size={48} className={DIAMOND} />
                 </span>
-                <span className="font-grotesk min-w-0 flex-1 truncate text-[20px]">{player.name}</span>
+                <span className="font-grotesk min-w-0 flex-1 truncate text-[20px]">{player.username}</span>
                 <span className="font-label-code hidden text-[13px] text-outline sm:inline">
                   {format.number(player.accuracy, { style: 'percent', maximumFractionDigits: 1 })}
                 </span>
