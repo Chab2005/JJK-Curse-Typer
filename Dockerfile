@@ -30,8 +30,7 @@ COPY . .
 # Build application
 RUN npx next build --experimental-build-mode compile
 
-# Remove development dependencies
-RUN npm prune --omit=dev
+# Dev dependencies are kept: drizzle-kit is needed for the pre-deploy migration
 
 
 # Final stage for app image
