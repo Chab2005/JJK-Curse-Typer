@@ -28,8 +28,10 @@ export default async function LeaderboardPage({ params }: PageProps<'/[locale]/l
       <SiteHeader />
       <main className="relative w-full flex-1 overflow-hidden bg-surface">
         <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-[420px] bg-[radial-gradient(ellipse_55%_70%_at_50%_0%,rgb(147_0_10/0.4),transparent_70%)]" />
+        {/* Lueur du bas, comme la fin de l'accueil : le fond tourne au rouge sombre avant le pied de page. */}
+        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-[640px] bg-linear-to-b from-[#120708]/0 to-[#120708]" />
         <section aria-labelledby="leaderboard-title" className="relative mx-auto flex max-w-[1152px] flex-col gap-10 px-6 pt-14 pb-24">
-          <PageIntro id="leaderboard-title" eyebrow={t('eyebrow')} title={t('title')} watermark={t('watermark')} />
+          <PageIntro id="leaderboard-title" eyebrow={t('eyebrow')} title={t('title')} watermark={t('watermark')} chevrons />
           {/* useSearchParams : la liste se rend côté client, avec l'état lu dans l'URL. */}
           <Suspense fallback={<div className="min-h-[480px]" />}>
             <LeaderboardBrowser players={players} />

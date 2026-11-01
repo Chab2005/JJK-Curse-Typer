@@ -14,4 +14,12 @@ describe('Characters (smoke)', () => {
     expect(screen.getByText('Divergent Fist')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Meet the characters/ })).toHaveAttribute('href', '/characters');
   });
+
+  it('links each card to its character page', () => {
+    renderWithIntl(<Characters />);
+
+    const cards = screen.getAllByRole('listitem').map((card) => card.querySelector('a')?.getAttribute('href'));
+    expect(cards).toEqual(['/characters/yuji', '/characters/megumi', '/characters/sukuna', '/characters/gojo']);
+    expect(screen.getByRole('link', { name: 'Yuji Itadori, Divergent Fist: open the file' })).toHaveAttribute('href', '/characters/yuji');
+  });
 });

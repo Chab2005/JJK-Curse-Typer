@@ -33,8 +33,10 @@ export default async function LobbiesPage({ params }: PageProps<'/[locale]/lobbi
       <SiteHeader />
       <main className="relative w-full flex-1 overflow-hidden bg-surface">
         <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-[420px] bg-[radial-gradient(ellipse_55%_70%_at_50%_0%,rgb(147_0_10/0.4),transparent_70%)]" />
+        {/* Lueur du bas, comme la fin de l'accueil : le fond tourne au rouge sombre avant le pied de page. */}
+        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-[640px] bg-linear-to-b from-[#120708]/0 to-[#120708]" />
         <section aria-labelledby="lobbies-title" className="relative mx-auto flex max-w-[1152px] flex-col gap-10 px-6 pt-14 pb-24">
-          <PageIntro id="lobbies-title" eyebrow={t('eyebrow')} title={t('title')} intro={t('intro')} watermark={t('watermark')} />
+          <PageIntro id="lobbies-title" eyebrow={t('eyebrow')} title={t('title')} intro={t('intro')} watermark={t('watermark')} chevrons />
           {/* Hauteur minimale : le panneau des filtres doit tenir dans <main>, qui coupe ce qui dépasse,
               même avec peu de résultats (sous `sm`, le bouton passe sous la recherche). */}
           <div className="min-h-[752px] sm:min-h-[656px]">

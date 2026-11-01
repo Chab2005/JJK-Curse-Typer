@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import FilterPopover from '@/components/shared/FilterPopover';
 import Pagination from '@/components/shared/Pagination';
+import PlateOption from '@/components/shared/PlateOption';
 import SearchField from '@/components/shared/SearchField';
 import { writeSearch } from '@/components/shared/urlSearch';
 import { paginate } from '@/lib/pagination';
@@ -44,24 +45,24 @@ export default function LeaderboardBrowser({ players }: { players: PlayerStats[]
 
   return (
     <div className="flex flex-col gap-8">
-      <div className="flex flex-col gap-3">
-        <div className="flex flex-wrap items-stretch gap-3">
-          <SearchField id="player-search" label={t('search')} value={draft} onChange={search} />
-          <FilterPopover label={t('filter')} icon="filter_list" closeLabel={t('close')}>
-            <fieldset className="flex flex-col gap-1">
-              <legend className="font-label-code mb-2 text-[11px] font-bold uppercase tracking-[0.2em] text-primary">{t('sortBy')}</legend>
-              {CATEGORIES.map((c) => (
-                <label key={c} className="flex min-h-10 cursor-pointer items-center gap-3 text-[15px] text-on-surface">
-                  <input type="radio" name="leaderboard-category" checked={c === category} onChange={() => sortBy(c)} className="size-[18px] shrink-0 accent-primary-container" />
-                  {t(`categories.${c}`)}
-                </label>
-              ))}
-            </fieldset>
-          </FilterPopover>
-        </div>
-        <p className="text-on-surface-variant">
-          {t.rich('current', { category: t(`categories.${category}`), strong: (chunks) => <strong className="font-normal text-primary">{chunks}</strong> })}
-        </p>
+      {/* La catégorie de tri choisie s'affiche dans le bouton du filtre (MPM par défaut). */}
+      <div className="flex flex-wrap items-center gap-3.5">
+        <SearchField id="player-search" label={t('search')} value={draft} onChange={search} />
+        <FilterPopover
+          label={t.rich('filterCurrent', { category: t(`categories.${category}`), strong: (chunks) => <strong className="font-normal text-primary">{chunks}</strong> })}
+          icon="filter_list"
+          chevrons
+          closeLabel={t('close')}
+        >
+          <fieldset className="flex flex-col gap-1.5">
+            <legend className="font-label-code mb-2 text-[11px] font-bold uppercase tracking-[0.2em] text-primary-container">{t('sortBy')}</legend>
+            {CATEGORIES.map((c) => (
+              <PlateOption key={c} type="radio" name="leaderboard-category" checked={c === category} onChange={() => sortBy(c)}>
+                {t(`categories.${c}`)}
+              </PlateOption>
+            ))}
+          </fieldset>
+        </FilterPopover>
       </div>
 
       {podium.length > 0 && <Podium players={podium} category={category} />}

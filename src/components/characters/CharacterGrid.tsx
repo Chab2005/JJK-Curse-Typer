@@ -4,7 +4,7 @@ import { Link } from '@/i18n/navigation';
 import { faceFrame } from '@/components/shared/characterImages';
 import { CHARACTERS } from '@/components/shared/characters';
 import { CHARACTER_STYLES } from './characterStyles';
-import { RUNNER_PLAY, runnerStyle } from './characterSprites';
+import { RUNNER_IDLE, RUNNER_RUN, runnerIdleStyle, runnerStyle } from './characterSprites';
 
 /** Largeur de l'illustration dans la carte : le buste entier, pas seulement le visage. */
 const ART_WIDTH = 500;
@@ -48,7 +48,8 @@ export default function CharacterGrid() {
                       </span>
                       <span aria-hidden="true" className="cut-asym absolute right-3.5 bottom-3.5 hidden bg-primary-container p-px [--b:10px] xl:block">
                         <span className="cut-asym relative block h-[67px] w-[70px] overflow-hidden bg-[rgb(12_3_4/0.85)] [--b:9.5px]">
-                          <span className={`absolute right-[3px] bottom-0 block motion-reduce:[animation:none]! ${RUNNER_PLAY}`} style={runnerStyle(character.id)} />
+                          <span className={`absolute bottom-0 left-1/2 block -translate-x-1/2 motion-reduce:[animation:none]! ${RUNNER_IDLE}`} style={runnerIdleStyle(character.id)} />
+                          <span className={`absolute right-[3px] bottom-0 motion-reduce:[animation:none]! ${RUNNER_RUN}`} style={runnerStyle(character.id)} />
                         </span>
                       </span>
                     </span>

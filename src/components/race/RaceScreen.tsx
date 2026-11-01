@@ -211,7 +211,7 @@ export default function RaceScreen({
             <>
               <RaceTrack runners={trackRunners(seats, standings, you, race.text.length)} banner={bannerText()} nameOf={nameOf} />
 
-              {you !== null && race.bonus && <EnergyBar energy={mine?.energy ?? 0} />}
+              {you !== null && race.bonus && <EnergyBar energy={mine?.energy ?? 0} character={seats.find((seat) => seat.id === you)?.avatar} />}
 
               {you !== null && score && (
                 <RaceHud

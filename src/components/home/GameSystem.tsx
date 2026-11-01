@@ -12,7 +12,7 @@ export default function GameSystem() {
   const t = useTranslations('GameSystem');
 
   return (
-    <section aria-labelledby="system-title" className="torn-top relative overflow-hidden bg-[#1a0f11] px-6 pt-30 pb-[110px]">
+    <section aria-labelledby="system-title" className="torn-y relative overflow-hidden bg-[#1a0f11] px-6 pt-30 pb-[110px]">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_50%_0%,rgb(147_0_10/0.55),transparent_70%),radial-gradient(circle_at_15%_70%,rgb(147_0_10/0.25),transparent_30%),radial-gradient(circle_at_90%_85%,rgb(147_0_10/0.2),transparent_25%)]"

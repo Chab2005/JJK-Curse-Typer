@@ -71,4 +71,18 @@ Stage only the files for this commit (`git add <paths>`, not `git add -A` when s
 git commit -m "<type> : <message>"
 ```
 
-Use a single `-m` so there is no body. Then run `git log --oneline -3` and show the user the resulting commit(s).
+Use a single `-m` so there is no body.
+
+## 5. Reply
+
+Get the new commit(s) with `git log --format='%h %s' -<n>`. Reply with one line per commit, nothing else:
+
+```
+[commit ID] [commit message]
+```
+
+Ex:
+
+```
+a1b2c3d feat : implement lobby chat
+```

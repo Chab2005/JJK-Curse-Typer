@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { useState, useTransition } from 'react';
 import { createLobbyAction } from '@/app/actions/lobbies';
-import BevelFrame, { goldFrame } from '@/components/shared/BevelFrame';
+import ChevronButton from '@/components/shared/ChevronButton';
 import { useRouter } from '@/i18n/navigation';
 
 // Ouvre un nouveau lobby privé dont on est l'hôte (LOB-4) ; un invité passe d'abord par la connexion.
@@ -33,17 +33,17 @@ export default function CreateLobbyButton({ signedIn, align = 'end' }: { signedI
 
   return (
     <div className={`hidden flex-col gap-2 sm:flex ${align === 'end' ? 'items-end' : 'items-center'}`}>
-      <BevelFrame
-        as="button"
+      <ChevronButton
         type="button"
+        variant="primary"
         onClick={create}
         disabled={isCreating}
-        frame={`group inline-flex ${goldFrame} transition-transform hover:-translate-y-0.5 disabled:pointer-events-none disabled:opacity-70`}
-        className="flex min-h-11 items-center gap-2 bg-primary-container px-5 text-[13px] whitespace-nowrap uppercase tracking-[0.12em] text-on-primary-container transition-colors group-hover:bg-inverse-primary"
+        frame="disabled:opacity-70"
+        className="text-[15px] uppercase tracking-[0.12em] whitespace-nowrap"
       >
         <span aria-hidden="true" className={`material-symbols-outlined text-[18px] ${isCreating ? 'animate-spin' : ''}`}>{isCreating ? 'progress_activity' : 'add'}</span>
         {signedIn ? t('create') : t('createGuest')}
-      </BevelFrame>
+      </ChevronButton>
       {failed && (
         <p role="alert" className="text-[14px] text-error">
           {t('createFailed')}

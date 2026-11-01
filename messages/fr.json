@@ -176,41 +176,68 @@
     "intro": "Une course se gagne au clavier, mais l'énergie occulte et les techniques empêchent les meneurs de s'envoler.",
     "type": {
       "title": "Tapez juste, avancez",
-      "text": "Tout le monde reçoit le même texte au même signal. Chaque caractère juste fait avancer votre exorciste sur la piste ; le premier arrivé l'emporte.",
+      "text": "Même texte, même signal pour tous. Chaque caractère juste fait avancer votre exorciste ; le premier arrivé l'emporte.",
       "sample": "les fléaux naissent des émotions humaines"
     },
     "charge": {
       "title": "Chargez l'énergie occulte",
-      "text": "Chaque caractère juste remplit votre barre. Plus votre série sans faute est longue, plus elle se remplit vite, jusqu'à {max, number} EP.",
+      "text": "Chaque caractère juste remplit la barre, plus vite en série sans faute. L'énergie paie vos techniques et votre territoire.",
       "label": "Énergie occulte",
       "max": "/ {max, number} EP",
       "status": {
         "charging": "En charge",
         "streak": "Série de {count} sans faute",
         "full": "Énergie pleine"
-      }
+      },
+      "marker": "{min, number} · territoire"
     },
     "catchUp": {
+      "eyebrow": "Technique",
       "title": "Rattrapez les meneurs",
-      "text": "Chaque exorciste a sa technique, celle de son personnage. Derrière, elle sert à attaquer les trois premiers, et frappe d'autant plus fort que votre retard est grand. Les meneurs ont aussi la leur."
+      "text": "Chaque exorciste a celle de son personnage. Derrière, elle frappe les trois premiers, d'autant plus fort que votre retard est grand."
     },
     "domain": {
       "eyebrow": "Atout ultime",
       "title": "Extension du territoire",
-      "text": "Comme sa technique, le territoire dépend de votre exorciste, mais tous n'en ont pas, même avec une technique. Dès {min, number} EP d'énergie occulte, déployez-le : contrairement aux techniques, il frappe tous les autres exorcistes de la course, meneurs comme poursuivants. Le prix est lourd : votre énergie occulte est entièrement vidée, et votre technique est inutilisable pendant les {seconds} secondes qui suivent.",
-      "example": "Satoru Gojo · Sphère de l'espace infini"
+      "text": "Frappe tous les autres exorcistes de la course, meneurs comme poursuivants. Tous les personnages n'en ont pas."
     },
     "restriction": {
       "eyebrow": "Exception",
       "title": "Restriction céleste",
-      "text": "Certains exorcistes, comme Maki Zenin, sont nés sous une restriction céleste : ils n'ont ni technique, ni extension du territoire. En échange, les territoires adverses n'ont aucun effet sur eux.",
+      "text": "Maki Zenin n'a ni technique ni territoire. En échange, les territoires adverses n'ont aucun effet sur elle.",
       "immune": "Immunisée"
     },
     "rules": {
-      "host": "L'hôte peut désactiver les techniques.",
-      "finish": "Aucun effet ne vous empêche de finir : tous sont limités en temps ou en longueur.",
-      "bots": "Les bots jouent avec les mêmes règles."
-    }
+      "host": {
+        "title": "L'hôte décide",
+        "text": "Avant la course, l'hôte peut désactiver les techniques pour une course au clavier pure."
+      },
+      "finish": {
+        "title": "Tout le monde finit",
+        "text": "Aucun effet ne vous empêche de franchir la ligne : tous sont limités en temps ou en longueur."
+      },
+      "bots": {
+        "title": "Bots à armes égales",
+        "text": "Les bots tapent, chargent et lancent leurs techniques avec exactement les mêmes règles que vous."
+      },
+      "techniques": "Techniques",
+      "on": "Activées",
+      "off": "Désactivées",
+      "same": "Mêmes règles"
+    },
+    "tags": {
+      "max": "Max {max, number} EP",
+      "streak": "Série = charge plus rapide",
+      "top3": "Cible : le top 3",
+      "behind": "+ fort si en retard",
+      "leaders": "Les meneurs aussi",
+      "domainMin": "Dès {min, number} EP",
+      "drain": "Vide l'énergie",
+      "lock": "Technique bloquée {seconds} s",
+      "none": "Ni technique ni territoire",
+      "immune": "Immunisée aux territoires"
+    },
+    "rulesTitle": "Règles communes"
   },
   "TopExorcists": {
     "eyebrow": "Classement",
@@ -456,7 +483,7 @@
     "filter": "Filtre",
     "sortBy": "Trier par",
     "close": "Fermer",
-    "current": "Catégorie : <strong>{category}</strong>",
+    "filterCurrent": "Filtre : <strong>{category}</strong>",
     "categories": {
       "wpm": "MPM",
       "accuracy": "Précision",
@@ -466,11 +493,6 @@
     "units": {
       "wpm": "{value} MPM",
       "score": "{value} pts"
-    },
-    "places": {
-      "1": "Premier · {category}",
-      "2": "Second · {category}",
-      "3": "Troisième · {category}"
     },
     "podium": "Podium",
     "tableCaption": "Classement général, trié par {category}",
@@ -606,6 +628,7 @@
     },
     "energy": {
       "label": "Énergie",
+      "cursedLabel": "Énergie occulte",
       "value": "{value} / {max} EP",
       "full": "Énergie au maximum !"
     },

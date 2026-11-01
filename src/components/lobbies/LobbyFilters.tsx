@@ -1,8 +1,8 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import BevelCheck from '@/components/shared/BevelCheck';
 import FilterPopover from '@/components/shared/FilterPopover';
+import PlateOption from '@/components/shared/PlateOption';
 import { CHAR_KINDS, DEFAULT_LOBBY_FILTERS, type LobbyFilters as Filters, TEXT_LANGUAGES } from './lobbySearch';
 
 /** Ajoute ou retire `item` de la liste selon `checked`. */
@@ -21,31 +21,31 @@ export default function LobbyFilters({ filters, onChange }: { filters: Filters; 
     >
       <div className="flex flex-col gap-5">
         <Group legend={t('language')}>
-          <div className="flex gap-2">
+          <div className="flex gap-1.5">
             {TEXT_LANGUAGES.map((language) => (
-              <BevelCheck
+              <PlateOption
                 key={language}
                 checked={filters.languages.includes(language)}
                 onChange={(checked) => onChange({ ...filters, languages: toggle(filters.languages, language, checked) })}
               >
                 {t(`languages.${language}`)}
-              </BevelCheck>
+              </PlateOption>
             ))}
           </div>
         </Group>
 
         <Group legend={t('chars')} hint={t('charsHint')}>
           {CHAR_KINDS.map((kind) => (
-            <BevelCheck key={kind} checked={filters.chars.includes(kind)} onChange={(checked) => onChange({ ...filters, chars: toggle(filters.chars, kind, checked) })}>
+            <PlateOption key={kind} checked={filters.chars.includes(kind)} onChange={(checked) => onChange({ ...filters, chars: toggle(filters.chars, kind, checked) })}>
               {t(`charKinds.${kind}`)}
-            </BevelCheck>
+            </PlateOption>
           ))}
         </Group>
 
         <Group legend={t('bonus')}>
-          <BevelCheck checked={filters.bonusOnly} onChange={(bonusOnly) => onChange({ ...filters, bonusOnly })}>
+          <PlateOption checked={filters.bonusOnly} onChange={(bonusOnly) => onChange({ ...filters, bonusOnly })}>
             {t('bonusOnly')}
-          </BevelCheck>
+          </PlateOption>
         </Group>
       </div>
     </FilterPopover>
@@ -54,9 +54,9 @@ export default function LobbyFilters({ filters, onChange }: { filters: Filters; 
 
 function Group({ legend, hint, children }: { legend: string; hint?: string; children: React.ReactNode }) {
   return (
-    <fieldset className="flex flex-col gap-2">
-      <legend className="font-label-code mb-2 text-[11px] font-bold uppercase tracking-[0.2em] text-primary">{legend}</legend>
-      {hint && <p className="text-[13px] leading-5 text-outline">{hint}</p>}
+    <fieldset className="flex flex-col gap-1.5">
+      <legend className="font-label-code mb-2 text-[11px] font-bold uppercase tracking-[0.2em] text-primary-container">{legend}</legend>
+      {hint && <p className="mb-1 text-[13px] leading-5 text-outline">{hint}</p>}
       {children}
     </fieldset>
   );

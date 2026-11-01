@@ -176,41 +176,68 @@
     "intro": "A race is won on the keyboard, but cursed energy and techniques stop the leaders from running away with it.",
     "type": {
       "title": "Type right, move forward",
-      "text": "Everyone gets the same text at the same signal. Every correct character moves your exorcist along the track; first to the line wins.",
+      "text": "Same text, same signal for everyone. Every correct character moves your exorcist forward; first to the line wins.",
       "sample": "curses are born from human emotions"
     },
     "charge": {
       "title": "Charge your cursed energy",
-      "text": "Every correct character fills your bar. The longer your flawless streak, the faster it fills, up to {max, number} EP.",
+      "text": "Every correct character fills the bar, faster on a flawless streak. Energy pays for your techniques and your domain.",
       "label": "Cursed energy",
       "max": "/ {max, number} EP",
       "status": {
         "charging": "Charging",
         "streak": "{count} flawless in a row",
         "full": "Energy full"
-      }
+      },
+      "marker": "{min, number} · domain"
     },
     "catchUp": {
+      "eyebrow": "Technique",
       "title": "Catch the leaders",
-      "text": "Every exorcist has a technique: their character's. From behind, it strikes the top three, and hits harder the further behind you are. The leaders have theirs too."
+      "text": "Every exorcist has their character's. From behind, it strikes the top three, and hits harder the further behind you are."
     },
     "domain": {
       "eyebrow": "Ultimate",
       "title": "Domain Expansion",
-      "text": "Like their technique, the domain depends on your exorcist, but not every exorcist has one, even with a technique. From {min, number} EP of cursed energy, unleash it: unlike techniques, it hits every other exorcist in the race, leaders and chasers alike. The price is steep: your cursed energy is fully drained, and your technique can't be used for the next {seconds} seconds.",
-      "example": "Satoru Gojo · Unlimited Void"
+      "text": "Hits every other exorcist in the race, leaders and chasers alike. Not every character has one."
     },
     "restriction": {
       "eyebrow": "Exception",
       "title": "Heavenly Restriction",
-      "text": "Some exorcists, like Maki Zenin, are born under a heavenly restriction: they have no technique and no domain. In exchange, enemy domains have no effect on them.",
+      "text": "Maki Zenin has neither technique nor domain. In exchange, enemy domains have no effect on her.",
       "immune": "Immune"
     },
     "rules": {
-      "host": "The host can turn techniques off.",
-      "finish": "No effect can stop you from finishing: all are limited in time or length.",
-      "bots": "Bots play by the same rules."
-    }
+      "host": {
+        "title": "The host decides",
+        "text": "Before the race, the host can turn techniques off for a pure keyboard race."
+      },
+      "finish": {
+        "title": "Everyone finishes",
+        "text": "No effect can stop you from crossing the line: they are all limited in time or length."
+      },
+      "bots": {
+        "title": "Bots on equal terms",
+        "text": "Bots type, charge and cast their techniques with exactly the same rules as you."
+      },
+      "techniques": "Techniques",
+      "on": "On",
+      "off": "Off",
+      "same": "Same rules"
+    },
+    "tags": {
+      "max": "Max {max, number} EP",
+      "streak": "Streak = faster charge",
+      "top3": "Target: the top 3",
+      "behind": "Stronger when behind",
+      "leaders": "Leaders have one too",
+      "domainMin": "From {min, number} EP",
+      "drain": "Drains your energy",
+      "lock": "Technique locked {seconds} s",
+      "none": "No technique, no domain",
+      "immune": "Immune to domains"
+    },
+    "rulesTitle": "Shared rules"
   },
   "TopExorcists": {
     "eyebrow": "Rankings",
@@ -456,7 +483,7 @@
     "filter": "Filter",
     "sortBy": "Sort by",
     "close": "Close",
-    "current": "Category: <strong>{category}</strong>",
+    "filterCurrent": "Filter: <strong>{category}</strong>",
     "categories": {
       "wpm": "WPM",
       "accuracy": "Accuracy",
@@ -466,11 +493,6 @@
     "units": {
       "wpm": "{value} WPM",
       "score": "{value} pts"
-    },
-    "places": {
-      "1": "First · {category}",
-      "2": "Second · {category}",
-      "3": "Third · {category}"
     },
     "podium": "Podium",
     "tableCaption": "Overall rankings, sorted by {category}",
@@ -606,6 +628,7 @@
     },
     "energy": {
       "label": "Energy",
+      "cursedLabel": "Cursed energy",
       "value": "{value} / {max} EP",
       "full": "Full energy!"
     },

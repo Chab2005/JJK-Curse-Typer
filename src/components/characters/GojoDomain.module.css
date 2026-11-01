@@ -1,0 +1,76 @@
+/* Tunnel centré dans une scène fixe (UI-7, UI-8). */
+.scene {
+  position: relative;
+  isolation: isolate;
+  height: 220px;
+  flex-shrink: 0;
+  overflow: hidden;
+  background: radial-gradient(ellipse at center, #12061e 15%, #10071c 40%, #040108 85%);
+}
+
+.tunnel {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.rays {
+  mask-image: radial-gradient(ellipse at center, transparent 8%, #000 35%);
+}
+
+.streak {
+  stroke-dasharray: 12 100;
+  opacity: .65;
+  animation: void-travel var(--duration) linear var(--delay) infinite;
+}
+
+.blackHole {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  width: 112px;
+  height: 112px;
+  border: 1px solid #f1ddff;
+  border-radius: 50%;
+  background: #000;
+  box-shadow: 0 0 5px 2px #e3b7ffb3, 0 0 17px 6px #a666eb99, 0 0 34px 10px #9438cf40;
+}
+
+.blackHole::before {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border: 1px solid #bd8dec80;
+  border-radius: 50%;
+  box-shadow: 0 0 9px #c590f273;
+}
+
+.aura {
+  position: absolute;
+  bottom: 9px;
+  left: 50%;
+  translate: -50% 0;
+  width: 112px;
+  height: 128px;
+  background: radial-gradient(ellipse, #e8d0ff1f, #af66ff1a 40%, transparent 70%);
+}
+
+.gojo {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  translate: -50% 0;
+  filter: drop-shadow(0 0 2px #f1deffb3) drop-shadow(0 0 8px #bb78ea80) drop-shadow(0 7px 5px #000);
+}
+
+@keyframes void-travel {
+  /* Un cycle correspond exactement à la longueur du motif : aucun saut ni clignotement. */
+  from { stroke-dashoffset: 12; }
+  to { stroke-dashoffset: -100; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .streak { animation: none; stroke-dasharray: none; opacity: .25; }
+}
