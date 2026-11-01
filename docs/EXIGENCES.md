@@ -140,7 +140,7 @@ Résumé : 40 complètes · 34 partielles · 16 non faites (90 exigences).
 | ID | Statut | Fichiers principaux | Tests associés | Notes et choix |
 |---|---|---|---|---|
 | I18N-01 | Partiel | `messages/en.json`, `messages/fr.json` | `tests/messages/messages.test.ts` | Mêmes clés dans les deux langues, vérifié par test. Audit des chaînes restantes à faire. |
-| I18N-02 | Complet | `src/components/layout/LanguageSwitcher.tsx`, `src/i18n/locale-redirect.ts`, `src/proxy.ts` | `tests/i18n/locale-redirect.test.ts`, `tests/components/layout/LanguageSwitcher.test.tsx` | Sélecteur dans l'en-tête de chaque page, choix gardé en cookie, langue du navigateur par défaut. Sous-domaine `fr.` sur le domaine racine, préfixe `/fr` sur un autre hôte (Railway). |
+| I18N-02 | Complet | `src/components/layout/LanguageSwitcher.tsx`, `src/i18n/locale-redirect.ts`, `src/proxy.ts` | `tests/i18n/locale-redirect.test.ts`, `tests/components/layout/LanguageSwitcher.test.tsx` | Sélecteur dans l'en-tête de chaque page, choix gardé en cookie, langue du navigateur par défaut. Français sous le préfixe `/fr`, anglais sans préfixe. |
 | I18N-03 | Partiel | `src/components/profile/*`, `src/components/race/*` | — | Formatage selon la langue dans plusieurs composants ; audit complet à faire. |
 
 ## 6. Qualité
@@ -165,6 +165,6 @@ Résumé : 40 complètes · 34 partielles · 16 non faites (90 exigences).
 
 - **Code de salle** : affiché `XXX-XXX` pour la lisibilité ; le tiret ne fait pas partie des 6 caractères.
 - **Visibilité par défaut** : une nouvelle salle est privée ; l'hôte la passe en « sur code » ou « publique ».
-- **Langue** : anglais sur le domaine racine, français sur `fr.<domaine>` ; sur un hôte sans domaine dédié
-  (Railway), préfixe `/fr`. Le choix explicite (cookie) passe avant la langue du navigateur.
+- **Langue** : anglais sans préfixe, français sous `/fr` (`/fr/lobbies`), quel que soit l'hôte.
+  Le choix explicite (cookie) passe avant la langue du navigateur.
 - **Invités** : leurs résultats sont gardés dans leur cookie et rattachés au compte à l'inscription ou à la connexion.

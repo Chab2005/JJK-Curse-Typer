@@ -13,5 +13,5 @@ export const PAGES = [
   { name: 'not-found', path: '/FOOBAR' },
 ] as const;
 
-/** Origine de chaque langue : anglais sur le domaine racine, français sur fr. (GEN-3). */
-export const ORIGINS = { en: 'http://localhost:3000', fr: 'http://fr.localhost:3000' } as const;
+/** Préfixe de chemin de chaque langue : anglais sans préfixe, français sous /fr (GEN-3). */
+export const LOCALE_PREFIXES = { en: '', fr: '/fr' } as const;
