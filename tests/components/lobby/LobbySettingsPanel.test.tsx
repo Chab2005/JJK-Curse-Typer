@@ -48,7 +48,7 @@ describe('LobbySettingsPanel (LOB-5)', () => {
 
     await user.click(screen.getByRole('button', { name: 'Edit settings' }));
     await user.click(screen.getByRole('button', { name: 'Real text' }));
-    await user.click(screen.getByRole('checkbox', { name: 'Enable bonuses' }));
+    await user.click(screen.getByRole('checkbox', { name: 'Enable techniques' }));
     await user.click(screen.getByRole('checkbox', { name: 'Digits (0-9)' }));
     await user.click(screen.getByRole('combobox', { name: 'Race timer' }));
     await user.click(screen.getByRole('option', { name: '3 min' }));
@@ -66,12 +66,12 @@ describe('LobbySettingsPanel (LOB-5)', () => {
     const { user } = renderWithIntl(<LobbySettingsPanel settings={SETTINGS} participantCount={3} editable onChange={onChange} />);
 
     await user.click(screen.getByRole('button', { name: 'Edit settings' }));
-    await user.click(screen.getByRole('checkbox', { name: 'Enable bonuses' }));
+    await user.click(screen.getByRole('checkbox', { name: 'Enable techniques' }));
     await user.click(screen.getByRole('button', { name: 'Cancel' }));
     expect(onChange).not.toHaveBeenCalled();
 
     await user.click(screen.getByRole('button', { name: 'Edit settings' }));
-    expect(screen.getByRole('checkbox', { name: 'Enable bonuses' })).not.toBeChecked();
+    expect(screen.getByRole('checkbox', { name: 'Enable techniques' })).not.toBeChecked();
   });
 
   it('sends nothing when saved without changes', async () => {

@@ -30,11 +30,11 @@ describe('LobbyBrowser (LOB-2)', () => {
     window.history.replaceState(null, '', '/lobbies?page=2');
     const { user } = renderWithIntl(<LobbyBrowser lobbies={SAMPLE_LOBBIES} signedIn />);
 
-    await user.type(screen.getByRole('searchbox', { name: 'Host or lobby name' }), 'nanami');
+    await user.type(screen.getByRole('searchbox', { name: 'Host or lobby name' }), 'okkotsu');
 
     expect(screen.getByText('1 lobby found')).toBeInTheDocument();
-    expect(rows()[0]).toHaveTextContent('Nanami_Ratio73');
-    expect(window.location.search).toBe('?q=nanami');
+    expect(rows()[0]).toHaveTextContent('Okkotsu_Rika73');
+    expect(window.location.search).toBe('?q=okkotsu');
     expect(screen.queryByRole('navigation', { name: 'Lobby pages' })).not.toBeInTheDocument();
   });
 

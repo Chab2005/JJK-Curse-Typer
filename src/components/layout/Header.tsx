@@ -12,7 +12,7 @@ const NAV = [
   { href: '/', key: 'home' },
   { href: '/lobbies', key: 'arenas' },
   { href: '/leaderboard', key: 'leaderboard' },
-  { href: '/profile', key: 'archives' },
+  { href: '/characters', key: 'characters' },
 ] as const;
 
 export default function Header({ account = null }: { account?: HeaderAccount | null }) {

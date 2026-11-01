@@ -1,5 +1,6 @@
 import { useTranslations } from 'next-intl';
 import type { LobbySummary } from '@/components/lobbies/lobbySearch';
+import SpearArrow from '@/components/shared/SpearArrow';
 import JoinForm from './JoinForm';
 import PublicLobbies from './PublicLobbies';
 
@@ -15,6 +16,11 @@ export default function JoinSection({ publicLobbies, accountName = null, showSam
         <div className="flex flex-col items-center gap-2 text-center">
           <p className="font-label-code text-[12px] font-bold uppercase tracking-[0.32em] text-primary-container">{t('eyebrow')}</p>
           <h2 id="join-title" className="text-[clamp(36px,4.5vw,56px)] leading-tight uppercase tracking-[0.08em]">{t('title')}</h2>
+          <span aria-hidden="true" className="mt-1 flex items-center gap-2.5 text-primary-container">
+            <SpearArrow direction="left" className="h-[30px] w-[90px]" />
+            <span className="size-[9px] rotate-45 bg-primary-container" />
+            <SpearArrow direction="right" className="h-[30px] w-[90px]" />
+          </span>
         </div>
         <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,440px),1fr))] items-start gap-7">
           <JoinForm accountName={accountName} />

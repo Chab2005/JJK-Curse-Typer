@@ -12,7 +12,7 @@ describe('initials', () => {
   });
 
   it('saute les séparateurs en tête', () => {
-    expect(initials('__Nanami--Ratio73')).toBe('NA');
+    expect(initials('__Okkotsu--Rika73')).toBe('OK');
   });
 
   it('renvoie ? pour un nom vide', () => {

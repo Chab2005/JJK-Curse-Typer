@@ -3,6 +3,8 @@ export const PAGES = [
   { name: 'home', path: '/' },
   { name: 'lobbies', path: '/lobbies' },
   { name: 'leaderboard', path: '/leaderboard' },
+  { name: 'characters', path: '/characters' },
+  { name: 'character', path: '/characters/gojo' },
   { name: 'login', path: '/login' },
   { name: 'register', path: '/register' },
   { name: 'profile', path: '/profile' },

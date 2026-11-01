@@ -29,6 +29,7 @@ export default function Footer() {
       <nav aria-label={t('nav')} className="flex flex-wrap justify-center gap-7">
         <FooterLink href="/lobbies">{t('arenas')}</FooterLink>
         <FooterLink href="/leaderboard">{t('leaderboard')}</FooterLink>
+        <FooterLink href="/characters">{t('characters')}</FooterLink>
         <FooterLink href="/profile">{t('profile')}</FooterLink>
       </nav>
       <p className="max-w-[640px] text-[13px] leading-5 text-outline">{t('disclaimer')}</p>
