@@ -9,6 +9,9 @@ import PageIntro from '@/components/shared/PageIntro';
 import type { Locale } from '@/i18n/config';
 import { accountPlayers } from '@/lib/stats';
 
+// Lit la base à chaque requête : la page ne doit pas être prérendue au build (la base n'est pas joignable à ce moment-là).
+export const dynamic = 'force-dynamic';
+
 export async function generateMetadata({ params }: PageProps<'/[locale]/leaderboard'>) {
   const { locale } = await params;
   const t = await getTranslations({ locale: locale as Locale, namespace: 'Leaderboard' });
