@@ -1,0 +1,13 @@
+/* Liaison entre 01 et 02 : un seul chevron immobile, seule l'opacité change. */
+.stepArrow {
+  animation: step-fade 2.8s ease-in-out infinite;
+}
+
+@keyframes step-fade {
+  0%, 100% { opacity: .15; }
+  50% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stepArrow { animation: none; opacity: 1; }
+}
