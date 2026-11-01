@@ -606,6 +606,7 @@
     },
     "energy": {
       "label": "Énergie",
+      "cursedLabel": "Énergie occulte",
       "value": "{value} / {max} EP",
       "full": "Énergie au maximum !"
     },

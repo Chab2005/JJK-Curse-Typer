@@ -256,38 +256,6 @@ kbd,
   50% { opacity: 0.85; transform: scale(1.12); }
 }
 
-/* Course : barre d'énergie en flammes bleues (BON-1). Des langues claires défilent sur un dégradé
-   qui ondule, avec un léger scintillement ; la barre pleine pulse. */
-.energy-flame {
-  background-image:
-    repeating-linear-gradient(105deg, transparent 0 7px, rgb(200 246 255 / 0.45) 7px 9px, transparent 9px 15px),
-    radial-gradient(ellipse 70% 140% at 50% 120%, rgb(232 252 255 / 0.7), transparent 60%),
-    linear-gradient(90deg, #0a2470, #1d5bff 35%, #4cd7f6 70%, #c8f6ff);
-  background-size: 30px 100%, 26px 100%, 200% 100%;
-  box-shadow: 0 0 10px rgb(76 215 246 / 0.75), inset 0 0 6px rgb(200 246 255 / 0.6);
-  animation: energy-flame 1.4s linear infinite, energy-flicker 0.9s steps(3, jump-none) infinite;
-  transition: width 200ms linear;
-}
-
-.energy-full {
-  animation: energy-full 1.2s ease-in-out infinite;
-}
-
-@keyframes energy-flame {
-  from { background-position: 0 0, 0 0, 0% 0; }
-  to { background-position: 30px 0, -26px 0, 200% 0; }
-}
-
-@keyframes energy-flicker {
-  0%, 100% { filter: brightness(1) saturate(1); }
-  50% { filter: brightness(1.25) saturate(1.2); }
-}
-
-@keyframes energy-full {
-  0%, 100% { filter: drop-shadow(0 0 4px rgb(76 215 246 / 0.6)); }
-  50% { filter: drop-shadow(0 0 12px rgb(76 215 246 / 1)); }
-}
-
 /* Course : annonces de la zone d'animation (RACE-5) et décompte (RACE-1). */
 @keyframes race-pop {
   0% { opacity: 0; transform: scale(0.7); }
@@ -326,115 +294,132 @@ kbd,
   70%, 100% { left: calc(var(--finish) * (100% - 36px)); }
 }
 
-/* Barre d'énergie occulte en feu bleu. Deux textures de bruit défilent vers le haut à des vitesses
-   différentes, fondues en « difference », puis sepia + contraste + rotation de teinte en font des flammes.
-   Les flammes penchent comme les bouts de la barre (8px sur 20px, environ 21,8°). */
-.ce {
-  position: relative;
-  height: 96px;
+/* BON-1: anime CE is luminous fluid wrapped in torn black ink, with detached pools. */
+@property --ce-fill {
+  syntax: '<percentage>';
+  inherits: true;
+  initial-value: 0%;
 }
 
-.ce-track {
+.ce {
+  --ce-bar-height: 20px;
+  --ce-light: #50d5df;
+  --ce-hot: #b5eef1;
+  --ce-edge: #087b9b;
+  --ce-ink: #02090f;
+  position: relative;
+  isolation: isolate;
+  height: 112px;
+  pointer-events: none;
+  transition: --ce-fill 160ms linear;
+}
+
+.ce[data-affinity="sukuna"] {
+  --ce-light: #ee123b;
+  --ce-hot: #ff5677;
+  --ce-edge: #8c0028;
+  --ce-ink: #0c0208;
+}
+
+.ce[data-affinity="yuta"] {
+  --ce-light: #e38aca;
+  --ce-hot: #f4c7e9;
+  --ce-edge: #a93184;
+  --ce-ink: #100410;
+}
+
+.ce-compact { --ce-bar-height: 18px; height: 72px; }
+
+.ce-bar {
   position: absolute;
   inset: auto 0 0;
-  height: 20px;
-  background: #131315;
-  box-shadow: inset 0 0 0 1px #2a2a2c;
-  clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
-  transition: box-shadow 0.3s;
+  height: var(--ce-bar-height);
+  clip-path: polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
+  z-index: 0;
 }
 
-.ce-body {
-  position: absolute;
-  inset: 0 auto 0 0;
-  clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
-  background: linear-gradient(90deg, #071a52, #1d5bff 55%, #4cd7f6);
-  transition: width 90ms linear;
-}
-
-/* Les flammes s'arrêtent sur le prolongement du bout biseauté de la barre (30,4px plus loin au sommet de 96px). */
-.ce-fires {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  height: 96px;
-  mix-blend-mode: screen;
-  clip-path: polygon(0 0, calc(100% + 30.4px) 0, calc(100% - 8px) 100%, 0 100%);
-  transition: width 90ms linear;
-}
-
-.ce-fire {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 90px;
-  mix-blend-mode: screen;
-  transform: skewX(-21.8deg);
-  transform-origin: 0 100%;
-  mask-image: linear-gradient(to top, #000 60%, transparent);
-}
-
-.ce-fire-mid {
-  bottom: 10px;
-  left: 6px;
-  height: 72px;
-}
-
-.ce-flames {
+.ce-track, .ce-body, .ce-ticks { position: absolute; inset: 0; }
+.ce-track { background: linear-gradient(180deg, #19212b, #0a0e15); }
+.ce-fill { position: absolute; inset: 0 auto 0 0; width: var(--ce-fill); overflow: hidden; }
+.ce-charge {
   position: absolute;
   inset: 0;
-  background-image:
-    linear-gradient(to bottom, #000 0, rgb(0 0 0 / 0.5) 22%, transparent 60%),
-    linear-gradient(to top, rgb(255 255 255 / 0.4) 0, transparent 38%),
-    url("/images/fire-noise.png"),
-    url("/images/fire-noise.png"),
-    linear-gradient(#000, #000);
-  background-size: 100% 100%, 100% 100%, 180px 420px, 130px 300px, 100% 100%;
-  background-blend-mode: normal, screen, difference, difference, normal;
-  filter: sepia(1) contrast(4) hue-rotate(182deg) saturate(2);
-  animation: ce-burn 5s linear infinite;
+  overflow: hidden;
+  /* One smoothly interpolated reveal; the artwork never changes width while charging. */
+  clip-path: polygon(12px 0, var(--ce-fill) 0, var(--ce-fill) calc(100% - var(--ce-bar-height)), calc(var(--ce-fill) - 12px) 100%, 0 100%, 12px calc(100% - var(--ce-bar-height)));
+  z-index: 1;
 }
+.ce[data-state="empty"] .ce-charge { visibility: hidden; }
 
-.ce-back {
-  transform: translateX(-14px) scaleY(1.12);
-  transform-origin: 50% 100%;
-  filter: sepia(1) contrast(4) hue-rotate(196deg) saturate(2.4) brightness(0.8);
-  opacity: 0.85;
-  animation-duration: 3.7s;
-  animation-delay: -1.8s;
-}
-
-.ce-mid {
-  filter: sepia(1) contrast(4) hue-rotate(178deg) saturate(1.8) brightness(1.1);
-  animation-duration: 4.3s;
-  animation-delay: -2.6s;
-}
-
-.ce-glow {
-  filter: sepia(1) contrast(4) hue-rotate(182deg) saturate(2) blur(10px);
-  opacity: 0.7;
-}
-
-.ce-ticks {
+.ce-field {
   position: absolute;
+  inset: 0;
+}
+.ce-surface { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.ce-skin, .ce-light, .ce-hot {
+  animation: ce-roll 13.7s linear infinite;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+.ce-skin {
+  fill: var(--ce-ink);
+  stroke: var(--ce-edge);
+  stroke-width: 1.3;
+}
+.ce-light { fill: var(--ce-light); stroke: var(--ce-ink); stroke-width: 1.8; }
+.ce-hot { fill: var(--ce-hot); stroke: none; }
+.ce[data-affinity="sukuna"] .ce-hot { opacity: 0.42; }
+
+.ce-fragments { position: absolute; inset: 0; }
+.ce-fragment {
+  position: absolute;
+  bottom: 6%;
+  overflow: visible;
+  fill: var(--ce-light);
+  stroke: var(--ce-ink);
+  stroke-width: 3;
+  opacity: 0;
+  animation: ce-drift var(--duration) var(--delay) linear infinite;
+}
+.ce-fragment:nth-child(3n) { fill: var(--ce-ink); stroke: var(--ce-edge); stroke-width: 1.5; }
+
+.ce-body {
+  background:
+    linear-gradient(180deg, var(--ce-light), var(--ce-edge) 65%, var(--ce-ink));
+  opacity: 0.92;
+}
+.ce-current {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 2px;
+  background: var(--ce-hot);
+  opacity: 0.35;
+}
+.ce-ticks {
   inset: auto 0 0;
-  height: 20px;
-  clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
-  background: repeating-linear-gradient(90deg, transparent 0 calc(100% / 15 - 2px), rgb(14 14 16 / 0.8) calc(100% / 15 - 2px) calc(100% / 15));
+  height: var(--ce-bar-height);
+  display: flex;
+  z-index: 2;
+  clip-path: polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
 }
+.ce-ticks span { flex: 1; border-right: 2px solid rgb(3 8 14 / 0.85); box-shadow: 1px 0 rgb(200 219 232 / 0.2); transform: skewX(-15deg); }
+.ce-ticks span:last-child { border: 0; }
 
-.ce-full .ce-flames {
-  animation-duration: 3s;
+@keyframes ce-roll {
+  0%, 100% { d: var(--ce-shape-0); }
+  12.5% { d: var(--ce-shape-1); }
+  25% { d: var(--ce-shape-2); }
+  37.5% { d: var(--ce-shape-3); }
+  50% { d: var(--ce-shape-4); }
+  62.5% { d: var(--ce-shape-5); }
+  75% { d: var(--ce-shape-6); }
+  87.5% { d: var(--ce-shape-7); }
 }
-
-.ce-full .ce-track {
-  box-shadow: inset 0 0 0 1px #4cd7f6, 0 0 22px rgb(76 215 246 / 0.65);
-}
-
-@keyframes ce-burn {
-  from { background-position: 0 0, 0 0, 180px 2520px, 0 2100px, 0 0; }
-  to { background-position: 0 0, 0 0, 0 0, 260px 0, 0 0; }
+@keyframes ce-drift {
+  0% { opacity: 0; transform: translate(0, 0) scale(0.5) rotate(-12deg); }
+  16% { opacity: 1; }
+  68% { opacity: 0.85; }
+  100% { opacity: 0; transform: translate(var(--drift), -65px) scale(0.35) rotate(38deg); }
 }
 
 /* Course de l'étape 3 : un poursuivant lance sa technique sur un meneur, qui encaisse un éclair façon Black Flash. */
@@ -606,12 +591,14 @@ kbd,
 
 /* Animations jamais bloquantes et coupées sur demande (UI-7, UI-8). */
 @media (prefers-reduced-motion: reduce) {
-  .energy-flame,
-  .energy-full,
   .race-pop,
   .guide-typed,
   .guide-runner,
-  .ce-flames,
+  .ce-skin,
+  .ce-light,
+  .ce-hot,
+  .ce-fragment,
+  .ce-body,
   .guide-racer,
   .guide-cast,
   .guide-charge,
@@ -622,6 +609,10 @@ kbd,
   .guide-hr-guard,
   .guide-hr-tag {
     animation: none;
+  }
+
+  .ce {
+    transition: none;
   }
 
   .guide-dom-fill,

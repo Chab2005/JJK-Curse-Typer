@@ -145,6 +145,11 @@ describe('RaceScreen', () => {
     expect(screen.queryByRole('meter', { name: 'Energy' })).not.toBeInTheDocument();
   });
 
+  it.each(['sukuna', 'yuta', 'gojo'] as const)('uses the player character for %s energy', (avatar) => {
+    start({ race: race({ bonus: true, seats: [{ ...SEATS[0], avatar }, ...SEATS.slice(1)] }) });
+    expect(screen.getByRole('meter', { name: 'Energy' })).toHaveAttribute('data-affinity', avatar === 'sukuna' ? 'sukuna' : avatar === 'yuta' ? 'yuta' : 'default');
+  });
+
   it('puts late arrivals in spectator mode', () => {
     start({ you: null });
 

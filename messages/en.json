@@ -606,6 +606,7 @@
     },
     "energy": {
       "label": "Energy",
+      "cursedLabel": "Cursed energy",
       "value": "{value} / {max} EP",
       "full": "Full energy!"
     },

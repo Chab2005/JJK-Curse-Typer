@@ -1,46 +1,25 @@
 import { useTranslations } from 'next-intl';
-import { ENERGY_MAX, ENERGY_SECTIONS, sectionFill } from '@/game/energy';
+import { ENERGY_MAX } from '@/game/energy';
+import CursedEnergyMeter from '@/components/shared/CursedEnergyMeter';
+import type { CharacterId } from '@/components/shared/characters';
 
-const SECTIONS = Array.from({ length: ENERGY_SECTIONS }, (_, i) => i);
-
-// Énergie du joueur (BON-1), montrée seulement quand les bonus sont activés : 15 sections de 100 EP
-// en parallélogrammes, remplies de flammes bleues. La valeur est écrite en toutes lettres (UI-8).
-export default function EnergyBar({ energy }: { energy: number }) {
+// Énergie du joueur (BON-1), montrée seulement quand les bonus sont activés (UI-8).
+export default function EnergyBar({ energy, character }: { energy: number; character?: CharacterId | null }) {
   const t = useTranslations('Race.energy');
-  const full = energy >= ENERGY_MAX;
-  const value = t('value', { value: energy, max: ENERGY_MAX });
+  const amount = Math.max(0, Math.min(ENERGY_MAX, energy));
+  const full = amount === ENERGY_MAX;
+  const value = t('value', { value: amount, max: ENERGY_MAX });
+  const color = character === 'sukuna' ? 'text-primary' : character === 'yuta' ? 'text-[#f587d7]' : 'text-tertiary';
 
   return (
-    <div className="flex items-center gap-4">
-      <span
-        aria-hidden="true"
-        className={`flex size-10 shrink-0 items-center justify-center rounded-[50%] border-2 border-tertiary bg-surface-container-lowest shadow-[0_0_14px_rgb(76_215_246/0.55)] ${full ? 'energy-full' : ''}`}
-      >
-        <span className="material-symbols-outlined text-[22px] text-tertiary">local_fire_department</span>
-      </span>
-
-      <div
-        role="meter"
-        aria-label={t('label')}
-        aria-valuemin={0}
-        aria-valuemax={ENERGY_MAX}
-        aria-valuenow={energy}
-        aria-valuetext={value}
-        className={`flex h-5 flex-1 -skew-x-[30deg] gap-[3px] ${full ? 'energy-full' : ''}`}
-      >
-        {SECTIONS.map((index) => {
-          const fill = sectionFill(energy, index);
-          return (
-            <span key={index} data-section={index} data-fill={fill} className="relative flex-1 overflow-hidden bg-surface-container-high ring-1 ring-outline-variant/70 ring-inset">
-              {fill > 0 && <span className="energy-flame absolute inset-y-0 left-0" style={{ width: `${fill * 100}%` }} />}
-            </span>
-          );
-        })}
+    <div className="min-w-0">
+      <div className={`flex min-h-9 items-center justify-between gap-3 font-label-code text-[12px] ${color}`}>
+        <span className="uppercase tracking-[0.16em]">{t('cursedLabel')}</span>
+        <span className="shrink-0 tabular-nums">{value}</span>
       </div>
-
-      <p className="flex shrink-0 flex-col items-end leading-tight">
-        <span className="font-label-code text-[13px] text-tertiary">{value}</span>
-        {full && <span className="font-label-code text-[11px] uppercase tracking-[0.14em] text-tertiary-fixed">{t('full')}</span>}
+      <CursedEnergyMeter energy={amount} character={character} label={t('label')} valueText={value} compact />
+      <p className={`mt-2 min-h-4 text-right font-label-code text-[11px] uppercase tracking-[0.14em] ${color}`}>
+        {full ? t('full') : '\u00a0'}
       </p>
     </div>
   );
