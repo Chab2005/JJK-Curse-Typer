@@ -88,10 +88,8 @@ export default function GameGuide() {
               </div>
             </div>
 
-            <div aria-hidden="true" className="relative flex items-center justify-center lg:-my-11">
-              <svg viewBox="0 0 24 48" preserveAspectRatio="none" fill="none" className={`${styles.stepArrow} h-12 w-6 rotate-90 text-primary-container lg:absolute lg:inset-y-0 lg:h-full lg:rotate-0`}>
-                <path d="M4 0 20 24 4 48" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
-              </svg>
+            <div aria-hidden="true" className="relative min-h-12">
+              <span className={styles.stepDivider} />
             </div>
 
             <div className="flex flex-col gap-[22px]">

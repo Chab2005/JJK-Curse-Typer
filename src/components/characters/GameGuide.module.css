@@ -1,13 +1,8 @@
-/* Liaison entre 01 et 02 : un seul chevron immobile, seule l'opacité change. */
-.stepArrow {
-  animation: step-fade 2.8s ease-in-out infinite;
-}
-
-@keyframes step-fade {
-  0%, 100% { opacity: .15; }
-  50% { opacity: 1; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .stepArrow { animation: none; opacity: 1; }
+/* Séparateur vertical fixe, en retrait du cadre et transparent aux deux extrémités. */
+.stepDivider {
+  position: absolute;
+  inset-block: 0;
+  left: 50%;
+  width: 1px;
+  background: linear-gradient(to bottom, transparent, var(--color-primary-container) 22%, var(--color-primary-container) 78%, transparent);
 }
