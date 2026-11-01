@@ -184,3 +184,12 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 # Return messages after a prompt
 
 No fluff just what was done
+
+## After a commit
+
+When told to commit, only reply with one line per commit, nothing else:
+
+    [commit ID] [commit message]
+
+Ex:
+    a1b2c3d feat : implement lobby chat
