@@ -62,10 +62,10 @@ export default function Hero({ onlineCount }: { onlineCount: number | null }) {
           )}
         </p>
 
-        <div className="relative flex flex-wrap justify-center gap-4">
+        {/* « Jouer maintenant » au-dessus, « Rejoindre par code » en dessous, sans chevrons. */}
+        <div className="relative flex flex-col items-center gap-4">
           <PlayNowButton />
-          <ChevronButton as={SmoothScrollLink} href="#join" className="gap-2.5 text-[17px] uppercase tracking-[0.12em] whitespace-nowrap">
-            <span aria-hidden="true" className="material-symbols-outlined text-[20px] text-primary">pin</span>
+          <ChevronButton as={SmoothScrollLink} href="#join" chevrons={false} className="text-[17px] uppercase tracking-[0.12em] whitespace-nowrap">
             {t('joinByCode')}
           </ChevronButton>
         </div>

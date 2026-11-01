@@ -6,6 +6,7 @@ import ChevronButton from '@/components/shared/ChevronButton';
 import { Link } from '@/i18n/navigation';
 import { faceFrame, findCharacterImage } from '@/components/shared/characterImages';
 import { CHARACTERS, type CharacterId } from '@/components/shared/characters';
+import { RUNNER_PLAY, runnerStyle } from '@/components/characters/characterSprites';
 
 // Illustration en pied du personnage : public/images/characters/<id>.webp (ou .png, .jpg…),
 // agrandie et cadrée sur le visage (`face`, en fractions de l'illustration).
@@ -23,6 +24,10 @@ function characterFiles(): string[] {
   }
 }
 
+// Personnages mis en avant sur l'accueil, dans l'ordre d'affichage.
+const FEATURED: readonly CharacterId[] = ['yuji', 'megumi', 'sukuna', 'gojo'];
+const FEATURED_CHARACTERS = FEATURED.map((id) => CHARACTERS.find((character) => character.id === id)!);
+
 // Couleurs propres aux cartes de l'accueil.
 const CARD_STYLES: Record<CharacterId, { tint: string; ink: string; stroke: string }> = {
   yuji: { tint: 'bg-[radial-gradient(ellipse_90%_70%_at_50%_35%,rgb(225_29_72/0.55),#131315_75%)]', ink: 'text-primary', stroke: '[-webkit-text-stroke:2px_#ffb3b6]' },
@@ -30,9 +35,9 @@ const CARD_STYLES: Record<CharacterId, { tint: string; ink: string; stroke: stri
   nobara: { tint: 'bg-[radial-gradient(ellipse_90%_70%_at_50%_35%,rgb(147_0_10/0.6),#131315_75%)]', ink: 'text-primary-fixed', stroke: '[-webkit-text-stroke:2px_#ffdada]' },
   gojo: { tint: 'bg-[radial-gradient(ellipse_90%_70%_at_50%_35%,rgb(0_127_149/0.55),#131315_75%)]', ink: 'text-tertiary-fixed', stroke: '[-webkit-text-stroke:2px_#acedff]' },
   maki: { tint: 'bg-[radial-gradient(ellipse_90%_70%_at_50%_35%,rgb(92_63_64/0.75),#131315_75%)]', ink: 'text-on-surface-variant', stroke: '[-webkit-text-stroke:2px_#e5bdbe]' },
-  nanami: { tint: 'bg-[radial-gradient(ellipse_90%_70%_at_50%_35%,rgb(0_127_149/0.4),#131315_75%)]', ink: 'text-tertiary', stroke: '[-webkit-text-stroke:2px_#4cd7f6]' },
+  yuta: { tint: 'bg-[radial-gradient(ellipse_90%_70%_at_50%_35%,rgb(0_127_149/0.4),#131315_75%)]', ink: 'text-tertiary', stroke: '[-webkit-text-stroke:2px_#4cd7f6]' },
   todo: { tint: 'bg-[radial-gradient(ellipse_90%_70%_at_50%_35%,rgb(225_29_72/0.35),#131315_75%)]', ink: 'text-primary', stroke: '[-webkit-text-stroke:2px_#ffb3b6]' },
-  toge: { tint: 'bg-[radial-gradient(ellipse_90%_70%_at_50%_35%,rgb(49_49_192/0.45),#131315_75%)]', ink: 'text-secondary', stroke: '[-webkit-text-stroke:2px_#c0c1ff]' },
+  sukuna: { tint: 'bg-[radial-gradient(ellipse_90%_70%_at_50%_35%,rgb(147_0_10/0.7),#131315_75%)]', ink: 'text-primary', stroke: '[-webkit-text-stroke:2px_#ffb3b6]' },
 };
 
 export default function Characters() {
@@ -46,52 +51,62 @@ export default function Characters() {
       </p>
 
       <div className="relative mx-auto flex max-w-[1240px] flex-col gap-10">
-        <div className="flex flex-wrap items-end justify-between gap-5">
-          <div className="flex flex-col gap-2">
-            <p className="font-label-code text-[12px] font-bold uppercase tracking-[0.32em] text-primary-container">{t('eyebrow')}</p>
-            <h2 id="characters-title" className="text-[clamp(36px,4.5vw,56px)] leading-tight uppercase tracking-[0.08em]">{t('title')}</h2>
-          </div>
-          <ChevronButton as={Link} href="/lobbies" className="gap-2.5 text-sm uppercase tracking-[0.16em] whitespace-nowrap">
-            {t('cta')}
-            <span aria-hidden="true" className="material-symbols-outlined text-lg">arrow_forward</span>
-          </ChevronButton>
+        <div className="flex flex-col gap-2">
+          <p className="font-label-code text-[12px] font-bold uppercase tracking-[0.32em] text-primary-container">{t('eyebrow')}</p>
+          <h2 id="characters-title" className="text-[clamp(36px,4.5vw,56px)] leading-tight uppercase tracking-[0.08em]">{t('title')}</h2>
         </div>
 
         <ul className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,260px),1fr))] gap-[18px]">
-          {CHARACTERS.map((character, index) => {
+          {FEATURED_CHARACTERS.map((character) => {
             const image = findCharacterImage(character.id, files);
             const style = CARD_STYLES[character.id];
             return (
+              // Carte F du canvas : biseau à double filet (cadre, vide, filet, face) ; au survol seulement,
+              // le cadre s'allume, la carte luit en rouge et monte de 6px.
               <li
                 key={character.id}
-                className={`group relative h-[340px] overflow-hidden shadow-[0_0_0_1px_#2a2a2c,0_16px_28px_rgb(0_0_0/0.5)] transition duration-200 hover:-translate-y-1.5 hover:shadow-[0_0_0_1px_#ffb3b6,0_24px_40px_rgb(0_0_0/0.6)] ${style.tint}`}
+                className="group relative h-[340px] transition-[translate,filter] duration-200 hover:-translate-y-1.5 hover:brightness-115 hover:drop-shadow-[0_0_14px_rgb(225_29_72/0.45)] motion-reduce:transition-none"
               >
-                {image ? (
-                  <Image
-                    src={image}
-                    alt=""
-                    width={904}
-                    height={1270}
-                    unoptimized
-                    style={{ ...faceFrame(character.face, FACE_ANCHOR_Y), transformOrigin: `${character.face.x * 100}% ${character.face.y * 100}%` }}
-                    className="absolute h-auto max-w-none transition-transform duration-300 group-hover:scale-105"
-                  />
-                ) : (
-                  <span aria-hidden="true" className={`absolute right-3.5 -top-2.5 text-[230px] leading-none text-transparent opacity-75 ${style.stroke}`}>
-                    {character.name[0]}
-                  </span>
-                )}
-                <p className="font-label-code absolute left-[18px] top-[18px] bg-surface-container-lowest/70 px-1.5 py-0.5 text-[11px] tracking-[0.2em] text-on-surface-variant">
-                  {t('number', { number: String(index + 1).padStart(2, '0') })}
-                </p>
-                <div className="absolute inset-x-0 bottom-0 bg-linear-to-b from-transparent to-surface-container-lowest/95 to-55% px-[18px] pt-10 pb-4">
-                  <p className="font-grotesk text-xl font-semibold text-on-primary-container">{character.name}</p>
-                  <p className={`text-[15px] ${style.ink}`}>{t(`techniques.${character.id}`)}</p>
+                <div className="bevel-var size-full bg-[#8f1022] p-px transition-colors duration-200 [--b:14px] group-hover:bg-primary-container">
+                  <div className="bevel-var size-full bg-[#0b0405] p-[3px] [--b:13.5px]">
+                    <div className="bevel-var size-full bg-primary-container/40 p-px [--b:12px]">
+                      <div className={`bevel-var relative size-full overflow-hidden [--b:11.5px] ${style.tint}`}>
+                        {image ? (
+                          <Image
+                            src={image}
+                            alt=""
+                            width={904}
+                            height={1270}
+                            unoptimized
+                            style={{ ...faceFrame(character.face, FACE_ANCHOR_Y), transformOrigin: `${character.face.x * 100}% ${character.face.y * 100}%` }}
+                            className="absolute h-auto max-w-none transition-transform duration-300 group-hover:scale-105"
+                          />
+                        ) : (
+                          <span aria-hidden="true" className={`absolute right-3.5 -top-2.5 text-[230px] leading-none text-transparent opacity-75 ${style.stroke}`}>
+                            {character.name[0]}
+                          </span>
+                        )}
+                        <div className="absolute inset-x-0 bottom-0 bg-linear-to-b from-transparent to-surface-container-lowest/95 to-55% pt-10 pr-[94px] pb-4 pl-[18px]">
+                          <p className="font-grotesk text-xl font-semibold text-on-primary-container">{character.name}</p>
+                          <p className={`text-[15px] ${style.ink}`}>{t(`techniques.${character.id}`)}</p>
+                        </div>
+                        <div aria-hidden="true" className="cut-asym absolute right-3.5 bottom-3.5 bg-primary-container p-px [--b:10px]">
+                          <div className="cut-asym relative h-[67px] w-[70px] overflow-hidden bg-[rgb(12_3_4/0.85)] [--b:9.5px]">
+                            <span className={`absolute right-[3px] bottom-0 block motion-reduce:[animation:none]! ${RUNNER_PLAY}`} style={runnerStyle(character.id)} />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </li>
             );
           })}
         </ul>
+
+        <ChevronButton as={Link} href="/characters" frame="self-center" className="text-sm uppercase tracking-[0.16em] whitespace-nowrap">
+          {t('cta')}
+        </ChevronButton>
       </div>
     </section>
   );

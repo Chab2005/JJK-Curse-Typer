@@ -32,10 +32,7 @@ export default function PlayNowButton() {
 
   return (
     <>
-      <ChevronButton type="button" variant="primary" onClick={play} disabled={isPending} className="gap-3 text-[19px] uppercase tracking-[0.12em] whitespace-nowrap">
-        <span aria-hidden="true" className={`material-symbols-outlined w-[22px] text-[22px] ${isPending ? 'animate-spin' : ''}`}>
-          {isPending ? 'progress_activity' : 'swords'}
-        </span>
+      <ChevronButton type="button" variant="primary" onClick={play} disabled={isPending} aria-busy={isPending} className="text-[19px] uppercase tracking-[0.12em] whitespace-nowrap">
         {t('play')}
       </ChevronButton>
       {problem && (

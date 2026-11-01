@@ -52,13 +52,12 @@ export default function LanguageSwitcher() {
         onClick={() => setOpen((value) => !value)}
         className="font-label-code text-[11px] uppercase tracking-[0.16em] whitespace-nowrap"
       >
-        <svg aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.2" className="size-3.5 text-on-surface-variant">
-          <circle cx="8" cy="8" r="7" />
-          <ellipse cx="8" cy="8" rx="3" ry="7" />
-          <path d="M1 8h14M2.2 4.5h11.6M2.2 11.5h11.6" />
-        </svg>
+        <span aria-hidden="true" className="material-symbols-outlined text-[16px] normal-case tracking-normal text-on-surface-variant">
+          translate
+        </span>
         <span>
-          {t('label')} · <b className="text-primary">{current}</b>
+          <span className="sr-only">{t('label')} · </span>
+          <b className="text-primary">{current}</b>
         </span>
         <ArrowHead className={`size-2 text-primary transition-transform duration-250 motion-reduce:transition-none ${open ? '' : 'rotate-180'}`} />
       </ChevronButton>
