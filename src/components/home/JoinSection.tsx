@@ -9,6 +9,8 @@ export default function JoinSection({ publicLobbies, accountName = null, showSam
 
   return (
     <section id="join" aria-labelledby="join-title" className="relative -mt-[26px] scroll-mt-19 overflow-hidden bg-surface px-6 py-24">
+      {/* Lueur rouge au centre de la section, qui prolonge l'amorce du bas du héros */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_55%_40%_at_50%_50%,rgb(147_0_10/0.34),rgb(147_0_10/0.12)_50%,transparent_75%),linear-gradient(to_bottom,rgb(18_7_8/0.6),rgb(18_7_8)_50%,transparent)]" />
       <p aria-hidden="true" className="text-stroke-ghost pointer-events-none absolute left-1/2 top-6 hidden -translate-x-1/2 whitespace-nowrap text-[190px] uppercase leading-none tracking-[0.08em] lg:block">
         {t('watermark')}
       </p>

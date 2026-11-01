@@ -16,6 +16,8 @@ export default function Hero({ onlineCount }: { onlineCount: number | null }) {
     >
       {/* Énergie occulte : halo, éclairs Black Flash et taches */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_40%_45%_at_50%_50%,rgb(225_29_72/0.4),rgb(147_0_10/0.18)_45%,transparent_75%)]" />
+      {/* Amorce de la lueur centrée dans « Rejoindre » : même bordeaux que le bas de la page */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-[450px] bg-[linear-gradient(to_bottom,transparent,rgb(18_7_8/0.6))]" />
       <BlackFlash />
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_78%,rgb(147_0_10/0.35),transparent_22%),radial-gradient(circle_at_86%_22%,rgb(147_0_10/0.3),transparent_24%),radial-gradient(circle_at_14%_22%,rgb(147_0_10/0.3),transparent_24%),radial-gradient(circle_at_78%_88%,rgb(147_0_10/0.25),transparent_18%)]" />
       <p aria-hidden="true" className="hidden lg:block absolute left-10 top-1/2 -translate-y-1/2 [writing-mode:vertical-rl] whitespace-nowrap font-label-code text-[11px] uppercase tracking-[0.5em] text-outline-variant">
