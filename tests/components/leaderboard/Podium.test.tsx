@@ -6,12 +6,13 @@ import { SAMPLE_PLAYERS } from '@/components/leaderboard/samplePlayers';
 import { renderWithIntl } from '../../render';
 
 describe('Podium (smoke)', () => {
-  it('renders the top 3 with their place', () => {
+  it('renders the top 3 with their rank, without a place label', () => {
     renderWithIntl(<Podium players={rankPlayers(SAMPLE_PLAYERS, 'wpm').slice(0, 3)} category="wpm" />);
 
     const podium = within(screen.getByRole('region', { name: 'Podium' }));
     expect(podium.getAllByRole('link')).toHaveLength(3);
-    expect(podium.getByText('First · WPM')).toBeInTheDocument();
+    expect(podium.getByText('1')).toBeInTheDocument();
+    expect(podium.queryByText('First · WPM')).not.toBeInTheDocument();
     expect(podium.getByText('182 WPM')).toBeInTheDocument();
   });
 

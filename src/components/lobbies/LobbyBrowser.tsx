@@ -3,6 +3,8 @@
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
+import ChevronButton from '@/components/shared/ChevronButton';
+import HexCard from '@/components/shared/HexCard';
 import Pagination from '@/components/shared/Pagination';
 import SearchField from '@/components/shared/SearchField';
 import { writeSearch } from '@/components/shared/urlSearch';
@@ -42,13 +44,16 @@ export default function LobbyBrowser({ lobbies, signedIn }: { lobbies: LobbySumm
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-wrap items-stretch gap-3">
+      <div className="flex flex-wrap items-center gap-3.5">
         <SearchField id="lobby-search" label={t('search')} value={draft} onChange={search} />
         <LobbyFilters filters={current} onChange={applyFilters} />
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p aria-live="polite" className="font-label-code text-[12px] uppercase tracking-[0.16em] text-tertiary">
+        <p aria-live="polite" className="font-label-code flex items-center gap-2.5 text-[12px] uppercase tracking-[0.16em] text-tertiary">
+          <svg aria-hidden="true" viewBox="0 0 10 10" className="size-[7px] rotate-90">
+            <path d="M5 0 10 10 5 7 0 10z" fill="currentColor" />
+          </svg>
           {t('resultCount', { count: results.length })}
         </p>
         {results.length > 0 && <CreateLobbyButton signedIn={signedIn} />}
@@ -57,20 +62,23 @@ export default function LobbyBrowser({ lobbies, signedIn }: { lobbies: LobbySumm
       {results.length > 0 ? (
         <LobbyTable lobbies={view.items} />
       ) : (
-        <div className="flex flex-col items-center gap-4 border border-dashed border-outline-variant px-6 py-14 text-center">
-          <p className="text-lg text-on-surface-variant">{t('empty')}</p>
-          <button
-            type="button"
-            onClick={() => {
-              setDraft('');
-              writeSearch(lobbySearchQuery(DEFAULT_LOBBY_FILTERS, 1), 'push');
-            }}
-            className="min-h-11 border border-on-surface px-5 text-[13px] uppercase tracking-[0.14em] transition-colors hover:bg-on-surface hover:text-surface-container-lowest"
-          >
-            {t('clear')}
-          </button>
-          <CreateLobbyButton signedIn={signedIn} align="center" />
-        </div>
+        <HexCard className="flex flex-col items-center gap-[18px] px-8 py-11 text-center sm:px-16">
+          <p className="text-[19px] text-on-surface-variant">{t('empty')}</p>
+          <div className="flex flex-wrap justify-center gap-3.5">
+            <ChevronButton
+              type="button"
+              size="sm"
+              onClick={() => {
+                setDraft('');
+                writeSearch(lobbySearchQuery(DEFAULT_LOBBY_FILTERS, 1), 'push');
+              }}
+              className="font-label-code text-[11px] uppercase tracking-[0.16em]"
+            >
+              {t('clear')}
+            </ChevronButton>
+            <CreateLobbyButton signedIn={signedIn} align="center" />
+          </div>
+        </HexCard>
       )}
 
       {view.pageCount > 1 && <Pagination label={t('pagination')} page={view.page} pageCount={view.pageCount} onChange={goToPage} />}

@@ -11,6 +11,7 @@ describe('LeaderboardBrowser (STAT-8)', () => {
     renderWithIntl(<LeaderboardBrowser players={SAMPLE_PLAYERS} />);
 
     expect(screen.getByText('WPM', { selector: 'strong' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Filter: WPM' })).toBeInTheDocument();
     const places = within(podium()!).getAllByRole('link');
     expect(places.map((link) => link.getAttribute('aria-label'))).toEqual([
       "View Satoru_Infinity's profile",

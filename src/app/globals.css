@@ -197,6 +197,11 @@ kbd,
   clip-path: polygon(var(--b) 0, calc(100% - var(--b)) 0, 100% var(--b), 100% calc(100% - var(--b)), calc(100% - var(--b)) 100%, var(--b) 100%, 0 calc(100% - var(--b)), 0 var(--b));
 }
 
+/* Bouts pointus réglables (--h = longueur des pointes) : champs, rangées et plaques des arènes et du classement. */
+@utility hx-cut {
+  clip-path: polygon(var(--h) 0, calc(100% - var(--h)) 0, 100% 50%, calc(100% - var(--h)) 100%, var(--h) 100%, 0 50%);
+}
+
 /* Deux coins coupés seulement, en haut à gauche et en bas à droite (--b). */
 @utility cut-asym {
   clip-path: polygon(var(--b) 0, 100% 0, 100% calc(100% - var(--b)), calc(100% - var(--b)) 100%, 0 100%, 0 var(--b));
@@ -285,13 +290,13 @@ kbd,
 
 /* Coureurs de la piste : chacun s'arrête à `--finish` (fraction de la piste). */
 .guide-runner {
-  left: calc(var(--finish) * (100% - 36px));
+  left: calc(var(--finish) * (100% - 56px));
   animation: guide-run 5s linear infinite;
 }
 
 @keyframes guide-run {
   0% { left: 0; }
-  70%, 100% { left: calc(var(--finish) * (100% - 36px)); }
+  70%, 100% { left: calc(var(--finish) * (100% - 56px)); }
 }
 
 /* BON-1: anime CE is luminous fluid wrapped in torn black ink, with detached pools. */
@@ -422,7 +427,7 @@ kbd,
   100% { opacity: 0; transform: translate(var(--drift), -65px) scale(0.35) rotate(38deg); }
 }
 
-/* Course de l'étape 3 : un poursuivant lance sa technique sur un meneur, qui encaisse un éclair façon Black Flash. */
+/* Course de l'étape 3 : le dernier lance sa technique sur le meneur, qui encaisse un éclair façon Black Flash. */
 .guide-racer {
   animation: guide-racer-hit 4s ease-out infinite;
 }
@@ -431,11 +436,6 @@ kbd,
   opacity: 0;
   box-shadow: 0 0 10px 4px rgb(225 29 72 / 0.9), 0 0 2px 1px #fff;
   animation: guide-cast 4s cubic-bezier(0.55, 0, 0.85, 0.55) infinite;
-}
-
-.guide-charge {
-  opacity: 0;
-  animation: guide-charge 4s ease-out infinite;
 }
 
 .guide-spark {
@@ -458,13 +458,6 @@ kbd,
   55%, 100% { left: var(--x2); top: var(--y2); opacity: 0; }
 }
 
-@keyframes guide-charge {
-  0%, 22% { transform: scale(0.3); opacity: 0; }
-  28% { opacity: 1; }
-  36% { transform: scale(1); opacity: 0; }
-  100% { opacity: 0; }
-}
-
 @keyframes guide-spark-flicker {
   0% { opacity: 0; }
   55% { opacity: 1; }
@@ -480,113 +473,120 @@ kbd,
   58%, 100% { transform: scale(1) rotate(14deg); }
 }
 
-/* Extension du territoire : des cercles s'ouvrent depuis le centre, puis le sceau apparaît. */
-.guide-dom-fill {
-  transform: scale(0);
-  animation: guide-dom-fill 5s cubic-bezier(0.2, 0.8, 0.3, 1) infinite;
+/* Extension du territoire (sphère de l'espace infini) et restriction céleste : étoiles qui foncent vers l'avant,
+   rayons qui tournent et anneau blanc derrière l'exorciste ; Maki court dans une bulle que le vide n'atteint pas. */
+.guide-void {
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 46%, #16233d 0%, #060a16 45%, #000 85%);
 }
 
-.guide-dom-ring {
+.guide-void-rays {
+  position: absolute;
+  inset: -60%;
+  background: repeating-conic-gradient(from 0deg at 50% 50%, rgb(190 225 255 / 0) 0deg 6deg, rgb(190 225 255 / 0.13) 6deg 7deg);
+  mask-image: radial-gradient(circle at 50% 50%, transparent 6%, #000 16%, transparent 48%);
+  animation: guide-spin 50s linear infinite;
+}
+
+.guide-void-stars {
+  position: absolute;
+  inset: -50%;
   opacity: 0;
-  transform: translate(-50%, -50%) scale(0);
-  animation: guide-dom-ring 5s cubic-bezier(0.2, 0.8, 0.3, 1) infinite;
+  background-image:
+    radial-gradient(1px 1px at 20px 30px, #fff, transparent),
+    radial-gradient(1px 1px at 80px 120px, #cfe9ff, transparent),
+    radial-gradient(1.6px 1.6px at 150px 60px, #fff, transparent),
+    radial-gradient(1px 1px at 200px 170px, #9fdcff, transparent),
+    radial-gradient(1px 1px at 60px 190px, #fff, transparent),
+    radial-gradient(1.6px 1.6px at 240px 100px, #e6f6ff, transparent),
+    radial-gradient(1px 1px at 120px 10px, #fff, transparent);
+  background-size: 260px 220px;
+  animation: guide-warp 6s linear infinite;
 }
 
-.guide-dom-sigil {
-  animation: guide-spin 24s linear infinite, guide-dom-show 5s ease-out infinite;
+.guide-void-stars-far {
+  background-size: 170px 150px;
+  animation-delay: -3s;
 }
 
-.guide-dom-word {
-  animation: guide-dom-word 5s ease-out infinite;
+.guide-void-streaks {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 6% at 50% 46%, rgb(220 240 255 / 0.35), transparent 70%),
+    radial-gradient(ellipse 4% 50% at 50% 46%, rgb(220 240 255 / 0.18), transparent 70%);
+  mix-blend-mode: screen;
 }
 
-.guide-dom-flash {
-  opacity: 0;
-  animation: guide-dom-flash 5s ease-out infinite;
+.guide-void-eye {
+  position: absolute;
+  top: 46%;
+  left: 50%;
+  width: 120px;
+  height: 120px;
+  margin: -60px 0 0 -60px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #000 52%, #fff 56%, #bfe6ff 60%, rgb(76 215 246 / 0.35) 67%, transparent 72%);
+  box-shadow: 0 0 44px 12px rgb(180 225 255 / 0.32);
+  animation: guide-void-eye 3.2s ease-in-out infinite;
 }
 
-@keyframes guide-dom-fill {
-  0%, 6% { transform: scale(0); }
-  40%, 100% { transform: scale(1); }
+.guide-shield {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 132px;
+  height: 132px;
+  margin: -66px 0 0 -66px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #140608 0%, #0e0e10 62%, rgb(14 14 16 / 0.85) 70%, transparent 72%);
+  box-shadow: 0 0 0 1px rgb(229 225 228 / 0.55), 0 0 30px 6px rgb(0 0 0 / 0.8);
+  animation: guide-shield 2.4s ease-in-out infinite;
 }
 
-@keyframes guide-dom-ring {
-  0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
-  8% { opacity: 1; }
-  42% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-  88% { opacity: 0.5; }
-  100% { transform: translate(-50%, -50%) scale(1.04); opacity: 0; }
+.guide-ground {
+  position: absolute;
+  top: calc(50% + 35px);
+  left: calc(50% - 50px);
+  width: 100px;
+  height: 1px;
+  background: repeating-linear-gradient(90deg, rgb(229 225 228 / 0.6) 0 6px, transparent 6px 12px);
+  animation: guide-ground 0.4s linear infinite;
 }
 
 @keyframes guide-spin {
   to { transform: rotate(360deg); }
 }
 
-@keyframes guide-dom-show {
-  0%, 30% { opacity: 0; }
-  45%, 88% { opacity: 1; }
-  100% { opacity: 0; }
+@keyframes guide-warp {
+  0% { transform: scale(0.35); opacity: 0; }
+  25% { opacity: 0.95; }
+  100% { transform: scale(1.7); opacity: 0; }
 }
 
-@keyframes guide-dom-word {
-  0%, 32% { opacity: 0; letter-spacing: 0.6em; }
-  50%, 88% { opacity: 1; letter-spacing: 0.12em; }
-  100% { opacity: 0; letter-spacing: 0.12em; }
+@keyframes guide-void-eye {
+  50% { box-shadow: 0 0 64px 20px rgb(180 225 255 / 0.48); transform: scale(1.05); }
 }
 
-@keyframes guide-dom-flash {
-  0%, 5% { opacity: 0; }
-  7% { opacity: 0.55; }
-  14%, 100% { opacity: 0; }
+@keyframes guide-shield {
+  50% { box-shadow: 0 0 0 1px rgb(229 225 228 / 0.85), 0 0 36px 10px rgb(0 0 0 / 0.85); }
 }
 
-/* Restriction céleste : un territoire adverse déferle, mais s'arrête net autour de Maki. */
-.guide-hr-domain {
-  mask-image: radial-gradient(circle at 64% 50%, transparent 0 58px, #000 62px);
+@keyframes guide-ground {
+  to { background-position-x: -12px; }
 }
 
-.guide-hr-wave {
-  transform: scale(0);
-  animation: guide-hr-wave 5s cubic-bezier(0.2, 0.8, 0.3, 1) infinite;
-}
+/* Règles communes : cartes à double filet qui s'allument au survol, chacune avec sa petite animation. */
+.guide-switch-knob { left: 34px; }
+.group:hover .guide-switch { background: var(--color-surface-container-high); }
+.group:hover .guide-switch-knob { left: 8px; background: var(--color-outline); }
+.guide-finish-runner { left: 0; transition: left 1.6s cubic-bezier(0.4, 0, 0.2, 1); }
+.group:hover .guide-finish-runner { left: calc(100% - 52px); }
+.group:hover .guide-bob { animation: guide-bob 0.6s ease-in-out infinite alternate; }
 
-.guide-hr-ring {
-  opacity: 0;
-  transform: translate(-50%, -50%) scale(0);
-  animation: guide-hr-ring 5s cubic-bezier(0.2, 0.8, 0.3, 1) infinite;
-}
-
-.guide-hr-guard {
-  animation: guide-hr-guard 5s ease-out infinite;
-}
-
-.guide-hr-tag {
-  animation: guide-hr-tag 5s ease-out infinite;
-}
-
-@keyframes guide-hr-wave {
-  0%, 5% { transform: scale(0); }
-  45%, 100% { transform: scale(1); }
-}
-
-@keyframes guide-hr-ring {
-  0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
-  8% { opacity: 1; }
-  45% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-  90% { opacity: 0.4; }
-  100% { transform: translate(-50%, -50%) scale(1.03); opacity: 0; }
-}
-
-@keyframes guide-hr-guard {
-  0%, 26% { transform: scale(1); border-color: rgb(229 225 228 / 0.25); box-shadow: none; }
-  30% { transform: scale(1.08); border-color: #fffaf9; box-shadow: 0 0 18px rgb(255 250 249 / 0.55), inset 0 0 14px rgb(255 250 249 / 0.25); }
-  45%, 100% { transform: scale(1); border-color: rgb(229 225 228 / 0.5); box-shadow: none; }
-}
-
-@keyframes guide-hr-tag {
-  0%, 28% { opacity: 0; transform: translate(-50%, 6px); }
-  36%, 90% { opacity: 1; transform: translate(-50%, 0); }
-  100% { opacity: 0; transform: translate(-50%, 0); }
+@keyframes guide-bob {
+  to { transform: translateY(-5px); }
 }
 
 /* Animations jamais bloquantes et coupées sur demande (UI-7, UI-8). */
@@ -601,32 +601,28 @@ kbd,
   .ce-body,
   .guide-racer,
   .guide-cast,
-  .guide-charge,
   .guide-spark,
-  .guide-dom-sigil,
-  .guide-dom-word,
-  .guide-dom-flash,
-  .guide-hr-guard,
-  .guide-hr-tag {
+  .guide-void-rays,
+  .guide-void-eye,
+  .guide-shield,
+  .guide-ground,
+  .guide-bob {
+    animation: none !important;
+  }
+
+  .guide-void-stars {
     animation: none;
+    opacity: 0.6;
+  }
+
+  .guide-finish-runner {
+    transition: none;
   }
 
   .ce {
     transition: none;
   }
 
-  .guide-dom-fill,
-  .guide-hr-wave {
-    animation: none;
-    transform: scale(1);
-  }
-
-  .guide-dom-ring,
-  .guide-hr-ring {
-    animation: none;
-    opacity: 0.7;
-    transform: translate(-50%, -50%) scale(1);
-  }
 }
 
 /* Sprites des personnages (fiche personnage) : bande de 8 images, une par pas de l'animation ; --sprite-end = position finale. */
@@ -717,6 +713,47 @@ kbd,
   .hcard-g { --h: 25.5px; display: flex; flex: 1; padding: 3px; background: #0b0405; }
   .hcard-r { --h: 24px; display: flex; flex: 1; padding: 1px; background: rgb(225 29 72 / 0.35); }
   .hcard-c { --h: 23.5px; flex: 1; background: radial-gradient(120% 120% at 50% 0%, #2a0b10 0%, #150608 55%, #0c0304 100%); }
+
+  /* Rangée pointée (tableaux des arènes et du classement) : le fond dessine le filet (--row-frame), ::before la face. */
+  .hx-row {
+    --h: 22px;
+    position: relative;
+    isolation: isolate;
+    background: var(--row-frame, #4a1218);
+    clip-path: polygon(var(--h) 0, calc(100% - var(--h)) 0, 100% 50%, calc(100% - var(--h)) 100%, var(--h) 100%, 0 50%);
+    transition: filter 0.3s;
+  }
+  .hx-row::before {
+    content: '';
+    position: absolute;
+    inset: 1px;
+    z-index: -1;
+    background: linear-gradient(90deg, #1a0709, #110506);
+    clip-path: polygon(calc(var(--h) - 0.5px) 0, calc(100% - var(--h) + 0.5px) 0, 100% 50%, calc(100% - var(--h) + 0.5px) 100%, calc(var(--h) - 0.5px) 100%, 0 50%);
+  }
+  .hx-row:hover { filter: brightness(1.35); }
+
+  /* Étiquette du guide : double filet en petit (cadre, vide, filet, face) ; --tag-frame et --tag-ink donnent la couleur. */
+  .tag { --tag-frame: #8f1022; --tag-ink: var(--color-on-surface-variant); display: inline-flex; padding: 1px; background: var(--tag-frame); }
+  .tag > span { display: flex; padding: 2px; background: #0b0405; }
+  .tag > span > span { display: flex; padding: 1px; background: color-mix(in srgb, var(--tag-frame) 50%, transparent); }
+  .tag > span > span > span {
+    padding: 6px 12px;
+    background: radial-gradient(120% 160% at 50% 0%, #2a0b10, #0c0304);
+    font-family: var(--font-jetbrains-mono), monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--tag-ink);
+  }
+  .tag { clip-path: polygon(8px 0, calc(100% - 8px) 0, 100% 8px, 100% calc(100% - 8px), calc(100% - 8px) 100%, 8px 100%, 0 calc(100% - 8px), 0 8px); }
+  .tag > span { clip-path: polygon(7.5px 0, calc(100% - 7.5px) 0, 100% 7.5px, 100% calc(100% - 7.5px), calc(100% - 7.5px) 100%, 7.5px 100%, 0 calc(100% - 7.5px), 0 7.5px); }
+  .tag > span > span { clip-path: polygon(6px 0, calc(100% - 6px) 0, 100% 6px, 100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0 calc(100% - 6px), 0 6px); }
+  .tag > span > span > span { clip-path: polygon(5.5px 0, calc(100% - 5.5px) 0, 100% 5.5px, 100% calc(100% - 5.5px), calc(100% - 5.5px) 100%, 5.5px 100%, 0 calc(100% - 5.5px), 0 5.5px); }
+  .tag-energy { --tag-frame: #087b9b; --tag-ink: var(--color-tertiary); }
+  .tag-hot { --tag-frame: var(--color-primary-container); --tag-ink: var(--color-primary); }
+  .tag-light { --tag-frame: var(--color-outline); --tag-ink: var(--color-on-primary-container); }
 
   /* Champ à bouts pointus (formulaire de l'accueil) : chanfrein de 14px, que les libellés suivent. */
   .field-cut {

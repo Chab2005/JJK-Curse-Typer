@@ -15,12 +15,15 @@ describe('GameGuide (smoke)', () => {
     for (const step of ['Type right, move forward', 'Charge your cursed energy', 'Catch the leaders', 'Domain Expansion', 'Heavenly Restriction']) {
       expect(screen.getByRole('heading', { level: 3, name: step })).toBeInTheDocument();
     }
-    expect(screen.getByText('The host can turn techniques off.')).toBeInTheDocument();
+    for (const rule of ['The host decides', 'Everyone finishes', 'Bots on equal terms']) {
+      expect(screen.getByRole('heading', { level: 3, name: rule })).toBeInTheDocument();
+    }
   });
 
   it('states the domain cost: 1,000 EP, then 10 seconds without a technique', () => {
     renderWithIntl(<GameGuide />);
 
-    expect(screen.getByText(/From 1,000 EP of cursed energy/)).toHaveTextContent('for the next 10 seconds');
+    expect(screen.getByText('From 1,000 EP')).toBeInTheDocument();
+    expect(screen.getByText('Technique locked 10 s')).toBeInTheDocument();
   });
 });

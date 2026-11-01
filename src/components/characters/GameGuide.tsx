@@ -1,61 +1,61 @@
-import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import type { CSSProperties, ReactNode } from 'react';
-import { faceCrop } from '@/components/shared/characterImages';
-import { CHARACTERS, type CharacterId } from '@/components/shared/characters';
+import { Chevrons } from '@/components/shared/ChevronButton';
+import type { CharacterId } from '@/components/shared/characters';
 import { ENERGY_MAX } from '@/game/energy';
+import { spriteStyle } from './characterSprites';
 import EnergyDemo from './EnergyDemo';
 
 /** Énergie minimale pour déployer une extension du territoire, et durée pendant laquelle la technique est ensuite bloquée. */
 const DOMAIN_MIN_ENERGY = 1000;
 const DOMAIN_LOCK_SECONDS = 10;
 
-const RUNNER_SIZE = 36;
+/** Échelles des bandes de sprites : coureurs de l'étape 1, couloirs de l'étape 3 et Maki, Gojo dans son territoire, coureur des règles. */
+const RUNNER_SCALE = 0.17;
+const RACER_SCALE = 0.197;
+const GOJO_SCALE = 0.3;
+const FINISH_SCALE = 0.12;
 
 /** Coureurs de la démonstration de frappe et la fraction de piste qu'ils atteignent. */
-const RUNNERS: { id: CharacterId; finish: number; ring: string }[] = [
-  { id: 'yuji', finish: 1, ring: 'ring-primary-container' },
-  { id: 'megumi', finish: 0.86, ring: 'ring-secondary-container' },
-  { id: 'yuta', finish: 0.72, ring: 'ring-surface-container-highest' },
+const RUNNERS: { id: CharacterId; finish: number }[] = [
+  { id: 'yuji', finish: 1 },
+  { id: 'megumi', finish: 0.86 },
+  { id: 'yuta', finish: 0.72 },
 ];
 
-/** Course de l'étape 3 : un exorciste par couloir (du 1er au 5e) et sa position sur la piste. */
-const LANE_GAP = 56;
+/** Course de l'étape 3 : le meneur (touché), un poursuivant et le lanceur, chacun dans son couloir et à sa place sur la piste. */
+const LANE_GAP = 64;
+const LANE_HEIGHT = 60;
 const RACE: { id: CharacterId; x: number }[] = [
-  { id: 'gojo', x: 0.9 },
-  { id: 'yuta', x: 0.8 },
-  { id: 'maki', x: 0.71 },
-  { id: 'megumi', x: 0.44 },
-  { id: 'yuji', x: 0.27 },
+  { id: 'gojo', x: 0.84 },
+  { id: 'maki', x: 0.56 },
+  { id: 'yuji', x: 0.24 },
 ];
-/** Techniques lancées : couloir du lanceur → couloir du meneur visé, décalées d'une demi-boucle. */
-const CASTS = [
-  { from: 4, to: 0, delay: '0s' },
-  { from: 3, to: 2, delay: '-2s' },
-];
-const laneY = (lane: number) => lane * LANE_GAP + RUNNER_SIZE / 2;
+/** La technique part du dernier couloir et frappe le meneur. */
+const CAST = { from: 2, to: 0 };
+const laneCenter = (lane: number) => lane * LANE_GAP + LANE_HEIGHT / 2;
 
 /** Éclair d'impact façon Black Flash : quelques branches brisées autour du point touché. */
 const SPARK_PATH = 'M0 0 L5 -3 L3 -9 L10 -14 L9 -21 M0 0 L6 2 L11 -1 L18 3 L25 1 M0 0 L-4 4 L-2 10 L-9 15 L-10 22 M0 0 L-6 -2 L-10 -8 L-17 -9 M0 0 L2 6 L8 9 L9 17';
 
-const DOMAIN_RINGS = [90, 170, 250, 340, 450];
-const RESTRICTION_RINGS = [220, 420, 640, 880];
+/** Barre cramoisie au bas des trois cartes, dans le dégradé du bouton « Jouer ». */
+const CARD_BAR = 'pointer-events-none absolute inset-x-0 bottom-0 h-1.5 bg-linear-to-b from-primary-container via-[#a3102f] to-[#6e0718]';
 
-const face = (id: CharacterId) => CHARACTERS.find((c) => c.id === id)!.face;
+type Tag = { label: string; tone?: 'energy' | 'hot' | 'light' };
 
-// Guide de /characters : déroulé d'une course en cinq étapes animées (frappe, énergie, techniques,
-// extension du territoire, restriction céleste), puis les règles communes.
+// Guide de /characters (canvas « Personnages · guide repensé ») : la frappe qui charge l'énergie dans un grand panneau,
+// puis trois cartes (technique, extension du territoire, restriction céleste) et les règles communes.
 export default function GameGuide() {
   const t = useTranslations('Guide');
   const sample = t('type.sample');
 
   return (
-    <section aria-labelledby="guide-title" className="torn-top relative overflow-hidden bg-surface px-6 pt-[150px] pb-[170px]">
-      <p aria-hidden="true" className="text-stroke-ghost pointer-events-none absolute top-[70px] -right-3.5 hidden whitespace-nowrap text-[190px] uppercase leading-none lg:block">
+    <section aria-labelledby="guide-title" className="torn-top relative overflow-hidden bg-surface px-6 pt-[130px] pb-[140px]">
+      <p aria-hidden="true" className="text-stroke-ghost pointer-events-none absolute top-[60px] right-[max(24px,calc((100%-1152px)/2))] hidden whitespace-nowrap text-[190px] uppercase leading-none lg:block">
         {t('watermark')}
       </p>
 
-      <div className="relative mx-auto flex max-w-[1152px] flex-col gap-28 lg:gap-[140px]">
+      <div className="relative mx-auto flex max-w-[1152px] flex-col gap-12">
         <div className="flex max-w-[720px] flex-col gap-3.5">
           <p className="font-label-code text-[12px] font-bold uppercase tracking-[0.32em] text-primary-container">{t('eyebrow')}</p>
           <h2 id="guide-title" className="text-[clamp(36px,5vw,64px)] leading-[1.1] uppercase tracking-[0.06em]">
@@ -66,170 +66,260 @@ export default function GameGuide() {
           <p className="text-[19px] leading-[30px] text-on-surface-variant">{t('intro')}</p>
         </div>
 
-        <Step number="01" stroke="[-webkit-text-stroke:1px_rgb(225_29_72/0.45)]" title={t('type.title')} text={t('type.text')}>
-          <div aria-hidden="true" className="font-label-code relative overflow-hidden text-[clamp(15px,1.8vw,20px)] leading-8 whitespace-nowrap">
-            <span className="font-label-code text-outline-variant">{sample}</span>
-            <span className="font-label-code guide-typed absolute top-0 left-0 overflow-hidden border-r-2 border-primary-container text-on-primary-container" style={{ '--chars': sample.length } as CSSProperties}>
-              {sample}
-            </span>
-          </div>
-          <div aria-hidden="true" className="flex flex-col gap-3.5">
-            {RUNNERS.map(({ id, finish, ring }) => (
-              <div key={id} className="relative h-9 border-b border-dashed border-surface-container-high">
-                <span className={`guide-runner absolute top-0 size-9 overflow-hidden rounded-[50%] bg-surface-container-low ring-2 ${ring}`} style={{ '--finish': finish } as CSSProperties}>
-                  <Portrait id={id} size={RUNNER_SIZE} />
+        {/* 01 + 02 : double filet, la frappe à gauche, l'énergie qu'elle charge à droite. */}
+        <DoubleFilet>
+          <div className="grid gap-8 p-7 sm:p-11 lg:grid-cols-[minmax(0,1fr)_40px_minmax(0,1fr)]">
+            <div className="flex flex-col gap-6">
+              <Caption number="01" stroke="[-webkit-text-stroke:1px_rgb(225_29_72/0.55)]" title={t('type.title')} text={t('type.text')} />
+              <div aria-hidden="true" className="font-label-code relative overflow-hidden text-[18px] leading-[30px] whitespace-nowrap">
+                <span className="font-label-code text-outline-variant">{sample}</span>
+                <span className="font-label-code guide-typed absolute top-0 left-0 overflow-hidden border-r-2 border-primary-container text-on-primary-container" style={{ '--chars': sample.length } as CSSProperties}>
+                  {sample}
                 </span>
               </div>
-            ))}
+              <div aria-hidden="true" className="flex flex-col gap-1.5">
+                {RUNNERS.map(({ id, finish }) => (
+                  <div key={id} className="relative h-14 border-b border-dashed border-surface-container-high">
+                    <span className="guide-runner absolute top-0 flex size-14 items-end justify-center" style={{ '--finish': finish } as CSSProperties}>
+                      <Sprite id={id} kind="running" scale={RUNNER_SCALE} />
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div aria-hidden="true" className="flex items-center justify-center">
+              <span className="flex h-12 w-6 rotate-90 -scale-x-100 text-primary-container lg:rotate-0">
+                <Chevrons className="size-full" />
+              </span>
+            </div>
+
+            <div className="flex flex-col gap-[22px]">
+              <Caption number="02" stroke="[-webkit-text-stroke:1px_rgb(76_215_246/0.55)]" title={t('charge.title')} text={t('charge.text')} />
+              <div className="flex flex-col gap-3">
+                <EnergyDemo>
+                  <p className="font-label-code relative h-4 text-[10px] uppercase tracking-[0.14em]">
+                    <span aria-hidden="true" className="absolute -top-1.5 left-2/3 h-1.5 w-px bg-primary" />
+                    <span className="font-label-code absolute left-2/3 -translate-x-1/2 whitespace-nowrap text-primary">{t('charge.marker', { min: DOMAIN_MIN_ENERGY })}</span>
+                  </p>
+                </EnergyDemo>
+              </div>
+              <TagList
+                tags={[
+                  { label: t('tags.max', { max: ENERGY_MAX }), tone: 'energy' },
+                  { label: t('tags.streak') },
+                ]}
+              />
+            </div>
           </div>
-        </Step>
+        </DoubleFilet>
 
-        <Step number="02" flip stroke="[-webkit-text-stroke:1px_rgb(76_215_246/0.45)]" title={t('charge.title')} text={t('charge.text', { max: ENERGY_MAX })}>
-          <EnergyDemo />
-        </Step>
+        {/* 03, 04, 05 : trois cadres des cartes personnage, chacun terminé par la barre cramoisie. */}
+        <div className="grid gap-5 lg:grid-cols-3">
+          <div className="bevel-var flex bg-primary-container p-px [--b:14px]">
+            <article className="bevel-var relative flex flex-1 flex-col bg-linear-to-b from-surface-container-lowest from-55% to-[#2a0710] [--b:13.5px]">
+              <RaceDemo />
+              <CardBody number="03" stroke="[-webkit-text-stroke:1px_rgb(192_193_255/0.55)]" eyebrow={t('catchUp.eyebrow')} title={t('catchUp.title')} text={t('catchUp.text')}>
+                <TagList stacked tags={[{ label: t('tags.top3') }, { label: t('tags.behind') }, { label: t('tags.leaders') }]} />
+              </CardBody>
+              <span aria-hidden="true" className={CARD_BAR} />
+            </article>
+          </div>
 
-        <Step number="03" stroke="[-webkit-text-stroke:1px_rgb(192_193_255/0.45)]" title={t('catchUp.title')} text={t('catchUp.text')}>
-          <RaceDemo />
-        </Step>
+          <div className="cut-asym flex bg-[linear-gradient(160deg,#e11d48,#3a0c14_45%,#8f1022)] p-[2px] [--b:30px]">
+            <article className="cut-asym relative flex flex-1 flex-col bg-surface-container-lowest [--b:29px]">
+              <VoidScene>
+                <span className="guide-void-eye" />
+                <span className="absolute top-[calc(46%+58px)] left-1/2 -translate-x-1/2 -translate-y-full">
+                  <Sprite id="gojo" kind="idle" scale={GOJO_SCALE} />
+                </span>
+              </VoidScene>
+              <CardBody number="04" stroke="[-webkit-text-stroke:1px_rgb(225_29_72/0.6)]" eyebrow={t('domain.eyebrow')} title={t('domain.title')} text={t('domain.text')}>
+                <TagList
+                  stacked
+                  tags={[
+                    { label: t('tags.domainMin', { min: DOMAIN_MIN_ENERGY }), tone: 'hot' },
+                    { label: t('tags.drain') },
+                    { label: t('tags.lock', { seconds: DOMAIN_LOCK_SECONDS }) },
+                  ]}
+                />
+              </CardBody>
+              <span aria-hidden="true" className={CARD_BAR} />
+            </article>
+          </div>
 
-        <Step
-          number="04"
-          flip
-          flush
-          stroke="[-webkit-text-stroke:1px_rgb(225_29_72/0.55)]"
-          eyebrow={t('domain.eyebrow')}
-          title={t('domain.title')}
-          text={t('domain.text', { min: DOMAIN_MIN_ENERGY, seconds: DOMAIN_LOCK_SECONDS })}
-        >
-          <DomainDemo example={t('domain.example')} />
-        </Step>
+          <DoubleFilet className="flex" faceClassName="relative flex flex-1 flex-col bg-surface-container-lowest">
+            <VoidScene>
+              <span className="guide-shield" />
+              <span className="absolute top-[calc(50%+34px)] left-1/2 -translate-x-1/2 -translate-y-full">
+                <Sprite id="maki" kind="running" scale={RACER_SCALE} />
+              </span>
+              <span className="guide-ground" />
+              <span className="font-label-code absolute top-[calc(50%+66px)] left-1/2 -translate-x-1/2 text-[10px] whitespace-nowrap uppercase tracking-[0.2em] text-on-primary-container">
+                {t('restriction.immune')}
+              </span>
+            </VoidScene>
+            <CardBody number="05" stroke="[-webkit-text-stroke:1px_rgb(229_189_190/0.5)]" eyebrow={t('restriction.eyebrow')} title={t('restriction.title')} text={t('restriction.text')}>
+              <TagList stacked angle={-4} tags={[{ label: t('tags.none') }, { label: t('tags.immune'), tone: 'light' }]} />
+            </CardBody>
+            <span aria-hidden="true" className={CARD_BAR} />
+          </DoubleFilet>
+        </div>
 
-        <Step number="05" flush stroke="[-webkit-text-stroke:1px_rgb(229_189_190/0.45)]" eyebrow={t('restriction.eyebrow')} title={t('restriction.title')} text={t('restriction.text')}>
-          <RestrictionDemo immune={t('restriction.immune')} />
-        </Step>
-
-        <ul className="flex flex-wrap gap-x-8 gap-y-3.5">
-          {(['host', 'finish', 'bots'] as const).map((rule) => (
-            <li key={rule} className="flex items-center gap-2.5 text-base text-on-surface-variant">
-              <span aria-hidden="true" className="material-symbols-outlined text-xl text-primary">{RULE_ICONS[rule]}</span>
-              {t(`rules.${rule}`)}
-            </li>
-          ))}
-        </ul>
+        <div className="flex flex-col gap-[18px]">
+          <p className="font-label-code text-[12px] font-bold uppercase tracking-[0.32em] text-primary-container">{t('rulesTitle')}</p>
+          <ul className="grid gap-5 md:grid-cols-3">
+            <RuleCard title={t('rules.host.title')} text={t('rules.host.text')}>
+              <span className="font-label-code text-[11px] uppercase tracking-[0.18em] text-outline">{t('rules.techniques')}</span>
+              <span className="guide-switch hx-cut relative h-[30px] w-[62px] bg-primary-container transition-colors duration-300 [--h:10px]">
+                <span className="guide-switch-knob bevel-var absolute top-[5px] size-5 bg-on-primary-container transition-[left,background-color] duration-300 [--b:5px] motion-reduce:transition-none" />
+              </span>
+              <span className="font-label-code text-[11px] uppercase tracking-[0.14em]">
+                <span className="font-label-code text-primary group-hover:hidden">{t('rules.on')}</span>
+                <span className="font-label-code hidden text-outline group-hover:inline">{t('rules.off')}</span>
+              </span>
+            </RuleCard>
+            <RuleCard title={t('rules.finish.title')} text={t('rules.finish.text')}>
+              <span className="relative h-11 flex-1 border-b border-dashed border-on-surface/35">
+                <span className="guide-finish-runner absolute bottom-0">
+                  <Sprite id="yuji" kind="running" scale={FINISH_SCALE} />
+                </span>
+                <span className="absolute right-0 bottom-0 h-11 w-3 bg-[repeating-conic-gradient(#fffaf9_0_25%,#0e0e10_0_50%)] [background-size:6px_6px]" />
+              </span>
+            </RuleCard>
+            <RuleCard title={t('rules.bots.title')} text={t('rules.bots.text')}>
+              <span className="material-symbols-outlined guide-bob text-[30px] text-on-surface-variant transition-colors group-hover:text-on-primary-container">person</span>
+              <span className="font-grotesk text-[26px] font-bold text-outline-variant transition-[color,text-shadow] group-hover:text-primary group-hover:[text-shadow:0_0_12px_rgb(225_29_72/0.8)]">=</span>
+              <span className="material-symbols-outlined guide-bob text-[30px] text-on-surface-variant transition-colors [animation-delay:-0.3s] group-hover:text-on-primary-container">smart_toy</span>
+              <span className="font-label-code ml-auto text-[10px] uppercase tracking-[0.18em] text-outline">{t('rules.same')}</span>
+            </RuleCard>
+          </ul>
+        </div>
       </div>
     </section>
   );
 }
 
-const RULE_ICONS = { host: 'toggle_on', finish: 'flag', bots: 'smart_toy' } as const;
-
-// Visage d'un personnage, cadré dans un rond de `size` px.
-function Portrait({ id, size }: { id: CharacterId; size: number }) {
-  return <Image src={`/images/characters/${id}.webp`} alt="" width={904} height={1270} unoptimized style={faceCrop(face(id), size)} className="absolute h-auto max-w-none" />;
+// Personnage en pixel art qui joue sa bande idle ou de course, à `scale` de la taille du fichier.
+function Sprite({ id, kind, scale }: { id: CharacterId; kind: 'idle' | 'running'; scale: number }) {
+  return <span className="block motion-reduce:[animation:none]!" style={spriteStyle(id, kind, scale)} />;
 }
 
-// Étape 3 : cinq couloirs ; deux poursuivants lancent leur technique et le meneur visé encaisse un éclair.
-function RaceDemo() {
-  const targets = new Map(CASTS.map((cast) => [cast.to, cast.delay]));
+// Cadre à double filet des cartes personnage : cadre, vide, filet et face, chaque couche un peu moins biseautée.
+function DoubleFilet({ className = '', faceClassName = 'bg-[radial-gradient(120%_120%_at_50%_0%,#1c0709_0%,#0e0e10_60%)]', children }: { className?: string; faceClassName?: string; children: ReactNode }) {
   return (
-    <div aria-hidden="true" className="relative h-[262px]">
-      {RACE.map(({ id }, lane) => (
-        <span key={id} className={`font-label-code absolute left-0 flex h-9 w-[34px] items-center text-[13px] ${lane < 3 ? 'text-primary' : 'text-outline'}`} style={{ top: lane * LANE_GAP }}>
-          {String(lane + 1).padStart(2, '0')}
-        </span>
+    <div className={`bevel-var bg-[#8f1022] p-px [--b:14px] ${className}`}>
+      <div className="bevel-var flex flex-1 bg-[#0b0405] p-[3px] [--b:13.5px]">
+        <div className="bevel-var flex flex-1 bg-primary-container/40 p-px [--b:12px]">
+          <div className={`bevel-var flex-1 [--b:11.5px] ${faceClassName}`}>{children}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Numéro en contour, sur-titre facultatif, titre et texte d'une étape.
+function Caption({ number, stroke, eyebrow, title, text }: { number: string; stroke: string; eyebrow?: string; title: string; text: string }) {
+  return (
+    <div className="flex items-start gap-[18px]">
+      <span aria-hidden="true" className={`font-grotesk text-[64px] leading-[0.8] font-bold text-transparent ${stroke}`}>{number}</span>
+      <div className="flex min-w-0 flex-col gap-1.5">
+        {eyebrow && <p className="font-label-code text-[11px] font-bold uppercase tracking-[0.28em] text-primary-container">{eyebrow}</p>}
+        <h3 className="font-grotesk text-2xl leading-[1.2] font-semibold">{title}</h3>
+        <p className="text-base leading-[25px] text-on-surface-variant">{text}</p>
+      </div>
+    </div>
+  );
+}
+
+function CardBody({ children, ...caption }: { number: string; stroke: string; eyebrow: string; title: string; text: string; children: ReactNode }) {
+  return (
+    <div className="flex flex-1 flex-col gap-[18px] px-[26px] pt-[26px] pb-[34px]">
+      <Caption {...caption} />
+      {children}
+    </div>
+  );
+}
+
+// Étiquettes à double filet : en ligne, ou empilées et inclinées (le début plus bas que la fin) dans les cartes.
+function TagList({ tags, stacked = false, angle = -7 }: { tags: Tag[]; stacked?: boolean; angle?: number }) {
+  return (
+    <ul className={stacked ? 'flex flex-col items-start gap-3.5 pt-1.5 pb-2.5' : 'flex flex-wrap gap-2.5'}>
+      {tags.map(({ label, tone }) => (
+        <li key={label} className={`tag ${tone ? `tag-${tone}` : ''} origin-left`} style={stacked ? { rotate: `${angle}deg` } : undefined}>
+          <span>
+            <span>
+              <span className="font-label-code">{label}</span>
+            </span>
+          </span>
+        </li>
       ))}
-      <div className="absolute inset-y-0 right-[22px] left-11">
+    </ul>
+  );
+}
+
+// Fond de la sphère de l'espace infini : rayons, étoiles qui foncent vers l'avant, traînées de lumière.
+function VoidScene({ children }: { children: ReactNode }) {
+  return (
+    <div aria-hidden="true" className="guide-void h-[220px]">
+      <span className="guide-void-rays" />
+      <span className="guide-void-stars" />
+      <span className="guide-void-stars guide-void-stars-far" />
+      <span className="guide-void-streaks" />
+      {children}
+    </div>
+  );
+}
+
+// Étape 3 : trois couloirs ; le dernier lance sa technique et le meneur encaisse un éclair.
+function RaceDemo() {
+  const start = { x: `${RACE[CAST.from].x * 100}%`, y: `${laneCenter(CAST.from)}px` };
+  const end = { x: `${RACE[CAST.to].x * 100}%`, y: `${laneCenter(CAST.to)}px` };
+
+  return (
+    <div aria-hidden="true" className="relative h-[220px] overflow-hidden bg-[radial-gradient(ellipse_80%_70%_at_70%_20%,rgb(147_0_10/0.25),#0b0b0d_70%)]">
+      <div className="absolute inset-x-[22px] inset-y-4">
         {RACE.map(({ id }, lane) => (
-          <div key={id} className="absolute inset-x-0 h-9 border-b border-dashed border-surface-container-high" style={{ top: lane * LANE_GAP }} />
+          <div key={id} className={`absolute inset-x-0 border-b border-dashed ${lane === CAST.to ? 'border-primary-container/45' : 'border-surface-container-high'}`} style={{ top: lane * LANE_GAP, height: LANE_HEIGHT }} />
         ))}
         {RACE.map(({ id, x }, lane) => (
-          <span
-            key={id}
-            className={`absolute -mt-[18px] -ml-[18px] size-9 overflow-hidden rounded-[50%] bg-surface-container-low ring-2 ${lane < 3 ? 'ring-primary-container' : 'ring-secondary-container'} ${targets.has(lane) ? 'guide-racer' : ''}`}
-            style={{ left: `${x * 100}%`, top: laneY(lane), animationDelay: targets.get(lane) }}
-          >
-            <Portrait id={id} size={RUNNER_SIZE} />
+          <span key={id} className="absolute -translate-x-1/2 -translate-y-full" style={{ left: `${x * 100}%`, top: lane * LANE_GAP + LANE_HEIGHT }}>
+            <span className={`block ${lane === CAST.to ? 'guide-racer' : ''}`}>
+              <Sprite id={id} kind="running" scale={RACER_SCALE} />
+            </span>
           </span>
         ))}
-        {CASTS.map(({ from, to, delay }) => {
-          const start = { x: `${RACE[from].x * 100}%`, y: `${laneY(from)}px` };
-          const end = { x: `${RACE[to].x * 100}%`, y: `${laneY(to)}px` };
-          return (
-            <span key={`${from}-${to}`}>
-              <span className="guide-charge absolute -mt-[26px] -ml-[26px] size-[52px] rounded-[50%] border-2 border-primary-container/80" style={{ left: start.x, top: start.y, animationDelay: delay }} />
-              <span
-                className="guide-cast absolute -mt-[5px] -ml-[5px] size-2.5 rounded-[50%] bg-on-primary-container"
-                style={{ '--x1': start.x, '--y1': start.y, '--x2': end.x, '--y2': end.y, animationDelay: delay } as CSSProperties}
-              />
-              <svg viewBox="-32 -32 64 64" className="guide-spark absolute -mt-8 -ml-8 size-16" style={{ left: end.x, top: end.y, animationDelay: `${delay}, ${delay}` }}>
-                <g fill="none" strokeLinejoin="round" strokeLinecap="round">
-                  <path d={SPARK_PATH} stroke="#e11d48" strokeWidth={6} opacity={0.55} />
-                  <path d={SPARK_PATH} stroke="#ff2d55" strokeWidth={3} />
-                  <path d={SPARK_PATH} stroke="#050505" strokeWidth={1.2} />
-                </g>
-              </svg>
-            </span>
-          );
-        })}
+        <span
+          className="guide-cast absolute -mt-[5px] -ml-[5px] size-2.5 rounded-[50%] bg-on-primary-container"
+          style={{ '--x1': start.x, '--y1': start.y, '--x2': end.x, '--y2': end.y } as CSSProperties}
+        />
+        <svg viewBox="-32 -32 64 64" className="guide-spark absolute -mt-8 -ml-8 size-16" style={{ left: end.x, top: end.y }}>
+          <g fill="none" strokeLinejoin="round" strokeLinecap="round">
+            <path d={SPARK_PATH} stroke="#e11d48" strokeWidth={6} opacity={0.55} />
+            <path d={SPARK_PATH} stroke="#ff2d55" strokeWidth={3} />
+            <path d={SPARK_PATH} stroke="#050505" strokeWidth={1.2} />
+          </g>
+        </svg>
       </div>
     </div>
   );
 }
 
-// Étape 4 : le territoire s'ouvre en cercles depuis le centre, puis son sceau apparaît (exemple : celui de Gojo).
-function DomainDemo({ example }: { example: string }) {
+// Règle commune : carte à double filet qui monte et s'allume au survol, avec sa petite animation en tête.
+function RuleCard({ title, text, children }: { title: string; text: string; children: ReactNode }) {
   return (
-    <div aria-hidden="true" className="relative h-80 overflow-hidden bg-[radial-gradient(circle_at_50%_50%,#2a0010,#0e0e10_70%)]">
-      <div className="guide-dom-fill absolute top-1/2 left-1/2 -mt-[260px] -ml-[260px] size-[520px] rounded-[50%] bg-[radial-gradient(circle,rgb(147_0_10/0.55),rgb(14_14_16/0)_70%)]" />
-      {DOMAIN_RINGS.map((size, index) => (
-        <span key={size} className="guide-dom-ring absolute top-1/2 left-1/2 rounded-[50%] border border-primary-container/75" style={{ width: size, height: size, animationDelay: `${index * 0.12}s` }} />
-      ))}
-      <div className="guide-dom-sigil absolute top-1/2 left-1/2 -mt-[125px] -ml-[125px] size-[250px] rounded-[50%] border-2 border-dashed border-primary/40" />
-      <div className="guide-dom-word absolute inset-0 flex flex-col items-center justify-center gap-2.5">
-        <span lang="ja" className="text-[44px] font-extrabold text-on-primary-container [text-shadow:0_0_18px_rgb(225_29_72/0.8)]">領域展開</span>
-        <span lang="ja" className="text-lg font-bold text-primary">無量空処</span>
-        <span className="font-label-code text-[11px] uppercase tracking-[0.2em] text-outline">{example}</span>
+    <li className="group flex transition-[translate,filter] duration-250 hover:-translate-y-[5px] hover:drop-shadow-[0_0_14px_rgb(225_29_72/0.4)] motion-reduce:transition-none">
+      <div className="bevel-var flex flex-1 bg-[#4a1218] p-px transition-colors duration-250 [--b:12px] group-hover:bg-primary-container">
+        <div className="bevel-var flex flex-1 bg-[#0b0405] p-[3px] [--b:11.5px]">
+          <div className="bevel-var flex flex-1 bg-primary-container/20 p-px transition-colors duration-250 [--b:10px] group-hover:bg-primary-container/55">
+            <div className="bevel-var flex flex-1 flex-col gap-3 bg-[radial-gradient(120%_120%_at_50%_0%,#1f080c,#0c0304_70%)] px-6 pt-[22px] pb-[26px] [--b:9.5px]">
+              <div aria-hidden="true" className="relative mb-1.5 flex h-16 items-center gap-3.5 border-b border-dashed border-[#2a1416] px-1">{children}</div>
+              <h3 className="font-grotesk text-xl font-semibold text-on-primary-container">{title}</h3>
+              <p className="text-[15px] leading-[23px] text-on-surface-variant">{text}</p>
+            </div>
+          </div>
+        </div>
       </div>
-      <div className="guide-dom-flash absolute inset-0 bg-on-primary-container" />
-    </div>
-  );
-}
-
-// Étape 5 : un territoire adverse déferle depuis la gauche, mais s'arrête net autour de Maki (restriction céleste).
-function RestrictionDemo({ immune }: { immune: string }) {
-  return (
-    <div aria-hidden="true" className="relative h-[300px] overflow-hidden bg-surface-container-lowest">
-      <div className="guide-hr-domain absolute inset-0">
-        <div className="guide-hr-wave absolute top-1/2 -left-[530px] -mt-[500px] size-[1000px] rounded-[50%] bg-[radial-gradient(circle,rgb(147_0_10/0.6),rgb(147_0_10/0.35)_45%,rgb(14_14_16/0)_70%)]" />
-        {RESTRICTION_RINGS.map((size, index) => (
-          <span key={size} className="guide-hr-ring absolute top-1/2 -left-[30px] rounded-[50%] border border-primary-container/75" style={{ width: size, height: size, animationDelay: `${index * 0.12}s` }} />
-        ))}
-      </div>
-      <div className="guide-hr-guard absolute top-1/2 left-[64%] -mt-[60px] -ml-[60px] size-[120px] rounded-[50%] border border-dashed border-on-surface/50" />
-      <span className="absolute top-1/2 left-[64%] -mt-[38px] -ml-[38px] size-[76px] overflow-hidden rounded-[50%] bg-surface-container-low ring-2 ring-on-surface">
-        <Portrait id="maki" size={76} />
-      </span>
-      <span className="font-label-code guide-hr-tag absolute top-[calc(50%+70px)] left-[64%] -translate-x-1/2 text-[11px] whitespace-nowrap uppercase tracking-[0.2em] text-on-primary-container">{immune}</span>
-    </div>
-  );
-}
-
-// Une étape du guide : texte d'un côté, démonstration animée dans un cadre rouge de l'autre (`flip` les inverse sur grand écran).
-// `flush` : la démonstration remplit le cadre, sans marge intérieure.
-function Step({ number, stroke, eyebrow, title, text, flip = false, flush = false, children }: { number: string; stroke: string; eyebrow?: string; title: string; text: string; flip?: boolean; flush?: boolean; children: ReactNode }) {
-  return (
-    <div className="grid items-center gap-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:gap-[88px]">
-      <div className={`relative flex flex-col gap-4 ${flip ? 'lg:order-2' : ''}`}>
-        <span aria-hidden="true" className={`font-grotesk absolute -top-[78px] -left-2.5 text-[140px] leading-none font-bold text-transparent ${stroke}`}>
-          {number}
-        </span>
-        {eyebrow && <p className="font-label-code relative text-[12px] font-bold uppercase tracking-[0.32em] text-primary-container">{eyebrow}</p>}
-        <h3 className="font-grotesk relative text-[32px] leading-[1.15] font-semibold">{title}</h3>
-        <p className="relative text-lg leading-[29px] text-on-surface-variant">{text}</p>
-      </div>
-      <div className="bevel bg-primary-container p-px">
-        <div className={`bevel flex flex-col gap-7 bg-surface-container-lowest ${flush ? '' : 'px-6 py-8 sm:px-8 sm:py-9'}`}>{children}</div>
-      </div>
-    </div>
+    </li>
   );
 }

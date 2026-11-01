@@ -33,27 +33,24 @@ export const RUNNER_IDLE = 'group-hover:hidden group-focus-visible:hidden';
 export const RUNNER_RUN = 'hidden group-hover:block group-focus-visible:block';
 
 export function runnerIdleStyle(id: CharacterId): CSSProperties {
-  const { w, h } = SPRITES[id].idle;
-  const width = Math.round(w * RUNNER_SCALE);
-  const height = Math.round(h * RUNNER_SCALE);
-  return {
-    width,
-    height,
-    background: `url(/images/characters/anim/${id}-idle.png) 0 0 / ${width * 8}px ${height}px no-repeat`,
-    animation: 'sprite-idle 0.9s steps(8) infinite',
-    '--sprite-end': `-${width * 8}px`,
-  } as CSSProperties;
+  return spriteStyle(id, 'idle', RUNNER_SCALE);
 }
 
 export function runnerStyle(id: CharacterId): CSSProperties {
-  const { w, h } = SPRITES[id].running;
-  const width = Math.round(w * RUNNER_SCALE);
-  const height = Math.round(h * RUNNER_SCALE);
+  return spriteStyle(id, 'running', RUNNER_SCALE);
+}
+
+/** Style d'une bande jouée en boucle à `scale` de la taille du fichier : idle (8 images) ou course (7 images jouées). */
+export function spriteStyle(id: CharacterId, kind: 'idle' | 'running', scale: number): CSSProperties {
+  const { w, h } = SPRITES[id][kind];
+  const width = Math.round(w * scale);
+  const height = Math.round(h * scale);
+  const frames = kind === 'idle' ? 8 : 7;
   return {
     width,
     height,
-    background: `url(/images/characters/anim/${id}-running.png) 0 0 / ${width * 8}px ${height}px no-repeat`,
-    animation: 'sprite-running 0.875s steps(7) infinite reverse',
-    '--sprite-end': `-${width * 7}px`,
+    background: `url(/images/characters/anim/${id}-${kind}.png) 0 0 / ${width * 8}px ${height}px no-repeat`,
+    animation: kind === 'idle' ? 'sprite-idle 0.9s steps(8) infinite' : 'sprite-running 0.875s steps(7) infinite reverse',
+    '--sprite-end': `-${width * frames}px`,
   } as CSSProperties;
 }
