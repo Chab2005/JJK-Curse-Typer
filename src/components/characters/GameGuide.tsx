@@ -5,15 +5,15 @@ import type { CharacterId } from '@/components/shared/characters';
 import { ENERGY_MAX } from '@/game/energy';
 import { spriteStyle } from './characterSprites';
 import EnergyDemo from './EnergyDemo';
+import GojoDomain, { DomainScene } from './GojoDomain';
 
 /** Énergie minimale pour déployer une extension du territoire, et durée pendant laquelle la technique est ensuite bloquée. */
 const DOMAIN_MIN_ENERGY = 1000;
 const DOMAIN_LOCK_SECONDS = 10;
 
-/** Échelles des bandes de sprites : coureurs de l'étape 1, couloirs de l'étape 3 et Maki, Gojo dans son territoire, coureur des règles. */
+/** Échelles des bandes de sprites : coureurs de l'étape 1, couloirs de l'étape 3 et Maki, coureur des règles. */
 const RUNNER_SCALE = 0.17;
 const RACER_SCALE = 0.197;
-const GOJO_SCALE = 0.3;
 const FINISH_SCALE = 0.12;
 
 /** Coureurs de la démonstration de frappe et la fraction de piste qu'ils atteignent. */
@@ -128,12 +128,7 @@ export default function GameGuide() {
 
           <div className="cut-asym flex bg-[linear-gradient(160deg,#e11d48,#3a0c14_45%,#8f1022)] p-[2px] [--b:30px]">
             <article className="cut-asym relative flex flex-1 flex-col bg-surface-container-lowest [--b:29px]">
-              <VoidScene>
-                <span className="guide-void-eye" />
-                <span className="absolute top-[calc(46%+58px)] left-1/2 -translate-x-1/2 -translate-y-full">
-                  <Sprite id="gojo" kind="idle" scale={GOJO_SCALE} />
-                </span>
-              </VoidScene>
+              <GojoDomain />
               <CardBody number="04" stroke="[-webkit-text-stroke:1px_rgb(225_29_72/0.6)]" eyebrow={t('domain.eyebrow')} title={t('domain.title')} text={t('domain.text')}>
                 <TagList
                   stacked
@@ -149,7 +144,7 @@ export default function GameGuide() {
           </div>
 
           <DoubleFilet className="flex" faceClassName="relative flex flex-1 flex-col bg-surface-container-lowest">
-            <VoidScene>
+            <DomainScene>
               <span className="guide-shield" />
               <span className="absolute top-[calc(50%+34px)] left-1/2 -translate-x-1/2 -translate-y-full">
                 <Sprite id="maki" kind="running" scale={RACER_SCALE} />
@@ -158,7 +153,7 @@ export default function GameGuide() {
               <span className="font-label-code absolute top-[calc(50%+66px)] left-1/2 -translate-x-1/2 text-[10px] whitespace-nowrap uppercase tracking-[0.2em] text-on-primary-container">
                 {t('restriction.immune')}
               </span>
-            </VoidScene>
+            </DomainScene>
             <CardBody number="05" stroke="[-webkit-text-stroke:1px_rgb(229_189_190/0.5)]" eyebrow={t('restriction.eyebrow')} title={t('restriction.title')} text={t('restriction.text')}>
               <TagList stacked angle={-4} tags={[{ label: t('tags.none') }, { label: t('tags.immune'), tone: 'light' }]} />
             </CardBody>
@@ -255,19 +250,6 @@ function TagList({ tags, stacked = false, angle = -7 }: { tags: Tag[]; stacked?:
         </li>
       ))}
     </ul>
-  );
-}
-
-// Fond de la sphère de l'espace infini : rayons, étoiles qui foncent vers l'avant, traînées de lumière.
-function VoidScene({ children }: { children: ReactNode }) {
-  return (
-    <div aria-hidden="true" className="guide-void h-[220px]">
-      <span className="guide-void-rays" />
-      <span className="guide-void-stars" />
-      <span className="guide-void-stars guide-void-stars-far" />
-      <span className="guide-void-streaks" />
-      {children}
-    </div>
   );
 }
 
