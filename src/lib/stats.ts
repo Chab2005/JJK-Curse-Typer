@@ -5,7 +5,9 @@ import { keyStats, results, users } from '@/db/schema';
 import { playerFromGames, type PlayerStats } from '@/components/leaderboard/leaderboard';
 import type { KeyStat } from '@/game/keyStats';
 import type { GameRecord } from '@/game/stats';
+import { SAMPLE_PLAYERS } from '@/components/leaderboard/samplePlayers';
 import { avatarUrl } from '@/lib/auth/avatar';
+import { showSampleData } from '@/lib/sampleData';
 
 // Lecture des courses enregistrées (STAT-1, STAT-2, STAT-8) : la base garde la précision en pourcentage.
 
@@ -58,4 +60,12 @@ export async function accountPlayers(): Promise<PlayerStats[]> {
     byUser.set(row.userId!, entry);
   }
   return [...byUser.values()].flatMap((entry) => playerFromGames(entry, entry.games) ?? []);
+}
+
+/** Joueurs du classement : comptes réels, et en développement les joueurs de démonstration dont aucun compte ne porte le nom. */
+export async function leaderboardPlayers(): Promise<PlayerStats[]> {
+  const accounts = await accountPlayers();
+  if (!showSampleData()) return accounts;
+  const taken = new Set(accounts.map((p) => p.username.toLowerCase()));
+  return [...accounts, ...SAMPLE_PLAYERS.filter((p) => !taken.has(p.username.toLowerCase()))];
 }
