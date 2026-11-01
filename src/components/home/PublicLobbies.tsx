@@ -1,5 +1,6 @@
 import { useTranslations } from 'next-intl';
 import type { LobbySummary } from '@/components/lobbies/lobbySearch';
+import ChevronButton from '@/components/shared/ChevronButton';
 import { Link } from '@/i18n/navigation';
 
 // Lobbies publics créés par les joueurs, puis données de démonstration en attendant la room d'index (LOB-2).
@@ -22,7 +23,7 @@ const LOBBIES: LobbyItem[] = [
     mode: { kind: 'sprint', seconds: 60 },
     participants: { kind: 'exorcists', current: 7, max: 8 },
     status: { kind: 'startsIn', seconds: 12 },
-    accent: 'border-primary-container',
+    accent: 'bg-primary-container',
     joinCode: 'SHJ-60S',
   },
   {
@@ -30,7 +31,7 @@ const LOBBIES: LobbyItem[] = [
     mode: { kind: 'words', count: 120 },
     participants: { kind: 'ready', current: 3, max: 5 },
     status: { kind: 'waitingSquad' },
-    accent: 'border-secondary',
+    accent: 'bg-secondary',
     joinCode: 'SNC-120',
   },
   {
@@ -38,12 +39,12 @@ const LOBBIES: LobbyItem[] = [
     mode: { kind: 'words', count: 30 },
     participants: { kind: 'ready', current: 2, max: 4 },
     status: { kind: 'readyToLaunch' },
-    accent: 'border-tertiary',
+    accent: 'bg-tertiary',
     joinCode: 'KYT-30W',
   },
 ];
 
-const ACCENTS = ['border-primary-container', 'border-secondary', 'border-tertiary'];
+const ACCENTS = ['bg-primary-container', 'bg-secondary', 'bg-tertiary'];
 /** Lobbies affichés sur l'accueil ; la liste complète est sur /lobbies. */
 const SHOWN = 3;
 
@@ -69,38 +70,43 @@ export default function PublicLobbies({ created = [], showSamples = true }: { cr
 
       {lobbies.length === 0 && <p className="border border-dashed border-outline-variant px-6 py-10 text-center text-on-surface-variant">{t('noLobbies')}</p>}
 
-      <ul className="flex flex-col gap-3">
+      <ul className="flex flex-col gap-2.5">
         {lobbies.slice(0, SHOWN).map((lobby) => (
-          <li key={lobby.joinCode} className={`flex items-stretch border-l-[3px] bg-surface-container-low transition-colors hover:bg-surface-container-high ${lobby.accent}`}>
-            <div className="flex min-w-0 flex-grow flex-col gap-1.5 px-4 py-3.5">
-              <div className="flex flex-wrap items-baseline gap-2.5">
-                <p className="font-grotesk text-[19px]">{lobby.name}</p>
-                <p className="font-label-code text-[11px] text-outline">{t(`mode.${lobby.mode.kind}`, lobby.mode)}</p>
+          // Rangée à bouts pointus (canvas « Accueil · style flèches ») : losange de couleur, infos, puis « Rejoindre » à chevrons à droite.
+          <li key={lobby.joinCode} className="flex bg-[#4a1218] p-px transition-[filter] duration-300 [clip-path:polygon(22px_0,calc(100%_-_22px)_0,100%_50%,calc(100%_-_22px)_100%,22px_100%,0_50%)] hover:brightness-135">
+            <div className="flex min-h-[70px] flex-1 items-center gap-4 bg-linear-to-r from-[#1a0709] to-[#110506] py-2 pr-3.5 pl-[34px] [clip-path:polygon(21.5px_0,calc(100%_-_21.5px)_0,100%_50%,calc(100%_-_21.5px)_100%,21.5px_100%,0_50%)]">
+              <span aria-hidden="true" className={`size-2 shrink-0 rotate-45 ${lobby.accent}`} />
+              <div className="flex min-w-0 flex-grow flex-col gap-1">
+                <div className="flex flex-wrap items-baseline gap-2.5">
+                  <p className="font-grotesk text-[19px]">{lobby.name}</p>
+                  <p className="font-label-code text-[11px] text-outline">{t(`mode.${lobby.mode.kind}`, lobby.mode)}</p>
+                </div>
+                <p className="flex items-center gap-1.5 text-sm text-on-surface-variant">
+                  <span aria-hidden="true" className="material-symbols-outlined text-base text-tertiary">group</span>
+                  {t(`participants.${lobby.participants.kind}`, lobby.participants)} ·{' '}
+                  <span className="text-primary">{t(`status.${lobby.status.kind}`, lobby.status)}</span>
+                </p>
               </div>
-              <p className="flex items-center gap-1.5 text-sm text-on-surface-variant">
-                <span aria-hidden="true" className="material-symbols-outlined text-base text-tertiary">group</span>
-                {t(`participants.${lobby.participants.kind}`, lobby.participants)} ·{' '}
-                <span className="text-primary">{t(`status.${lobby.status.kind}`, lobby.status)}</span>
-              </p>
+              <ChevronButton
+                as={Link}
+                href={`/lobby/${lobby.joinCode}`}
+                aria-label={t('joinLabel', { name: lobby.name })}
+                size="sm"
+                variant="primary"
+                chevrons="right"
+                frame="shrink-0"
+                className="font-label-code text-[11px] uppercase tracking-[0.16em]"
+              >
+                {t('join')}
+              </ChevronButton>
             </div>
-            <Link
-              href={`/lobby/${lobby.joinCode}`}
-              aria-label={t('joinLabel', { name: lobby.name })}
-              className="flex items-center bg-surface-container-high px-5 text-[13px] uppercase tracking-widest text-on-surface transition-colors hover:bg-primary-container hover:text-on-primary-container"
-            >
-              {t('join')}
-            </Link>
           </li>
         ))}
       </ul>
 
-      <Link
-        href="/lobbies"
-        className="mt-1.5 flex min-h-13 items-center justify-center gap-2.5 border border-on-surface text-[15px] uppercase tracking-[0.16em] text-on-surface transition-colors hover:bg-on-surface hover:text-surface-container-lowest"
-      >
+      <ChevronButton as={Link} href="/lobbies" chevrons={false} frame="mt-1.5 w-full" className="text-[15px] uppercase tracking-[0.16em]">
         {t('all')}
-        <span aria-hidden="true" className="material-symbols-outlined text-lg">arrow_forward</span>
-      </Link>
+      </ChevronButton>
     </div>
   );
 }

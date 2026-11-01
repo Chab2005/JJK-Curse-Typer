@@ -1,4 +1,5 @@
 import { useTranslations } from 'next-intl';
+import ScrollStripes from './ScrollStripes';
 
 const FACTS = [
   { key: 'players', icon: 'groups' },
@@ -16,7 +17,7 @@ export default function GameSystem() {
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_50%_0%,rgb(147_0_10/0.55),transparent_70%),radial-gradient(circle_at_15%_70%,rgb(147_0_10/0.25),transparent_30%),radial-gradient(circle_at_90%_85%,rgb(147_0_10/0.2),transparent_25%)]"
       />
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[repeating-linear-gradient(115deg,rgb(225_29_72/0.07)_0_2px,transparent_2px_60px)]" />
+      <ScrollStripes />
 
       <div className="relative mx-auto flex max-w-[1080px] flex-col items-center gap-14 text-center">
         <div className="flex flex-col items-center gap-2">

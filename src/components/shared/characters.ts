@@ -7,10 +7,10 @@ export const CHARACTERS = [
   { id: 'megumi', name: 'Megumi Fushiguro', face: { x: 0.51, y: 0.13 } },
   { id: 'nobara', name: 'Nobara Kugisaki', face: { x: 0.52, y: 0.145 } },
   { id: 'gojo', name: 'Satoru Gojo', face: { x: 0.5, y: 0.115 } },
-  { id: 'maki', name: 'Maki Zen’in', face: { x: 0.47, y: 0.15 } },
-  { id: 'nanami', name: 'Kento Nanami', face: { x: 0.5, y: 0.135 } },
+  { id: 'maki', name: 'Maki Zenin', face: { x: 0.53, y: 0.15 } },
+  { id: 'yuta', name: 'Yuta Okkotsu', face: { x: 0.5, y: 0.1 } },
   { id: 'todo', name: 'Aoi Todo', face: { x: 0.52, y: 0.14 } },
-  { id: 'toge', name: 'Toge Inumaki', face: { x: 0.49, y: 0.145 } },
+  { id: 'sukuna', name: 'Ryomen Sukuna', face: { x: 0.5, y: 0.14 } },
 ] as const satisfies readonly { id: string; name: string; face: FacePoint }[];
 
 export type Character = (typeof CHARACTERS)[number];

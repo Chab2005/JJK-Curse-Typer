@@ -192,6 +192,16 @@ kbd,
   clip-path: polygon(10px 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 10px 100%, 0 50%);
 }
 
+/* Biseau réglable (--b) : couches emboîtées des cartes personnage, chaque couche un peu moins coupée. */
+@utility bevel-var {
+  clip-path: polygon(var(--b) 0, calc(100% - var(--b)) 0, 100% var(--b), 100% calc(100% - var(--b)), calc(100% - var(--b)) 100%, var(--b) 100%, 0 calc(100% - var(--b)), 0 var(--b));
+}
+
+/* Deux coins coupés seulement, en haut à gauche et en bas à droite (--b). */
+@utility cut-asym {
+  clip-path: polygon(var(--b) 0, 100% 0, 100% calc(100% - var(--b)), calc(100% - var(--b)) 100%, 0 100%, 0 var(--b));
+}
+
 /* Parallélogramme aux deux bords penchés (soulignement des liens d'en-tête) */
 @utility parallelogram {
   clip-path: polygon(5px 0, 100% 0, calc(100% - 5px) 100%, 0 100%);
@@ -284,11 +294,450 @@ kbd,
   animation: race-pop 320ms ease-out both;
 }
 
+/* Guide de /characters : petites démonstrations en boucle (frappe, énergie, techniques, territoires). */
+/* La frappe se dévoile caractère par caractère : `--chars` est la longueur de la phrase. */
+.guide-typed {
+  width: calc(var(--chars) * 1ch);
+  animation: guide-type 5s steps(var(--chars), end) infinite, guide-caret 0.7s step-end infinite;
+}
+
+@keyframes guide-type {
+  0% { width: 0; }
+  70%, 100% { width: calc(var(--chars) * 1ch); }
+}
+
+@keyframes guide-caret {
+  50% { border-color: transparent; }
+}
+
+/* Coureurs de la piste : chacun s'arrête à `--finish` (fraction de la piste). */
+.guide-runner {
+  left: calc(var(--finish) * (100% - 36px));
+  animation: guide-run 5s linear infinite;
+}
+
+@keyframes guide-run {
+  0% { left: 0; }
+  70%, 100% { left: calc(var(--finish) * (100% - 36px)); }
+}
+
+/* Barre d'énergie occulte en feu bleu. Deux textures de bruit défilent vers le haut à des vitesses
+   différentes, fondues en « difference », puis sepia + contraste + rotation de teinte en font des flammes.
+   Les flammes penchent comme les bouts de la barre (8px sur 20px, environ 21,8°). */
+.ce {
+  position: relative;
+  height: 96px;
+}
+
+.ce-track {
+  position: absolute;
+  inset: auto 0 0;
+  height: 20px;
+  background: #131315;
+  box-shadow: inset 0 0 0 1px #2a2a2c;
+  clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+  transition: box-shadow 0.3s;
+}
+
+.ce-body {
+  position: absolute;
+  inset: 0 auto 0 0;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+  background: linear-gradient(90deg, #071a52, #1d5bff 55%, #4cd7f6);
+  transition: width 90ms linear;
+}
+
+/* Les flammes s'arrêtent sur le prolongement du bout biseauté de la barre (30,4px plus loin au sommet de 96px). */
+.ce-fires {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 96px;
+  mix-blend-mode: screen;
+  clip-path: polygon(0 0, calc(100% + 30.4px) 0, calc(100% - 8px) 100%, 0 100%);
+  transition: width 90ms linear;
+}
+
+.ce-fire {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 90px;
+  mix-blend-mode: screen;
+  transform: skewX(-21.8deg);
+  transform-origin: 0 100%;
+  mask-image: linear-gradient(to top, #000 60%, transparent);
+}
+
+.ce-fire-mid {
+  bottom: 10px;
+  left: 6px;
+  height: 72px;
+}
+
+.ce-flames {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to bottom, #000 0, rgb(0 0 0 / 0.5) 22%, transparent 60%),
+    linear-gradient(to top, rgb(255 255 255 / 0.4) 0, transparent 38%),
+    url("/images/fire-noise.png"),
+    url("/images/fire-noise.png"),
+    linear-gradient(#000, #000);
+  background-size: 100% 100%, 100% 100%, 180px 420px, 130px 300px, 100% 100%;
+  background-blend-mode: normal, screen, difference, difference, normal;
+  filter: sepia(1) contrast(4) hue-rotate(182deg) saturate(2);
+  animation: ce-burn 5s linear infinite;
+}
+
+.ce-back {
+  transform: translateX(-14px) scaleY(1.12);
+  transform-origin: 50% 100%;
+  filter: sepia(1) contrast(4) hue-rotate(196deg) saturate(2.4) brightness(0.8);
+  opacity: 0.85;
+  animation-duration: 3.7s;
+  animation-delay: -1.8s;
+}
+
+.ce-mid {
+  filter: sepia(1) contrast(4) hue-rotate(178deg) saturate(1.8) brightness(1.1);
+  animation-duration: 4.3s;
+  animation-delay: -2.6s;
+}
+
+.ce-glow {
+  filter: sepia(1) contrast(4) hue-rotate(182deg) saturate(2) blur(10px);
+  opacity: 0.7;
+}
+
+.ce-ticks {
+  position: absolute;
+  inset: auto 0 0;
+  height: 20px;
+  clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+  background: repeating-linear-gradient(90deg, transparent 0 calc(100% / 15 - 2px), rgb(14 14 16 / 0.8) calc(100% / 15 - 2px) calc(100% / 15));
+}
+
+.ce-full .ce-flames {
+  animation-duration: 3s;
+}
+
+.ce-full .ce-track {
+  box-shadow: inset 0 0 0 1px #4cd7f6, 0 0 22px rgb(76 215 246 / 0.65);
+}
+
+@keyframes ce-burn {
+  from { background-position: 0 0, 0 0, 180px 2520px, 0 2100px, 0 0; }
+  to { background-position: 0 0, 0 0, 0 0, 260px 0, 0 0; }
+}
+
+/* Course de l'étape 3 : un poursuivant lance sa technique sur un meneur, qui encaisse un éclair façon Black Flash. */
+.guide-racer {
+  animation: guide-racer-hit 4s ease-out infinite;
+}
+
+.guide-cast {
+  opacity: 0;
+  box-shadow: 0 0 10px 4px rgb(225 29 72 / 0.9), 0 0 2px 1px #fff;
+  animation: guide-cast 4s cubic-bezier(0.55, 0, 0.85, 0.55) infinite;
+}
+
+.guide-charge {
+  opacity: 0;
+  animation: guide-charge 4s ease-out infinite;
+}
+
+.guide-spark {
+  opacity: 0;
+  filter: drop-shadow(0 0 5px rgb(225 29 72 / 0.9));
+  animation: guide-spark-flicker 4s step-end infinite, guide-spark-grow 4s linear infinite;
+}
+
+@keyframes guide-racer-hit {
+  0%, 54%, 100% { transform: none; filter: none; }
+  56% { transform: translateX(-12px); filter: brightness(2.4) saturate(0); }
+  62% { transform: translateX(-7px); filter: none; }
+  82% { transform: none; }
+}
+
+@keyframes guide-cast {
+  0%, 33% { left: var(--x1); top: var(--y1); opacity: 0; }
+  36% { left: var(--x1); top: var(--y1); opacity: 1; }
+  54% { left: var(--x2); top: var(--y2); opacity: 1; }
+  55%, 100% { left: var(--x2); top: var(--y2); opacity: 0; }
+}
+
+@keyframes guide-charge {
+  0%, 22% { transform: scale(0.3); opacity: 0; }
+  28% { opacity: 1; }
+  36% { transform: scale(1); opacity: 0; }
+  100% { opacity: 0; }
+}
+
+@keyframes guide-spark-flicker {
+  0% { opacity: 0; }
+  55% { opacity: 1; }
+  57% { opacity: 0.15; }
+  58% { opacity: 1; }
+  61% { opacity: 0.4; }
+  62% { opacity: 1; }
+  66% { opacity: 0; }
+}
+
+@keyframes guide-spark-grow {
+  0%, 54% { transform: scale(0.2) rotate(0); }
+  58%, 100% { transform: scale(1) rotate(14deg); }
+}
+
+/* Extension du territoire : des cercles s'ouvrent depuis le centre, puis le sceau apparaît. */
+.guide-dom-fill {
+  transform: scale(0);
+  animation: guide-dom-fill 5s cubic-bezier(0.2, 0.8, 0.3, 1) infinite;
+}
+
+.guide-dom-ring {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0);
+  animation: guide-dom-ring 5s cubic-bezier(0.2, 0.8, 0.3, 1) infinite;
+}
+
+.guide-dom-sigil {
+  animation: guide-spin 24s linear infinite, guide-dom-show 5s ease-out infinite;
+}
+
+.guide-dom-word {
+  animation: guide-dom-word 5s ease-out infinite;
+}
+
+.guide-dom-flash {
+  opacity: 0;
+  animation: guide-dom-flash 5s ease-out infinite;
+}
+
+@keyframes guide-dom-fill {
+  0%, 6% { transform: scale(0); }
+  40%, 100% { transform: scale(1); }
+}
+
+@keyframes guide-dom-ring {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+  8% { opacity: 1; }
+  42% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  88% { opacity: 0.5; }
+  100% { transform: translate(-50%, -50%) scale(1.04); opacity: 0; }
+}
+
+@keyframes guide-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes guide-dom-show {
+  0%, 30% { opacity: 0; }
+  45%, 88% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes guide-dom-word {
+  0%, 32% { opacity: 0; letter-spacing: 0.6em; }
+  50%, 88% { opacity: 1; letter-spacing: 0.12em; }
+  100% { opacity: 0; letter-spacing: 0.12em; }
+}
+
+@keyframes guide-dom-flash {
+  0%, 5% { opacity: 0; }
+  7% { opacity: 0.55; }
+  14%, 100% { opacity: 0; }
+}
+
+/* Restriction céleste : un territoire adverse déferle, mais s'arrête net autour de Maki. */
+.guide-hr-domain {
+  mask-image: radial-gradient(circle at 64% 50%, transparent 0 58px, #000 62px);
+}
+
+.guide-hr-wave {
+  transform: scale(0);
+  animation: guide-hr-wave 5s cubic-bezier(0.2, 0.8, 0.3, 1) infinite;
+}
+
+.guide-hr-ring {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0);
+  animation: guide-hr-ring 5s cubic-bezier(0.2, 0.8, 0.3, 1) infinite;
+}
+
+.guide-hr-guard {
+  animation: guide-hr-guard 5s ease-out infinite;
+}
+
+.guide-hr-tag {
+  animation: guide-hr-tag 5s ease-out infinite;
+}
+
+@keyframes guide-hr-wave {
+  0%, 5% { transform: scale(0); }
+  45%, 100% { transform: scale(1); }
+}
+
+@keyframes guide-hr-ring {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+  8% { opacity: 1; }
+  45% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  90% { opacity: 0.4; }
+  100% { transform: translate(-50%, -50%) scale(1.03); opacity: 0; }
+}
+
+@keyframes guide-hr-guard {
+  0%, 26% { transform: scale(1); border-color: rgb(229 225 228 / 0.25); box-shadow: none; }
+  30% { transform: scale(1.08); border-color: #fffaf9; box-shadow: 0 0 18px rgb(255 250 249 / 0.55), inset 0 0 14px rgb(255 250 249 / 0.25); }
+  45%, 100% { transform: scale(1); border-color: rgb(229 225 228 / 0.5); box-shadow: none; }
+}
+
+@keyframes guide-hr-tag {
+  0%, 28% { opacity: 0; transform: translate(-50%, 6px); }
+  36%, 90% { opacity: 1; transform: translate(-50%, 0); }
+  100% { opacity: 0; transform: translate(-50%, 0); }
+}
+
 /* Animations jamais bloquantes et coupées sur demande (UI-7, UI-8). */
 @media (prefers-reduced-motion: reduce) {
   .energy-flame,
   .energy-full,
-  .race-pop {
+  .race-pop,
+  .guide-typed,
+  .guide-runner,
+  .ce-flames,
+  .guide-racer,
+  .guide-cast,
+  .guide-charge,
+  .guide-spark,
+  .guide-dom-sigil,
+  .guide-dom-word,
+  .guide-dom-flash,
+  .guide-hr-guard,
+  .guide-hr-tag {
     animation: none;
   }
+
+  .guide-dom-fill,
+  .guide-hr-wave {
+    animation: none;
+    transform: scale(1);
+  }
+
+  .guide-dom-ring,
+  .guide-hr-ring {
+    animation: none;
+    opacity: 0.7;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/* Sprites des personnages (fiche personnage) : bande de 8 images, une par pas de l'animation ; --sprite-end = position finale. */
+@keyframes sprite-idle {
+  to { background-position-x: var(--sprite-end); }
+}
+@keyframes sprite-running {
+  to { background-position-x: var(--sprite-end); }
+}
+
+/* Bouton-flèche (ChevronButton) : plaque à bouts pointus en quatre couches (cadre, vide, filet, face),
+   flanquée de chevrons qui s'écartent au survol. --h = longueur des pointes de chaque couche. */
+@layer components {
+  .arw {
+    position: relative;
+    display: inline-flex;
+    align-items: stretch;
+    padding: 0 var(--cap-in);
+    background: none;
+    border: 0;
+    color: var(--color-on-surface);
+    text-decoration: none;
+    cursor: pointer;
+    transition: filter 0.3s;
+  }
+  .arw:hover {
+    filter: brightness(1.45) drop-shadow(0 0 10px rgb(225 29 72 / 0.35));
+  }
+  .arw-bare { padding: 0; }
+  .arw-right { padding-left: 0; }
+  .arw:disabled {
+    pointer-events: none;
+    opacity: 0.8;
+  }
+  .arw-cap {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    width: var(--cap-w);
+    color: var(--color-primary-container);
+    transition: translate 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .arw-cap svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  .arw-cap-l { left: 0; }
+  .arw-cap-r { right: 0; transform: scaleX(-1); }
+  .arw:hover .arw-cap-l { translate: -22% 0; }
+  .arw:hover .arw-cap-r { translate: 22% 0; }
+  .arw-f, .arw-g, .arw-r, .arw-c {
+    clip-path: polygon(var(--h) 0, calc(100% - var(--h)) 0, 100% 50%, calc(100% - var(--h)) 100%, var(--h) 100%, 0 50%);
+  }
+  .arw-f { display: flex; flex: 1; padding: 1px; background: #8f1022; }
+  .arw-g { display: flex; flex: 1; padding: 3px; background: #0b0405; }
+  .arw-r { display: flex; flex: 1; padding: 1px; background: rgb(225 29 72 / 0.4); }
+  .arw-c {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: radial-gradient(120% 160% at 50% 0%, #3a0c14 0%, #170608 55%, #0c0304 100%);
+  }
+  .arw-p .arw-c {
+    background: linear-gradient(180deg, #e11d48 0%, #a3102f 55%, #6e0718 100%);
+    color: var(--color-on-primary-container);
+  }
+  .arw-sm { height: 40px; --cap-w: 20px; --cap-in: 12px; }
+  .arw-sm .arw-f { --h: 13px; }
+  .arw-sm .arw-g { --h: 12.5px; padding: 2px; }
+  .arw-sm .arw-r { --h: 11px; }
+  .arw-sm .arw-c { --h: 10.5px; padding: 0 24px; }
+  .arw-md { height: 56px; --cap-w: 28px; --cap-in: 17px; }
+  .arw-md .arw-f { --h: 18px; }
+  .arw-md .arw-g { --h: 17.5px; }
+  .arw-md .arw-r { --h: 16px; }
+  .arw-md .arw-c { --h: 15.5px; padding: 0 34px; }
+
+  /* Carte à bouts pointus (HexCard) : mêmes quatre couches que la plaque des boutons, en plus grand. */
+  .hcard, .hcard-g, .hcard-r, .hcard-c {
+    clip-path: polygon(var(--h) 0, calc(100% - var(--h)) 0, 100% 50%, calc(100% - var(--h)) 100%, var(--h) 100%, 0 50%);
+  }
+  .hcard { --h: 26px; display: flex; padding: 1px; background: #8f1022; }
+  .hcard-g { --h: 25.5px; display: flex; flex: 1; padding: 3px; background: #0b0405; }
+  .hcard-r { --h: 24px; display: flex; flex: 1; padding: 1px; background: rgb(225 29 72 / 0.35); }
+  .hcard-c { --h: 23.5px; flex: 1; background: radial-gradient(120% 120% at 50% 0%, #2a0b10 0%, #150608 55%, #0c0304 100%); }
+
+  /* Champ à bouts pointus (formulaire de l'accueil) : chanfrein de 14px, que les libellés suivent. */
+  .field-cut {
+    clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 14px 100%, 0 50%);
+  }
+
+  /* Langues du sélecteur : glissent une à une depuis le dessous du bouton. */
+  .lang-drop li { animation: lang-drop 0.3s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+  .lang-drop li:nth-child(2) { animation-delay: 0.06s; }
+  .lang-drop li:nth-child(3) { animation-delay: 0.12s; }
+}
+
+@keyframes lang-drop {
+  from { transform: translateY(-110%); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .arw, .arw-cap { transition: none; }
+  .lang-drop li { animation: none; }
 }

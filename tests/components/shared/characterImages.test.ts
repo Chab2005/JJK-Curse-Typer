@@ -16,6 +16,13 @@ describe('faceFrame', () => {
   it('agrandit toujours l’image à la même largeur', () => {
     expect(faceFrame({ x: 0.5, y: 0.05 }, 100).width).toBe(FACE_ZOOM_WIDTH);
   });
+
+  it('accepte une autre largeur pour cadrer le buste plutôt que le visage', () => {
+    const frame = faceFrame({ x: 0.47, y: 0.13 }, 120, 500);
+    expect(frame.width).toBe(500);
+    expect(frame.left).toBe(`calc(50% - ${0.47 * 500}px)`);
+    expect(frame.top + 0.13 * 500 * ratio).toBeCloseTo(120);
+  });
 });
 
 describe('faceCrop', () => {

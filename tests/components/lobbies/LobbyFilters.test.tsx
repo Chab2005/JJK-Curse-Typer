@@ -17,7 +17,7 @@ describe('LobbyFilters (LOB-2)', () => {
   it('checks the boxes that match the current filters', async () => {
     await openFilters({ ...FILTERS, bonusOnly: true, languages: ['en'] });
 
-    expect(screen.getByRole('checkbox', { name: 'Bonuses enabled only' })).toBeChecked();
+    expect(screen.getByRole('checkbox', { name: 'Techniques enabled only' })).toBeChecked();
     expect(screen.getByRole('checkbox', { name: 'English' })).toBeChecked();
     expect(screen.getByRole('checkbox', { name: 'French' })).not.toBeChecked();
   });
@@ -25,7 +25,7 @@ describe('LobbyFilters (LOB-2)', () => {
   it('turns a toggle on and keeps the rest of the filters', async () => {
     const { user, onChange } = await openFilters();
 
-    await user.click(screen.getByRole('checkbox', { name: 'Bonuses enabled only' }));
+    await user.click(screen.getByRole('checkbox', { name: 'Techniques enabled only' }));
 
     expect(onChange).toHaveBeenCalledWith({ ...FILTERS, bonusOnly: true });
   });
