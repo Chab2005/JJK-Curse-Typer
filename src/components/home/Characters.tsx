@@ -46,9 +46,10 @@ export default function Characters() {
 
   return (
     <section aria-labelledby="characters-title" className="relative overflow-hidden bg-surface-container-lowest px-6 pt-25 pb-[110px]">
-      <p aria-hidden="true" className="text-stroke-ghost pointer-events-none absolute -left-2.5 top-7.5 hidden whitespace-nowrap text-[200px] uppercase leading-none lg:block">
-        {t('watermark')}
-      </p>
+      {/* Calé sur la colonne du contenu (même gouttière et largeur max) pour s'aligner sur le titre. */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-x-6 top-7.5 mx-auto hidden max-w-[1240px] lg:block">
+        <p className="text-stroke-ghost whitespace-nowrap text-[200px] uppercase leading-none">{t('watermark')}</p>
+      </div>
 
       <div className="relative mx-auto flex max-w-[1240px] flex-col gap-10">
         <div className="flex flex-col gap-2">
