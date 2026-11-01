@@ -42,6 +42,7 @@ const CARD_STYLES: Record<CharacterId, { tint: string; ink: string; stroke: stri
 
 export default function Characters() {
   const t = useTranslations('Characters');
+  const page = useTranslations('CharactersPage');
   const files = characterFiles();
 
   return (
@@ -63,44 +64,47 @@ export default function Characters() {
             const style = CARD_STYLES[character.id];
             return (
               // Carte F du canvas : biseau à double filet (cadre, vide, filet, face) ; au survol seulement,
-              // le cadre s'allume, la carte luit en rouge et monte de 6px.
-              <li
-                key={character.id}
-                className="group relative h-[340px] transition-[translate,filter] duration-200 hover:-translate-y-1.5 hover:brightness-115 hover:drop-shadow-[0_0_14px_rgb(225_29_72/0.45)] motion-reduce:transition-none"
-              >
-                <div className="bevel-var size-full bg-[#8f1022] p-px transition-colors duration-200 [--b:14px] group-hover:bg-primary-container">
-                  <div className="bevel-var size-full bg-[#0b0405] p-[3px] [--b:13.5px]">
-                    <div className="bevel-var size-full bg-primary-container/40 p-px [--b:12px]">
-                      <div className={`bevel-var relative size-full overflow-hidden [--b:11.5px] ${style.tint}`}>
-                        {image ? (
-                          <Image
-                            src={image}
-                            alt=""
-                            width={904}
-                            height={1270}
-                            unoptimized
-                            style={{ ...faceFrame(character.face, FACE_ANCHOR_Y), transformOrigin: `${character.face.x * 100}% ${character.face.y * 100}%` }}
-                            className="absolute h-auto max-w-none transition-transform duration-300 group-hover:scale-105"
-                          />
-                        ) : (
-                          <span aria-hidden="true" className={`absolute right-3.5 -top-2.5 text-[230px] leading-none text-transparent opacity-75 ${style.stroke}`}>
-                            {character.name[0]}
-                          </span>
-                        )}
-                        <div className="absolute inset-x-0 bottom-0 bg-linear-to-b from-transparent to-surface-container-lowest/95 to-55% pt-10 pr-[94px] pb-4 pl-[18px]">
-                          <p className="font-grotesk text-xl font-semibold text-on-primary-container">{character.name}</p>
-                          <p className={`text-[15px] ${style.ink}`}>{t(`techniques.${character.id}`)}</p>
-                        </div>
-                        <div aria-hidden="true" className="cut-asym absolute right-3.5 bottom-3.5 bg-primary-container p-px [--b:10px]">
-                          <div className="cut-asym relative h-[67px] w-[70px] overflow-hidden bg-[rgb(12_3_4/0.85)] [--b:9.5px]">
-                            <span className={`absolute bottom-0 left-1/2 block -translate-x-1/2 motion-reduce:[animation:none]! ${RUNNER_IDLE}`} style={runnerIdleStyle(character.id)} />
-                            <span className={`absolute right-[3px] bottom-0 motion-reduce:[animation:none]! ${RUNNER_RUN}`} style={runnerStyle(character.id)} />
+              // le cadre s'allume, la carte luit en rouge et monte de 6px. Elle ouvre la fiche /characters/<id>.
+              <li key={character.id} className="relative h-[340px]">
+                <Link
+                  href={`/characters/${character.id}`}
+                  aria-label={page('cardLabel', { name: character.name, technique: t(`techniques.${character.id}`) })}
+                  className="group block size-full transition-[translate,filter] duration-200 hover:-translate-y-1.5 hover:brightness-115 hover:drop-shadow-[0_0_14px_rgb(225_29_72/0.45)] motion-reduce:transition-none"
+                >
+                  <div className="bevel-var size-full bg-[#8f1022] p-px transition-colors duration-200 [--b:14px] group-hover:bg-primary-container">
+                    <div className="bevel-var size-full bg-[#0b0405] p-[3px] [--b:13.5px]">
+                      <div className="bevel-var size-full bg-primary-container/40 p-px [--b:12px]">
+                        <div className={`bevel-var relative size-full overflow-hidden [--b:11.5px] ${style.tint}`}>
+                          {image ? (
+                            <Image
+                              src={image}
+                              alt=""
+                              width={904}
+                              height={1270}
+                              unoptimized
+                              style={{ ...faceFrame(character.face, FACE_ANCHOR_Y), transformOrigin: `${character.face.x * 100}% ${character.face.y * 100}%` }}
+                              className="absolute h-auto max-w-none transition-transform duration-300 group-hover:scale-105"
+                            />
+                          ) : (
+                            <span aria-hidden="true" className={`absolute right-3.5 -top-2.5 text-[230px] leading-none text-transparent opacity-75 ${style.stroke}`}>
+                              {character.name[0]}
+                            </span>
+                          )}
+                          <div className="absolute inset-x-0 bottom-0 bg-linear-to-b from-transparent to-surface-container-lowest/95 to-55% pt-10 pr-[94px] pb-4 pl-[18px]">
+                            <p className="font-grotesk text-xl font-semibold text-on-primary-container">{character.name}</p>
+                            <p className={`text-[15px] ${style.ink}`}>{t(`techniques.${character.id}`)}</p>
+                          </div>
+                          <div aria-hidden="true" className="cut-asym absolute right-3.5 bottom-3.5 bg-primary-container p-px [--b:10px]">
+                            <div className="cut-asym relative h-[67px] w-[70px] overflow-hidden bg-[rgb(12_3_4/0.85)] [--b:9.5px]">
+                              <span className={`absolute bottom-0 left-1/2 block -translate-x-1/2 motion-reduce:[animation:none]! ${RUNNER_IDLE}`} style={runnerIdleStyle(character.id)} />
+                              <span className={`absolute right-[3px] bottom-0 motion-reduce:[animation:none]! ${RUNNER_RUN}`} style={runnerStyle(character.id)} />
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                </Link>
               </li>
             );
           })}
