@@ -2,18 +2,19 @@ import { useTranslations } from 'next-intl';
 import BevelFrame, { goldFrame } from '@/components/shared/BevelFrame';
 import { Link } from '@/i18n/navigation';
 
-export type NotFoundVariant = 'page' | 'profile' | 'settings' | 'lobby';
+export type NotFoundVariant = 'page' | 'profile' | 'settings' | 'lobby' | 'character';
 
-// Où renvoyer le visiteur selon ce qui manque : l'accueil, le classement, les paramètres ou le formulaire de code.
+// Où renvoyer le visiteur selon ce qui manque : l'accueil, le classement, les paramètres, le formulaire de code ou les personnages.
 const BACK: Record<NotFoundVariant, { href: string; icon: string }> = {
   page: { href: '/', icon: 'home' },
   profile: { href: '/leaderboard', icon: 'leaderboard' },
   settings: { href: '/settings', icon: 'settings' },
   lobby: { href: '/#join', icon: 'keyboard' },
+  character: { href: '/characters', icon: 'groups' },
 };
 
 // Contenu des pages 404 : URL inconnue, joueur inexistant, sous-page de paramètres inconnue,
-// code de lobby inconnu (faute de frappe, lobby fermé ou lien privé invalidé, LOB-4).
+// code de lobby inconnu (faute de frappe, lobby fermé ou lien privé invalidé, LOB-4), personnage inconnu.
 export default function NotFound({ variant }: { variant: NotFoundVariant }) {
   const t = useTranslations('NotFound');
   const back = BACK[variant];

@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
 // Tests de bout en bout (QA) et captures de tout le site. Réutilise `npm run dev` s'il tourne déjà sur :3000
-// (Postgres requis : `docker compose up -d`). Le français est servi sur fr.localhost:3000 (GEN-3).
+// (Postgres requis : `docker compose up -d`). Le français est servi sous /fr (GEN-3).
 export default defineConfig({
   testDir: 'e2e',
   outputDir: 'e2e/.results',

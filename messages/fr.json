@@ -10,7 +10,7 @@
       "home": "Accueil",
       "arenas": "Arènes",
       "leaderboard": "Classement",
-      "archives": "Archives"
+      "characters": "Personnages"
     },
     "profileAlt": "Mon profil",
     "menu": {
@@ -21,7 +21,11 @@
     "logout": "Déconnexion"
   },
   "LanguageSwitcher": {
-    "label": "Langue"
+    "label": "Langue",
+    "names": {
+      "en": "English",
+      "fr": "Français"
+    }
   },
   "Hero": {
     "tagline": "Mettez votre énergie occulte au bout des doigts.",
@@ -85,7 +89,7 @@
     "eyebrow": "Système de jeu",
     "titleLine1": "Les règles sont simples : tapez.",
     "titleLine2": "Les malédictions font le reste.",
-    "intro": "Un texte, un départ synchronisé, et chaque frappe juste fait avancer votre exorciste sur la piste. Les derniers reçoivent des bonus pour viser les meneurs.",
+    "intro": "Un texte, un départ synchronisé, et chaque frappe juste fait avancer votre exorciste sur la piste. Les derniers utilisent leur technique pour viser les meneurs.",
     "facts": {
       "players": {
         "value": "60",
@@ -110,16 +114,102 @@
     "title": "Choisissez votre exorciste",
     "watermark": "Exorcistes",
     "cta": "Vérifier les personnages",
-    "number": "No. {number}",
     "techniques": {
       "yuji": "Divergent Fist",
       "megumi": "Dix Ombres",
       "nobara": "Résonance",
       "gojo": "Infini",
       "maki": "Corps céleste",
-      "nanami": "Ratio 7:3",
+      "yuta": "Rika",
       "todo": "Boogie Woogie",
-      "toge": "Paroles maudites"
+      "sukuna": "Shrine"
+    }
+  },
+  "CharactersPage": {
+    "metaTitle": "Personnages",
+    "eyebrow": "Personnages",
+    "title": "Registre des exorcistes",
+    "watermark": "Personnages",
+    "intro": "Huit exorcistes jouables. Ouvrez une fiche pour lire leur technique et leur capacité en course.",
+    "listLabel": "Personnages jouables",
+    "cardLabel": "{name}, {technique} : ouvrir la fiche"
+  },
+  "Character": {
+    "breadcrumb": "Fil d’Ariane",
+    "portraitAlt": "{name}, illustration en pied",
+    "techniqueTitle": "Technique innée",
+    "abilityTitle": "Capacité en course",
+    "abilitySoon": "Bientôt dévoilée",
+    "abilitySoonText": "Son effet, son coût en énergie et sa durée seront bientôt dévoilés.",
+    "play": "Jouer {name}",
+    "otherFiles": "Autres fiches",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "all": "Toutes les fiches",
+    "others": "Exorcistes",
+    "descriptions": {
+      "yuji": "Élève de première année à l’école d’exorcisme de Tokyo. Réceptacle de Sukuna, il compense son retard en sorts par une force physique hors norme.",
+      "megumi": "Exorciste calme et méthodique, héritier d’une technique du clan Zenin.",
+      "nobara": "Venue de la campagne pour Tokyo, elle avance sans jamais douter d’elle-même.",
+      "gojo": "Professeur des premières années et exorciste le plus puissant de son époque. Son bandeau cache les Six Yeux.",
+      "maki": "Rejetée par son clan, elle s’est fait une place à la force de ses armes.",
+      "yuta": "Élève de deuxième année hanté par Rika, l’esprit maudit auquel il s’est lié.",
+      "todo": "Élève de Kyoto à la carrure imposante. Il juge les gens à leur type idéal.",
+      "sukuna": "Le Roi des fléaux, scellé depuis mille ans dans vingt doigts. Le corps de Yuji lui sert désormais de réceptacle."
+    },
+    "techniqueDetails": {
+      "yuji": "Son énergie occulte suit ses poings avec un temps de retard : chaque coup frappe deux fois.",
+      "megumi": "Il forme des ombres avec ses mains pour invoquer jusqu’à dix shikigamis.",
+      "nobara": "Ce qu’elle frappe sur une poupée de paille, sa cible le ressent.",
+      "gojo": "L’Infini ralentit tout ce qui l’approche, jusqu’à ce que plus rien ne l’atteigne.",
+      "maki": "Née presque sans énergie occulte, elle reçoit en échange un corps et des sens surhumains.",
+      "yuta": "Il emprunte l’énergie maudite sans limite de Rika et copie les techniques de ceux qu’il bat.",
+      "todo": "Un claquement de mains suffit pour échanger la place de deux cibles.",
+      "sukuna": "Cleave s’ajuste à la résistance et à l’énergie occulte de sa cible pour la trancher d’un seul coup ; Dismantle taille en pièces tout ce qui l’entoure. Pour achever, il libère Fuga : une flèche de feu qui embrase tout."
+    }
+  },
+  "Guide": {
+    "eyebrow": "Comment jouer",
+    "watermark": "Guide",
+    "titleLine1": "Tapez. Chargez.",
+    "titleLine2": "Rattrapez.",
+    "intro": "Une course se gagne au clavier, mais l'énergie occulte et les techniques empêchent les meneurs de s'envoler.",
+    "type": {
+      "title": "Tapez juste, avancez",
+      "text": "Tout le monde reçoit le même texte au même signal. Chaque caractère juste fait avancer votre exorciste sur la piste ; le premier arrivé l'emporte.",
+      "sample": "les fléaux naissent des émotions humaines"
+    },
+    "charge": {
+      "title": "Chargez l'énergie occulte",
+      "text": "Chaque caractère juste remplit votre barre. Plus votre série sans faute est longue, plus elle se remplit vite, jusqu'à {max, number} EP.",
+      "label": "Énergie occulte",
+      "max": "/ {max, number} EP",
+      "status": {
+        "charging": "En charge",
+        "streak": "Série de {count} sans faute",
+        "full": "Énergie pleine"
+      }
+    },
+    "catchUp": {
+      "title": "Rattrapez les meneurs",
+      "text": "Chaque exorciste a sa technique, celle de son personnage. Derrière, elle sert à attaquer les trois premiers, et frappe d'autant plus fort que votre retard est grand. Les meneurs ont aussi la leur."
+    },
+    "domain": {
+      "eyebrow": "Atout ultime",
+      "title": "Extension du territoire",
+      "text": "Comme sa technique, le territoire dépend de votre exorciste, mais tous n'en ont pas, même avec une technique. Dès {min, number} EP d'énergie occulte, déployez-le : contrairement aux techniques, il frappe tous les autres exorcistes de la course, meneurs comme poursuivants. Le prix est lourd : votre énergie occulte est entièrement vidée, et votre technique est inutilisable pendant les {seconds} secondes qui suivent.",
+      "example": "Satoru Gojo · Sphère de l'espace infini"
+    },
+    "restriction": {
+      "eyebrow": "Exception",
+      "title": "Restriction céleste",
+      "text": "Certains exorcistes, comme Maki Zenin, sont nés sous une restriction céleste : ils n'ont ni technique, ni extension du territoire. En échange, les territoires adverses n'ont aucun effet sur eux.",
+      "immune": "Immunisée"
+    },
+    "rules": {
+      "host": "L'hôte peut désactiver les techniques.",
+      "finish": "Aucun effet ne vous empêche de finir : tous sont limités en temps ou en longueur.",
+      "bots": "Les bots jouent avec les mêmes règles."
     }
   },
   "TopExorcists": {
@@ -134,8 +224,9 @@
     "nav": "Pied de page",
     "arenas": "Arènes",
     "leaderboard": "Classement",
+    "characters": "Personnages",
     "profile": "Profil",
-    "disclaimer": "Projet scolaire non officiel, réalisé par des fans. Jujutsu Kaisen © Gege Akutami / Shueisha. Illustrations des personnages : Jujutsu Kaisen Phantom Parade (Sumzap). Aucune affiliation avec les ayants droit."
+    "disclaimer": "Projet scolaire non officiel, réalisé par des fans. Jujutsu Kaisen © Gege Akutami / Shueisha. Illustrations des personnages : Jujutsu Kaisen Phantom Parade (Sumzap) ; Maki : anime Jujutsu Kaisen, saison 3 (TOHO). Aucune affiliation avec les ayants droit."
   },
   "Pagination": {
     "previous": "Page précédente",
@@ -158,8 +249,8 @@
     "pagination": "Pages des lobbies",
     "filters": {
       "button": "Filtres",
-      "bonus": "Bonus",
-      "bonusOnly": "Bonus activés uniquement",
+      "bonus": "Techniques",
+      "bonusOnly": "Techniques activées uniquement",
       "language": "Langue du texte",
       "languages": {
         "fr": "Français",
@@ -181,7 +272,7 @@
       "lobby": "Hôte · Lobby",
       "players": "Joueurs",
       "language": "Langue",
-      "bonus": "Bonus",
+      "bonus": "Techniques",
       "chars": "Type de texte",
       "action": "Action",
       "words": "{count} mots",
@@ -331,10 +422,10 @@
         "accumulate": "Les fautes restent dans le texte et coûtent des points.",
         "block": "Impossible d'avancer sans taper le bon caractère."
       },
-      "bonus": "Bonus",
-      "bonusToggle": "Activer les bonus",
-      "bonusOn": "Activés",
-      "bonusOff": "Désactivés",
+      "bonus": "Techniques",
+      "bonusToggle": "Activer les techniques",
+      "bonusOn": "Activées",
+      "bonusOff": "Désactivées",
       "capacity": "Capacité",
       "capacityHint": "Entre {min} et {max} participants.",
       "capacityValue": "{count} participants",
@@ -685,6 +776,13 @@
       "title": "Ce lobby n'existe pas",
       "text": "Vérifiez le code : il est peut-être mal tapé, ou le lobby a fermé.",
       "back": "Entrer un code"
+    },
+    "character": {
+      "metaTitle": "Personnage introuvable",
+      "eyebrow": "Personnage introuvable",
+      "title": "Aucune fiche pour cet exorciste",
+      "text": "Ce personnage n'est pas jouable, ou le lien est mal tapé.",
+      "back": "Voir les personnages"
     }
   }
 }

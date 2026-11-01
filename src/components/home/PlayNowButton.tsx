@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { useState, useTransition } from 'react';
 import { quickPlayAction } from '@/app/actions/lobbies';
-import BevelFrame, { goldFrame } from '@/components/shared/BevelFrame';
+import ChevronButton from '@/components/shared/ChevronButton';
 import { Link, useRouter } from '@/i18n/navigation';
 import { smoothScrollTo } from './SmoothScrollLink';
 
@@ -32,19 +32,9 @@ export default function PlayNowButton() {
 
   return (
     <>
-      <BevelFrame
-        as="button"
-        type="button"
-        onClick={play}
-        disabled={isPending}
-        frame={`group inline-flex ${goldFrame} transition-transform hover:-translate-y-0.5 disabled:pointer-events-none disabled:opacity-80`}
-        className="flex min-h-[58px] items-center gap-3 bg-primary-container px-[34px] text-[19px] uppercase tracking-[0.12em] text-on-primary-container transition-colors group-hover:bg-inverse-primary"
-      >
-        <span aria-hidden="true" className={`material-symbols-outlined w-[22px] text-[22px] ${isPending ? 'animate-spin' : ''}`}>
-          {isPending ? 'progress_activity' : 'swords'}
-        </span>
+      <ChevronButton type="button" variant="primary" onClick={play} disabled={isPending} aria-busy={isPending} className="text-[19px] uppercase tracking-[0.12em] whitespace-nowrap">
         {t('play')}
-      </BevelFrame>
+      </ChevronButton>
       {problem && (
         <p role="alert" className="absolute inset-x-0 top-full mt-5 text-[15px] text-error">
           {problem === 'account'

@@ -1,27 +1,16 @@
 // Décision de redirection de langue, en amont de next-intl (GEN-3).
 // Fonction pure : le proxy lui passe la requête et applique le résultat.
 //
-// - Domaine racine (anglais) : redirige vers le sous-domaine de la langue
-//   préférée (cookie de choix explicite, sinon Accept-Language).
-// - `?lang=xx` (sélecteur de langue) : le choix est mémorisé dans un cookie
-//   du domaine racine, puis le visiteur est envoyé sur le domaine de la langue.
-// - Hôte inconnu (preview Vercel, Railway, IP) : pas de sous-domaine, la langue
-//   passe par le préfixe de chemin (`/fr/...`) géré par next-intl ; le choix
-//   est mémorisé dans un cookie de cet hôte pour remettre le préfixe.
+// - `?lang=xx` (sélecteur de langue) : le choix est mémorisé dans un cookie,
+//   puis le visiteur est envoyé sur la même page sous le préfixe de la langue.
+// - Chemin sans préfixe (anglais) : redirige vers `/fr/...` si la langue
+//   préférée est le français (cookie de choix explicite, sinon Accept-Language).
+// - Chemin déjà préfixé : servi tel quel par next-intl.
 
-import {
-  LANG_PARAM,
-  defaultLocale,
-  hostForLocale,
-  isLocale,
-  localeForHost,
-  locales,
-  type Locale,
-} from './config';
+import { LANG_PARAM, defaultLocale, isLocale, locales, type Locale } from './config';
 
 export type LocaleRequest = {
-  host: string;
-  /** Chemin tel que vu par le navigateur, sans le préfixe interne de next-intl. */
+  /** Chemin tel que vu par le navigateur. */
   pathname: string;
   /** Chaîne de requête avec son `?`, ou chaîne vide. */
   search: string;
@@ -31,7 +20,7 @@ export type LocaleRequest = {
 
 export type LocaleDecision =
   | { type: 'next' }
-  | { type: 'redirect'; host: string; pathname: string; search: string; setCookie?: Locale };
+  | { type: 'redirect'; pathname: string; search: string; setCookie?: Locale };
 
 /** Première langue supportée de l'en-tête Accept-Language, par poids q décroissant. */
 export function matchAcceptLanguage(header: string | null): Locale | undefined {
@@ -68,63 +57,25 @@ function withLocalePrefix(pathname: string, locale: Locale): string {
   return pathname === '/' ? `/${locale}` : `/${locale}${pathname}`;
 }
 
-export function resolveLocaleRedirect(req: LocaleRequest, root: string): LocaleDecision {
-  const hostLocale = localeForHost(req.host, root);
+export function resolveLocaleRedirect(req: LocaleRequest): LocaleDecision {
   const requested = new URLSearchParams(req.search).get(LANG_PARAM);
 
-  if (hostLocale === undefined) {
-    if (isLocale(requested)) {
-      const pathname = withLocalePrefix(stripLocalePrefix(req.pathname), requested);
-      return { type: 'redirect', host: req.host, pathname, search: withoutLangParam(req.search), setCookie: requested };
-    }
-    // Les liens next-intl n'ont jamais de préfixe (chaque langue est la langue
-    // par défaut de son domaine) : le cookie de choix, sinon la langue du
-    // navigateur (I18N-02), rétablit `/fr/...`.
-    const unprefixed = stripLocalePrefix(req.pathname) === req.pathname;
-    const preferred = isLocale(req.cookieLocale) ? req.cookieLocale : matchAcceptLanguage(req.acceptLanguage);
-    if (unprefixed && preferred !== undefined && preferred !== defaultLocale) {
-      const pathname = withLocalePrefix(req.pathname, preferred);
-      return { type: 'redirect', host: req.host, pathname, search: req.search };
-    }
-    return { type: 'next' };
-  }
-
   if (isLocale(requested)) {
-    const search = withoutLangParam(req.search);
-
-    if (hostLocale !== defaultLocale) {
-      // Le cookie de choix vit sur le domaine racine : on y passe d'abord.
-      return { type: 'redirect', host: root, pathname: req.pathname, search: req.search };
-    }
-    return {
-      type: 'redirect',
-      host: hostForLocale(requested, root),
-      pathname: req.pathname,
-      search,
-      setCookie: requested,
-    };
+    const pathname = withLocalePrefix(stripLocalePrefix(req.pathname), requested);
+    return { type: 'redirect', pathname, search: withoutLangParam(req.search), setCookie: requested };
   }
 
-  if (hostLocale !== defaultLocale) return { type: 'next' };
-
-  const preferred = isLocale(req.cookieLocale)
-    ? req.cookieLocale
-    : matchAcceptLanguage(req.acceptLanguage) ?? defaultLocale;
-
-  if (preferred === defaultLocale) return { type: 'next' };
-  return { type: 'redirect', host: hostForLocale(preferred, root), pathname: req.pathname, search: req.search };
+  // Un lien sans préfixe (saisi à la main, retour OAuth) : le cookie de choix,
+  // sinon la langue du navigateur (I18N-02), rétablit `/fr/...`.
+  const unprefixed = stripLocalePrefix(req.pathname) === req.pathname;
+  const preferred = isLocale(req.cookieLocale) ? req.cookieLocale : matchAcceptLanguage(req.acceptLanguage);
+  if (unprefixed && preferred !== undefined && preferred !== defaultLocale) {
+    return { type: 'redirect', pathname: withLocalePrefix(req.pathname, preferred), search: req.search };
+  }
+  return { type: 'next' };
 }
 
-/**
- * Lien du sélecteur de langue. Sur un domaine de langue, il vise directement
- * la racine (où vit le cookie de choix) : une redirection vers la racine depuis
- * fr. ne suffit pas en dev, car Next la rend relative à `localhost`.
- * `host` vaut `null` avant l'hydratation (rendu serveur).
- */
-export function localeSwitchHref(
-  { host, pathname, locale }: { host: string | null; pathname: string; locale: Locale },
-  root: string,
-): string {
-  const path = `${pathname}?${LANG_PARAM}=${locale}`;
-  return host !== null && localeForHost(host, root) !== undefined ? `//${root}${path}` : path;
+/** Lien du sélecteur de langue : la page courante (sans préfixe) avec `?lang=xx`. */
+export function localeSwitchHref({ pathname, locale }: { pathname: string; locale: Locale }): string {
+  return `${pathname}?${LANG_PARAM}=${locale}`;
 }

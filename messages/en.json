@@ -10,7 +10,7 @@
       "home": "Home",
       "arenas": "Arenas",
       "leaderboard": "Rankings",
-      "archives": "Archives"
+      "characters": "Characters"
     },
     "profileAlt": "My profile",
     "menu": {
@@ -21,7 +21,11 @@
     "logout": "Log out"
   },
   "LanguageSwitcher": {
-    "label": "Language"
+    "label": "Language",
+    "names": {
+      "en": "English",
+      "fr": "Français"
+    }
   },
   "Hero": {
     "tagline": "Channel your cursed energy into your fingertips.",
@@ -85,7 +89,7 @@
     "eyebrow": "How it works",
     "titleLine1": "The rules are simple: type.",
     "titleLine2": "The curses do the rest.",
-    "intro": "One text, a synchronized start, and every correct keystroke moves your exorcist down the track. Those at the back get bonuses to strike the leaders.",
+    "intro": "One text, a synchronized start, and every correct keystroke moves your exorcist down the track. Those at the back use their technique to strike the leaders.",
     "facts": {
       "players": {
         "value": "60",
@@ -109,17 +113,103 @@
     "eyebrow": "Characters",
     "title": "Choose your exorcist",
     "watermark": "Exorcists",
-    "cta": "Enter a room",
-    "number": "No. {number}",
+    "cta": "Meet the characters",
     "techniques": {
       "yuji": "Divergent Fist",
       "megumi": "Ten Shadows",
       "nobara": "Resonance",
       "gojo": "Limitless",
       "maki": "Heavenly Restriction",
-      "nanami": "Ratio 7:3",
+      "yuta": "Rika",
       "todo": "Boogie Woogie",
-      "toge": "Cursed Speech"
+      "sukuna": "Shrine"
+    }
+  },
+  "CharactersPage": {
+    "metaTitle": "Characters",
+    "eyebrow": "Characters",
+    "title": "Exorcist registry",
+    "watermark": "Characters",
+    "intro": "Eight playable exorcists. Open a file to read their technique and their race ability.",
+    "listLabel": "Playable characters",
+    "cardLabel": "{name}, {technique}: open the file"
+  },
+  "Character": {
+    "breadcrumb": "Breadcrumb",
+    "portraitAlt": "{name}, full-length illustration",
+    "techniqueTitle": "Innate technique",
+    "abilityTitle": "Race ability",
+    "abilitySoon": "Coming soon",
+    "abilitySoonText": "Its effect, energy cost and duration will be revealed soon.",
+    "play": "Play {name}",
+    "otherFiles": "Other files",
+    "previous": "Previous",
+    "next": "Next",
+    "all": "All characters",
+    "others": "Exorcists",
+    "descriptions": {
+      "yuji": "First-year student at the Tokyo school of sorcery. Vessel of Sukuna, he makes up for his lack of spells with tremendous physical strength.",
+      "megumi": "A calm, methodical sorcerer, heir to a technique of the Zenin clan.",
+      "nobara": "She left the countryside for Tokyo and moves forward without ever doubting herself.",
+      "gojo": "Teacher of the first years and the strongest sorcerer of his era. His blindfold hides the Six Eyes.",
+      "maki": "Rejected by her clan, she earned her place by the strength of her weapons.",
+      "yuta": "A second-year student haunted by Rika, the cursed spirit he once bound himself to.",
+      "todo": "A towering Kyoto student. He judges people by their type.",
+      "sukuna": "The King of Curses, sealed for a thousand years in twenty fingers. Yuji’s body now serves as his vessel."
+    },
+    "techniqueDetails": {
+      "yuji": "His cursed energy follows his fists a beat late: every blow lands twice.",
+      "megumi": "He shapes shadows with his hands to summon up to ten shikigami.",
+      "nobara": "Whatever she hits on a straw doll, her target feels.",
+      "gojo": "The Infinity slows down everything that approaches him, until nothing reaches him at all.",
+      "maki": "Born with almost no cursed energy, she gets a superhuman body and senses in exchange.",
+      "yuta": "He borrows Rika's boundless cursed energy and copies the techniques of those he defeats.",
+      "todo": "One clap is enough to swap the places of two targets.",
+      "sukuna": "Cleave adjusts to its target’s toughness and cursed energy to cut it in a single stroke; Dismantle slices through everything around him. To finish, he unleashes Fuga: an arrow of fire that sets everything ablaze."
+    }
+  },
+  "Guide": {
+    "eyebrow": "How to play",
+    "watermark": "Guide",
+    "titleLine1": "Type. Charge.",
+    "titleLine2": "Catch up.",
+    "intro": "A race is won on the keyboard, but cursed energy and techniques stop the leaders from running away with it.",
+    "type": {
+      "title": "Type right, move forward",
+      "text": "Everyone gets the same text at the same signal. Every correct character moves your exorcist along the track; first to the line wins.",
+      "sample": "curses are born from human emotions"
+    },
+    "charge": {
+      "title": "Charge your cursed energy",
+      "text": "Every correct character fills your bar. The longer your flawless streak, the faster it fills, up to {max, number} EP.",
+      "label": "Cursed energy",
+      "max": "/ {max, number} EP",
+      "status": {
+        "charging": "Charging",
+        "streak": "{count} flawless in a row",
+        "full": "Energy full"
+      }
+    },
+    "catchUp": {
+      "title": "Catch the leaders",
+      "text": "Every exorcist has a technique: their character's. From behind, it strikes the top three, and hits harder the further behind you are. The leaders have theirs too."
+    },
+    "domain": {
+      "eyebrow": "Ultimate",
+      "title": "Domain Expansion",
+      "text": "Like their technique, the domain depends on your exorcist, but not every exorcist has one, even with a technique. From {min, number} EP of cursed energy, unleash it: unlike techniques, it hits every other exorcist in the race, leaders and chasers alike. The price is steep: your cursed energy is fully drained, and your technique can't be used for the next {seconds} seconds.",
+      "example": "Satoru Gojo · Unlimited Void"
+    },
+    "restriction": {
+      "eyebrow": "Exception",
+      "title": "Heavenly Restriction",
+      "text": "Some exorcists, like Maki Zenin, are born under a heavenly restriction: they have no technique and no domain. In exchange, enemy domains have no effect on them.",
+      "immune": "Immune"
+    },
+    "rules": {
+      "host": "The host can turn techniques off.",
+      "finish": "No effect can stop you from finishing: all are limited in time or length.",
+      "bots": "Bots play by the same rules."
     }
   },
   "TopExorcists": {
@@ -134,8 +224,9 @@
     "nav": "Footer",
     "arenas": "Arenas",
     "leaderboard": "Rankings",
+    "characters": "Characters",
     "profile": "Profile",
-    "disclaimer": "Unofficial fan-made school project. Jujutsu Kaisen © Gege Akutami / Shueisha. Character art: Jujutsu Kaisen Phantom Parade (Sumzap). Not affiliated with the rights holders."
+    "disclaimer": "Unofficial fan-made school project. Jujutsu Kaisen © Gege Akutami / Shueisha. Character art: Jujutsu Kaisen Phantom Parade (Sumzap); Maki: Jujutsu Kaisen TV anime, season 3 (TOHO). Not affiliated with the rights holders."
   },
   "Pagination": {
     "previous": "Previous page",
@@ -158,8 +249,8 @@
     "pagination": "Lobby pages",
     "filters": {
       "button": "Filters",
-      "bonus": "Bonuses",
-      "bonusOnly": "Bonuses enabled only",
+      "bonus": "Techniques",
+      "bonusOnly": "Techniques enabled only",
       "language": "Text language",
       "languages": {
         "fr": "French",
@@ -181,7 +272,7 @@
       "lobby": "Host · Lobby",
       "players": "Players",
       "language": "Language",
-      "bonus": "Bonus",
+      "bonus": "Techniques",
       "chars": "Text type",
       "action": "Action",
       "words": "{count} words",
@@ -331,8 +422,8 @@
         "accumulate": "Mistakes stay in the text and cost points.",
         "block": "You can't go on until you type the right character."
       },
-      "bonus": "Bonuses",
-      "bonusToggle": "Enable bonuses",
+      "bonus": "Techniques",
+      "bonusToggle": "Enable techniques",
       "bonusOn": "Enabled",
       "bonusOff": "Disabled",
       "capacity": "Capacity",
@@ -685,6 +776,13 @@
       "title": "This lobby doesn't exist",
       "text": "Check the code: it may be mistyped, or the lobby has closed.",
       "back": "Enter a code"
+    },
+    "character": {
+      "metaTitle": "Character not found",
+      "eyebrow": "Character not found",
+      "title": "No file for this exorcist",
+      "text": "This character isn't playable, or the link is mistyped.",
+      "back": "See the characters"
     }
   }
 }

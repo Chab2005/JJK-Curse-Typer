@@ -4,8 +4,8 @@ import type { LobbySummary } from './lobbySearch';
 export const SAMPLE_LOBBIES: LobbySummary[] = [
   { code: 'SHJ-60S', name: 'Shinjuku Showdown', host: 'John_Kaisen', players: 13, capacity: 20, bonus: true, languages: ['fr'], chars: ['uppercase', 'digits', 'punctuation'], words: 60, status: 'waiting' },
   { code: 'DMN-INF', name: 'Domaine Infini', host: 'Satoru_Infinity', players: 7, capacity: 8, bonus: true, languages: ['fr', 'en'], chars: ['uppercase'], words: 120, status: 'waiting' },
-  { code: 'DJO-ZEN', name: 'Dojo Zen’in', host: 'Maki_Heavenly', players: 4, capacity: 4, bonus: false, languages: ['fr'], chars: [], words: 30, status: 'waiting' },
-  { code: 'HRS-SUP', name: 'Heures sup’', host: 'Nanami_Ratio73', players: 2, capacity: 10, bonus: false, languages: ['en'], chars: ['uppercase', 'digits'], words: 73, status: 'waiting' },
+  { code: 'DJO-ZEN', name: 'Dojo Zenin', host: 'Maki_Heavenly', players: 4, capacity: 4, bonus: false, languages: ['fr'], chars: [], words: 30, status: 'waiting' },
+  { code: 'HRS-SUP', name: 'Heures sup’', host: 'Okkotsu_Rika73', players: 2, capacity: 10, bonus: false, languages: ['en'], chars: ['uppercase', 'digits'], words: 73, status: 'waiting' },
   { code: 'CLO-MRT', name: 'Clous & marteau', host: 'Nobara_Resonance', players: 9, capacity: 12, bonus: true, languages: ['fr'], chars: ['uppercase', 'accents'], words: 90, status: 'waiting' },
   { code: 'BLK-FLS', name: 'Black Flash', host: 'Yuji_BlackFlash', players: 18, capacity: 20, bonus: true, languages: ['en'], chars: ['uppercase', 'digits', 'punctuation'], words: 60, status: 'racing' },
   { code: 'BGW-OGI', name: 'Boogie Woogie', host: 'Todo_BoogieWoogie', players: 5, capacity: 6, bonus: true, languages: ['fr'], chars: [], words: 45, status: 'waiting' },

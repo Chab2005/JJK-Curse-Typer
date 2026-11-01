@@ -10,7 +10,7 @@ describe('Header', () => {
     renderWithIntl(<Header />);
 
     expect(screen.getByRole('link', { name: 'JJK: Curse Typer, home' })).toHaveAttribute('href', '/');
-    expect(mainNav().getAllByRole('link').map((link) => link.textContent)).toEqual(['Home', 'Arenas', 'Rankings', 'Archives']);
+    expect(mainNav().getAllByRole('link').map((link) => link.textContent)).toEqual(['Home', 'Arenas', 'Rankings', 'Characters']);
   });
 
   it('marks Home as current only on the home page', () => {
@@ -21,10 +21,10 @@ describe('Header', () => {
   });
 
   it('marks a section as current on its sub-pages', () => {
-    window.history.replaceState(null, '', '/profile/Maki_Heavenly');
+    window.history.replaceState(null, '', '/characters/maki');
     renderWithIntl(<Header />);
 
-    expect(mainNav().getByRole('link', { name: 'Archives' })).toHaveAttribute('aria-current', 'page');
+    expect(mainNav().getByRole('link', { name: 'Characters' })).toHaveAttribute('aria-current', 'page');
     expect(mainNav().getByRole('link', { name: 'Home' })).not.toHaveAttribute('aria-current');
   });
 

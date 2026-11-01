@@ -4,7 +4,8 @@ import { useTranslations } from 'next-intl';
 import { useState, useTransition } from 'react';
 import { setGuestNameAction } from '@/app/actions/auth';
 import { createLobbyAction } from '@/app/actions/lobbies';
-import BevelFrame, { cardFrame } from '@/components/shared/BevelFrame';
+import ChevronButton from '@/components/shared/ChevronButton';
+import HexCard from '@/components/shared/HexCard';
 import { useRouter } from '@/i18n/navigation';
 import { USERNAME_MAX, USERNAME_MIN, validateUsername } from '@/lib/auth/validation';
 import { formatPinInput, isCompletePin, normalizePin, pickRandomPseudo } from './join';
@@ -15,7 +16,7 @@ const RANDOM_PSEUDOS = [
   'Nobara_Resonance',
   'Satoru_Infinity',
   'Sukuna_Malevolent',
-  'Nanami_Ratio73',
+  'Okkotsu_Rika73',
   'Todo_BoogieWoogie',
   'Maki_Heavenly',
 ];
@@ -88,7 +89,7 @@ export default function JoinForm({ accountName = null }: { accountName?: string 
   };
 
   return (
-    <BevelFrame as="form" onSubmit={triggerJoinDomain} frame={cardFrame} className="flex flex-col gap-[22px] bg-surface-container-low px-[34px] pt-9 pb-[30px]">
+    <HexCard as="form" onSubmit={triggerJoinDomain} className="flex flex-col gap-[22px] px-10 pt-10 pb-8 sm:px-14">
       <div className="flex items-center justify-between gap-2">
         <h3 className="text-xl uppercase tracking-[0.12em]">{t('title')}</h3>
         <p className="font-label-code flex items-center gap-1.5 text-[11px] font-bold uppercase text-tertiary">
@@ -98,7 +99,7 @@ export default function JoinForm({ accountName = null }: { accountName?: string 
       </div>
 
       <div className="flex flex-col gap-2">
-        <label htmlFor="roomPinInput" className="flex justify-between text-[13px] uppercase tracking-[0.14em] text-on-surface-variant">
+        <label htmlFor="roomPinInput" className="flex justify-between px-3.5 text-[13px] uppercase tracking-[0.14em] text-on-surface-variant">
           {t('pinLabel')}
           <span className="font-label-code text-[10px] tracking-[0.08em] text-outline">{t('pinExample')}</span>
         </label>
@@ -112,12 +113,12 @@ export default function JoinForm({ accountName = null }: { accountName?: string 
           autoComplete="off"
           autoCapitalize="characters"
           spellCheck={false}
-          className="w-full border border-surface-container-highest bg-surface-container-lowest px-[18px] py-3 text-center text-[38px] font-bold uppercase tracking-[0.24em] text-primary placeholder:text-surface-container-highest"
+          className="field-cut w-full bg-[#0b0405] px-8 py-3 text-center text-[38px] font-bold uppercase tracking-[0.24em] text-primary placeholder:text-surface-container-highest"
         />
       </div>
 
       <div className="flex flex-col gap-2">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between px-3.5">
           <label htmlFor="exorcistPseudoInput" className="text-[13px] uppercase tracking-[0.14em] text-on-surface-variant">
             {t('nameLabel')}
           </label>
@@ -142,7 +143,7 @@ export default function JoinForm({ accountName = null }: { accountName?: string 
           aria-invalid={nameError !== null}
           aria-describedby={nameError ? 'exorcistPseudoError' : undefined}
           placeholder="Megumi_Shadows"
-          className="font-grotesk w-full border aria-invalid:border-error border-surface-container-highest bg-surface-container-lowest px-[18px] py-[13px] text-xl text-on-surface placeholder:text-surface-container-highest"
+          className="field-cut font-grotesk w-full bg-[#0b0405] px-8 py-[13px] text-xl text-on-surface placeholder:text-surface-container-highest aria-invalid:bg-error-container/40"
         />
       </div>
 
@@ -152,16 +153,16 @@ export default function JoinForm({ accountName = null }: { accountName?: string 
         </p>
       )}
 
-      <BevelFrame
-        as="button"
+      <ChevronButton
         type="submit"
+        variant="primary"
+        order="decreasing"
         disabled={isLoading || !canSubmit}
-        frame="group flex bg-primary transition-transform hover:-translate-y-0.5 disabled:pointer-events-none disabled:opacity-80"
-        className="flex min-h-15 flex-grow items-center justify-center gap-3 bg-primary-container text-[19px] uppercase tracking-[0.12em] text-on-primary-container transition-colors group-hover:bg-inverse-primary"
+        frame="mt-1.5 self-center"
+        className="text-[18px] uppercase tracking-[0.12em] whitespace-nowrap"
       >
-        <span aria-hidden="true" className="material-symbols-outlined text-[22px]">swords</span>
         {t('submit')}
-      </BevelFrame>
+      </ChevronButton>
 
       {/* Masqué sur téléphone (sous `sm`) : la création de lobby ne s'y propose pas. */}
       <button
@@ -170,7 +171,13 @@ export default function JoinForm({ accountName = null }: { accountName?: string 
         disabled={isCreating}
         className="group hidden min-h-8 items-center gap-2 self-center sm:flex text-sm text-outline transition-colors hover:text-primary disabled:opacity-60"
       >
-        <span aria-hidden="true" className={`material-symbols-outlined text-[17px] text-primary ${isCreating ? 'animate-spin' : ''}`}>{isCreating ? 'progress_activity' : 'add'}</span>
+        {isCreating ? (
+          <span aria-hidden="true" className="material-symbols-outlined animate-spin text-[17px] text-primary">progress_activity</span>
+        ) : (
+          <svg aria-hidden="true" viewBox="0 0 10 10" className="size-[7px] rotate-90 text-primary-container">
+            <path d="M5 0 10 10 5 7 0 10z" fill="currentColor" />
+          </svg>
+        )}
         <span className="underline decoration-primary/40 underline-offset-4 group-hover:decoration-primary">{accountName ? t('createLobby') : t('createLobbyGuest')}</span>
       </button>
       {createFailed && (
@@ -205,6 +212,6 @@ export default function JoinForm({ accountName = null }: { accountName?: string 
           )}
         </div>
       )}
-    </BevelFrame>
+    </HexCard>
   );
 }

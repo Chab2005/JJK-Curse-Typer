@@ -12,7 +12,7 @@ const NAV = [
   { href: '/', key: 'home' },
   { href: '/lobbies', key: 'arenas' },
   { href: '/leaderboard', key: 'leaderboard' },
-  { href: '/profile', key: 'archives' },
+  { href: '/characters', key: 'characters' },
 ] as const;
 
 export default function Header({ account = null }: { account?: HeaderAccount | null }) {
@@ -42,10 +42,8 @@ export default function Header({ account = null }: { account?: HeaderAccount | n
 
         {/* Langue + profil */}
         <div className="flex items-center gap-3 shrink-0">
-          <div className="hidden lg:flex diamond-ends bg-error-container p-px">
-            <div className="diamond-ends bg-surface-container-lowest px-2">
-              <LanguageSwitcher />
-            </div>
+          <div className="hidden lg:flex">
+            <LanguageSwitcher />
           </div>
           <div className="hidden lg:flex">
             <AccountControls account={account} />

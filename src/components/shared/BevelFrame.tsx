@@ -1,7 +1,7 @@
 import type { ComponentProps, ElementType, ReactNode } from 'react';
 
-/** Bordure dégradée rouge → gris → bleu des cartes et des modales. */
-export const cardFrame = 'bg-linear-160 from-primary-container via-outline-variant via-40% to-secondary-container';
+/** Bordure rouge des cartes et des modales. */
+export const cardFrame = 'bg-primary-container';
 /** Bordure dorée des actions principales et de la première place. */
 export const goldFrame = 'bg-linear-135 from-gold to-gold-deep';
 

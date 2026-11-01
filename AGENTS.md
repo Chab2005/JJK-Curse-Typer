@@ -66,9 +66,9 @@ Playwright (`playwright.config.ts`, projects `desktop`, `mobile` and `firefox`) 
 
 ## i18n (GEN-3)
 
-- `next-intl`, locales `en` (default) and `fr`. One domain per locale: English on the root domain (`monkey-type.foo`), French on `fr.monkey-type.foo`. Root domain comes from `NEXT_PUBLIC_ROOT_DOMAIN` (default `monkey-type.foo`; `localhost:3000` in `.env`, so dev uses `http://fr.localhost:3000`). On an unknown host (Vercel preview) the locale falls back to a path prefix (`/fr`).
+- `next-intl`, locales `en` (default) and `fr`. Path prefix per locale (`localePrefix: 'as-needed'`): English unprefixed (`/lobbies`), French under `/fr` (`/fr/lobbies`), on any host.
 - Pages live under `src/app/[locale]/`. UI copy goes in `messages/en.json` and `messages/fr.json` (same keys, checked by `tests/messages/messages.test.ts`); never hardcode copy in components, use `useTranslations` / `getTranslations`.
-- `src/proxy.ts` runs `resolveLocaleRedirect` (pure, `src/i18n/locale-redirect.ts`) before the next-intl middleware: on the root domain it redirects to `fr.` from the `NEXT_LOCALE` cookie or `Accept-Language`; `?lang=xx` (language switcher in the header) stores the choice in that cookie on the root domain.
+- `src/proxy.ts` runs `resolveLocaleRedirect` (pure, `src/i18n/locale-redirect.ts`) before the next-intl middleware: an unprefixed path redirects to `/fr/...` from the `NEXT_LOCALE` cookie or `Accept-Language`; `?lang=xx` (language switcher in the header) stores the choice in that cookie and moves to the matching prefix.
 - Use `Link`/`usePathname` from `@/i18n/navigation`, not `next/link`, for internal links.
 
 

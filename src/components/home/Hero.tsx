@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
-import BevelFrame from '@/components/shared/BevelFrame';
+import ChevronButton from '@/components/shared/ChevronButton';
 import BlackFlash from './BlackFlash';
 import PlayNowButton from './PlayNowButton';
 import SmoothScrollLink from './SmoothScrollLink';
@@ -62,17 +62,12 @@ export default function Hero({ onlineCount }: { onlineCount: number | null }) {
           )}
         </p>
 
-        <div className="relative flex flex-wrap justify-center gap-4">
+        {/* « Jouer maintenant » au-dessus, « Rejoindre par code » en dessous, sans chevrons. */}
+        <div className="relative flex flex-col items-center gap-4">
           <PlayNowButton />
-          <BevelFrame
-            as={SmoothScrollLink}
-            href="#join"
-            frame="group inline-flex bg-outline transition-transform hover:-translate-y-0.5"
-            className="flex min-h-[58px] items-center gap-2.5 bg-surface-container-lowest px-[30px] text-[17px] uppercase tracking-[0.12em] text-on-surface transition-colors group-hover:bg-surface-container-high"
-          >
-            <span aria-hidden="true" className="material-symbols-outlined text-[20px] text-primary">pin</span>
+          <ChevronButton as={SmoothScrollLink} href="#join" chevrons={false} className="text-[17px] uppercase tracking-[0.12em] whitespace-nowrap">
             {t('joinByCode')}
-          </BevelFrame>
+          </ChevronButton>
         </div>
       </div>
     </section>
