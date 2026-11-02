@@ -1,7 +1,7 @@
 import { SAMPLE_PLAYERS } from '@/components/leaderboard/samplePlayers';
 import type { CharacterId } from '@/components/shared/characters';
 import { type KeyStat, QWERTY } from './keyboard';
-import type { RaceWpm } from './wpmHistory';
+import type { RaceStat } from './statHistory';
 
 // Données de démonstration en attendant les statistiques en base (STAT-1 à STAT-4).
 // Générées sans hasard à partir des joueurs du classement, pour un rendu stable.
@@ -18,7 +18,7 @@ export interface Profile {
   accuracy: number;
   errorsPer100: number;
   averageScore: number;
-  races: RaceWpm[];
+  races: RaceStat[];
   keyStats: KeyStat[];
 }
 
@@ -38,11 +38,20 @@ export function findSampleProfile(username: string, now: Date): Profile | null {
 
   // Courses réparties sur ~14 mois, MPM qui progresse jusqu'au niveau actuel.
   const count = Math.min(player.games, 140);
-  const races = Array.from({ length: count }, (_, i): RaceWpm => {
+  // Précision qui progresse aussi, victoires au taux du joueur.
+  const handle = player.username.toLowerCase().replace(/_/g, '-');
+  const winRate = 0.08 + 0.2 * noise(handle);
+  const races = Array.from({ length: count }, (_, i): RaceStat => {
     const progress = count === 1 ? 1 : i / (count - 1);
+    const accuracy = Math.min(1, player.accuracy - (1 - player.accuracy) * (0.6 * (1 - progress) + 0.4 * Math.sin(i * 2.3)));
+    const keystrokes = 400 + Math.round(300 * noise(`${handle}${i}`));
     return {
       date: new Date(now.getTime() - Math.round((1 - progress) * 420) * DAY - (i % 3) * 3 * 60 * 60 * 1000).toISOString(),
       wpm: Math.round(player.wpm * (0.72 + 0.28 * progress) + 7 * Math.sin(i * 1.7)),
+      accuracy,
+      errors: Math.round(keystrokes * (1 - accuracy)),
+      keystrokes,
+      won: noise(`${i}${handle}`) < winRate,
     };
   });
 
@@ -53,14 +62,13 @@ export function findSampleProfile(username: string, now: Date): Profile | null {
     return { char, errorRate: Math.round(errorRate * 10) / 10, avgMs: Math.round(avgMs) };
   });
 
-  const handle = player.username.toLowerCase().replace(/_/g, '-');
   return {
     username: player.username,
     avatar: player.avatar,
     github: `https://github.com/${handle}`,
     discord: noise(handle) > 0.4 ? handle.replace(/-/g, '.') : '',
     games: player.games,
-    wins: Math.round(player.games * (0.08 + 0.2 * noise(handle))),
+    wins: Math.round(player.games * winRate),
     bestWpm: Math.max(...races.map((r) => r.wpm), player.wpm),
     wpm: player.wpm,
     accuracy: player.accuracy,

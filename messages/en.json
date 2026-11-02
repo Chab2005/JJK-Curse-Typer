@@ -520,7 +520,7 @@
     "discordLink": "Discord profile",
     "summary": "{games} races · {wins} wins · best: {best} WPM",
     "chart": {
-      "title": "WPM over time",
+      "title": "{stat} over time",
       "period": "Time period",
       "periods": {
         "7d": "7 days",
@@ -528,13 +528,26 @@
         "1y": "1 year",
         "all": "All"
       },
-      "summary": "WPM chart, {count} points with races, latest {last} WPM. Use the arrow keys to read each point.",
+      "statCurrent": "<prefix>Stat:</prefix> <strong>{stat}</strong>",
+      "statLegend": "Show",
+      "close": "Close",
+      "stats": {
+        "wpm": "WPM",
+        "score": "Average score",
+        "accuracy": "Accuracy",
+        "races": "Races",
+        "wins": "Wins",
+        "errors": "Error rate"
+      },
+      "summary": "{stat} chart, {count} points with races, latest {last}. Use the arrow keys to read each point.",
       "wpm": "{value} WPM",
+      "score": "{value} pts",
+      "wins": "{count, plural, one {# win} other {# wins}}",
+      "errors": "{value} errors / 100 words",
       "noRace": "No race",
       "races": "{count, plural, one {# race} other {# races}}",
       "empty": "No race in this period.",
       "date": "Date",
-      "wpmColumn": "Average WPM",
       "racesColumn": "Races"
     },
     "stats": {

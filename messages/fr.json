@@ -520,7 +520,7 @@
     "discordLink": "Profil Discord",
     "summary": "{games} courses · {wins} victoires · meilleur : {best} MPM",
     "chart": {
-      "title": "Évolution du MPM",
+      "title": "Évolution : {stat}",
       "period": "Période",
       "periods": {
         "7d": "7 jours",
@@ -528,13 +528,26 @@
         "1y": "1 an",
         "all": "Tout"
       },
-      "summary": "Graphique du MPM, {count} points avec courses, dernier : {last} MPM. Utilisez les flèches pour lire chaque point.",
+      "statCurrent": "<prefix>Stat :</prefix> <strong>{stat}</strong>",
+      "statLegend": "Afficher",
+      "close": "Fermer",
+      "stats": {
+        "wpm": "MPM",
+        "score": "Score moyen",
+        "accuracy": "Précision",
+        "races": "Courses",
+        "wins": "Victoires",
+        "errors": "Taux d’erreur"
+      },
+      "summary": "Graphique : {stat}, {count} points avec courses, dernier : {last}. Utilisez les flèches pour lire chaque point.",
       "wpm": "{value} MPM",
+      "score": "{value} pts",
+      "wins": "{count, plural, one {# victoire} other {# victoires}}",
+      "errors": "{value} erreurs / 100 mots",
       "noRace": "Aucune course",
       "races": "{count, plural, one {# course} other {# courses}}",
       "empty": "Aucune course sur cette période.",
       "date": "Date",
-      "wpmColumn": "MPM moyen",
       "racesColumn": "Courses"
     },
     "stats": {

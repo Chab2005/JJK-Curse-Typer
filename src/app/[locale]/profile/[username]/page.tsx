@@ -9,7 +9,7 @@ import KeyboardHeatmap from '@/components/profile/KeyboardHeatmap';
 import ProfileHeader from '@/components/profile/ProfileHeader';
 import ProfileIdentity from '@/components/profile/ProfileIdentity';
 import StatTiles from '@/components/profile/StatTiles';
-import WpmChart from '@/components/profile/WpmChart';
+import StatChart from '@/components/profile/StatChart';
 import { showSampleData } from '@/lib/sampleData';
 import { findSampleProfile } from '@/components/profile/sampleProfiles';
 import type { Locale } from '@/i18n/config';
@@ -17,7 +17,7 @@ import { Link } from '@/i18n/navigation';
 import { getSessionUser } from '@/lib/auth/session';
 import { findAccountProfile } from '@/lib/auth/profile';
 import { accountGames, accountKeyStats } from '@/lib/stats';
-import { summarizeGames } from '@/game/stats';
+import { isWin, summarizeGames } from '@/game/stats';
 
 export async function generateMetadata({ params }: PageProps<'/[locale]/profile/[username]'>) {
   const { username } = await params;
@@ -65,7 +65,10 @@ export default async function ProfilePage({ params }: PageProps<'/[locale]/profi
             </ProfileIdentity>
             {stats ? (
               <>
-                <WpmChart races={games.map((g) => ({ date: g.at, wpm: g.wpm }))} now={now.toISOString()} />
+                <StatChart
+                  races={games.map((g) => ({ date: g.at, wpm: g.wpm, accuracy: g.accuracy, errors: g.errors, keystrokes: g.keystrokes, won: isWin(g) }))}
+                  now={now.toISOString()}
+                />
                 <StatTiles profile={stats} />
                 {keys.length > 0 && <KeyboardHeatmap stats={keys} />}
               </>
@@ -90,7 +93,7 @@ export default async function ProfilePage({ params }: PageProps<'/[locale]/profi
             own={false}
             summary={t('summary', { games: profile.games, wins: profile.wins, best: profile.bestWpm })}
           />
-          <WpmChart races={profile.races} now={now.toISOString()} />
+          <StatChart races={profile.races} now={now.toISOString()} />
           <StatTiles profile={profile} />
           <KeyboardHeatmap stats={profile.keyStats} />
         </div>

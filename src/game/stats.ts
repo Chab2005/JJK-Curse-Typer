@@ -33,6 +33,9 @@ export interface GameRecord {
   at: string;
 }
 
+/** Première place dans une course à plusieurs. */
+export const isWin = (game: Pick<GameRecord, 'rank' | 'players'>): boolean => game.rank === 1 && (game.players ?? 0) > 1;
+
 export interface GamesSummary {
   games: number;
   /** Premières places dans une course à plusieurs. */
@@ -52,7 +55,7 @@ export function summarizeGames(games: readonly GameRecord[]): GamesSummary | nul
   const sum = (pick: (game: GameRecord) => number) => games.reduce((total, game) => total + pick(game), 0);
   return {
     games: games.length,
-    wins: games.filter((g) => g.rank === 1 && (g.players ?? 0) > 1).length,
+    wins: games.filter(isWin).length,
     bestWpm: Math.max(...games.map((g) => g.wpm)),
     wpm: Math.round(sum((g) => g.wpm) / games.length),
     accuracy: sum((g) => g.accuracy) / games.length,
