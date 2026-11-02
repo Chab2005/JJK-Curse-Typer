@@ -37,7 +37,7 @@ export default function Abilities({ character }: { character: CharacterId }) {
           return (
             <li
               key={ability.id}
-              className={`relative ${ability.featured ? 'sm:col-span-2 sm:w-[calc(50%-8px)] sm:justify-self-center lg:col-span-1 lg:col-start-2 lg:w-auto lg:justify-self-stretch' : ''}`}
+              className={`group/card relative ${ability.featured ? 'sm:col-span-2 sm:w-[calc(50%-8px)] sm:justify-self-center lg:col-span-1 lg:col-start-2 lg:w-auto lg:justify-self-stretch' : ''}`}
             >
               <BevelFrame
                 frame={`h-full ${ability.featured ? 'bg-linear-160 from-primary-container to-[#8f1022]' : 'bg-surface-container-high'}`}
@@ -46,11 +46,14 @@ export default function Abilities({ character }: { character: CharacterId }) {
                 {/* Place du shikigami dans le coin haut droit : le titre et l'effet s'écoulent autour. */}
                 <div className="flow-root">
                   {scene && <div className="float-right mb-2 ml-3" style={{ width: scene.width, height: scene.height }} />}
-                  <div className="flex items-baseline gap-3">
-                    <span className="font-label-code text-[12px] tracking-[0.16em] text-primary-container">{String(index + 1).padStart(2, '0')}</span>
-                    <h3 className="font-grotesk text-[19px] font-semibold text-on-primary-container">{t(`${character}.items.${ability.id}.name`)}</h3>
+                  {/* `flow-root` à côté du float : la colonne de texte garde sa largeur jusqu'en bas au lieu de passer sous le shikigami. */}
+                  <div className={scene?.beside ? 'flow-root' : undefined}>
+                    <div className="flex items-baseline gap-3">
+                      <span className="font-label-code text-[12px] tracking-[0.16em] text-primary-container">{String(index + 1).padStart(2, '0')}</span>
+                      <h3 className="font-grotesk text-[19px] font-semibold text-on-primary-container">{t(`${character}.items.${ability.id}.name`)}</h3>
+                    </div>
+                    <p className="mt-3 text-[15px] leading-[23px] text-on-surface-variant">{t(`${character}.items.${ability.id}.effect`)}</p>
                   </div>
-                  <p className="mt-3 text-[15px] leading-[23px] text-on-surface-variant">{t(`${character}.items.${ability.id}.effect`)}</p>
                 </div>
                 <p className={`${FOOTER} ${ability.featured ? 'border-outline-variant' : 'border-surface-container-high'}`}>
                   <span>{t('duration')} <b className="font-medium text-on-surface">{duration(ability)}</b></span>
@@ -66,17 +69,18 @@ export default function Abilities({ character }: { character: CharacterId }) {
   );
 }
 
-/** Shikigami d'une carte : idle en boucle, et sa bande de survol (course, langue…) quand on passe dessus, comme le sprite de la fiche.
+/** Shikigami d'une carte : idle en boucle, et sa bande de survol (course, langue…) quand on passe sur la carte, comme le sprite de la fiche.
  *  `invisible` plutôt que `hidden` : la bande de survol est chargée d'avance et ne clignote pas au premier survol.
  *  Posé sur la place réservée dans la carte (bordure 1px + marges intérieures), mais hors de la carte : son biseau
- *  (clip-path) couperait la langue du crapaud, qui déborde sur la carte voisine. */
+ *  (clip-path) couperait la langue du crapaud, qui déborde de la carte. `pointer-events-none` : ce qui déborde
+ *  ne déclenche pas le survol, seule la carte le fait. */
 function ShikigamiCorner({ scene }: { scene: ShikigamiScene }) {
   return (
-    <div aria-hidden="true" data-testid="shikigami" className="group/sprite absolute top-[21px] right-[23px] z-10" style={{ width: scene.width, height: scene.height }}>
+    <div aria-hidden="true" data-testid="shikigami" className="pointer-events-none absolute top-[21px] right-[23px] z-10" style={{ width: scene.width, height: scene.height }}>
       {scene.sprites.map((sprite, i) => (
         <Fragment key={i}>
-          <div className={`absolute [image-rendering:pixelated] ${sprite.hover ? 'group-hover/sprite:invisible' : ''}`} style={shikigamiStyle(sprite.idle, sprite, scene.scale)} />
-          {sprite.hover && <div className="invisible absolute [image-rendering:pixelated] group-hover/sprite:visible" style={shikigamiStyle(sprite.hover, sprite, scene.scale)} />}
+          <div className={`absolute [image-rendering:pixelated] ${sprite.hover ? 'group-hover/card:invisible' : ''}`} style={shikigamiStyle(sprite.idle, sprite, scene.scale)} />
+          {sprite.hover && <div className="invisible absolute [image-rendering:pixelated] group-hover/card:visible" style={shikigamiStyle(sprite.hover, sprite, scene.scale)} />}
         </Fragment>
       ))}
     </div>
