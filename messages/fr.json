@@ -138,6 +138,11 @@
     "breadcrumb": "Fil d’Ariane",
     "portraitAlt": "{name}, illustration en pied",
     "techniqueTitle": "Technique innée",
+    "domainTitle": "Extension du territoire",
+    "domains": {
+      "gojo": "Sphère de l’espace infini",
+      "megumi": "Jardin des ombres chimériques"
+    },
     "abilityTitle": "Capacité en course",
     "abilitySoon": "Bientôt dévoilée",
     "abilitySoonText": "Son effet, son coût en énergie et sa durée seront bientôt dévoilés.",
