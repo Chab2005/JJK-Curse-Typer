@@ -1,8 +1,10 @@
+import { Fragment } from 'react';
 import { useTranslations } from 'next-intl';
 import BevelFrame from '@/components/shared/BevelFrame';
 import type { CharacterId } from '@/components/shared/characters';
 import { CHARACTER_ABILITIES, hasAbilities, type CharacterAbility } from './characterAbilities';
 import { CHARACTER_STYLES } from './characterStyles';
+import { ABILITY_SPRITES, shikigamiStyle, type ShikigamiScene } from './abilitySprites';
 
 const FOOTER = 'font-label-code mt-auto flex flex-wrap justify-between gap-x-4 gap-y-1 whitespace-nowrap border-t border-dashed pt-3 text-[11px] uppercase tracking-[0.14em] text-outline';
 
@@ -30,28 +32,53 @@ export default function Abilities({ character }: { character: CharacterId }) {
       </div>
 
       <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {abilities.map((ability, index) => (
-          <li
-            key={ability.id}
-            className={ability.featured ? 'sm:col-span-2 sm:w-[calc(50%-8px)] sm:justify-self-center lg:col-span-1 lg:col-start-2 lg:w-auto lg:justify-self-stretch' : undefined}
-          >
-            <BevelFrame
-              frame={`h-full ${ability.featured ? 'bg-linear-160 from-primary-container to-[#8f1022]' : 'bg-surface-container-high'}`}
-              className={`flex h-full flex-col gap-3 px-[22px] py-5 ${ability.featured ? 'bg-[radial-gradient(120%_140%_at_50%_0%,#2a0a10,#131315_70%)]' : 'bg-surface'}`}
+        {abilities.map((ability, index) => {
+          const scene = ABILITY_SPRITES[ability.id];
+          return (
+            <li
+              key={ability.id}
+              className={`relative ${ability.featured ? 'sm:col-span-2 sm:w-[calc(50%-8px)] sm:justify-self-center lg:col-span-1 lg:col-start-2 lg:w-auto lg:justify-self-stretch' : ''}`}
             >
-              <div className="flex items-baseline gap-3">
-                <span className="font-label-code text-[12px] tracking-[0.16em] text-primary-container">{String(index + 1).padStart(2, '0')}</span>
-                <h3 className="font-grotesk text-[19px] font-semibold text-on-primary-container">{t(`${character}.items.${ability.id}.name`)}</h3>
-              </div>
-              <p className="text-[15px] leading-[23px] text-on-surface-variant">{t(`${character}.items.${ability.id}.effect`)}</p>
-              <p className={`${FOOTER} ${ability.featured ? 'border-outline-variant' : 'border-surface-container-high'}`}>
-                <span>{t('duration')} <b className="font-medium text-on-surface">{duration(ability)}</b></span>
-                <span>{t('cost')} <b className={`font-medium ${ability.featured ? 'text-primary' : 'text-secondary'}`}>{cost(ability)}</b></span>
-              </p>
-            </BevelFrame>
-          </li>
-        ))}
+              <BevelFrame
+                frame={`h-full ${ability.featured ? 'bg-linear-160 from-primary-container to-[#8f1022]' : 'bg-surface-container-high'}`}
+                className={`flex h-full flex-col gap-3 px-[22px] py-5 ${ability.featured ? 'bg-[radial-gradient(120%_140%_at_50%_0%,#2a0a10,#131315_70%)]' : 'bg-surface'}`}
+              >
+                {/* Place du shikigami dans le coin haut droit : le titre et l'effet s'écoulent autour. */}
+                <div className="flow-root">
+                  {scene && <div className="float-right mb-2 ml-3" style={{ width: scene.width, height: scene.height }} />}
+                  <div className="flex items-baseline gap-3">
+                    <span className="font-label-code text-[12px] tracking-[0.16em] text-primary-container">{String(index + 1).padStart(2, '0')}</span>
+                    <h3 className="font-grotesk text-[19px] font-semibold text-on-primary-container">{t(`${character}.items.${ability.id}.name`)}</h3>
+                  </div>
+                  <p className="mt-3 text-[15px] leading-[23px] text-on-surface-variant">{t(`${character}.items.${ability.id}.effect`)}</p>
+                </div>
+                <p className={`${FOOTER} ${ability.featured ? 'border-outline-variant' : 'border-surface-container-high'}`}>
+                  <span>{t('duration')} <b className="font-medium text-on-surface">{duration(ability)}</b></span>
+                  <span>{t('cost')} <b className={`font-medium ${ability.featured ? 'text-primary' : 'text-secondary'}`}>{cost(ability)}</b></span>
+                </p>
+              </BevelFrame>
+              {scene && <ShikigamiCorner scene={scene} />}
+            </li>
+          );
+        })}
       </ul>
     </section>
+  );
+}
+
+/** Shikigami d'une carte : idle en boucle, et sa bande de survol (course, langue…) quand on passe dessus, comme le sprite de la fiche.
+ *  `invisible` plutôt que `hidden` : la bande de survol est chargée d'avance et ne clignote pas au premier survol.
+ *  Posé sur la place réservée dans la carte (bordure 1px + marges intérieures), mais hors de la carte : son biseau
+ *  (clip-path) couperait la langue du crapaud, qui déborde sur la carte voisine. */
+function ShikigamiCorner({ scene }: { scene: ShikigamiScene }) {
+  return (
+    <div aria-hidden="true" data-testid="shikigami" className="group/sprite absolute top-[21px] right-[23px] z-10" style={{ width: scene.width, height: scene.height }}>
+      {scene.sprites.map((sprite, i) => (
+        <Fragment key={i}>
+          <div className={`absolute [image-rendering:pixelated] ${sprite.hover ? 'group-hover/sprite:invisible' : ''}`} style={shikigamiStyle(sprite.idle, sprite, scene.scale)} />
+          {sprite.hover && <div className="invisible absolute [image-rendering:pixelated] group-hover/sprite:visible" style={shikigamiStyle(sprite.hover, sprite, scene.scale)} />}
+        </Fragment>
+      ))}
+    </div>
   );
 }
