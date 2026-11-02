@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from 'react';
 import BevelFrame from './BevelFrame';
+import Pointer from './Pointer';
 import Reserve from './Reserve';
 
 /** Hauteur de la liste ouverte : une option fait 40px (min-h-10), plus py-2, le cadre et mt-1/mb-1. */
@@ -23,7 +24,7 @@ function visibleBox(el: HTMLElement) {
   return { top, bottom };
 }
 
-// Liste déroulante au cadre biseauté (comme les cartes du salon, mais tout en rouge), à la place d'un <select> dont la liste native ne se stylise pas.
+// Liste déroulante en plaque pointée cramoisie (niveau des bots, minuteur), à la place d'un <select> dont la liste native ne se stylise pas.
 // Motif « combobox sans saisie » de l'APG : le focus reste sur le bouton, les flèches parcourent les options,
 // Entrée ou Espace choisit, Échap ou un clic à l'extérieur ferme. Pour des listes courtes (pas de défilement) :
 // la liste s'ouvre vers le haut quand la place manque en dessous.
@@ -101,8 +102,7 @@ export default function BevelSelect<T extends string | number>({
 
   return (
     <div ref={rootRef} className="relative">
-      <BevelFrame
-        as="button"
+      <button
         id={buttonId}
         type="button"
         role="combobox"
@@ -114,16 +114,17 @@ export default function BevelSelect<T extends string | number>({
         onClick={() => (open ? setOpen(false) : show())}
         onKeyDown={onKeyDown}
         onBlur={() => setOpen(false)}
-        frame="group flex bg-primary-container focus-visible:outline-none"
-        className="flex min-h-11 flex-1 items-center gap-3 bg-surface-container-lowest pr-3 pl-4 text-[14px] text-on-surface transition-colors group-hover:bg-surface-container-high group-focus-visible:bg-surface-container-high"
+        className="group hx-cut flex bg-[#8f1022] p-px transition-[filter,background-color] [--h:13px] hover:brightness-140 focus-visible:bg-tertiary focus-visible:outline-none aria-expanded:bg-primary-container"
       >
-        {/* Largeur de l'option la plus longue : changer d'option ne redimensionne pas le bouton. */}
-        <Reserve active={String(value)} variants={labels} className="font-label-code text-left" />
-        <span aria-hidden="true" className={`material-symbols-outlined text-[20px]! text-primary transition-transform ${open ? 'rotate-180' : ''}`}>expand_more</span>
-      </BevelFrame>
+        <span className="hx-cut flex min-h-[42px] flex-1 items-center gap-3 bg-[radial-gradient(120%_160%_at_50%_0%,#3a0c14_0%,#170608_55%,#0c0304_100%)] pr-5 pl-6 text-[13px] text-on-primary-container [--h:12.5px]">
+          {/* Largeur de l'option la plus longue : changer d'option ne redimensionne pas le bouton. */}
+          <Reserve active={String(value)} variants={labels} className="font-label-code text-left uppercase tracking-[0.12em]" />
+          <span aria-hidden="true" className={`material-symbols-outlined text-[20px]! text-primary-container transition-transform ${open ? 'rotate-180' : ''}`}>expand_more</span>
+        </span>
+      </button>
 
       <div hidden={!open} className={`absolute left-0 z-30 min-w-full ${upward ? 'bottom-full mb-1' : 'top-full mt-1'} drop-shadow-[0_16px_24px_rgb(0_0_0/0.55)]`}>
-        <BevelFrame frame="bg-primary-container" className="bg-surface-container-low">
+        <BevelFrame frame="bg-[#8f1022]" className="bg-[radial-gradient(120%_120%_at_50%_0%,#2a0b10_0%,#150608_55%,#0c0304_100%)]">
           {/* mousedown sans effet : le focus reste sur le bouton pendant le clic. */}
           <ul id={`${id}-listbox`} role="listbox" aria-labelledby={labelId} onMouseDown={(e) => e.preventDefault()} className="flex flex-col py-2">
             {options.map((option, index) => (
@@ -134,10 +135,10 @@ export default function BevelSelect<T extends string | number>({
                 aria-selected={option === value}
                 onClick={() => choose(index)}
                 onMouseEnter={() => setActive(index)}
-                className={`font-label-code flex min-h-10 cursor-pointer items-center justify-between gap-4 px-4 text-[14px] whitespace-nowrap transition-colors ${index === active ? 'bg-surface-container-high' : ''} ${option === value ? 'text-primary' : 'text-on-surface'}`}
+                className={`font-label-code flex min-h-10 cursor-pointer items-center justify-between gap-4 px-4 text-[13px] whitespace-nowrap uppercase tracking-[0.12em] transition-colors ${index === active ? 'bg-[#3a0c14]' : ''} ${option === value ? 'text-primary' : 'text-[#c9aeaf]'}`}
               >
                 {labels[String(option)]}
-                <span aria-hidden="true" className={`material-symbols-outlined text-[18px]! ${option === value ? '' : 'invisible'}`}>check</span>
+      <Pointer className={`text-primary-container ${option === value ? '' : 'invisible'}`} />
               </li>
             ))}
           </ul>

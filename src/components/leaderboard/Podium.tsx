@@ -1,20 +1,13 @@
 import { useTranslations } from 'next-intl';
 import Avatar from '@/components/shared/Avatar';
-import { goldFrame } from '@/components/shared/BevelFrame';
 import type { CharacterId } from '@/components/shared/characters';
 import { Link } from '@/i18n/navigation';
 import type { LeaderboardCategory, RankedPlayer } from './leaderboard';
 import { useMetric } from './useMetric';
 
-/** Cadre, encre et anneau des trois places ; partagés avec le podium de fin de course. */
-export const PLACES = [
-  { frame: goldFrame, ink: 'text-gold', ring: 'ring-gold' },
-  { frame: 'bg-secondary/60', ink: 'text-secondary', ring: 'ring-secondary' },
-  { frame: 'bg-tertiary/60', ink: 'text-tertiary', ring: 'ring-tertiary' },
-] as const;
-
-/** Métal du classement : or pour la 1re place, argent pour la 2e, bronze pour la 3e (cadre de la carte, rang, cadre de l'avatar). */
-const METALS = [
+/** Métal du classement : or pour la 1re place, argent pour la 2e, bronze pour la 3e (cadre de la carte, rang, cadre de l'avatar).
+ * Partagé avec le podium de fin de course. */
+export const METALS = [
   { frame: 'bg-gold', ink: 'text-gold' },
   { frame: 'bg-[#d9dce3]', ink: 'text-[#d9dce3]' },
   { frame: 'bg-[#d08a52]', ink: 'text-[#d08a52]' },

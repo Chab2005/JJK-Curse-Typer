@@ -1,6 +1,7 @@
 // Logique pure de l'écran de course : ce que le client retient des messages de la room,
 // la place de chacun sur la piste et l'état de chaque caractère du texte.
 import type { RaceSnapshot, ServerMessage } from '@/game/protocol';
+import { CHARACTERS, type CharacterId } from '@/components/shared/characters';
 import { overtakes, type RacePhase, type RacerSeat, type RacerStatus, type Standing } from '@/game/race';
 
 /** Annonce affichée dans la zone d'animation (RACE-3, RACE-5). */
@@ -15,9 +16,18 @@ export interface RaceView {
   phase: RacePhase | null;
   standings: Standing[];
   banner: RaceBanner | null;
+  /** Heure locale du dernier tick où chaque coureur a avancé : son personnage court tant qu'elle est récente. */
+  movedAt: Record<string, number>;
 }
 
-export const initialRaceView: RaceView = { you: null, race: null, startAt: null, phase: null, standings: [], banner: null };
+export const initialRaceView: RaceView = { you: null, race: null, startAt: null, phase: null, standings: [], banner: null, movedAt: {} };
+
+/** Coureurs dont la progression a augmenté depuis le tick précédent, notés à `at`. */
+function nextMovedAt(view: RaceView, standings: Standing[], at: number): Record<string, number> {
+  const before = new Map(view.standings.map((s) => [s.id, s.progress]));
+  const moved = standings.filter((s) => s.progress > (before.get(s.id) ?? 0));
+  return moved.length === 0 ? view.movedAt : { ...view.movedAt, ...Object.fromEntries(moved.map((s) => [s.id, at])) };
+}
 
 function nextBanner(view: RaceView, standings: Standing[], at: number): RaceBanner | null {
   if (view.standings.length === 0) return view.banner;
@@ -43,7 +53,7 @@ export function raceViewReducer(view: RaceView, message: ServerMessage, received
       // Chaque tick estime l'heure de départ ; la plus précoce est celle qui a le moins souffert du réseau.
       const startAt = Math.min(view.startAt ?? Infinity, receivedAt - message.elapsed);
       const banner = message.phase === 'racing' ? nextBanner(view, message.standings, receivedAt) : view.banner;
-      return { ...view, startAt, phase: message.phase, standings: message.standings, banner };
+      return { ...view, startAt, phase: message.phase, standings: message.standings, banner, movedAt: nextMovedAt(view, message.standings, receivedAt) };
     }
     case 'resync':
       return view;
@@ -65,9 +75,32 @@ export interface TrackRunner {
   /** Le meneur et le joueur sont dessinés plus gros (maquette « Course »). */
   big: boolean;
   lane: number;
+  /** Personnage dessiné sur la piste. */
+  character: CharacterId;
+  /** Le personnage court (il vient d'avancer, ou le joueur tape) ; sinon il est au repos (idle). */
+  running: boolean;
 }
 
-export function trackRunners(seats: readonly RacerSeat[], standings: readonly Standing[], you: string | null, textLength: number): TrackRunner[] {
+/** Un personnage court encore RUN_MS après son dernier pas : les ticks arrivent toutes les 200 ms. */
+export const RUN_MS = 600;
+
+/** Horloge locale (`now`), derniers pas vus dans les ticks (`movedAt`) et dernière frappe du joueur (`youTypedAt`). */
+export interface TrackMotion {
+  now: number;
+  movedAt: Record<string, number>;
+  youTypedAt: number | null;
+}
+
+const STILL: TrackMotion = { now: 0, movedAt: {}, youTypedAt: null };
+
+/** Personnage du coureur : celui qu'il a choisi, sinon (bot, compte sans personnage) un personnage stable tiré de son siège. */
+export function runnerCharacter(seat: RacerSeat): CharacterId {
+  if (seat.avatar) return seat.avatar;
+  const hash = [...seat.id].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7);
+  return CHARACTERS[hash % CHARACTERS.length].id;
+}
+
+export function trackRunners(seats: readonly RacerSeat[], standings: readonly Standing[], you: string | null, textLength: number, motion: TrackMotion = STILL): TrackRunner[] {
   const byId = new Map(standings.map((s) => [s.id, s]));
   return seats.map((seat, i) => {
     const standing = byId.get(seat.id);
@@ -77,7 +110,10 @@ export function trackRunners(seats: readonly RacerSeat[], standings: readonly St
     // Pas de meneur tant que personne n'a tapé un caractère juste.
     const leader = standing?.rank === 1 && (progress > 0 || status === 'finished');
     const isYou = seat.id === you;
-    return { seat, x, rank: standing?.rank ?? i + 1, wpm: standing?.wpm ?? 0, status, leader, you: isYou, big: leader || isYou, lane: i % LANES };
+    // Le joueur court dès qu'il tape, sans attendre le tick ; les autres, quand la room les voit avancer.
+    const lastMove = isYou ? motion.youTypedAt : motion.movedAt[seat.id];
+    const running = status === 'racing' && lastMove != null && motion.now - lastMove < RUN_MS;
+    return { seat, x, rank: standing?.rank ?? i + 1, wpm: standing?.wpm ?? 0, status, leader, you: isYou, big: leader || isYou, lane: i % LANES, character: runnerCharacter(seat), running };
   });
 }
 

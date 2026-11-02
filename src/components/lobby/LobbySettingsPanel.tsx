@@ -4,7 +4,6 @@ import { useFormatter, useTranslations } from 'next-intl';
 import { useRef, useState } from 'react';
 import { CHAR_KINDS, TEXT_LANGUAGES, textCharsLabel } from '@/components/lobbies/lobbySearch';
 import BevelCheck from '@/components/shared/BevelCheck';
-import BevelFrame, { cardFrame } from '@/components/shared/BevelFrame';
 import BevelPanel from '@/components/shared/BevelPanel';
 import ChevronButton from '@/components/shared/ChevronButton';
 import BevelSelect from '@/components/shared/BevelSelect';
@@ -75,15 +74,15 @@ function SettingsDialog({ settings, participantCount, onSave }: { settings: Lobb
         onClick={(e) => e.target === e.currentTarget && close()}
         className="m-auto w-[min(calc(100vw-32px),560px)] overflow-clip bg-transparent p-0 text-on-surface backdrop:bg-black/70 backdrop:backdrop-blur-sm"
       >
-        <BevelFrame frame={`flex max-h-[calc(100dvh-112px)] flex-col ${cardFrame}`} className="flex min-h-0 flex-col bg-surface-container-low">
-          <div className="flex items-center justify-between gap-3 px-6 pt-6 pb-4 sm:px-8">
-            <h2 id="settings-dialog-title" className="text-[22px] uppercase tracking-[0.12em]">{t('title')}</h2>
+        <BevelPanel frame="max-h-[calc(100dvh-112px)]" className="flex min-h-0 flex-col">
+          <div className="flex items-center justify-between gap-3 border-b border-[#8f1022]/60 px-6 pt-6 pb-4 sm:px-8">
+            <h2 id="settings-dialog-title" className="text-[26px] uppercase tracking-[0.08em]">{t('title')}</h2>
             <button type="button" onClick={close} aria-label={t('close')} className="flex size-10 items-center justify-center text-on-surface-variant transition-colors hover:text-primary">
               <span aria-hidden="true" className="material-symbols-outlined text-[22px]">close</span>
             </button>
           </div>
 
-          <div ref={bodyRef} className="min-h-0 overflow-y-auto px-6 pb-2 sm:px-8">
+          <div ref={bodyRef} className="min-h-0 overflow-y-auto px-6 pt-5 pb-4 sm:px-8">
             <SettingsForm settings={draft} participantCount={participantCount} onChange={(patch) => setDraft((d) => ({ ...d, ...patch }))} />
           </div>
 
@@ -96,7 +95,7 @@ function SettingsDialog({ settings, participantCount, onSave }: { settings: Lobb
               {t('save')}
             </ChevronButton>
           </div>
-        </BevelFrame>
+        </BevelPanel>
       </dialog>
     </>
   );
@@ -180,15 +179,17 @@ function SettingsForm({ settings, participantCount, onChange }: { settings: Lobb
 
       <div className="flex flex-col gap-2">
         <Label htmlFor="settings-practice">{t('practice')}</Label>
-        <input
-          id="settings-practice"
-          value={settings.practice}
-          onChange={(e) => onChange({ practice: e.target.value })}
-          aria-describedby="settings-practice-hint"
-          autoComplete="off"
-          spellCheck={false}
-          className="font-label-code min-h-11 w-full border border-surface-container-highest bg-surface-container-lowest px-3 text-[16px] tracking-[0.2em] text-on-surface focus:border-primary-container focus:outline-none"
-        />
+        <span className="hx-cut flex bg-[#8f1022] p-px transition-colors [--h:14px] focus-within:bg-primary-container">
+          <input
+            id="settings-practice"
+            value={settings.practice}
+            onChange={(e) => onChange({ practice: e.target.value })}
+            aria-describedby="settings-practice-hint"
+            autoComplete="off"
+            spellCheck={false}
+            className="hx-cut font-label-code min-h-[42px] w-full bg-[radial-gradient(120%_160%_at_50%_0%,#2a0b10_0%,#170608_55%,#0c0304_100%)] px-7 text-[16px] tracking-[0.2em] text-on-primary-container [--h:13.5px] focus:outline-none"
+          />
+        </span>
         <p id="settings-practice-hint" className="text-[13px] text-outline">{t('practiceHint')}</p>
       </div>
 
@@ -235,13 +236,13 @@ function Hints<T extends string>({ active, options, hint }: { active: T; options
 }
 
 function Label({ htmlFor, id, children }: { htmlFor: string; id?: string; children: React.ReactNode }) {
-  return <label htmlFor={htmlFor} id={id} className="font-label-code text-[11px] font-bold uppercase tracking-[0.2em] text-primary">{children}</label>;
+  return <label htmlFor={htmlFor} id={id} className="font-label-code text-[11px] font-bold uppercase tracking-[0.2em] text-primary-container">{children}</label>;
 }
 
 function Group({ legend, children }: { legend: string; children: React.ReactNode }) {
   return (
     <fieldset className="flex flex-col gap-1">
-      <legend className="font-label-code mb-2 text-[11px] font-bold uppercase tracking-[0.2em] text-primary">{legend}</legend>
+      <legend className="font-label-code mb-2 text-[11px] font-bold uppercase tracking-[0.2em] text-primary-container">{legend}</legend>
       {children}
     </fieldset>
   );
@@ -275,23 +276,25 @@ export function NumberField({ id, label, hint, value, min, max, onCommit }: { id
   return (
     <div className="flex flex-col gap-2">
       <Label htmlFor={id}>{label}</Label>
-      <BevelFrame frame="flex self-start bg-primary-container transition-colors focus-within:bg-primary" className="flex min-h-11 bg-surface-container-lowest">
-        <StepButton icon="remove" label={t('decrease', { field: label })} disabled={value <= min} onClick={() => step(-1)} />
-        <input
-          id={id}
-          type="number"
-          inputMode="numeric"
-          min={min}
-          max={max}
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          onBlur={commit}
-          onKeyDown={(e) => e.key === 'Enter' && commit()}
-          aria-describedby={hint ? `${id}-hint` : undefined}
-          className="font-label-code w-16 appearance-none bg-transparent text-center text-[16px] text-on-surface focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [-moz-appearance:textfield]"
-        />
-        <StepButton icon="add" label={t('increase', { field: label })} disabled={value >= max} onClick={() => step(1)} />
-      </BevelFrame>
+      <span className="hx-cut flex self-start bg-[#8f1022] p-px transition-colors [--h:14px] focus-within:bg-primary-container">
+        <span className="hx-cut flex min-h-[42px] bg-[radial-gradient(120%_160%_at_50%_0%,#2a0b10_0%,#170608_55%,#0c0304_100%)] px-3 [--h:13.5px]">
+          <StepButton icon="remove" label={t('decrease', { field: label })} disabled={value <= min} onClick={() => step(-1)} />
+          <input
+            id={id}
+            type="number"
+            inputMode="numeric"
+            min={min}
+            max={max}
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            onBlur={commit}
+            onKeyDown={(e) => e.key === 'Enter' && commit()}
+            aria-describedby={hint ? `${id}-hint` : undefined}
+            className="font-label-code w-16 appearance-none bg-transparent text-center text-[16px] text-on-surface focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [-moz-appearance:textfield]"
+          />
+          <StepButton icon="add" label={t('increase', { field: label })} disabled={value >= max} onClick={() => step(1)} />
+        </span>
+      </span>
       {hint && <p id={`${id}-hint`} className="text-[13px] text-outline">{hint}</p>}
     </div>
   );
@@ -306,7 +309,7 @@ function StepButton({ icon, label, disabled, onClick }: { icon: string; label: s
       aria-label={label}
       disabled={disabled}
       onClick={onClick}
-      className="grid w-10 place-items-center text-primary transition-colors enabled:hover:bg-surface-container-high disabled:cursor-not-allowed disabled:text-outline-variant"
+      className="grid w-10 place-items-center text-primary-container transition-colors enabled:hover:text-primary disabled:cursor-not-allowed disabled:text-outline-variant"
     >
       <span aria-hidden="true" className="material-symbols-outlined text-[18px]!">{icon}</span>
     </button>

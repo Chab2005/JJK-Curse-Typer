@@ -63,6 +63,8 @@ export default function RaceScreen({
   const [typing, setTyping] = useState<TypingState | null>(null);
   const [abandoned, setAbandoned] = useState(false);
   const [pending, setPending] = useState<Pending>(null);
+  // Dernière frappe du joueur : son personnage court tant qu'il tape.
+  const [typedAt, setTypedAt] = useState<number | null>(null);
   // La saisie et les frappes à envoyer vivent aussi dans des refs : plusieurs touches peuvent arriver dans le même événement.
   const typingRef = useRef<TypingState | null>(null);
   const outbox = useRef<Keystroke[]>([]);
@@ -128,6 +130,7 @@ export default function RaceScreen({
     outbox.current.push(stroke);
     typingRef.current = next;
     setTyping(next);
+    setTypedAt(Date.now());
   };
 
   const abandon = () => {
@@ -209,7 +212,11 @@ export default function RaceScreen({
 
           {race && (
             <>
-              <RaceTrack runners={trackRunners(seats, standings, you, race.text.length)} banner={bannerText()} nameOf={nameOf} />
+              <RaceTrack
+                runners={trackRunners(seats, standings, you, race.text.length, { now, movedAt: view.movedAt, youTypedAt: typedAt })}
+                banner={bannerText()}
+                nameOf={nameOf}
+              />
 
               {you !== null && race.bonus && <EnergyBar energy={mine?.energy ?? 0} character={seats.find((seat) => seat.id === you)?.avatar} />}
 

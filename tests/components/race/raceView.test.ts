@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { RaceSnapshot, ServerMessage } from '@/game/protocol';
 import type { RacerSeat, Standing } from '@/game/race';
-import { charState, formatClock, initialRaceView, raceViewReducer, splitWords, trackRunners } from '@/components/race/raceView';
+import { RUN_MS, charState, formatClock, initialRaceView, raceViewReducer, runnerCharacter, splitWords, trackRunners } from '@/components/race/raceView';
 
 const seat = (id: string, kind: 'human' | 'bot' = 'human'): RacerSeat => ({ id, name: id, avatar: null, kind, level: kind === 'bot' ? 'grade_1' : null });
 const SEATS = [seat('me'), seat('ann'), seat('bot-1', 'bot')];
@@ -59,6 +59,14 @@ describe('raceViewReducer', () => {
     expect(view.banner).toBeNull();
   });
 
+  it('note l’heure du dernier pas de chaque coureur, quand sa progression augmente', () => {
+    let view = raceViewReducer(initialRaceView, welcome, 0);
+    view = raceViewReducer(view, tick(1000, standing('ann', 1, 2), standing('me', 2, 0)), 6000);
+    expect(view.movedAt).toEqual({ ann: 6000 });
+    view = raceViewReducer(view, tick(1200, standing('ann', 1, 2), standing('me', 2, 1)), 6200);
+    expect(view.movedAt).toEqual({ ann: 6000, me: 6200 });
+  });
+
   it('ignore les ticks reçus avant l’accueil', () => {
     expect(raceViewReducer(initialRaceView, tick(1000, standing('me', 1, 0)), 0)).toBe(initialRaceView);
   });
@@ -83,6 +91,37 @@ describe('trackRunners', () => {
   it('répartit les participants sur plusieurs rangs pour limiter les chevauchements', () => {
     const lanes = trackRunners(SEATS, [], null, 10).map((r) => r.lane);
     expect(new Set(lanes).size).toBe(3);
+  });
+});
+
+describe('trackRunners · animation des personnages', () => {
+  const standings = [standing('ann', 1, 5), standing('me', 2, 2), standing('bot-1', 3, 4, 'finished')];
+
+  it('fait courir qui vient d’avancer, le joueur tant qu’il tape ; les autres sont au repos', () => {
+    const motion = { now: 10_000, movedAt: { ann: 10_000 - RUN_MS + 1, 'bot-1': 9_999 }, youTypedAt: 10_000 - RUN_MS };
+    expect(trackRunners(SEATS, standings, 'me', 10, motion).map((r) => [r.seat.id, r.running])).toEqual([
+      ['me', false],
+      ['ann', true],
+      // Arrivé : il ne court plus, même s'il vient d'avancer.
+      ['bot-1', false],
+    ]);
+    expect(trackRunners(SEATS, standings, 'me', 10, { ...motion, youTypedAt: 9_900 })[0].running).toBe(true);
+  });
+
+  it('personne ne court sans mouvement connu', () => {
+    expect(trackRunners(SEATS, standings, 'me', 10).some((r) => r.running)).toBe(false);
+  });
+});
+
+describe('runnerCharacter', () => {
+  it('reprend le personnage choisi par le joueur', () => {
+    expect(runnerCharacter({ ...seat('me'), avatar: 'gojo' })).toBe('gojo');
+  });
+
+  it('donne à un bot ou un joueur sans personnage un personnage stable, tiré de son siège', () => {
+    expect(runnerCharacter(seat('bot-1', 'bot'))).toBe(runnerCharacter(seat('bot-1', 'bot')));
+    const picks = new Set(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'].map((id) => runnerCharacter(seat(id))));
+    expect(picks.size).toBeGreaterThan(1);
   });
 });
 

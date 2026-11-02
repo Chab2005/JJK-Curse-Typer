@@ -1,6 +1,8 @@
 import { useTranslations } from 'next-intl';
+import ChevronButton from '@/components/shared/ChevronButton';
 
-// Mesures en direct du joueur (RACE-6) : MPM, précision, position, temps ; et le bouton d'abandon (RACE-10).
+// Mesures en direct du joueur (RACE-6) : MPM, précision, position, temps, dans des plaques pointées ;
+// et le bouton d'abandon (RACE-10).
 export default function RaceHud({
   wpm,
   accuracy,
@@ -21,32 +23,31 @@ export default function RaceHud({
   const t = useTranslations('Race.hud');
 
   return (
-    <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
-      <dl className="flex flex-wrap items-end gap-x-10 gap-y-3">
-        <Metric label={t('wpm')} value={String(wpm)} big />
-        <Metric label={t('accuracy')} value={t('accuracyValue', { value: Math.round(accuracy * 100) })} />
+    <div className="flex flex-wrap items-center justify-between gap-x-8 gap-y-4">
+      <dl className="flex flex-wrap gap-3">
+        <Metric label={t('wpm')} value={String(wpm)} ink="text-primary [text-shadow:0_0_14px_rgb(225_29_72/0.5)]" lit />
+        <Metric label={t('accuracy')} value={t('accuracyValue', { value: Math.round(accuracy * 100) })} ink="text-tertiary" />
         <Metric label={t('position')} value={rank === null ? '–' : t('positionValue', { rank, total })} />
         <Metric label={t(clockLabel)} value={clock} />
       </dl>
       {onAbandon && (
-        <button
-          type="button"
-          onClick={onAbandon}
-          className="flex min-h-11 items-center gap-2 border border-outline-variant px-4 text-[13px] uppercase tracking-[0.12em] text-on-surface-variant transition-colors hover:border-error hover:text-error"
-        >
-          <span aria-hidden="true" className="material-symbols-outlined text-[18px]">flag</span>
+        <ChevronButton type="button" size="sm" chevrons={false} onClick={onAbandon} className="font-label-code text-[11px] uppercase tracking-[0.16em]">
+          <span aria-hidden="true" className="material-symbols-outlined text-[16px] text-primary">flag</span>
           {t('abandon')}
-        </button>
+        </ChevronButton>
       )}
     </div>
   );
 }
 
-function Metric({ label, value, big = false }: { label: string; value: string; big?: boolean }) {
+// Une mesure dans une plaque pointée ; `lit` : le cadre rouge vif de la mesure principale.
+function Metric({ label, value, ink = 'text-on-primary-container', lit = false }: { label: string; value: string; ink?: string; lit?: boolean }) {
   return (
-    <div className="flex flex-col-reverse gap-1">
-      <dt className="font-label-code text-[11px] uppercase tracking-[0.16em] text-on-surface-variant">{label}</dt>
-      <dd className={`font-grotesk font-bold tabular-nums text-on-surface ${big ? 'text-[44px] leading-[44px] text-primary' : 'text-[26px] leading-[30px]'}`}>{value}</dd>
+    <div className={`hx-cut flex p-px [--h:14px] ${lit ? 'bg-[#8f1022]' : 'bg-[#4a1218]'}`}>
+      <div className="hx-cut flex min-w-24 flex-col-reverse gap-1 bg-linear-to-r from-[#1a0709] to-[#110506] px-[30px] py-2.5 [--h:13.5px]">
+        <dt className="font-label-code text-[10px] uppercase tracking-[0.16em] text-outline">{label}</dt>
+        <dd className={`font-grotesk text-[30px] leading-none font-bold tabular-nums ${ink}`}>{value}</dd>
+      </div>
     </div>
   );
 }
