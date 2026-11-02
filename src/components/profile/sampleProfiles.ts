@@ -1,5 +1,6 @@
 import { SAMPLE_PLAYERS } from '@/components/leaderboard/samplePlayers';
-import type { CharacterId } from '@/components/shared/characters';
+import { CHARACTERS, type CharacterId } from '@/components/shared/characters';
+import type { CharacterGames } from '@/game/stats';
 import { type KeyStat, QWERTY } from './keyboard';
 import type { RaceStat } from './statHistory';
 
@@ -20,6 +21,8 @@ export interface Profile {
   averageScore: number;
   races: RaceStat[];
   keyStats: KeyStat[];
+  /** Courses par personnage joué. */
+  characters: CharacterGames[];
 }
 
 const DAY = 24 * 60 * 60 * 1000;
@@ -62,6 +65,14 @@ export function findSampleProfile(username: string, now: Date): Profile | null {
     return { char, errorRate: Math.round(errorRate * 10) / 10, avgMs: Math.round(avgMs) };
   });
 
+  // Un peu moins de la moitié des courses avec son avatar, le reste réparti entre les autres personnages.
+  const weights = CHARACTERS.map((c) => (c.id === player.avatar ? 5 : noise(handle + c.id)));
+  const total = weights.reduce((sum, w) => sum + w, 0);
+  const characters = CHARACTERS.map((c, i): CharacterGames => {
+    const games = Math.floor((player.games * weights[i]) / total);
+    return { character: c.id, games, wins: Math.round(games * winRate) };
+  });
+
   return {
     username: player.username,
     avatar: player.avatar,
@@ -76,5 +87,6 @@ export function findSampleProfile(username: string, now: Date): Profile | null {
     averageScore: player.averageScore,
     races,
     keyStats,
+    characters,
   };
 }

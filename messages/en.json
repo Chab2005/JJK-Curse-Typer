@@ -558,7 +558,12 @@
       "errors": "Errors per 100 words",
       "errorsUnit": "/ 100",
       "score": "Average score (last 5 races)",
-      "scoreUnit": "pts"
+      "scoreUnit": "pts",
+      "mostPlayed": {
+        "title": "Most played character",
+        "usage": "<strong>{count, plural, one {# race} other {# races}}</strong> · {share} of {total}",
+        "sheet": "Character sheet"
+      }
     },
     "heatmap": {
       "title": "Keyboard heatmap",

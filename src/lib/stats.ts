@@ -1,10 +1,10 @@
 import 'server-only';
 import { asc, eq, isNotNull, sql } from 'drizzle-orm';
 import { db } from '@/db';
-import { keyStats, results, users } from '@/db/schema';
+import { characterStats, keyStats, results, users } from '@/db/schema';
 import { playerFromGames, type PlayerStats } from '@/components/leaderboard/leaderboard';
 import type { KeyStat } from '@/game/keyStats';
-import type { GameRecord } from '@/game/stats';
+import { mostPlayedCharacter, type CharacterGames, type GameRecord } from '@/game/stats';
 import { SAMPLE_PLAYERS } from '@/components/leaderboard/samplePlayers';
 import { avatarUrl } from '@/lib/auth/avatar';
 import { showSampleData } from '@/lib/sampleData';
@@ -44,6 +44,15 @@ export async function accountGames(userId: number): Promise<GameRecord[]> {
 /** Carte de chaleur du clavier d'un compte (STAT-3) : une ligne par caractère assez tapé. */
 export async function accountKeyStats(userId: number): Promise<KeyStat[]> {
   return db.select({ char: keyStats.char, errorRate: keyStats.errorRate, avgMs: keyStats.avgMs }).from(keyStats).where(eq(keyStats.userId, userId));
+}
+
+/** Personnage le plus joué par un compte (courses avec bonus) ; `null` s'il n'a jamais couru avec un personnage. */
+export async function accountMostPlayed(userId: number): Promise<CharacterGames | null> {
+  const rows = await db
+    .select({ character: characterStats.character, games: characterStats.games, wins: characterStats.wins })
+    .from(characterStats)
+    .where(eq(characterStats.userId, userId));
+  return mostPlayedCharacter(rows);
 }
 
 /** Statistiques de chaque compte qui a couru, pour le classement général (STAT-8). */

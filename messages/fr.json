@@ -558,7 +558,12 @@
       "errors": "Erreurs pour 100 mots",
       "errorsUnit": "/ 100",
       "score": "Score moyen (5 dernières courses)",
-      "scoreUnit": "pts"
+      "scoreUnit": "pts",
+      "mostPlayed": {
+        "title": "Personnage le plus joué",
+        "usage": "<strong>{count, plural, one {# course} other {# courses}}</strong> · {share} de ses {total}",
+        "sheet": "Voir la fiche"
+      }
     },
     "heatmap": {
       "title": "Carte de chaleur du clavier",

@@ -16,8 +16,8 @@ import type { Locale } from '@/i18n/config';
 import { Link } from '@/i18n/navigation';
 import { getSessionUser } from '@/lib/auth/session';
 import { findAccountProfile } from '@/lib/auth/profile';
-import { accountGames, accountKeyStats } from '@/lib/stats';
-import { isWin, summarizeGames } from '@/game/stats';
+import { accountGames, accountKeyStats, accountMostPlayed } from '@/lib/stats';
+import { isWin, mostPlayedCharacter, summarizeGames } from '@/game/stats';
 
 export async function generateMetadata({ params }: PageProps<'/[locale]/profile/[username]'>) {
   const { username } = await params;
@@ -38,7 +38,7 @@ export default async function ProfilePage({ params }: PageProps<'/[locale]/profi
   if (!profile) {
     const account = await findAccountProfile(name);
     if (!account) notFound();
-    const [games, keys] = await Promise.all([accountGames(account.id), accountKeyStats(account.id)]);
+    const [games, keys, mostPlayed] = await Promise.all([accountGames(account.id), accountKeyStats(account.id), accountMostPlayed(account.id)]);
     const stats = summarizeGames(games);
     return (
       <>
@@ -69,7 +69,7 @@ export default async function ProfilePage({ params }: PageProps<'/[locale]/profi
                   races={games.map((g) => ({ date: g.at, wpm: g.wpm, accuracy: g.accuracy, errors: g.errors, keystrokes: g.keystrokes, won: isWin(g) }))}
                   now={now.toISOString()}
                 />
-                <StatTiles profile={stats} />
+                <StatTiles profile={stats} mostPlayed={mostPlayed} />
                 {keys.length > 0 && <KeyboardHeatmap stats={keys} />}
               </>
             ) : (
@@ -94,7 +94,7 @@ export default async function ProfilePage({ params }: PageProps<'/[locale]/profi
             summary={t('summary', { games: profile.games, wins: profile.wins, best: profile.bestWpm })}
           />
           <StatChart races={profile.races} now={now.toISOString()} />
-          <StatTiles profile={profile} />
+          <StatTiles profile={profile} mostPlayed={mostPlayedCharacter(profile.characters)} />
           <KeyboardHeatmap stats={profile.keyStats} />
         </div>
       </main>
