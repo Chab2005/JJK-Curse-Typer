@@ -1,10 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { keyStats } from '@/db/schema';
+import { characterStats, keyStats } from '@/db/schema';
 import type { RaceResult } from '@/game/results';
 import { clearGuestResults, takeGuestGames } from '@/lib/guestResults';
 
 const insert = vi.fn();
 const upsert = vi.fn();
+const characterUpsert = vi.fn();
 const where = vi.fn();
 const update = vi.fn();
 
@@ -13,7 +14,12 @@ vi.mock('@/db/client', () => ({
     update: () => ({ set: () => ({ where: () => update() }) }),
     select: () => ({ from: () => ({ where: (...args: unknown[]) => where(...args) }) }),
     insert: (table: unknown) => ({
-      values: (rows: unknown) => (table === keyStats ? { onConflictDoUpdate: () => upsert(rows) } : insert(rows)),
+      values: (rows: unknown) =>
+        table === keyStats
+          ? { onConflictDoUpdate: () => upsert(rows) }
+          : table === characterStats
+            ? { onConflictDoUpdate: () => characterUpsert(rows) }
+            : insert(rows),
     }),
   }),
 }));
@@ -32,6 +38,8 @@ const result = (seat: string, extra: Partial<RaceResult> = {}): RaceResult => ({
   durationMs: 41_600,
   status: 'finished',
   keys: [],
+  character: null,
+  won: true,
   ...extra,
 });
 
@@ -41,6 +49,7 @@ beforeEach(() => {
   clearGuestResults();
   insert.mockReset();
   upsert.mockReset();
+  characterUpsert.mockReset();
   where.mockReset();
   update.mockReset();
 });
@@ -70,6 +79,24 @@ describe('recordRaceResults', () => {
     where.mockResolvedValue([{ id: 7, key: 'yuji' }]);
     await recordRaceResults([result('Yuji')], AT);
     expect(upsert).not.toHaveBeenCalled();
+  });
+
+  it('compte la partie et la victoire du personnage joué par un compte', async () => {
+    where.mockResolvedValue([
+      { id: 7, key: 'yuji' },
+      { id: 8, key: 'maki' },
+    ]);
+    await recordRaceResults([result('Yuji', { character: 'gojo', won: true }), result('Maki', { character: 'maki', won: false })], AT);
+    expect(characterUpsert).toHaveBeenCalledWith([
+      { userId: 7, character: 'gojo', games: 1, wins: 1 },
+      { userId: 8, character: 'maki', games: 1, wins: 0 },
+    ]);
+  });
+
+  it('sans personnage (bonus désactivés), ne touche pas les statistiques de personnage', async () => {
+    where.mockResolvedValue([{ id: 7, key: 'yuji' }]);
+    await recordRaceResults([result('Yuji')], AT);
+    expect(characterUpsert).not.toHaveBeenCalled();
   });
 
   it('garde la course d’un invité pour son cookie, sans toucher la base (STAT-6)', async () => {

@@ -64,6 +64,13 @@
       "when": 1793623826107,
       "tag": "0008_user_levels",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1793623936715,
+      "tag": "0009_character_stats",
+      "breakpoints": true
     }
   ]
 }

@@ -2,7 +2,7 @@
 // l'écran de course réclame ensuite le résultat pour son cookie. Une erreur de base n'arrête jamais la room.
 import { inArray, sql } from 'drizzle-orm';
 import { getDb } from '@/db/client';
-import { keyStats, results, users } from '@/db/schema';
+import { characterStats, keyStats, results, users } from '@/db/schema';
 import { raceXp } from '@/game/levels';
 import { GUEST_SEAT_PREFIX, type RaceResult } from '@/game/results';
 import type { GuestGame } from '@/lib/auth/guest';
@@ -62,6 +62,23 @@ export async function recordRaceResults(list: readonly RaceResult[], at: Date): 
           set: {
             errorRate: sql`(${keyStats.errorRate} + excluded.error_rate) / 2`,
             avgMs: sql`(${keyStats.avgMs} + excluded.avg_ms) / 2`,
+          },
+        });
+    }
+
+    // Personnage joué (bonus activés) : une partie de plus, et une victoire si premier des humains.
+    const characterRows = saved.flatMap(({ userId, result }) =>
+      result.character === null ? [] : [{ userId, character: result.character, games: 1, wins: result.won ? 1 : 0 }],
+    );
+    if (characterRows.length > 0) {
+      await db
+        .insert(characterStats)
+        .values(characterRows)
+        .onConflictDoUpdate({
+          target: [characterStats.userId, characterStats.character],
+          set: {
+            games: sql`${characterStats.games} + excluded.games`,
+            wins: sql`${characterStats.wins} + excluded.wins`,
           },
         });
     }

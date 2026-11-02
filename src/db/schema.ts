@@ -97,6 +97,19 @@ export const keyStats = pgTable(
   (table) => [primaryKey({ columns: [table.userId, table.char] })],
 );
 
+// Personnage joué par un compte dans une course avec bonus, une ligne par compte et par personnage. Aucun historique :
+// chaque course ajoute 1 à `games`, et 1 à `wins` si le joueur est premier des humains. Taux de victoire = wins / games.
+export const characterStats = pgTable(
+  "character_stats",
+  {
+    userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    /** `CharacterId` : 'gojo', 'sukuna'… */
+    character: text("character").notNull(),
+    games: integer("games").default(0).notNull(),
+    wins: integer("wins").default(0).notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.userId, table.character] })],
+);
 
 
 

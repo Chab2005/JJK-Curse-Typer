@@ -1,5 +1,6 @@
 // Résultats d'une course finie à enregistrer (STAT-5, STAT-8). Fonction pure : la room les calcule,
 // le serveur les écrit. Seuls les joueurs qui ont vraiment tapé comptent : ni bots (BOT-5), ni sièges simulés, ni abandons.
+import type { CharacterId } from '@/components/shared/characters';
 import { raceKeyStats, type KeyStat } from './keyStats';
 import { standings, type RaceState } from './race';
 
@@ -24,6 +25,10 @@ export interface RaceResult {
   status: 'finished' | 'timeout';
   /** Touches assez tapées pour la heatmap du clavier. */
   keys: KeyStat[];
+  /** Personnage du siège, seulement si les bonus sont activés. */
+  character: CharacterId | null;
+  /** Meilleur rang parmi les joueurs humains de la course, bots ignorés. */
+  won: boolean;
 }
 
 /** Résultats des joueurs humains d'une course finie ; vide tant qu'elle court. */
@@ -33,6 +38,8 @@ export function raceResults(race: RaceState, now: number): RaceResult[] {
   const accounts = race.racers
     .filter(({ seat, driver, typing }) => seat.kind === 'human' && driver === 'player' && typing.keystrokes > 0 && !seat.id.startsWith(GUEST_SEAT_PREFIX))
     .map(({ seat }) => seat.id);
+  const humans = new Set(race.racers.filter(({ seat, driver }) => seat.kind === 'human' && driver === 'player').map(({ seat }) => seat.id));
+  const bestHumanRank = Math.min(...table.filter((r) => humans.has(r.id)).map((r) => r.rank));
   return race.racers.flatMap((racer): RaceResult[] => {
     const { seat, driver, status, typing, keys, endedAt } = racer;
     if (seat.kind !== 'human' || driver !== 'player' || (status !== 'finished' && status !== 'timeout')) return [];
@@ -51,6 +58,8 @@ export function raceResults(race: RaceState, now: number): RaceResult[] {
         durationMs: endedAt,
         status,
         keys: raceKeyStats(keys),
+        character: race.bonus ? seat.avatar : null,
+        won: row.rank === bestHumanRank,
       },
     ];
   });
