@@ -33,7 +33,7 @@ describe('PixelDomain (UI-7, UI-8)', () => {
 
   afterEach(() => { vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 
-  it.each(['gojo', 'megumi', 'yuta'] as const)('renders %s on a fixed pixel canvas', (character) => {
+  it.each(['gojo', 'megumi', 'yuta', 'sukuna'] as const)('renders %s on a fixed pixel canvas', (character) => {
     const { container } = render(<PixelDomain character={character} />);
     const canvas = container.querySelector('canvas');
     expect(canvas).toHaveAttribute('width', '400');

@@ -7,6 +7,7 @@ export const PAGES = [
   { name: 'character', path: '/characters/gojo' },
   { name: 'character-megumi', path: '/characters/megumi' },
   { name: 'character-yuta', path: '/characters/yuta' },
+  { name: 'character-sukuna', path: '/characters/sukuna' },
   { name: 'login', path: '/login' },
   { name: 'register', path: '/register' },
   { name: 'profile', path: '/profile' },

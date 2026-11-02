@@ -1,10 +1,13 @@
-/** Approved native pixel art for Gojo, Megumi and Yuta (BON-6, UI-4). */
-export type DomainCharacter = 'gojo' | 'megumi' | 'yuta';
+import { createSukunaDomainRenderer } from './sukunaDomainPixelArt';
+
+/** Approved native pixel art for Gojo, Megumi, Yuta and Sukuna (BON-6, UI-4). */
+export type DomainCharacter = 'gojo' | 'megumi' | 'yuta' | 'sukuna';
 type Context = CanvasRenderingContext2D;
 type Point = [number, number];
 
 /** Create browser resources only after mount; no canvas or image work during SSR. */
 export function createDomainRenderer(canvas: HTMLCanvasElement, character: DomainCharacter, showCharacter = true) {
+  if (character === 'sukuna') return createSukunaDomainRenderer(canvas, showCharacter);
   const context = canvas.getContext('2d', { alpha: false });
   if (!context) return null;
   context.imageSmoothingEnabled = false;

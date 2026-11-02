@@ -15,6 +15,7 @@ describe('CharacterSheet (smoke)', () => {
     ['gojo', 'Unlimited Void'],
     ['megumi', 'Chimera Shadow Garden'],
     ['yuta', 'Mutual Authentic Love'],
+    ['sukuna', 'Malevolent Shrine'],
   ])('shows the approved domain on the %s file', (id, name) => {
     renderWithIntl(<CharacterSheet character={CHARACTERS.find((c) => c.id === id)!} />);
     expect(screen.getByRole('heading', { name })).toBeInTheDocument();
@@ -22,7 +23,7 @@ describe('CharacterSheet (smoke)', () => {
   });
 
   it('keeps unimplemented domains off the other character files', () => {
-    renderWithIntl(<CharacterSheet character={CHARACTERS.find((c) => c.id === 'sukuna')!} />);
+    renderWithIntl(<CharacterSheet character={CHARACTERS.find((c) => c.id === 'maki')!} />);
     expect(screen.queryByTestId('domain-preview')).not.toBeInTheDocument();
   });
   it('renders the file of the character with its technique', () => {

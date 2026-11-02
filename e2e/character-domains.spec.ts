@@ -1,9 +1,9 @@
 import { expect, test } from '@playwright/test';
 
-test('Gojo, Megumi and Yuta have live pixel domains on their character files (UI-4, UI-7, GEN-3)', async ({ page }) => {
+test('All four domain users have live pixel domains on their character files (UI-4, UI-7, GEN-3)', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
-  for (const [character, name] of [['gojo', 'Unlimited Void'], ['megumi', 'Chimera Shadow Garden'], ['yuta', 'Mutual Authentic Love']]) {
+  for (const [character, name] of [['gojo', 'Unlimited Void'], ['megumi', 'Chimera Shadow Garden'], ['yuta', 'Mutual Authentic Love'], ['sukuna', 'Malevolent Shrine']]) {
     await page.goto(`/characters/${character}?lang=en`);
     await expect(page.getByRole('heading', { name, exact: true })).toBeVisible();
     const scene = page.locator(`[data-domain="${character}"]`), canvas = scene.locator('canvas');
@@ -33,6 +33,8 @@ test('Gojo, Megumi and Yuta have live pixel domains on their character files (UI
   await expect(page.getByText('Extension du territoire', { exact: true })).toBeVisible();
   await page.goto('/fr/characters/yuta?lang=fr');
   await expect(page.getByRole('heading', { name: 'Amour authentique mutuel' })).toBeVisible();
+  await page.goto('/fr/characters/sukuna?lang=fr');
+  await expect(page.getByRole('heading', { name: 'Autel démoniaque' })).toBeVisible();
   expect(errors).toEqual([]);
 });
 
