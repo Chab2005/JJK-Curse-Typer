@@ -11,11 +11,11 @@ export function rawWpm(keystrokes: number, ms: number): number {
 }
 
 /**
- * MPM brut moins une pénalité d'un mot par erreur, rapportée à la minute, borné à zéro (H-21) :
- * marteler le clavier fait plus d'erreurs que de mots et ne bat jamais un joueur précis (RACE-8).
+ * Frappes justes ÷ 5 ÷ minutes (énoncé, annexe A) : une faute coûte sa frappe, pas un mot entier.
+ * Marteler le clavier fait surtout des fautes et ne bat jamais un joueur précis (RACE-8).
  */
 export function netWpm(keystrokes: number, errors: number, ms: number): number {
-  return ms <= 0 ? 0 : Math.max(0, rawWpm(keystrokes, ms) - errors / minutes(ms));
+  return rawWpm(Math.max(0, keystrokes - errors), ms);
 }
 
 /** Part des frappes justes, entre 0 et 1. */

@@ -14,12 +14,14 @@ describe('rawWpm', () => {
 });
 
 describe('netWpm (H-21)', () => {
-  it('retire une pénalité par erreur rapportée à la minute', () => {
-    expect(netWpm(300, 6, 60_000)).toBe(54);
+  it('ne compte que les frappes justes', () => {
+    expect(netWpm(300, 15, 60_000)).toBe(57);
+    expect(netWpm(300, 0, 60_000)).toBe(rawWpm(300, 60_000));
   });
 
-  it('est borné à zéro', () => {
-    expect(netWpm(50, 40, 60_000)).toBe(0);
+  it('vaut 0 sans frappe juste ni temps écoulé', () => {
+    expect(netWpm(40, 40, 60_000)).toBe(0);
+    expect(netWpm(10, 0, 0)).toBe(0);
   });
 
   it('fait perdre celui qui martèle le clavier contre un joueur précis (RACE-8)', () => {
@@ -46,7 +48,7 @@ describe('typingScore', () => {
       startTyping('hello world', 'accumulate'),
       [...'hellp'].map((key, i) => ({ key, t: (i + 1) * 1000 })),
     );
-    expect(typingScore(typing, 6000)).toEqual({ wpm: 0, rawWpm: 10, accuracy: 0.8 });
-    expect(typingScore(typing, 60_000).wpm).toBe(0);
+    expect(typingScore(typing, 6000)).toEqual({ wpm: 8, rawWpm: 10, accuracy: 0.8 });
+    expect(typingScore(typing, 60_000).wpm).toBe(1);
   });
 });
