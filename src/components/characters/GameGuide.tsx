@@ -1,15 +1,23 @@
 import { useTranslations } from 'next-intl';
 import type { CSSProperties, ReactNode } from 'react';
 import type { CharacterId } from '@/components/shared/characters';
+import { BINDING_VOW_PROGRESS, DOMAIN_SECONDS, type Ability } from '@/game/abilities';
 import { ENERGY_MAX } from '@/game/energy';
 import { spriteStyle } from './characterSprites';
 import EnergyDemo from './EnergyDemo';
 import GojoDomain, { DomainScene } from './GojoDomain';
+import Shortcut from './Shortcut';
 import styles from './GameGuide.module.css';
 
 /** Énergie minimale pour déployer une extension du territoire, et durée pendant laquelle la technique est ensuite bloquée. */
 const DOMAIN_MIN_ENERGY = 1000;
 const DOMAIN_LOCK_SECONDS = 10;
+
+/** Part de la course offerte par le pacte contraignant, en pourcentage. */
+const VOW_PERCENT = Math.round(BINDING_VOW_PROGRESS * 100);
+
+/** Raccourcis listés dans le bloc « Commandes », dans l'ordre des touches. */
+const CONTROLS: Ability[] = ['domain', 'technique', 'vow'];
 
 /** Échelles des bandes de sprites : coureurs de l'étape 1, couloirs de l'étape 3 et Maki, coureur des règles. */
 const RUNNER_SCALE = 0.17;
@@ -132,6 +140,7 @@ export default function GameGuide() {
                   stacked
                   tags={[
                     { label: t('tags.domainMin', { min: DOMAIN_MIN_ENERGY }), tone: 'hot' },
+                    { label: t('tags.duration', { seconds: DOMAIN_SECONDS }) },
                     { label: t('tags.drain') },
                     { label: t('tags.lock', { seconds: DOMAIN_LOCK_SECONDS }) },
                   ]}
@@ -161,7 +170,7 @@ export default function GameGuide() {
 
         <div className="flex flex-col gap-[18px]">
           <p className="font-label-code text-[12px] font-bold uppercase tracking-[0.32em] text-primary-container">{t('rulesTitle')}</p>
-          <ul className="grid gap-5 md:grid-cols-3">
+          <ul className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
             <RuleCard title={t('rules.host.title')} text={t('rules.host.text')}>
               <span className="font-label-code text-[11px] uppercase tracking-[0.18em] text-outline">{t('rules.techniques')}</span>
               <span className="guide-switch hx-cut relative h-[30px] w-[62px] transition-colors duration-300 [--h:10px]">
@@ -186,8 +195,31 @@ export default function GameGuide() {
               <span className="material-symbols-outlined guide-bob text-[30px] text-on-surface-variant transition-colors [animation-delay:-0.3s] group-hover:text-on-primary-container">smart_toy</span>
               <span className="font-label-code ml-auto text-[10px] uppercase tracking-[0.18em] text-outline">{t('rules.same')}</span>
             </RuleCard>
+            <RuleCard title={t('rules.vow.title')} text={t('rules.vow.text', { percent: VOW_PERCENT })}>
+              <span className="relative h-2 flex-1 bg-surface-container-high">
+                <span className="absolute inset-y-0 left-0 w-[15%] bg-outline-variant" />
+                <span className="absolute inset-y-0 left-[15%] w-0 bg-primary transition-[width] duration-500 group-hover:w-[30%] motion-reduce:transition-none" />
+              </span>
+              <span className="font-label-code text-[12px] text-outline transition-colors group-hover:text-primary">{t('rules.vow.gain', { percent: VOW_PERCENT })}</span>
+            </RuleCard>
           </ul>
         </div>
+
+        <section aria-labelledby="controls-title" className="flex flex-col gap-[18px]">
+          <p id="controls-title" className="font-label-code text-[12px] font-bold uppercase tracking-[0.32em] text-primary-container">{t('controls.title')}</p>
+          <p className="max-w-[720px] text-base leading-[25px] text-on-surface-variant">{t('controls.intro')}</p>
+          <ul className="grid gap-3 md:grid-cols-3">
+            {CONTROLS.map((ability) => (
+              <li key={ability} className="bevel flex items-center gap-4 bg-surface-container-low px-5 py-4">
+                <Shortcut ability={ability} />
+                <span className="flex min-w-0 flex-col gap-0.5">
+                  <span className="font-grotesk text-[17px] font-semibold text-on-surface">{t(`controls.${ability}.label`)}</span>
+                  <span className="text-sm text-outline">{t(`controls.${ability}.hint`)}</span>
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
       </div>
     </section>
   );

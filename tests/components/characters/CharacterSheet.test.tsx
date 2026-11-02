@@ -22,6 +22,38 @@ describe('CharacterSheet (smoke)', () => {
     expect(screen.getByTestId('domain-preview')).toHaveAttribute('data-character', id);
   });
 
+  it.each([
+    ['gojo', /every other exorcist is stuck in place/],
+    ['megumi', /all of them activate automatically, every second/],
+    ['yuta', /he picks one up every second and casts its copied technique/],
+    ['sukuna', /every second, one more word is added/],
+  ])('describes the effect of the %s domain, cast with Alt+Q for 10 s', (id, effect) => {
+    renderWithIntl(<CharacterSheet character={CHARACTERS.find((c) => c.id === id)!} />);
+    expect(screen.getByText(effect)).toBeInTheDocument();
+    expect(screen.getByText('Lasts 10 s')).toBeInTheDocument();
+    expect(screen.getAllByText('Q')).toHaveLength(1);
+  });
+
+  it.each([
+    ['yuta', 'Copy', /With his shikigami Rika, Yuta can copy/],
+    ['gojo', 'Limitless', /never reaches him/],
+    ['megumi', 'Ten Shadows', /Megumi has access to shikigami/],
+    ['todo', 'Boogie-Woogie', /swap places with anything that has cursed energy/],
+    ['nobara', 'Straw Doll', /whatever she strikes on the doll/],
+    ['yuji', 'Black Flash', /Yuji has no innate technique/],
+  ])('names the %s technique and tells to type it after Alt+W', (id, name, details) => {
+    renderWithIntl(<CharacterSheet character={CHARACTERS.find((c) => c.id === id)!} />);
+    expect(screen.getByText(name)).toBeInTheDocument();
+    expect(screen.getByText(details)).toBeInTheDocument();
+    expect(screen.getByText(`then type “${name}”`)).toBeInTheDocument();
+    expect(screen.getByText('W')).toBeInTheDocument();
+  });
+
+  it('gives Maki no technique to cast', () => {
+    renderWithIntl(<CharacterSheet character={CHARACTERS.find((c) => c.id === 'maki')!} />);
+    expect(screen.queryByText(/then type/)).not.toBeInTheDocument();
+  });
+
   it('keeps unimplemented domains off the other character files', () => {
     renderWithIntl(<CharacterSheet character={CHARACTERS.find((c) => c.id === 'maki')!} />);
     expect(screen.queryByTestId('domain-preview')).not.toBeInTheDocument();

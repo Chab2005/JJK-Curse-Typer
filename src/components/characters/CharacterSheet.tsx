@@ -10,13 +10,18 @@ import { CHARACTERS, type Character } from '@/components/shared/characters';
 import { neighbours } from './characterPages';
 import { CHARACTER_STYLES } from './characterStyles';
 import { SPRITES, spriteBox } from './characterSprites';
+import { DOMAIN_SECONDS } from '@/game/abilities';
 import PixelDomain from './PixelDomain';
+import Shortcut from './Shortcut';
 
 /** Vignettes des autres fiches : illustration cadrée sur le buste. */
 const MINI_WIDTH = 300;
 const MINI_FACE_Y = 70;
 
-// Fiche d'un personnage (/characters/<id>) : illustration en pied, technique, capacité en course,
+/** Ligne « Alt + touche, puis tapez le nom » sous une technique ou un territoire. */
+const CAST_HINT = 'mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-dashed border-surface-container-high pt-3.5 text-sm text-on-surface-variant';
+
+// Fiche d'un personnage (/characters/<id>) : illustration en pied, technique, extension du territoire,
 // puis les fiches voisines et la bande des huit exorcistes.
 export default function CharacterSheet({ character }: { character: Character }) {
   const t = useTranslations('Character');
@@ -72,6 +77,12 @@ export default function CharacterSheet({ character }: { character: Character }) 
                 <p className={`text-xl ${style.ink}`}>{techniques(character.id)}</p>
               </div>
               <p className="text-base leading-[25px]">{t(`techniqueDetails.${character.id}`)}</p>
+              {character.id !== 'maki' && (
+                <p className={CAST_HINT}>
+                  <Shortcut ability="technique" />
+                  <span>{t('castHint', { name: techniques(character.id) })}</span>
+                </p>
+              )}
             </BevelFrame>
 
             {(character.id === 'gojo' || character.id === 'megumi' || character.id === 'yuta' || character.id === 'sukuna') && (
@@ -80,18 +91,15 @@ export default function CharacterSheet({ character }: { character: Character }) 
                 <div className="flex flex-col gap-1.5 px-6 py-[18px]">
                   <p className="font-label-code text-[11px] font-bold uppercase tracking-[0.24em] text-outline">{t('domainTitle')}</p>
                   <h2 className={`text-xl ${style.ink}`}>{t(`domains.${character.id}`)}</h2>
+                  <p className="text-base leading-[25px]">{t(`domainDetails.${character.id}`)}</p>
+                  <p className={CAST_HINT}>
+                    <Shortcut ability="domain" />
+                    <span>{t('castHint', { name: t(`domains.${character.id}`) })}</span>
+                    <span className="font-label-code ml-auto text-[11px] uppercase tracking-[0.16em] text-primary">{t('domainDuration', { seconds: DOMAIN_SECONDS })}</span>
+                  </p>
                 </div>
               </BevelFrame>
             )}
-
-            <div className="bevel flex items-start gap-4 bg-surface-container-low px-6 py-[22px]">
-              <span aria-hidden="true" className="material-symbols-outlined text-[28px] text-tertiary">bolt</span>
-              <div className="flex flex-col gap-1.5">
-                <h2 className="font-label-code text-[11px] font-bold uppercase tracking-[0.24em] text-outline">{t('abilityTitle')}</h2>
-                <p className="text-lg leading-[27px]">{t('abilitySoon')}</p>
-                <p className="text-[15px] leading-6 text-on-surface-variant">{t('abilitySoonText')}</p>
-              </div>
-            </div>
 
             <ChevronButton as={Link} href="/lobbies" frame="self-start" className="gap-2.5 text-sm uppercase tracking-[0.16em] whitespace-nowrap">
               {t('play', { name: character.name.split(' ')[0] })}

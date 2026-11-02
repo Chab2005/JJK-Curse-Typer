@@ -115,13 +115,13 @@
     "watermark": "Exorcistes",
     "cta": "Vérifier les personnages",
     "techniques": {
-      "yuji": "Divergent Fist",
+      "yuji": "Black Flash",
       "megumi": "Dix Ombres",
-      "nobara": "Résonance",
+      "nobara": "Poupée de paille",
       "gojo": "Infini",
       "maki": "Corps céleste",
-      "yuta": "Rika",
-      "todo": "Boogie Woogie",
+      "yuta": "Copie",
+      "todo": "Boogie-Woogie",
       "sukuna": "Shrine"
     }
   },
@@ -145,9 +145,14 @@
       "yuta": "Amour authentique mutuel",
       "sukuna": "Autel démoniaque"
     },
-    "abilityTitle": "Capacité en course",
-    "abilitySoon": "Bientôt dévoilée",
-    "abilitySoonText": "Son effet, son coût en énergie et sa durée seront bientôt dévoilés.",
+    "domainDetails": {
+      "gojo": "Un flot d’informations sans fin submerge tous ceux qui sont pris à l’intérieur : les autres exorcistes restent figés sur place jusqu’à la fermeture du territoire.",
+      "megumi": "Tous les shikigamis des Dix Ombres répondent à la fois : tant que le territoire est ouvert, ils s’activent tous automatiquement, chaque seconde.",
+      "yuta": "Des épées portant chaque technique copiée par Yuta emplissent le territoire. Tant qu’il est ouvert, il en saisit une chaque seconde et lance sa technique copiée, automatiquement et gratuitement.",
+      "sukuna": "L’autel taille dans le texte de chacun : chaque seconde, un mot de plus s’ajoute au texte de tous les autres exorcistes jusqu’à la fermeture du territoire."
+    },
+    "castHint": "puis tapez « {name} »",
+    "domainDuration": "Dure {seconds} s",
     "play": "Jouer {name}",
     "otherFiles": "Autres fiches",
     "previous": "Précédent",
@@ -165,13 +170,13 @@
       "sukuna": "Le Roi des fléaux, scellé depuis mille ans dans vingt doigts. Le corps de Yuji lui sert désormais de réceptacle."
     },
     "techniqueDetails": {
-      "yuji": "Son énergie occulte suit ses poings avec un temps de retard : chaque coup frappe deux fois.",
-      "megumi": "Il forme des ombres avec ses mains pour invoquer jusqu’à dix shikigamis.",
-      "nobara": "Ce qu’elle frappe sur une poupée de paille, sa cible le ressent.",
-      "gojo": "L’Infini ralentit tout ce qui l’approche, jusqu’à ce que plus rien ne l’atteigne.",
+      "yuji": "Yuji n’a pas de technique innée, alors il s’en forge une : quand son énergie occulte frappe moins d’un millionième de seconde après son poing, le coup s’embrase de noir et frappe deux fois et demie plus fort.",
+      "megumi": "Megumi a accès aux shikigamis. Chacun a un effet différent, qui touche Megumi ou un autre exorciste.",
+      "nobara": "Nobara plante un clou maudit dans une poupée de paille qui contient un morceau de sa cible : ce qu’elle frappe sur la poupée, la cible le ressent, où qu’elle soit.",
+      "gojo": "L’Infini fait entrer l’infini dans le monde réel : tout ce qui approche Gojo ralentit sans fin et ne l’atteint jamais. Il peut aussi le plier pour attirer ses cibles ou les projeter au loin.",
       "maki": "Née presque sans énergie occulte, elle reçoit en échange un corps et des sens surhumains.",
-      "yuta": "Il emprunte l’énergie maudite sans limite de Rika et copie les techniques de ceux qu’il bat.",
-      "todo": "Un claquement de mains suffit pour échanger la place de deux cibles.",
+      "yuta": "Avec son shikigami Rika, Yuta peut copier les techniques des autres exorcistes.",
+      "todo": "Une fois activée, elle permet à son utilisateur d’échanger sa place avec tout ce qui porte de l’énergie occulte.",
       "sukuna": "Cleave s’ajuste à la résistance et à l’énergie occulte de sa cible pour la trancher d’un seul coup ; Dismantle taille en pièces tout ce qui l’entoure. Pour achever, il libère Fuga : une flèche de feu qui embrase tout."
     }
   },
@@ -227,6 +232,11 @@
         "title": "Bots à armes égales",
         "text": "Les bots tapent, chargent et lancent leurs techniques avec exactement les mêmes règles que vous."
       },
+      "vow": {
+        "title": "Pacte contraignant",
+        "text": "Renoncez à votre technique pour le reste de la course et recevez d’un coup {percent} % de la progression.",
+        "gain": "+{percent} %"
+      },
       "techniques": "Techniques",
       "on": "Activées",
       "off": "Désactivées",
@@ -242,9 +252,26 @@
       "drain": "Vide l'énergie",
       "lock": "Technique bloquée {seconds} s",
       "none": "Ni technique ni territoire",
-      "immune": "Immunisée aux territoires"
+      "immune": "Immunisée aux territoires",
+      "duration": "Dure {seconds} s"
     },
-    "rulesTitle": "Règles communes"
+    "rulesTitle": "Règles communes",
+    "controls": {
+      "title": "Commandes",
+      "intro": "Maintenez Alt et appuyez sur une touche. Pour un territoire ou une technique, tapez ensuite son nom exact pour la lancer.",
+      "domain": {
+        "label": "Déployer un territoire",
+        "hint": "puis tapez son nom"
+      },
+      "technique": {
+        "label": "Lancer une technique",
+        "hint": "puis tapez son nom"
+      },
+      "vow": {
+        "label": "Conclure le pacte contraignant",
+        "hint": "renonce à votre technique"
+      }
+    }
   },
   "TopExorcists": {
     "eyebrow": "Classement",

@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import GameGuide from '@/components/characters/GameGuide';
 import { renderWithIntl } from '../../render';
@@ -15,7 +15,7 @@ describe('GameGuide (smoke)', () => {
     for (const step of ['Type right, move forward', 'Charge your cursed energy', 'Catch the leaders', 'Domain Expansion', 'Heavenly Restriction']) {
       expect(screen.getByRole('heading', { level: 3, name: step })).toBeInTheDocument();
     }
-    for (const rule of ['The host decides', 'Everyone finishes', 'Bots on equal terms']) {
+    for (const rule of ['The host decides', 'Everyone finishes', 'Bots on equal terms', 'Binding Vow']) {
       expect(screen.getByRole('heading', { level: 3, name: rule })).toBeInTheDocument();
     }
   });
@@ -25,5 +25,29 @@ describe('GameGuide (smoke)', () => {
 
     expect(screen.getByText('From 1,000 EP')).toBeInTheDocument();
     expect(screen.getByText('Technique locked 10 s')).toBeInTheDocument();
+  });
+
+  it('states that every domain lasts 10 seconds', () => {
+    renderWithIntl(<GameGuide />);
+
+    expect(screen.getByText('Lasts 10 s')).toBeInTheDocument();
+  });
+
+  it('lets a Binding Vow trade the technique for 30% of the race', () => {
+    renderWithIntl(<GameGuide />);
+
+    expect(screen.getByText(/Forfeit your technique for the rest of the race and get 30% of the race’s progress/)).toBeInTheDocument();
+  });
+
+  it('lists the Alt shortcuts and the name to type for a domain or a technique', () => {
+    renderWithIntl(<GameGuide />);
+
+    const controls = within(screen.getByRole('region', { name: 'Controls' }));
+    expect(controls.getByText(/type its exact name to cast it/)).toBeInTheDocument();
+    for (const [key, label] of [['Q', 'Open a domain'], ['W', 'Cast a technique'], ['X', 'Make the Binding Vow']]) {
+      const row = controls.getByText(label).closest('li')!;
+      expect(within(row as HTMLElement).getByText('Alt')).toBeInTheDocument();
+      expect(within(row as HTMLElement).getByText(key)).toBeInTheDocument();
+    }
   });
 });

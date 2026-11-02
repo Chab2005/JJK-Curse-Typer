@@ -115,13 +115,13 @@
     "watermark": "Exorcists",
     "cta": "Meet the characters",
     "techniques": {
-      "yuji": "Divergent Fist",
+      "yuji": "Black Flash",
       "megumi": "Ten Shadows",
-      "nobara": "Resonance",
+      "nobara": "Straw Doll",
       "gojo": "Limitless",
       "maki": "Heavenly Restriction",
-      "yuta": "Rika",
-      "todo": "Boogie Woogie",
+      "yuta": "Copy",
+      "todo": "Boogie-Woogie",
       "sukuna": "Shrine"
     }
   },
@@ -145,9 +145,14 @@
       "yuta": "Mutual Authentic Love",
       "sukuna": "Malevolent Shrine"
     },
-    "abilityTitle": "Race ability",
-    "abilitySoon": "Coming soon",
-    "abilitySoonText": "Its effect, energy cost and duration will be revealed soon.",
+    "domainDetails": {
+      "gojo": "Endless information floods the mind of everyone caught inside: every other exorcist is stuck in place until the domain closes.",
+      "megumi": "Every shikigami of the Ten Shadows answers at once: while the domain is open, all of them activate automatically, every second.",
+      "yuta": "Swords holding every technique Yuta has copied fill the domain. While it is open, he picks one up every second and casts its copied technique, automatically and for free.",
+      "sukuna": "The shrine cuts into everyone’s text: every second, one more word is added to every other exorcist’s text until the domain closes."
+    },
+    "castHint": "then type “{name}”",
+    "domainDuration": "Lasts {seconds} s",
     "play": "Play {name}",
     "otherFiles": "Other files",
     "previous": "Previous",
@@ -165,13 +170,13 @@
       "sukuna": "The King of Curses, sealed for a thousand years in twenty fingers. Yuji’s body now serves as his vessel."
     },
     "techniqueDetails": {
-      "yuji": "His cursed energy follows his fists a beat late: every blow lands twice.",
-      "megumi": "He shapes shadows with his hands to summon up to ten shikigami.",
-      "nobara": "Whatever she hits on a straw doll, her target feels.",
-      "gojo": "The Infinity slows down everything that approaches him, until nothing reaches him at all.",
+      "yuji": "Yuji has no innate technique, so he makes his own: when his cursed energy lands within a millionth of a second of his fist, the blow sparks black and hits two and a half times harder.",
+      "megumi": "Megumi has access to shikigami. Each one of them has a different effect, affecting either Megumi or another sorcerer.",
+      "nobara": "Nobara drives a cursed nail into a straw doll holding a piece of her target: whatever she strikes on the doll, the target feels, wherever they are.",
+      "gojo": "Limitless brings infinity into the real world: everything that approaches Gojo slows down endlessly and never reaches him. He can also bend it to pull targets in or blast them away.",
       "maki": "Born with almost no cursed energy, she gets a superhuman body and senses in exchange.",
-      "yuta": "He borrows Rika's boundless cursed energy and copies the techniques of those he defeats.",
-      "todo": "One clap is enough to swap the places of two targets.",
+      "yuta": "With his shikigami Rika, Yuta can copy other jujutsu sorcerers’ techniques.",
+      "todo": "When activated, it lets the user swap places with anything that has cursed energy.",
       "sukuna": "Cleave adjusts to its target’s toughness and cursed energy to cut it in a single stroke; Dismantle slices through everything around him. To finish, he unleashes Fuga: an arrow of fire that sets everything ablaze."
     }
   },
@@ -227,6 +232,11 @@
         "title": "Bots on equal terms",
         "text": "Bots type, charge and cast their techniques with exactly the same rules as you."
       },
+      "vow": {
+        "title": "Binding Vow",
+        "text": "Forfeit your technique for the rest of the race and get {percent}% of the race’s progress at once.",
+        "gain": "+{percent}%"
+      },
       "techniques": "Techniques",
       "on": "On",
       "off": "Off",
@@ -242,9 +252,26 @@
       "drain": "Drains your energy",
       "lock": "Technique locked {seconds} s",
       "none": "No technique, no domain",
-      "immune": "Immune to domains"
+      "immune": "Immune to domains",
+      "duration": "Lasts {seconds} s"
     },
-    "rulesTitle": "Shared rules"
+    "rulesTitle": "Shared rules",
+    "controls": {
+      "title": "Controls",
+      "intro": "Hold Alt and press a key. For a domain or a technique, then type its exact name to cast it.",
+      "domain": {
+        "label": "Open a domain",
+        "hint": "then type its name"
+      },
+      "technique": {
+        "label": "Cast a technique",
+        "hint": "then type its name"
+      },
+      "vow": {
+        "label": "Make the Binding Vow",
+        "hint": "forfeits your technique"
+      }
+    }
   },
   "TopExorcists": {
     "eyebrow": "Rankings",
