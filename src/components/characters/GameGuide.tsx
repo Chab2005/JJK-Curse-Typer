@@ -164,12 +164,12 @@ export default function GameGuide() {
           <ul className="grid gap-5 md:grid-cols-3">
             <RuleCard title={t('rules.host.title')} text={t('rules.host.text')}>
               <span className="font-label-code text-[11px] uppercase tracking-[0.18em] text-outline">{t('rules.techniques')}</span>
-              <span className="guide-switch hx-cut relative h-[30px] w-[62px] bg-primary-container transition-colors duration-300 [--h:10px]">
-                <span className="guide-switch-knob bevel-var absolute top-[5px] size-5 bg-on-primary-container transition-[left,background-color] duration-300 [--b:5px] motion-reduce:transition-none" />
+              <span className="guide-switch hx-cut relative h-[30px] w-[62px] transition-colors duration-300 [--h:10px]">
+                <span className="guide-switch-knob bevel-var absolute top-[5px] size-5 transition-[left,background-color] duration-300 [--b:5px] motion-reduce:transition-none" />
               </span>
               <span className="font-label-code text-[11px] uppercase tracking-[0.14em]">
-                <span className="font-label-code text-primary group-hover:hidden">{t('rules.on')}</span>
-                <span className="font-label-code hidden text-outline group-hover:inline">{t('rules.off')}</span>
+                <span className="font-label-code text-outline group-hover:hidden">{t('rules.off')}</span>
+                <span className="font-label-code hidden text-primary group-hover:inline">{t('rules.on')}</span>
               </span>
             </RuleCard>
             <RuleCard title={t('rules.finish.title')} text={t('rules.finish.text')}>

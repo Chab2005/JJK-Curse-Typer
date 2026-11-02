@@ -578,9 +578,10 @@ kbd,
 }
 
 /* Règles communes : cartes à double filet qui s'allument au survol, chacune avec sa petite animation. */
-.guide-switch-knob { left: 34px; }
-.group:hover .guide-switch { background: var(--color-surface-container-high); }
-.group:hover .guide-switch-knob { left: 8px; background: var(--color-outline); }
+.guide-switch { background: var(--color-surface-container-high); }
+.guide-switch-knob { left: 8px; background: var(--color-outline); }
+.group:hover .guide-switch { background: var(--color-primary-container); }
+.group:hover .guide-switch-knob { left: 34px; background: var(--color-on-primary-container); }
 .guide-finish-runner { left: 0; transition: left 1.6s cubic-bezier(0.4, 0, 0.2, 1); }
 .group:hover .guide-finish-runner { left: calc(100% - 52px); }
 .group:hover .guide-bob { animation: guide-bob 0.6s ease-in-out infinite alternate; }
