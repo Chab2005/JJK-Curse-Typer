@@ -30,6 +30,15 @@ export default function CharacterSheet({ character }: { character: Character }) 
   const { prev, next } = neighbours(character.id);
   const idle = spriteBox(SPRITES[character.id].idle);
   const running = spriteBox(SPRITES[character.id].running);
+  const hasDomain = character.id === 'gojo' || character.id === 'megumi' || character.id === 'yuta' || character.id === 'sukuna';
+
+  // Avec une seule carte, le bouton reste sous la carte plutôt que sous le cadre du portrait.
+  const play = (
+    <ChevronButton as={Link} href="/lobbies" frame={hasDomain ? 'justify-self-start lg:col-start-2 lg:row-start-3' : 'self-start'} className="gap-2.5 text-sm uppercase tracking-[0.16em] whitespace-nowrap">
+      {t('play', { name: character.name.split(' ')[0] })}
+      <span aria-hidden="true" className="material-symbols-outlined text-lg">arrow_forward</span>
+    </ChevronButton>
+  );
 
   return (
     <>
@@ -41,9 +50,11 @@ export default function CharacterSheet({ character }: { character: Character }) 
           <span aria-current="page" className="font-label-code text-on-surface">{character.name}</span>
         </nav>
 
-        <article aria-labelledby="character-name" className="grid items-start gap-7 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:gap-12">
-          <div className="relative h-[600px] lg:h-[780px]" style={{ '--glow': style.glow } as CSSProperties}>
-            <div aria-hidden="true" className="cut-asym-flip absolute inset-x-0 top-24 bottom-0 bg-linear-160 from-primary-container via-(--glow) via-60% to-surface-container-high p-px [--b:64px]">
+        {/* En lg, le portrait occupe la rangée des cartes : le bas du coin coupé tombe sur le haut de la carte technique,
+            le bas du cadre sur le bas de la dernière carte. */}
+        <article aria-labelledby="character-name" className="grid items-start gap-y-[22px] lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:gap-x-12">
+          <div className="relative h-[600px] lg:col-start-1 lg:row-start-2 lg:h-auto lg:min-h-[620px] lg:self-stretch" style={{ '--glow': style.glow } as CSSProperties}>
+            <div aria-hidden="true" className="cut-asym-flip absolute inset-x-0 top-24 bottom-0 lg:-top-16 bg-linear-160 from-primary-container via-(--glow) via-60% to-surface-container-high p-px [--b:64px]">
               <div className={`cut-asym-flip relative h-full overflow-hidden [--b:64px] ${style.tint}`}>
                 <span className="absolute inset-x-0 bottom-0 h-[46%] bg-[repeating-linear-gradient(-58deg,transparent_0_22px,rgb(4_4_13/0.55)_22px_23px)]" />
                 <span className="absolute -inset-x-[10%] -bottom-15 h-45 bg-[radial-gradient(ellipse_50%_50%_at_50%_50%,#04040d_30%,transparent_72%)]" />
@@ -56,7 +67,7 @@ export default function CharacterSheet({ character }: { character: Character }) 
               height={1270}
               unoptimized
               priority
-              className="absolute bottom-0 left-[46%] h-full w-auto max-w-none -translate-x-1/2 drop-shadow-[0_24px_30px_rgb(0_0_0/0.65)]"
+              className="absolute bottom-0 left-[46%] h-full w-auto max-w-none -translate-x-1/2 drop-shadow-[0_24px_30px_rgb(0_0_0/0.65)] lg:h-[calc(100%+160px)]"
             />
             <div aria-hidden="true" className="group/sprite absolute right-5 bottom-5 h-[150px] w-[128px] lg:right-[30px] lg:bottom-[26px]">
               <span className="absolute bottom-0 left-1/2 h-[30px] w-[150px] -translate-x-1/2 rounded-[50%] bg-[radial-gradient(ellipse_50%_50%_at_50%_50%,#000_35%,color-mix(in_srgb,var(--glow)_55%,transparent)_62%,transparent_72%)] shadow-[0_0_0_1px_rgb(192_193_255/0.25)]" />
@@ -71,12 +82,14 @@ export default function CharacterSheet({ character }: { character: Character }) 
             </div>
           </div>
 
-          <div className="flex flex-col gap-[22px] pt-3">
+          <div className="mt-1.5 flex flex-col gap-[22px] pt-3 lg:col-start-2 lg:row-start-1 lg:mt-0">
             <h1 id="character-name" className="font-grotesk text-[clamp(40px,5vw,64px)] leading-none font-bold uppercase tracking-[0.02em] text-on-primary-container">
               {character.name}
             </h1>
             <p className="text-[17px] leading-[27px] text-on-surface-variant">{t(`descriptions.${character.id}`)}</p>
+          </div>
 
+          <div className="flex flex-col gap-[22px] lg:col-start-2 lg:row-start-2">
             <BevelFrame frame={cardFrame} className="flex flex-col gap-2.5 bg-surface px-6 py-[22px]">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <h2 className="font-label-code text-[11px] font-bold uppercase tracking-[0.24em] text-outline">{t('techniqueTitle')}</h2>
@@ -91,7 +104,7 @@ export default function CharacterSheet({ character }: { character: Character }) 
               )}
             </BevelFrame>
 
-            {(character.id === 'gojo' || character.id === 'megumi' || character.id === 'yuta' || character.id === 'sukuna') && (
+            {hasDomain && (
               <BevelFrame frame={cardFrame} className="overflow-hidden bg-surface">
                 <PixelDomain character={character.id} />
                 <div className="flex flex-col gap-1.5 px-6 py-[18px]">
@@ -107,11 +120,10 @@ export default function CharacterSheet({ character }: { character: Character }) 
               </BevelFrame>
             )}
 
-            <ChevronButton as={Link} href="/lobbies" frame="self-start" className="gap-2.5 text-sm uppercase tracking-[0.16em] whitespace-nowrap">
-              {t('play', { name: character.name.split(' ')[0] })}
-              <span aria-hidden="true" className="material-symbols-outlined text-lg">arrow_forward</span>
-            </ChevronButton>
+            {!hasDomain && play}
           </div>
+
+          {hasDomain && play}
         </article>
 
         <Abilities character={character.id} />
