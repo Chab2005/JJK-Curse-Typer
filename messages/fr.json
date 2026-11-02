@@ -336,6 +336,14 @@
     "profile": "Profil",
     "disclaimer": "Projet scolaire non officiel, réalisé par des fans. Jujutsu Kaisen © Gege Akutami / Shueisha. Illustrations des personnages : Jujutsu Kaisen Phantom Parade (Sumzap) ; Maki : anime Jujutsu Kaisen, saison 3 (TOHO). Aucune affiliation avec les ayants droit."
   },
+  "CookieConsent": {
+    "title": "Cookies",
+    "body": "Curse Typer utilise des cookies essentiels pour ta session, ton profil d'invité et la connexion. Avec ton accord, on retient aussi ta langue.",
+    "note": "Les cookies essentiels restent actifs : sans eux, le jeu ne fonctionne pas. Tu peux changer d'avis avec le lien « Cookies » en bas de page.",
+    "accept": "Accepter",
+    "decline": "Refuser",
+    "settings": "Cookies"
+  },
   "Pagination": {
     "previous": "Page précédente",
     "next": "Page suivante",

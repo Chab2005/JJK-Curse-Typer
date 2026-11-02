@@ -785,7 +785,15 @@ kbd,
   from { transform: translateY(-110%); opacity: 0; }
 }
 
+/* Carte des cookies : monte depuis le bas de l'écran. */
+.cookie-rise { animation: cookie-rise 0.35s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+
+@keyframes cookie-rise {
+  from { transform: translateY(16px); opacity: 0; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .arw, .arw-cap { transition: none; }
   .lang-drop li { animation: none; }
+  .cookie-rise { animation: none; }
 }

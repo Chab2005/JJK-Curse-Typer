@@ -8,6 +8,7 @@ import {
   JetBrains_Mono,
   Space_Grotesk,
 } from "next/font/google";
+import CookieConsent from "@/components/layout/CookieConsent";
 import { routing } from "@/i18n/routing";
 import "../globals.css";
 
@@ -70,7 +71,10 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[lo
         />
       </head>
       <body className="min-h-screen flex flex-col justify-between bg-surface font-body-regular text-body-regular text-on-surface selection:bg-primary-container selection:text-on-primary-container">
-        <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <NextIntlClientProvider>
+          {children}
+          <CookieConsent />
+        </NextIntlClientProvider>
       </body>
     </html>
   );

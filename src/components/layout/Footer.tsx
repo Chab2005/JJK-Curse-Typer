@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
+import CookieSettingsButton from './CookieSettingsButton';
 
 export default function Footer() {
   const t = useTranslations('Footer');
@@ -31,6 +32,7 @@ export default function Footer() {
         <FooterLink href="/leaderboard">{t('leaderboard')}</FooterLink>
         <FooterLink href="/characters">{t('characters')}</FooterLink>
         <FooterLink href="/profile">{t('profile')}</FooterLink>
+        <CookieSettingsButton />
       </nav>
       <p className="max-w-[640px] text-[13px] leading-5 text-outline">{t('disclaimer')}</p>
     </footer>

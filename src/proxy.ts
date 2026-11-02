@@ -3,6 +3,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { LOCALE_COOKIE } from './i18n/config';
 import { resolveLocaleRedirect } from './i18n/locale-redirect';
 import { routing } from './i18n/routing';
+import { CONSENT_COOKIE, canRememberLocale, parseConsent } from './lib/cookieConsent';
 
 const handleI18nRouting = createMiddleware(routing);
 
@@ -25,7 +26,9 @@ export default function proxy(request: NextRequest) {
   const response = NextResponse.redirect(
     `${protocol}//${host}${decision.pathname}${decision.search}`,
   );
-  if (decision.setCookie) {
+  // Le choix de langue n'est mémorisé qu'avec l'accord du visiteur (carte des cookies).
+  const consent = parseConsent(request.cookies.get(CONSENT_COOKIE)?.value);
+  if (decision.setCookie && canRememberLocale(consent)) {
     response.cookies.set(LOCALE_COOKIE, decision.setCookie, {
       path: '/',
       maxAge: ONE_YEAR,

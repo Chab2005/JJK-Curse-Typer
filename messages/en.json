@@ -336,6 +336,14 @@
     "profile": "Profile",
     "disclaimer": "Unofficial fan-made school project. Jujutsu Kaisen © Gege Akutami / Shueisha. Character art: Jujutsu Kaisen Phantom Parade (Sumzap); Maki: Jujutsu Kaisen TV anime, season 3 (TOHO). Not affiliated with the rights holders."
   },
+  "CookieConsent": {
+    "title": "Cookies",
+    "body": "Curse Typer uses essential cookies for your session, guest profile and sign-in. With your consent, it also remembers your language.",
+    "note": "Essential cookies always stay on: the game can't work without them. You can change your mind with the “Cookies” link at the bottom of the page.",
+    "accept": "Accept",
+    "decline": "Decline",
+    "settings": "Cookies"
+  },
   "Pagination": {
     "previous": "Previous page",
     "next": "Next page",
