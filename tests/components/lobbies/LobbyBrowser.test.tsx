@@ -67,11 +67,11 @@ describe('LobbyBrowser (LOB-2)', () => {
     await waitFor(() => expect(routerMock.push).toHaveBeenCalledWith('/lobby/NEW-234'));
   });
 
-  it('offers to create a lobby under the clear button when nothing matches', async () => {
+  it('offers to create a lobby above the clear button when nothing matches', async () => {
     window.history.replaceState(null, '', '/lobbies?q=zzz');
     renderWithIntl(<LobbyBrowser lobbies={SAMPLE_LOBBIES} signedIn />);
 
-    expect(screen.getByRole('button', { name: 'Clear search and filters' }).nextElementSibling).toContainElement(screen.getByRole('button', { name: 'Create a lobby' }));
+    expect(screen.getByRole('button', { name: 'Clear search and filters' }).previousElementSibling).toContainElement(screen.getByRole('button', { name: 'Create a lobby' }));
   });
 
   it('sends a guest to the login page instead of creating a lobby', async () => {
