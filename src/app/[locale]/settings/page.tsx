@@ -2,6 +2,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import Footer from '@/components/layout/Footer';
 import SiteHeader from '@/components/layout/SiteHeader';
 import SettingsForm from '@/components/settings/SettingsForm';
+import PageIntro from '@/components/shared/PageIntro';
 import { redirect } from '@/i18n/navigation';
 import type { Locale } from '@/i18n/config';
 import { getSessionUser } from '@/lib/auth/session';
@@ -24,12 +25,11 @@ export default async function SettingsPage({ params }: PageProps<'/[locale]/sett
   return (
     <>
       <SiteHeader />
-      <main className="relative w-full flex-1 bg-surface">
-        <div className="mx-auto flex max-w-[640px] flex-col gap-10 px-6 pt-14 pb-24">
-          <header className="flex flex-col gap-2">
-            <p className="font-label-code text-[12px] font-bold uppercase tracking-[0.32em] text-primary-container">{t('eyebrow')}</p>
-            <h1 className="text-[32px] uppercase tracking-[0.12em]">{t('title')}</h1>
-          </header>
+      <main className="relative w-full flex-1 overflow-hidden bg-surface">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-[420px] bg-[radial-gradient(ellipse_55%_70%_at_50%_0%,rgb(147_0_10/0.4),transparent_70%)]" />
+        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-[640px] bg-linear-to-b from-transparent to-[#120708]" />
+        <div className="relative mx-auto flex max-w-[760px] flex-col gap-7 px-6 pt-14 pb-24">
+          <PageIntro id="settings-title" eyebrow={t('eyebrow')} title={t('title')} watermark={t('eyebrow')} chevrons />
           <SettingsForm username={user.username} displayName={user.displayName} avatarUrl={avatarUrl} github={user.github} discord={user.discord} />
         </div>
       </main>

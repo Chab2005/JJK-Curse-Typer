@@ -751,6 +751,8 @@
     "title": "Settings",
     "save": "Save",
     "saving": "Saving…",
+    "identity": "Identity & links",
+    "backToProfile": "Back to profile",
     "avatar": {
       "title": "Profile picture",
       "choose": "Choose a picture",
