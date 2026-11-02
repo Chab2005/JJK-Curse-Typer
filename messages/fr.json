@@ -155,10 +155,57 @@
     "domainDuration": "Dure {seconds} s",
     "play": "Jouer {name}",
     "otherFiles": "Autres fiches",
-    "previous": "Précédent",
-    "next": "Suivant",
+    "previous": "Précédent : {name}",
+    "next": "Suivant : {name}",
     "all": "Toutes les fiches",
-    "others": "Exorcistes",
+    "abilities": {
+      "eyebrow": "Capacités",
+      "duration": "Durée",
+      "cost": "Coût",
+      "costValue": "{cost} EO",
+      "costAll": "Toute l’EO · min {cost}",
+      "durations": {
+        "instant": "Instantané",
+        "seconds": "{seconds} s",
+        "untilUsed": "Jusqu’à usage",
+        "nextWord": "Mot suivant",
+        "restOfRace": "Fin de course"
+      },
+      "megumi": {
+        "title": "shikigami",
+        "intro": "Chaque shikigami a son propre effet. Les coûts sont en énergie occulte (EO).",
+        "items": {
+          "rabbitEscape": {
+            "name": "Lapins d’évasion",
+            "effect": "Megumi est intouchable pendant 3 s, territoires compris."
+          },
+          "toad": {
+            "name": "Crapaud",
+            "effect": "Attrape un joueur : il perd un mot."
+          },
+          "maxElephant": {
+            "name": "Éléphant Max",
+            "effect": "Fait avancer Megumi d’un mot."
+          },
+          "nue": {
+            "name": "Nue",
+            "effect": "Étourdit un joueur pendant 3 s."
+          },
+          "roundDeer": {
+            "name": "Cerf rond",
+            "effect": "Renvoie la prochaine attaque à son lanceur."
+          },
+          "divineDogs": {
+            "name": "Chiens divins",
+            "effect": "Efface le prochain mot de Megumi."
+          },
+          "mahoraga": {
+            "name": "Mahoraga",
+            "effect": "Megumi renonce à gagner pour l’invoquer. Mahoraga court comme un bot et accélère tant qu’il reste."
+          }
+        }
+      }
+    },
     "descriptions": {
       "yuji": "Élève de première année à l’école d’exorcisme de Tokyo. Réceptacle de Sukuna, il compense son retard en sorts par une force physique hors norme.",
       "megumi": "Exorciste calme et méthodique, héritier d’une technique du clan Zenin.",

@@ -155,10 +155,57 @@
     "domainDuration": "Lasts {seconds} s",
     "play": "Play {name}",
     "otherFiles": "Other files",
-    "previous": "Previous",
-    "next": "Next",
+    "previous": "Previous: {name}",
+    "next": "Next: {name}",
     "all": "All characters",
-    "others": "Exorcists",
+    "abilities": {
+      "eyebrow": "Abilities",
+      "duration": "Duration",
+      "cost": "Cost",
+      "costValue": "{cost} CE",
+      "costAll": "All CE · min {cost}",
+      "durations": {
+        "instant": "Instant",
+        "seconds": "{seconds} s",
+        "untilUsed": "Until used",
+        "nextWord": "Next word",
+        "restOfRace": "Rest of race"
+      },
+      "megumi": {
+        "title": "shikigami",
+        "intro": "Each shikigami has its own effect. Costs are in cursed energy (CE).",
+        "items": {
+          "rabbitEscape": {
+            "name": "Rabbit Escape",
+            "effect": "Megumi is untouchable for 3 s, domains included."
+          },
+          "toad": {
+            "name": "Toad",
+            "effect": "Grabs a player: they lose one word."
+          },
+          "maxElephant": {
+            "name": "Max Elephant",
+            "effect": "Pushes Megumi one word ahead."
+          },
+          "nue": {
+            "name": "Nue",
+            "effect": "Stuns a player for 3 s."
+          },
+          "roundDeer": {
+            "name": "Round Deer",
+            "effect": "Sends the next attack back to its sender."
+          },
+          "divineDogs": {
+            "name": "Divine Dogs",
+            "effect": "Clears Megumi’s next word."
+          },
+          "mahoraga": {
+            "name": "Mahoraga",
+            "effect": "Megumi gives up his chance to win to summon it. Mahoraga races as a bot and gets faster the longer it stays."
+          }
+        }
+      }
+    },
     "descriptions": {
       "yuji": "First-year student at the Tokyo school of sorcery. Vessel of Sukuna, he makes up for his lack of spells with tremendous physical strength.",
       "megumi": "A calm, methodical sorcerer, heir to a technique of the Zenin clan.",

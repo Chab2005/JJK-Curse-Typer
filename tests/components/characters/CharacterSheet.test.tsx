@@ -66,13 +66,15 @@ describe('CharacterSheet (smoke)', () => {
     expect(screen.getByRole('link', { name: /Play Satoru/ })).toHaveAttribute('href', '/lobbies');
   });
 
-  it('links to the previous and next files, and back to all characters', () => {
+  it('links to the previous and next files by name, and back to all characters', () => {
     renderWithIntl(<CharacterSheet character={gojo} />);
 
     const nav = within(screen.getByRole('navigation', { name: 'Other files' }));
-    expect(nav.getByRole('link', { name: /Nobara Kugisaki/ })).toHaveAttribute('href', '/characters/nobara');
-    expect(nav.getByRole('link', { name: /Maki Zenin/ })).toHaveAttribute('href', '/characters/maki');
+    expect(nav.getByRole('link', { name: 'Next: Maki Zenin' })).toHaveAttribute('href', '/characters/maki');
+    expect(nav.getByRole('link', { name: 'Previous: Nobara Kugisaki' })).toHaveAttribute('href', '/characters/nobara');
     expect(nav.getByRole('link', { name: /All characters/ })).toHaveAttribute('href', '/characters');
+    expect(nav.queryByText('Previous')).not.toBeInTheDocument();
+    expect(nav.queryByText('Next')).not.toBeInTheDocument();
   });
 
   it('shows neither the file number nor the Japanese name', () => {
@@ -82,9 +84,29 @@ describe('CharacterSheet (smoke)', () => {
     expect(screen.queryByText('五条悟')).not.toBeInTheDocument();
   });
 
-  it('marks the current character in the strip of files', () => {
+  it('no longer shows the strip of the eight exorcists', () => {
     renderWithIntl(<CharacterSheet character={gojo} />);
 
-    expect(screen.getByRole('link', { name: 'Satoru Gojo' })).toHaveAttribute('aria-current', 'page');
+    expect(screen.queryByRole('heading', { name: 'Exorcists' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Satoru Gojo' })).not.toBeInTheDocument();
+  });
+
+  it('lists the seven shikigami of the Ten Shadows with their duration and cost', () => {
+    renderWithIntl(<CharacterSheet character={CHARACTERS.find((c) => c.id === 'megumi')!} />);
+
+    const section = within(screen.getByRole('region', { name: /Ten Shadows · shikigami/ }));
+    const names = section.getAllByRole('heading', { level: 3 }).map((heading) => heading.textContent);
+    expect(names).toEqual(['Rabbit Escape', 'Toad', 'Max Elephant', 'Nue', 'Round Deer', 'Divine Dogs', 'Mahoraga']);
+    expect(section.getByText('Megumi is untouchable for 3 s, domains included.')).toBeInTheDocument();
+    expect(section.getAllByText('450 CE')).toHaveLength(2);
+    expect(section.getByText('Until used')).toBeInTheDocument();
+    expect(section.getByText('All CE · min 1000')).toBeInTheDocument();
+    expect(section.getByText('Rest of race')).toBeInTheDocument();
+  });
+
+  it('shows no abilities on a character without any yet', () => {
+    renderWithIntl(<CharacterSheet character={gojo} />);
+
+    expect(screen.queryByText('Abilities')).not.toBeInTheDocument();
   });
 });

@@ -207,6 +207,11 @@ kbd,
   clip-path: polygon(var(--b) 0, 100% 0, 100% calc(100% - var(--b)), calc(100% - var(--b)) 100%, 0 100%, 0 var(--b));
 }
 
+/* L'inverse : coins coupés en haut à droite et en bas à gauche (--b), cadre du portrait des fiches personnage. */
+@utility cut-asym-flip {
+  clip-path: polygon(0 0, calc(100% - var(--b)) 0, 100% var(--b), 100% 100%, var(--b) 100%, 0 calc(100% - var(--b)));
+}
+
 /* Parallélogramme aux deux bords penchés (soulignement des liens d'en-tête) */
 @utility parallelogram {
   clip-path: polygon(5px 0, 100% 0, calc(100% - 5px) 100%, 0 100%);
