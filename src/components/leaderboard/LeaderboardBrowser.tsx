@@ -11,7 +11,7 @@ import { writeSearch } from '@/components/shared/urlSearch';
 import { paginate } from '@/lib/pagination';
 import LeaderboardTable from './LeaderboardTable';
 import Podium from './Podium';
-import { CATEGORIES, type LeaderboardCategory, MIN_RANKED_GAMES, type PlayerStats, leaderboardQuery, leaderboardView, parseLeaderboardSearch, rankPlayers } from './leaderboard';
+import { CATEGORIES, type LeaderboardCategory, type PlayerStats, leaderboardQuery, leaderboardView, parseLeaderboardSearch, rankPlayers } from './leaderboard';
 
 const PER_PAGE = 10;
 
@@ -74,7 +74,7 @@ export default function LeaderboardBrowser({ players }: { players: PlayerStats[]
       )}
 
       {view.pageCount > 1 && <Pagination label={t('pagination')} page={view.page} pageCount={view.pageCount} onChange={goToPage} />}
-      <p className="font-label-code text-center text-[12px] text-outline">{t('eligibility', { games: MIN_RANKED_GAMES })}</p>
+      <p className="font-label-code text-center text-[12px] text-outline">{t('eligibility')}</p>
     </div>
   );
 }

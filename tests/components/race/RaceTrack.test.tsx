@@ -8,9 +8,9 @@ import { renderWithIntl } from '../../render';
 const seat = (id: string, kind: 'human' | 'bot' = 'human'): RacerSeat => ({ id, name: id, avatar: null, kind, level: null });
 
 const RUNNERS: TrackRunner[] = [
-  { seat: seat('Megumi'), x: 0.3, rank: 2, wpm: 61, status: 'racing', leader: false, you: true, big: true, lane: 0 },
-  { seat: seat('Yuji'), x: 0.6, rank: 1, wpm: 80, status: 'racing', leader: true, you: false, big: true, lane: 1 },
-  { seat: seat('1', 'bot'), x: 1, rank: 3, wpm: 70, status: 'finished', leader: false, you: false, big: false, lane: 2 },
+  { seat: seat('Megumi'), x: 0.3, rank: 2, wpm: 61, status: 'racing', leader: false, you: true, big: true, lane: 0, character: 'megumi', running: true },
+  { seat: seat('Yuji'), x: 0.6, rank: 1, wpm: 80, status: 'racing', leader: true, you: false, big: true, lane: 1, character: 'yuji', running: false },
+  { seat: seat('1', 'bot'), x: 1, rank: 3, wpm: 70, status: 'finished', leader: false, you: false, big: false, lane: 2, character: 'todo', running: false },
 ];
 
 describe('RaceTrack (RACE-2, RACE-3)', () => {
@@ -32,11 +32,12 @@ describe('RaceTrack (RACE-2, RACE-3)', () => {
     expect(screen.getByTitle('Megumi · You')).toBeInTheDocument();
   });
 
-  it("shows a racer's uploaded photo on the track (PROF-5)", () => {
-    const runners = [{ ...RUNNERS[0], seat: { ...seat('Megumi'), photo: '/api/avatar/Megumi?v=1' } }, ...RUNNERS.slice(1)];
-    const { container } = renderWithIntl(<RaceTrack runners={runners} banner="" nameOf={(s) => s.name} />);
+  it('draws each racer as their character, running when they move and idle otherwise', () => {
+    renderWithIntl(<RaceTrack runners={RUNNERS} banner="" nameOf={(s) => s.name} />);
 
-    expect(container.querySelector('img[src="/api/avatar/Megumi?v=1"]')).toBeInTheDocument();
+    const sprite = (title: string) => screen.getByTitle(title).querySelector<HTMLElement>('[style*="background"]')!.style.background;
+    expect(sprite('Megumi · You')).toContain('/images/characters/anim/megumi-running.png');
+    expect(sprite('Yuji · Leader')).toContain('/images/characters/anim/yuji-idle.png');
   });
 
   it('shows the banner in the animation zone', () => {

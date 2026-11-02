@@ -25,5 +25,5 @@ export const SAMPLE_PLAYERS: PlayerStats[] = [
   { username: 'Junpei_Jelly', avatar: null, games: 8, wpm: 78, accuracy: 0.944, averageScore: 1120, errorsPer100: 5.6 },
   { username: 'Takuma_Ino', avatar: null, games: 14, wpm: 74, accuracy: 0.958, averageScore: 1080, errorsPer100: 4.2 },
   { username: 'Arata_Nitta', avatar: null, games: 6, wpm: 71, accuracy: 0.962, averageScore: 1020, errorsPer100: 3.8 },
-  { username: 'Sukuna_Malevolent', avatar: null, games: 3, wpm: 240, accuracy: 0.999, averageScore: 3500, errorsPer100: 0.1 },
+  { username: 'Sukuna_Malevolent', avatar: null, games: 0, wpm: 240, accuracy: 0.999, averageScore: 3500, errorsPer100: 0.1 },
 ];

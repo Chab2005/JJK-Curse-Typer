@@ -6,8 +6,11 @@ import { parsePage } from '@/lib/pagination';
 export const CATEGORIES = ['wpm', 'accuracy', 'score', 'errors'] as const;
 export type LeaderboardCategory = (typeof CATEGORIES)[number];
 
-/** Parties minimales pour apparaître au classement (autant que le score moyen en compte). */
-export const MIN_RANKED_GAMES = 5;
+/** Parties classées minimales pour apparaître au classement : une course finie contre un autre compte suffit. */
+export const MIN_RANKED_GAMES = 1;
+
+/** Seules les courses contre un autre compte comptent au classement : courir seul ou contre des bots ne classe pas. */
+const isRankedGame = (game: GameRecord) => (game.rivals ?? 0) > 0;
 
 export interface PlayerStats {
   username: string;
@@ -24,9 +27,9 @@ export interface PlayerStats {
   errorsPer100: number;
 }
 
-/** Ligne du classement d'un compte à partir de ses parties, de la plus ancienne à la plus récente (STAT-8) ; `null` sans partie. */
+/** Ligne du classement d'un compte à partir de ses parties, de la plus ancienne à la plus récente (STAT-8) ; `null` sans partie classée. */
 export function playerFromGames(player: { username: string; photo: string | null }, games: readonly GameRecord[]): PlayerStats | null {
-  const summary = summarizeGames(games);
+  const summary = summarizeGames(games.filter(isRankedGame));
   if (!summary) return null;
   const { wpm, accuracy, averageScore, errorsPer100 } = summary;
   return { username: player.username, avatar: null, photo: player.photo, games: summary.games, wpm, accuracy, averageScore, errorsPer100 };

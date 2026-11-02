@@ -510,7 +510,7 @@
     "profileLabel": "View {name}'s profile",
     "empty": "No exorcist goes by that name.",
     "pagination": "Ranking pages",
-    "eligibility": "Players appear after {games} finished races. The average score covers their last 5 races.",
+    "eligibility": "Players appear once they finish a race against another account. Only those races count; the average score covers the last 5.",
     "noPlayers": "No one is ranked yet. Finish races to claim the first spot."
   },
   "Profile": {
@@ -520,7 +520,7 @@
     "discordLink": "Discord profile",
     "summary": "{games} races · {wins} wins · best: {best} WPM",
     "chart": {
-      "title": "WPM over time",
+      "title": "{stat} over time",
       "period": "Time period",
       "periods": {
         "7d": "7 days",
@@ -528,13 +528,26 @@
         "1y": "1 year",
         "all": "All"
       },
-      "summary": "WPM chart, {count} points with races, latest {last} WPM. Use the arrow keys to read each point.",
+      "statCurrent": "<prefix>Stat:</prefix> <strong>{stat}</strong>",
+      "statLegend": "Show",
+      "close": "Close",
+      "stats": {
+        "wpm": "WPM",
+        "score": "Average score",
+        "accuracy": "Accuracy",
+        "races": "Races",
+        "wins": "Wins",
+        "errors": "Error rate"
+      },
+      "summary": "{stat} chart, {count} points with races, latest {last}. Use the arrow keys to read each point.",
       "wpm": "{value} WPM",
+      "score": "{value} pts",
+      "wins": "{count, plural, one {# win} other {# wins}}",
+      "errors": "{value} errors / 100 words",
       "noRace": "No race",
       "races": "{count, plural, one {# race} other {# races}}",
       "empty": "No race in this period.",
       "date": "Date",
-      "wpmColumn": "Average WPM",
       "racesColumn": "Races"
     },
     "stats": {
@@ -545,7 +558,12 @@
       "errors": "Errors per 100 words",
       "errorsUnit": "/ 100",
       "score": "Average score (last 5 races)",
-      "scoreUnit": "pts"
+      "scoreUnit": "pts",
+      "mostPlayed": {
+        "title": "Most played character",
+        "usage": "<strong>{count, plural, one {# race} other {# races}}</strong> · {share} of {total}",
+        "sheet": "Character sheet"
+      }
     },
     "heatmap": {
       "title": "Keyboard heatmap",
@@ -751,6 +769,8 @@
     "title": "Settings",
     "save": "Save",
     "saving": "Saving…",
+    "identity": "Identity & links",
+    "backToProfile": "Back to profile",
     "avatar": {
       "title": "Profile picture",
       "choose": "Choose a picture",

@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { createInvitesAction, deleteInviteAction, listInvitesAction } from '@/app/actions/lobbies';
 import BevelFrame, { cardFrame } from '@/components/shared/BevelFrame';
+import ChevronButton from '@/components/shared/ChevronButton';
 import Reserve from '@/components/shared/Reserve';
 import CopyButton from './CopyButton';
 import { type InviteLink, type InviteLinkMode, inviteUrl, MAX_INVITES } from './lobbyAccess';
@@ -40,16 +41,19 @@ export default function InviteLinksDialog({ code, mode, refreshKey }: { code: st
 
   return (
     <>
-      <button
+      <ChevronButton
         type="button"
+        size="sm"
+        chevrons={false}
         onClick={open}
         disabled={mode === 'hostOnly'}
         aria-haspopup="dialog"
-        className="flex min-h-11 w-full items-center justify-center gap-2 border border-surface-container-highest px-4 text-[13px] uppercase tracking-[0.12em] text-on-surface transition-colors enabled:hover:border-primary enabled:hover:text-primary disabled:cursor-not-allowed disabled:text-outline"
+        frame="w-full disabled:opacity-40"
+        className="font-label-code text-[11px] uppercase tracking-[0.16em]"
       >
-        <span aria-hidden="true" className="material-symbols-outlined w-[18px] shrink-0 overflow-hidden text-[18px]!">link</span>
+        <span aria-hidden="true" className="material-symbols-outlined w-4 shrink-0 overflow-hidden text-[16px]! text-primary">link</span>
         {t('manage')}
-      </button>
+      </ChevronButton>
 
       <dialog
         ref={dialogRef}

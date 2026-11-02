@@ -56,7 +56,7 @@ vi.mock('next/navigation', () => ({
   useSearchParams: () => new URLSearchParams(window.location.search),
 }));
 
-// jsdom has neither ResizeObserver (WpmChart) nor <dialog> modal methods (EditProfileDialog).
+// jsdom has neither ResizeObserver (StatChart) nor <dialog> modal methods (EditProfileDialog).
 globalThis.ResizeObserver ??= class {
   observe() {}
   unobserve() {}

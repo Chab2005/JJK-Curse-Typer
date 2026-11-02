@@ -124,7 +124,7 @@ Résumé : 40 complètes · 34 partielles · 16 non faites (90 exigences).
 |---|---|---|---|---|
 | RES-01 | Complet | `src/components/race/RacePodium.tsx` | `tests/components/race/RacePodium.test.tsx` | |
 | RES-02 | Partiel | `src/components/race/RaceResultsTable.tsx` | `tests/components/race/RaceResultsTable.test.tsx` | Colonnes MPM brut, bonus reçus et statut à compléter. |
-| RES-03 | Partiel | `src/components/profile/WpmChart.tsx`, `src/components/profile/KeyboardHeatmap.tsx` | `tests/components/profile/*` | Courbe et carte de chaleur sur le profil ; à ajouter sur la page de résultats (courbe de tous les participants). |
+| RES-03 | Partiel | `src/components/profile/StatChart.tsx`, `src/components/profile/KeyboardHeatmap.tsx` | `tests/components/profile/*` | Courbe et carte de chaleur sur le profil ; à ajouter sur la page de résultats (courbe de tous les participants). |
 | RES-04 | Non fait | — | — | |
 | RES-05 | Partiel | `src/realtime/recordResults.ts`, `src/db/schema.ts` | `tests/realtime/recordResults.test.ts`, `e2e/race-results.spec.ts` | Résultats des comptes enregistrés en fin de course. Manque la série temporelle du MPM. |
 

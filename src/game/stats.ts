@@ -1,4 +1,5 @@
 // Statistiques d'un joueur calculées à partir de ses parties (STAT-2, STAT-8). Fonctions pures.
+import { CHARACTERS, type CharacterId } from '@/components/shared/characters';
 import { CHARS_PER_WORD } from './scoring';
 
 /** Nombre de parties récentes prises en compte dans le score moyen. */
@@ -27,9 +28,14 @@ export interface GameRecord {
   /** `null` pour une partie enregistrée avant le classement. */
   rank: number | null;
   players: number | null;
+  /** Autres comptes de la course ; absent ou `null` pour une partie enregistrée avant. */
+  rivals?: number | null;
   /** Date ISO. */
   at: string;
 }
+
+/** Première place dans une course à plusieurs. */
+export const isWin = (game: Pick<GameRecord, 'rank' | 'players'>): boolean => game.rank === 1 && (game.players ?? 0) > 1;
 
 export interface GamesSummary {
   games: number;
@@ -50,11 +56,31 @@ export function summarizeGames(games: readonly GameRecord[]): GamesSummary | nul
   const sum = (pick: (game: GameRecord) => number) => games.reduce((total, game) => total + pick(game), 0);
   return {
     games: games.length,
-    wins: games.filter((g) => g.rank === 1 && (g.players ?? 0) > 1).length,
+    wins: games.filter(isWin).length,
     bestWpm: Math.max(...games.map((g) => g.wpm)),
     wpm: Math.round(sum((g) => g.wpm) / games.length),
     accuracy: sum((g) => g.accuracy) / games.length,
     errorsPer100: errorsPer100Words(sum((g) => g.errors), sum((g) => g.keystrokes) / CHARS_PER_WORD),
     averageScore: averageScore(games.map((g) => g.wpm))!,
   };
+}
+
+/** Courses jouées avec un personnage (bonus activés) et victoires parmi elles. */
+export interface CharacterGames {
+  character: CharacterId;
+  games: number;
+  wins: number;
+}
+
+const ROSTER: readonly string[] = CHARACTERS.map((c) => c.id);
+
+/**
+ * Personnage le plus joué (PROF-4) ; à égalité, le plus de victoires, puis l'ordre de `CHARACTERS`.
+ * Les personnages inconnus et ceux sans course sont ignorés ; `null` s'il n'en reste aucun.
+ */
+export function mostPlayedCharacter(rows: readonly { character: string; games: number; wins: number }[]): CharacterGames | null {
+  const known = rows.filter((row): row is CharacterGames => ROSTER.includes(row.character) && row.games > 0);
+  if (known.length === 0) return null;
+  const [best] = [...known].sort((a, b) => b.games - a.games || b.wins - a.wins || ROSTER.indexOf(a.character) - ROSTER.indexOf(b.character));
+  return { character: best.character, games: best.games, wins: best.wins };
 }

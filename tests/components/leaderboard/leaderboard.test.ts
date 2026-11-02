@@ -41,8 +41,10 @@ describe('rankPlayers', () => {
     expect(rankPlayers(players, 'accuracy').map((p) => p.rank)).toEqual([1, 2, 3]);
   });
 
-  it('exclut les joueurs qui ont moins de 5 parties', () => {
-    expect(names(rankPlayers([...players, player('Novice', { wpm: 200, games: 4 })], 'wpm'))).not.toContain('Novice');
+  it('garde un joueur dès sa première partie classée, pas avant', () => {
+    const ranked = names(rankPlayers([...players, player('Novice', { wpm: 200, games: 1 }), player('Absent', { wpm: 200, games: 0 })], 'wpm'));
+    expect(ranked).toContain('Novice');
+    expect(ranked).not.toContain('Absent');
   });
 
   it('départage une égalité avec les autres statistiques (MPM, précision, score, erreurs)', () => {
@@ -105,7 +107,7 @@ describe('parseLeaderboardSearch et leaderboardQuery', () => {
 });
 
 describe('playerFromGames', () => {
-  const game = (wpm: number): GameRecord => ({ wpm, accuracy: 0.95, errors: 1, keystrokes: 50, rank: 1, players: 2, at: '2026-10-01T00:00:00.000Z' });
+  const game = (wpm: number, rivals: number | null = 1): GameRecord => ({ wpm, accuracy: 0.95, errors: 1, keystrokes: 50, rank: 1, players: 2, rivals, at: '2026-10-01T00:00:00.000Z' });
 
   it('fait une ligne du classement à partir des parties d’un compte (STAT-8)', () => {
     expect(playerFromGames({ username: 'Yuji', photo: '/api/avatar/Yuji?v=1' }, [game(40), game(60)])).toEqual({
@@ -120,7 +122,13 @@ describe('playerFromGames', () => {
     });
   });
 
-  it('renvoie null sans partie', () => {
+  it('ne compte que les courses contre un autre compte', () => {
+    const player = playerFromGames({ username: 'Yuji', photo: null }, [game(40), game(200, 0), game(150, null), game(60, 2)]);
+    expect(player).toMatchObject({ games: 2, wpm: 50 });
+  });
+
+  it('renvoie null sans partie contre un autre compte', () => {
     expect(playerFromGames({ username: 'Yuji', photo: null }, [])).toBeNull();
+    expect(playerFromGames({ username: 'Yuji', photo: null }, [game(40, 0), game(40, null)])).toBeNull();
   });
 });

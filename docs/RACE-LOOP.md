@@ -126,7 +126,7 @@ Persistance en BD et pages de résultats hors périmètre ; la boucle doit seule
 | COURSE-11 | non fait | — | Pas de relance, pas de fermeture. La room se ferme quand elle est vide (`raceHub.ts`). |
 | CONF-01 | partiel | `lobbyRoom.ts` (`TIMER_OPTIONS`) | **Max 3 min, l'énoncé va jusqu'à 10 min.** |
 | CONF-08 | fait | `typing.ts` (`accumulate` / `block`) | — |
-| Annexe A, MPM net | **non conforme** | `scoring.ts` (`netWpm`) | Calcul actuel : brut − erreurs/min (H-21). **L'énoncé impose correctement tapés ÷ 5 ÷ min.** |
+| Annexe A, MPM net | fait | `scoring.ts` (`netWpm`) | Frappes justes ÷ 5 ÷ min, comme l'énoncé. |
 | Annexe A, précision | fait | `scoring.ts` (`accuracy`) | Ratio 0–1 (×100 à l'affichage). |
 | Annexe A, progression | partiel | `race.ts` (`Standing.progress`) | Nombre de caractères justes, **pas un ratio** sur la longueur (nécessaire avec BONUS-04). |
 | BOT-01 | fait | `bots.ts` (`BOT_LEVELS`, `BOT_PROFILES`) | **6 niveaux** : `grade_4` (15 MPM, 12 %), `grade_3` (27, 8 %), `grade_2` (47, 5 %), `grade_1` (85, 2 %), `special_grade` (140, 0,5 %), `calamity_grade` (180, 0,01 %). Couvre les 5 plages de l'énoncé, plus un niveau au-delà d'« Impossible ». |

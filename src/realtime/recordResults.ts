@@ -2,13 +2,14 @@
 // l'écran de course réclame ensuite le résultat pour son cookie. Une erreur de base n'arrête jamais la room.
 import { inArray, sql } from 'drizzle-orm';
 import { getDb } from '@/db/client';
-import { keyStats, results, users } from '@/db/schema';
-import type { RaceResult } from '@/game/results';
+import { characterStats, keyStats, results, users } from '@/db/schema';
+import { raceXp } from '@/game/levels';
+import { GUEST_SEAT_PREFIX, type RaceResult } from '@/game/results';
 import type { GuestGame } from '@/lib/auth/guest';
 import { usernameKey } from '@/lib/auth/validation';
 import { holdGuestGame } from '@/lib/guestResults';
+import { awardXp } from '@/lib/xp';
 
-const GUEST_PREFIX = 'guest:';
 /** Borne du cookie d'invité (`gameSchema`). */
 const MAX_GUEST_SECONDS = 3600;
 
@@ -21,6 +22,7 @@ export function toGuestGame(result: RaceResult, at: Date): GuestGame {
     at: at.getTime(),
     rank: result.rank,
     players: result.players,
+    rivals: result.rivals,
     errors: result.errors,
     keystrokes: result.keystrokes,
   };
@@ -28,9 +30,9 @@ export function toGuestGame(result: RaceResult, at: Date): GuestGame {
 
 export async function recordRaceResults(list: readonly RaceResult[], at: Date): Promise<void> {
   // Avant toute attente : le résultat d'un invité doit être prêt quand son écran voit la fin de course.
-  for (const result of list) if (result.seat.startsWith(GUEST_PREFIX)) holdGuestGame(result.seat, toGuestGame(result, at), at.getTime());
+  for (const result of list) if (result.seat.startsWith(GUEST_SEAT_PREFIX)) holdGuestGame(result.seat, toGuestGame(result, at), at.getTime());
 
-  const accounts = list.filter((result) => !result.seat.startsWith(GUEST_PREFIX));
+  const accounts = list.filter((result) => !result.seat.startsWith(GUEST_SEAT_PREFIX));
   if (accounts.length === 0) return;
   try {
     const db = getDb();
@@ -44,8 +46,8 @@ export async function recordRaceResults(list: readonly RaceResult[], at: Date): 
       return userId === undefined ? [] : [{ userId, result }];
     });
     const rows = saved.map(({ userId, result }) => {
-      const { wpm, accuracy, rank, players, errors, keystrokes } = toGuestGame(result, at);
-      return { userId, wpm, accuracy, durationSeconds: Math.max(1, Math.round(result.durationMs / 1000)), rank, players, errors, keystrokes, createdAt: at };
+      const { wpm, accuracy, rank, players, rivals, errors, keystrokes } = toGuestGame(result, at);
+      return { userId, wpm, accuracy, durationSeconds: Math.max(1, Math.round(result.durationMs / 1000)), rank, players, rivals, errors, keystrokes, createdAt: at };
     });
     if (rows.length > 0) await db.insert(results).values(rows);
 
@@ -62,6 +64,30 @@ export async function recordRaceResults(list: readonly RaceResult[], at: Date): 
             avgMs: sql`(${keyStats.avgMs} + excluded.avg_ms) / 2`,
           },
         });
+    }
+
+    // Personnage joué (bonus activés) : une partie de plus, et une victoire si premier des humains.
+    const characterRows = saved.flatMap(({ userId, result }) =>
+      result.character === null ? [] : [{ userId, character: result.character, games: 1, wins: result.won ? 1 : 0 }],
+    );
+    if (characterRows.length > 0) {
+      await db
+        .insert(characterStats)
+        .values(characterRows)
+        .onConflictDoUpdate({
+          target: [characterStats.userId, characterStats.character],
+          set: {
+            games: sql`${characterStats.games} + excluded.games`,
+            wins: sql`${characterStats.wins} + excluded.wins`,
+          },
+        });
+    }
+
+    // XP et grade (STAT-9) : seulement face à un autre compte, comme le classement.
+    for (const { userId, result } of saved) {
+      const durationSeconds = result.durationMs / 1000;
+      const gain = raceXp({ wpm: result.wpm, accuracy: result.accuracy, durationSeconds, rank: result.rank, rivals: result.rivals, finished: result.status === 'finished' });
+      await awardXp(db, userId, gain);
     }
   } catch (error) {
     console.error('[race] results not saved', error);

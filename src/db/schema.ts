@@ -1,4 +1,5 @@
 import { customType, index, integer, pgTable, primaryKey, real, serial, text, timestamp } from "drizzle-orm/pg-core";
+import type { Level } from "../game/levels";
 
 const bytea = customType<{ data: Buffer }>({ dataType: () => "bytea" });
 
@@ -18,6 +19,10 @@ export const users = pgTable("users", {
   /** Photo téléversée (PROF-5), déjà redimensionnée en WebP ; `null` : initiales. */
   avatar: bytea("avatar"),
   avatarVersion: integer("avatar_version").default(0).notNull(),
+  /** Expérience totale cumulée (STAT-9). */
+  xp: integer("xp").default(0).notNull(),
+  /** Grade atteint, toujours égal à `levelForXp(xp)` (voir `src/game/levels.ts`). */
+  level: text("level").$type<Level>().default("grade_4").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -67,6 +72,8 @@ export const results = pgTable(
     /** Rang et nombre de participants (bots compris) ; `null` pour une course enregistrée avant leur ajout. */
     rank: integer("rank"),
     players: integer("players"),
+    /** Autres comptes de la course ; seules les courses qui en ont comptent au classement. `null` avant son ajout. */
+    rivals: integer("rivals"),
     errors: integer("errors").default(0).notNull(),
     keystrokes: integer("keystrokes").default(0).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -90,6 +97,19 @@ export const keyStats = pgTable(
   (table) => [primaryKey({ columns: [table.userId, table.char] })],
 );
 
+// Personnage joué par un compte dans une course avec bonus, une ligne par compte et par personnage. Aucun historique :
+// chaque course ajoute 1 à `games`, et 1 à `wins` si le joueur est premier des humains. Taux de victoire = wins / games.
+export const characterStats = pgTable(
+  "character_stats",
+  {
+    userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    /** `CharacterId` : 'gojo', 'sukuna'… */
+    character: text("character").notNull(),
+    games: integer("games").default(0).notNull(),
+    wins: integer("wins").default(0).notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.userId, table.character] })],
+);
 
 
 

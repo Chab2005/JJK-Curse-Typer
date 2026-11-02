@@ -1,22 +1,23 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
-import Avatar from '@/components/shared/Avatar';
+import ChevronButton from '@/components/shared/ChevronButton';
 import Footer from '@/components/layout/Footer';
 import SiteHeader from '@/components/layout/SiteHeader';
 import ProfileLinks from '@/components/profile/ProfileLinks';
 import EmptyStats from '@/components/profile/EmptyStats';
 import KeyboardHeatmap from '@/components/profile/KeyboardHeatmap';
 import ProfileHeader from '@/components/profile/ProfileHeader';
+import ProfileIdentity from '@/components/profile/ProfileIdentity';
 import StatTiles from '@/components/profile/StatTiles';
-import WpmChart from '@/components/profile/WpmChart';
+import StatChart from '@/components/profile/StatChart';
 import { showSampleData } from '@/lib/sampleData';
 import { findSampleProfile } from '@/components/profile/sampleProfiles';
 import type { Locale } from '@/i18n/config';
 import { Link } from '@/i18n/navigation';
 import { getSessionUser } from '@/lib/auth/session';
 import { findAccountProfile } from '@/lib/auth/profile';
-import { accountGames, accountKeyStats } from '@/lib/stats';
-import { summarizeGames } from '@/game/stats';
+import { accountGames, accountKeyStats, accountMostPlayed } from '@/lib/stats';
+import { isWin, mostPlayedCharacter, summarizeGames } from '@/game/stats';
 
 export async function generateMetadata({ params }: PageProps<'/[locale]/profile/[username]'>) {
   const { username } = await params;
@@ -37,35 +38,38 @@ export default async function ProfilePage({ params }: PageProps<'/[locale]/profi
   if (!profile) {
     const account = await findAccountProfile(name);
     if (!account) notFound();
-    const [games, keys] = await Promise.all([accountGames(account.id), accountKeyStats(account.id)]);
+    const [games, keys, mostPlayed] = await Promise.all([accountGames(account.id), accountKeyStats(account.id), accountMostPlayed(account.id)]);
     const stats = summarizeGames(games);
     return (
       <>
         <SiteHeader />
         <main className="relative w-full flex-1 overflow-hidden bg-surface">
-          <div className="relative mx-auto flex max-w-[960px] flex-col gap-6 px-6 pt-14 pb-24">
-            <section aria-labelledby="profile-title" className="flex flex-wrap items-center gap-x-8 gap-y-5">
-              <Avatar avatar={null} name={account.displayName} src={account.avatarUrl} size={148} className="ring-2 ring-primary-container ring-offset-4 ring-offset-surface" />
-              <div className="flex min-w-0 flex-1 basis-60 flex-col gap-2">
-                <p className="font-label-code text-[12px] font-bold uppercase tracking-[0.32em] text-primary-container">{t('eyebrow')}</p>
-                <h1 id="profile-title" className="font-grotesk text-[clamp(30px,4vw,42px)] leading-tight font-semibold break-words">{account.displayName}</h1>
-                <ProfileLinks github={account.github} discord={account.discord} />
-                <p className="font-label-code text-[14px] text-outline">@{account.username}{account.country ? ` · ${account.country}` : ''}</p>
-                <p className="font-label-code text-[12px] text-outline">
-                  {stats ? t('summary', { games: stats.games, wins: stats.wins, best: stats.bestWpm }) : t('games', { games: 0 })}
-                </p>
-                {viewer?.id === account.id && (
-                  <Link href="/settings" className="font-label-code mt-2 inline-flex min-h-8 items-center gap-2 self-start text-[14px] text-primary hover:text-primary-fixed">
-                    <span aria-hidden="true" className="material-symbols-outlined text-[18px]">edit</span>
+          <ProfileGlow />
+          <div className="relative mx-auto flex max-w-[1040px] flex-col gap-8 px-6 pt-14 pb-24">
+            <ProfileIdentity
+              name={account.displayName}
+              avatar={null}
+              photo={account.avatarUrl}
+              summary={stats ? t('summary', { games: stats.games, wins: stats.wins, best: stats.bestWpm }) : t('games', { games: 0 })}
+              action={
+                viewer?.id === account.id && (
+                  <ChevronButton as={Link} href="/settings" size="sm" className="font-label-code text-[11px] uppercase tracking-[0.16em]">
+                    <span aria-hidden="true" className="material-symbols-outlined text-[16px] text-primary">settings</span>
                     {t('editSettings')}
-                  </Link>
-                )}
-              </div>
-            </section>
+                  </ChevronButton>
+                )
+              }
+            >
+              <ProfileLinks github={account.github} discord={account.discord} />
+              <p className="font-label-code text-[14px] text-outline">@{account.username}{account.country ? ` · ${account.country}` : ''}</p>
+            </ProfileIdentity>
             {stats ? (
               <>
-                <WpmChart races={games.map((g) => ({ date: g.at, wpm: g.wpm }))} now={now.toISOString()} />
-                <StatTiles profile={stats} />
+                <StatChart
+                  races={games.map((g) => ({ date: g.at, wpm: g.wpm, accuracy: g.accuracy, errors: g.errors, keystrokes: g.keystrokes, won: isWin(g) }))}
+                  now={now.toISOString()}
+                />
+                <StatTiles profile={stats} mostPlayed={mostPlayed} />
                 {keys.length > 0 && <KeyboardHeatmap stats={keys} />}
               </>
             ) : (
@@ -82,19 +86,29 @@ export default async function ProfilePage({ params }: PageProps<'/[locale]/profi
     <>
       <SiteHeader />
       <main className="relative w-full flex-1 overflow-hidden bg-surface">
-        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-[420px] bg-[radial-gradient(ellipse_45%_70%_at_25%_0%,rgb(49_49_192/0.35),transparent_70%),radial-gradient(ellipse_40%_60%_at_80%_0%,rgb(147_0_10/0.35),transparent_70%)]" />
-        <div className="relative mx-auto flex max-w-[960px] flex-col gap-10 px-6 pt-14 pb-24">
+        <ProfileGlow />
+        <div className="relative mx-auto flex max-w-[1040px] flex-col gap-8 px-6 pt-14 pb-24">
           <ProfileHeader
             profile={{ username: profile.username, avatar: profile.avatar, github: profile.github, discord: profile.discord }}
             own={false}
             summary={t('summary', { games: profile.games, wins: profile.wins, best: profile.bestWpm })}
           />
-          <WpmChart races={profile.races} now={now.toISOString()} />
-          <StatTiles profile={profile} />
+          <StatChart races={profile.races} now={now.toISOString()} />
+          <StatTiles profile={profile} mostPlayed={mostPlayedCharacter(profile.characters)} />
           <KeyboardHeatmap stats={profile.keyStats} />
         </div>
       </main>
       <Footer />
+    </>
+  );
+}
+
+// Lueur cramoisie en haut de la page et fondu sombre en bas, comme les arènes et le classement.
+function ProfileGlow() {
+  return (
+    <>
+      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-[420px] bg-[radial-gradient(ellipse_55%_70%_at_50%_0%,rgb(147_0_10/0.4),transparent_70%)]" />
+      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-[640px] bg-linear-to-b from-transparent to-[#120708]" />
     </>
   );
 }

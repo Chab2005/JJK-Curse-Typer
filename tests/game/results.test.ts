@@ -10,6 +10,7 @@ const TEXT = 'abc def';
 const SEATS: RacerSeat[] = [
   { id: 'ann', name: 'Ann', avatar: null, kind: 'human', level: null },
   { id: 'bob', name: 'Bob', avatar: null, kind: 'human', level: null },
+  { id: 'guest:cid', name: 'Cid', avatar: null, kind: 'human', level: null },
   { id: 'bot-1', name: '1', avatar: null, kind: 'bot', level: 'grade_4' },
 ];
 
@@ -29,9 +30,28 @@ describe('raceResults', () => {
     );
     const results = raceResults(race, START + 600_000);
     const ann = results.find((r) => r.seat === 'ann')!;
-    expect(ann).toMatchObject({ status: 'finished', players: 3, errors: 1, keystrokes: 7, durationMs: 700 });
+    expect(ann).toMatchObject({ status: 'finished', players: 4, errors: 1, keystrokes: 7, durationMs: 700 });
     expect(ann.accuracy).toBeCloseTo(6 / 7);
     expect(ann.rank).toBeLessThan(results.find((r) => r.seat === 'bob')!.rank);
+  });
+
+  it('compte les autres comptes qui ont tapé, sans invités, bots ni simulation', () => {
+    const race = reduce(
+      claimed(0, 'ann', 'bob', 'guest:cid'),
+      { type: 'keys', id: 'ann', strokes: keys(TEXT), now: START + 800 },
+      { type: 'keys', id: 'bob', strokes: keys('ab'), now: START + 800 },
+      { type: 'abandon', id: 'bob', now: START + 900 },
+      { type: 'keys', id: 'guest:cid', strokes: keys(TEXT), now: START + 800 },
+      { type: 'tick', now: START + 600_000 },
+    );
+    const results = raceResults(race, START + 600_000);
+    expect(results.find((r) => r.seat === 'ann')!.rivals).toBe(1);
+    expect(results.find((r) => r.seat === 'guest:cid')!.rivals).toBe(2);
+  });
+
+  it('ne compte pas un compte qui n’a rien tapé', () => {
+    const race = reduce(claimed(1000, 'ann', 'bob'), { type: 'keys', id: 'ann', strokes: keys('abc'), now: START + 400 }, { type: 'tick', now: START + 1000 });
+    expect(raceResults(race, START + 1000)[0].rivals).toBe(0);
   });
 
   it('écarte les bots et les sièges humains tenus par la simulation (BOT-5)', () => {
@@ -69,13 +89,46 @@ describe('raceResults', () => {
   });
 
   it('rend le résultat du seul humain dès son arrivée, sans attendre les bots', () => {
-    const solo = createRace({ seats: [SEATS[0], SEATS[2]], text: TEXT, mode: 'accumulate', timerMs: 0, bonus: false, now: T0, seed: 1 });
+    const solo = createRace({ seats: [SEATS[0], SEATS[3]], text: TEXT, mode: 'accumulate', timerMs: 0, bonus: false, now: T0, seed: 1 });
     const race = reduce(solo, { type: 'claim', id: 'ann', now: T0 }, { type: 'tick', now: START }, { type: 'keys', id: 'ann', strokes: keys(TEXT), now: START + 800 }, {
       type: 'tick',
       now: START + 1000,
     });
     expect(race.phase).toBe('finished');
     expect(raceResults(race, START + 1000)).toEqual([expect.objectContaining({ seat: 'ann', rank: 1, players: 2, status: 'finished', durationMs: 700 })]);
+  });
+
+  it('garde le personnage du siège quand les bonus sont activés, aucun sinon', () => {
+    const seats: RacerSeat[] = [{ ...SEATS[0], avatar: 'gojo' }, SEATS[1]];
+    const play = (bonus: boolean) =>
+      reduce(
+        createRace({ seats, text: TEXT, mode: 'accumulate', timerMs: 0, bonus, now: T0, seed: 1 }),
+        { type: 'claim', id: 'ann', now: T0 },
+        { type: 'claim', id: 'bob', now: T0 },
+        { type: 'tick', now: START },
+        { type: 'keys', id: 'ann', strokes: keys(TEXT), now: START + 800 },
+        { type: 'keys', id: 'bob', strokes: keys(TEXT), now: START + 800 },
+        { type: 'tick', now: START + 600_000 },
+      );
+    expect(raceResults(play(true), START + 600_000).map((r) => [r.seat, r.character])).toEqual([
+      ['ann', 'gojo'],
+      ['bob', null],
+    ]);
+    expect(raceResults(play(false), START + 600_000).every((r) => r.character === null)).toBe(true);
+  });
+
+  it('donne la victoire au premier des humains, même derrière un bot', () => {
+    const race = reduce(
+      claimed(0, 'ann', 'bob'),
+      { type: 'keys', id: 'ann', strokes: keys(TEXT, 100, 20_000), now: START + 130_000 },
+      { type: 'keys', id: 'bob', strokes: keys(TEXT, 100, 30_000), now: START + 190_000 },
+      { type: 'tick', now: START + 600_000 },
+    );
+    const results = raceResults(race, START + 600_000);
+    const ann = results.find((r) => r.seat === 'ann')!;
+    expect(ann.rank).toBeGreaterThan(1);
+    expect(ann.won).toBe(true);
+    expect(results.find((r) => r.seat === 'bob')!.won).toBe(false);
   });
 
   it('ne rend rien tant que la course n’est pas finie', () => {

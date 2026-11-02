@@ -2,7 +2,8 @@
 
 import { useTranslations } from 'next-intl';
 import { useEffect, useId, useRef } from 'react';
-import BevelFrame, { cardFrame } from '@/components/shared/BevelFrame';
+import BevelPanel from '@/components/shared/BevelPanel';
+import ChevronButton from '@/components/shared/ChevronButton';
 
 // Confirmation avant d'abandonner ou de quitter la course (maquette « Course » : liens de l'en-tête).
 // <dialog> natif : focus piégé, Échap pour annuler.
@@ -43,26 +44,19 @@ export default function ConfirmDialog({
       }}
       className="m-auto w-[min(calc(100vw-32px),480px)] bg-transparent p-0 text-on-surface backdrop:bg-black/70 backdrop:backdrop-blur-sm"
     >
-      <BevelFrame frame={cardFrame} className="flex flex-col gap-4 bg-surface-container-low px-6 pt-7 pb-6">
-        <h2 id={`${id}-title`} className="text-[22px] uppercase tracking-[0.12em]">{title}</h2>
-        <p id={`${id}-body`} className="text-on-surface-variant">{body}</p>
-        <div className="mt-2 flex flex-wrap justify-end gap-3">
-          <button
-            type="button"
-            onClick={onCancel}
-            className="flex min-h-11 items-center border border-on-surface px-4 text-[13px] uppercase tracking-[0.12em] transition-colors hover:bg-on-surface hover:text-surface-container-lowest"
-          >
+      <BevelPanel className="flex flex-col gap-3.5 px-8 pt-[30px] pb-7">
+        <h2 id={`${id}-title`} className="text-[26px] uppercase tracking-[0.08em]">{title}</h2>
+        <p id={`${id}-body`} className="text-[17px] leading-[26px] text-on-surface-variant">{body}</p>
+        <div className="mt-1 flex flex-wrap justify-end gap-2.5 border-t border-[#8f1022]/60 pt-2.5">
+          <ChevronButton type="button" size="sm" chevrons={false} onClick={onCancel} className="font-label-code text-[11px] uppercase tracking-[0.16em]">
             {t('stay')}
-          </button>
-          <button
-            type="button"
-            onClick={onConfirm}
-            className="flex min-h-11 items-center bg-primary-container px-4 text-[13px] uppercase tracking-[0.12em] text-on-primary-container transition-colors hover:bg-inverse-primary"
-          >
+          </ChevronButton>
+          <ChevronButton type="button" size="sm" chevrons={false} variant="primary" onClick={onConfirm} className="font-label-code text-[11px] uppercase tracking-[0.16em]">
+            <span aria-hidden="true" className="material-symbols-outlined text-[16px]">flag</span>
             {confirmLabel}
-          </button>
+          </ChevronButton>
         </div>
-      </BevelFrame>
+      </BevelPanel>
     </dialog>
   );
 }

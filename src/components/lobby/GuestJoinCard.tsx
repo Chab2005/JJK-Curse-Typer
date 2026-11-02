@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { useState, useTransition } from 'react';
 import { setGuestNameAction } from '@/app/actions/auth';
+import ChevronButton from '@/components/shared/ChevronButton';
 import { useRouter } from '@/i18n/navigation';
 import { USERNAME_MAX, USERNAME_MIN, validateUsername } from '@/lib/auth/validation';
 
@@ -48,14 +49,10 @@ export default function GuestJoinCard() {
       <p id="guest-join-error" role="alert" className="min-h-5 text-[13px] leading-5 text-error">
         {error && tName(`nameError.${error}`, { min: USERNAME_MIN, max: USERNAME_MAX })}
       </p>
-      <button
-        type="submit"
-        disabled={pending}
-        className="flex min-h-11 items-center justify-center gap-2 border border-on-surface px-4 text-[13px] uppercase tracking-[0.12em] transition-colors hover:bg-on-surface hover:text-surface-container-lowest disabled:pointer-events-none disabled:text-outline"
-      >
-        <span aria-hidden="true" className="material-symbols-outlined text-[18px]">login</span>
+      <ChevronButton type="submit" size="sm" variant="primary" chevrons={false} disabled={pending} frame="w-full disabled:opacity-40" className="font-label-code text-[11px] uppercase tracking-[0.16em]">
+        <span aria-hidden="true" className="material-symbols-outlined text-[16px]">login</span>
         {t('submit')}
-      </button>
+      </ChevronButton>
     </form>
   );
 }

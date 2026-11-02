@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import BevelFrame, { cardFrame } from '@/components/shared/BevelFrame';
+import BevelPanel from '@/components/shared/BevelPanel';
 import Reserve from '@/components/shared/Reserve';
 import CopyButton from './CopyButton';
 import InviteLinksDialog from './InviteLinksDialog';
@@ -17,11 +17,11 @@ export default function InviteCard({ code, visibility, isHost, refreshKey = '' }
   const mode = inviteLinkMode(visibility, isHost);
 
   return (
-    <BevelFrame frame={cardFrame} className="flex flex-col gap-4 bg-surface-container-low px-6 pt-5 pb-6">
-      <h2 className="text-[13px] uppercase tracking-[0.14em] text-on-surface-variant">{t('title')}</h2>
+    <BevelPanel className="flex flex-col gap-4 px-6 pt-6 pb-7">
+      <h2 className="font-label-code text-[11px] font-bold uppercase tracking-[0.2em] text-primary-container">{t('title')}</h2>
 
       <div className="flex flex-col gap-1">
-        <p className="font-label-code text-[11px] uppercase tracking-[0.2em] text-outline">{t('code')}</p>
+        <p className="font-label-code text-[11px] uppercase tracking-[0.16em] text-outline">{t('code')}</p>
         <div className="flex h-11 items-center justify-between gap-3">
           {canCopyCode(visibility) ? (
             <>
@@ -47,7 +47,7 @@ export default function InviteCard({ code, visibility, isHost, refreshKey = '' }
           hostOnly: <Note>{t('hostOnly')}</Note>,
         }}
       />
-    </BevelFrame>
+    </BevelPanel>
   );
 }
 

@@ -1,6 +1,9 @@
 import { useTranslations } from 'next-intl';
 import type { CharacterId } from '@/components/shared/characters';
 import type { RacerStatus } from '@/game/race';
+import BevelPanel from '@/components/shared/BevelPanel';
+import ChevronButton, { Chevrons } from '@/components/shared/ChevronButton';
+import Pointer from '@/components/shared/Pointer';
 import { Link } from '@/i18n/navigation';
 import RacePodium from './RacePodium';
 import RaceResultsTable from './RaceResultsTable';
@@ -28,7 +31,7 @@ const HEADING: Record<Exclude<RacerStatus, 'racing' | 'stopped'>, 'finished' | '
 const percent = (accuracy: number) => Math.round(accuracy * 100);
 
 // Écran d'attente de qui a fini avant les autres (RACE-11), puis classement complet à la fin (RACE-14) :
-// podium et tableau dans le style du classement général.
+// panneau cramoisi, podium et tableau dans le style du classement général.
 export default function RaceSummary({ rows, you, over, lobbyCode }: { rows: SummaryRow[]; you: string | null; over: boolean; lobbyCode: string }) {
   const t = useTranslations('Race.summary');
   const me = rows.find((row) => row.id === you);
@@ -39,35 +42,41 @@ export default function RaceSummary({ rows, you, over, lobbyCode }: { rows: Summ
   return (
     <div className="flex flex-col gap-8">
       {(heading || waiting) && (
-        <section className="flex flex-col gap-6 border-l-[3px] border-primary-container bg-surface-container-low/80 px-6 py-6">
+        <BevelPanel as="section" className="flex flex-col gap-5 px-8 py-7 sm:px-10">
           {me && heading && (
-            <div className="flex flex-col gap-1.5">
-              <h2 className="text-[26px] uppercase tracking-[0.12em] text-on-surface">{t(heading)}</h2>
-              <p className="font-label-code text-[15px] text-primary">{t('position', { rank: me.rank, total: rows.length })}</p>
+            <div className="flex flex-col gap-2">
+              <h2 className="text-[30px] uppercase tracking-[0.1em] text-on-primary-container">{t(heading)}</h2>
+              <p className="font-label-code flex items-center gap-2.5 text-[13px] uppercase tracking-[0.16em] text-primary">
+                <Pointer className="text-primary-container" />
+                {t('position', { rank: me.rank, total: rows.length })}
+              </p>
               <p className="font-label-code text-[15px] text-on-surface-variant">{t('stats', { wpm: me.wpm, accuracy: percent(me.accuracy) })}</p>
             </div>
           )}
 
           {waiting && (
-            <p role="status" className="flex items-center gap-2 text-on-surface-variant">
+            <p role="status" className="flex items-center gap-2 border-t border-[#8f1022]/60 pt-4 text-on-surface-variant">
               <span aria-hidden="true" className="material-symbols-outlined animate-spin text-[18px] text-tertiary [animation-duration:2s]">progress_activity</span>
               {t('waiting', { count: racing })}
             </p>
           )}
-        </section>
+        </BevelPanel>
       )}
 
       {over && (
         <section aria-labelledby="race-results-title" className="flex flex-col gap-6">
-          <h2 id="race-results-title" className="text-[22px] uppercase tracking-[0.12em] text-on-surface">
+          <h2 id="race-results-title" className="flex items-center gap-3 text-[26px] uppercase tracking-[0.1em] text-on-primary-container">
+            <span aria-hidden="true" className="flex h-[22px] w-3 -scale-x-100 text-primary-container">
+              <Chevrons order="decreasing" className="size-full" />
+            </span>
             {t('over')}
           </h2>
           <RacePodium rows={rows} />
           {rows.length > 3 && <RaceResultsTable rows={rows.slice(3)} />}
-          <Link href={`/lobby/${lobbyCode}`} className="group flex min-h-10 items-center gap-2 self-start text-sm text-outline transition-colors hover:text-primary">
-            <span aria-hidden="true" className="material-symbols-outlined text-[17px] text-primary">arrow_back</span>
-            <span className="underline decoration-primary/40 underline-offset-4 group-hover:decoration-primary">{t('backToLobby')}</span>
-          </Link>
+          <ChevronButton as={Link} href={`/lobby/${lobbyCode}`} variant="primary" frame="self-start" className="text-[15px] uppercase tracking-[0.12em]">
+            <span aria-hidden="true" className="material-symbols-outlined text-[18px]">arrow_back</span>
+            {t('backToLobby')}
+          </ChevronButton>
         </section>
       )}
     </div>

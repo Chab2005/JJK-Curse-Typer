@@ -1,9 +1,9 @@
 import { useTranslations } from 'next-intl';
-import BevelFrame from '@/components/shared/BevelFrame';
+import ChevronButton from '@/components/shared/ChevronButton';
 import { Link, useRouter } from '@/i18n/navigation';
-import { primaryFace, primaryFrame } from './ReadyPanel';
+import { actionFace } from './ReadyPanel';
 
-// Quitter le lobby, sous les paramètres de course, avec l'allure du bouton principal.
+// Quitter le lobby, sous les paramètres de course : grand bouton-flèche sombre.
 // `onLeave` (lobby créé) : le départ est d'abord enregistré, pour que le salon le voie tout de suite.
 export default function LeaveLobbyLink({ onLeave }: { onLeave?: () => Promise<void> }) {
   const t = useTranslations('Lobby.actions');
@@ -17,9 +17,9 @@ export default function LeaveLobbyLink({ onLeave }: { onLeave?: () => Promise<vo
   };
 
   return (
-    <BevelFrame as={Link} href="/lobbies" onClick={leave} frame={primaryFrame} className={primaryFace}>
-      <span aria-hidden="true" className="material-symbols-outlined text-[22px]">logout</span>
+    <ChevronButton as={Link} href="/lobbies" onClick={leave} frame="w-full" className={actionFace}>
+      <span aria-hidden="true" className="material-symbols-outlined text-[20px] text-primary">logout</span>
       {t('leave')}
-    </BevelFrame>
+    </ChevronButton>
   );
 }

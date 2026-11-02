@@ -510,7 +510,7 @@
     "profileLabel": "Voir le profil de {name}",
     "empty": "Aucun exorciste ne porte ce nom.",
     "pagination": "Pages du classement",
-    "eligibility": "Les joueurs apparaissent après {games} courses terminées. Le score moyen porte sur leurs 5 dernières courses.",
+    "eligibility": "Les joueurs apparaissent dès qu'ils finissent une course contre un autre compte. Seules ces courses comptent ; le score moyen porte sur les 5 dernières.",
     "noPlayers": "Personne n'est encore classé. Termine des courses pour prendre la première place."
   },
   "Profile": {
@@ -520,7 +520,7 @@
     "discordLink": "Profil Discord",
     "summary": "{games} courses · {wins} victoires · meilleur : {best} MPM",
     "chart": {
-      "title": "Évolution du MPM",
+      "title": "Évolution : {stat}",
       "period": "Période",
       "periods": {
         "7d": "7 jours",
@@ -528,13 +528,26 @@
         "1y": "1 an",
         "all": "Tout"
       },
-      "summary": "Graphique du MPM, {count} points avec courses, dernier : {last} MPM. Utilisez les flèches pour lire chaque point.",
+      "statCurrent": "<prefix>Stat :</prefix> <strong>{stat}</strong>",
+      "statLegend": "Afficher",
+      "close": "Fermer",
+      "stats": {
+        "wpm": "MPM",
+        "score": "Score moyen",
+        "accuracy": "Précision",
+        "races": "Courses",
+        "wins": "Victoires",
+        "errors": "Taux d’erreur"
+      },
+      "summary": "Graphique : {stat}, {count} points avec courses, dernier : {last}. Utilisez les flèches pour lire chaque point.",
       "wpm": "{value} MPM",
+      "score": "{value} pts",
+      "wins": "{count, plural, one {# victoire} other {# victoires}}",
+      "errors": "{value} erreurs / 100 mots",
       "noRace": "Aucune course",
       "races": "{count, plural, one {# course} other {# courses}}",
       "empty": "Aucune course sur cette période.",
       "date": "Date",
-      "wpmColumn": "MPM moyen",
       "racesColumn": "Courses"
     },
     "stats": {
@@ -545,7 +558,12 @@
       "errors": "Erreurs pour 100 mots",
       "errorsUnit": "/ 100",
       "score": "Score moyen (5 dernières courses)",
-      "scoreUnit": "pts"
+      "scoreUnit": "pts",
+      "mostPlayed": {
+        "title": "Personnage le plus joué",
+        "usage": "<strong>{count, plural, one {# course} other {# courses}}</strong> · {share} de ses {total}",
+        "sheet": "Voir la fiche"
+      }
     },
     "heatmap": {
       "title": "Carte de chaleur du clavier",
@@ -751,6 +769,8 @@
     "title": "Paramètres",
     "save": "Enregistrer",
     "saving": "Enregistrement…",
+    "identity": "Identité & liens",
+    "backToProfile": "Retour au profil",
     "avatar": {
       "title": "Photo de profil",
       "choose": "Choisir une image",

@@ -15,6 +15,8 @@ const gameSchema = z.object({
   /** Rang et taille de la course, erreurs et frappes : absents des cookies d'avant leur ajout. */
   rank: z.number().int().min(1).max(100).optional(),
   players: z.number().int().min(1).max(100).optional(),
+  /** Autres comptes de la course (STAT-8) : absent des cookies d'avant son ajout. */
+  rivals: z.number().int().min(0).max(100).optional(),
   errors: z.number().int().min(0).optional(),
   keystrokes: z.number().int().min(0).optional(),
 });

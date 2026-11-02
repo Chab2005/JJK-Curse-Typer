@@ -17,7 +17,7 @@ import { DEFAULT_LOBBY_FILTERS, type LobbyFilters as Filters, type LobbySummary,
 const PER_PAGE = 8;
 
 // Recherche, filtres et pagination des lobbies publics ; l'état vit dans l'URL (?q=…&page=2).
-// Le bouton de création s'aligne sur le compteur, ou passe sous « Effacer » quand rien ne correspond.
+// Le bouton de création s'aligne sur le compteur, ou passe au-dessus de « Effacer » quand rien ne correspond.
 export default function LobbyBrowser({ lobbies, signedIn }: { lobbies: LobbySummary[]; signedIn: boolean }) {
   const t = useTranslations('Lobbies');
   const { filters, page } = parseLobbySearch(useSearchParams());
@@ -64,10 +64,12 @@ export default function LobbyBrowser({ lobbies, signedIn }: { lobbies: LobbySumm
       ) : (
         <HexCard className="flex flex-col items-center gap-[18px] px-8 py-11 text-center sm:px-16">
           <p className="text-[19px] text-on-surface-variant">{t('empty')}</p>
-          <div className="flex flex-wrap justify-center gap-3.5">
+          <div className="flex flex-col items-center gap-3.5">
+            <CreateLobbyButton signedIn={signedIn} align="center" />
             <ChevronButton
               type="button"
               size="sm"
+              chevrons={false}
               onClick={() => {
                 setDraft('');
                 writeSearch(lobbySearchQuery(DEFAULT_LOBBY_FILTERS, 1), 'push');
@@ -76,7 +78,6 @@ export default function LobbyBrowser({ lobbies, signedIn }: { lobbies: LobbySumm
             >
               {t('clear')}
             </ChevronButton>
-            <CreateLobbyButton signedIn={signedIn} align="center" />
           </div>
         </HexCard>
       )}

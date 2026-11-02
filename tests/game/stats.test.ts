@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { averageScore, errorsPer100Words, summarizeGames, type GameRecord } from '@/game/stats';
+import { averageScore, errorsPer100Words, mostPlayedCharacter, summarizeGames, type GameRecord } from '@/game/stats';
 
 describe('averageScore', () => {
   it('fait la moyenne des 5 dernières parties (les plus récentes en fin de liste)', () => {
@@ -50,5 +50,31 @@ describe('summarizeGames', () => {
 
   it('renvoie null sans aucune partie', () => {
     expect(summarizeGames([])).toBeNull();
+  });
+});
+
+describe('mostPlayedCharacter', () => {
+  it('choisit le personnage joué dans le plus de courses', () => {
+    expect(
+      mostPlayedCharacter([
+        { character: 'yuji', games: 12, wins: 4 },
+        { character: 'gojo', games: 30, wins: 2 },
+        { character: 'sukuna', games: 7, wins: 7 },
+      ]),
+    ).toEqual({ character: 'gojo', games: 30, wins: 2 });
+  });
+
+  it('départage une égalité par les victoires, puis par l’ordre des personnages', () => {
+    expect(mostPlayedCharacter([{ character: 'yuta', games: 5, wins: 1 }, { character: 'todo', games: 5, wins: 3 }])?.character).toBe('todo');
+    expect(mostPlayedCharacter([{ character: 'sukuna', games: 5, wins: 2 }, { character: 'megumi', games: 5, wins: 2 }])?.character).toBe('megumi');
+  });
+
+  it('ignore les personnages inconnus et ceux sans course', () => {
+    expect(mostPlayedCharacter([{ character: 'mahito', games: 50, wins: 0 }, { character: 'maki', games: 0, wins: 0 }, { character: 'nobara', games: 2, wins: 0 }])?.character).toBe('nobara');
+  });
+
+  it('renvoie null sans course avec un personnage', () => {
+    expect(mostPlayedCharacter([])).toBeNull();
+    expect(mostPlayedCharacter([{ character: 'gojo', games: 0, wins: 0 }])).toBeNull();
   });
 });
