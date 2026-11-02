@@ -3,12 +3,17 @@
 import { raceKeyStats, type KeyStat } from './keyStats';
 import { standings, type RaceState } from './race';
 
+/** Siège d'un invité : `guest:<pseudo>` ; les autres sièges humains sont des comptes. */
+export const GUEST_SEAT_PREFIX = 'guest:';
+
 export interface RaceResult {
   /** Siège du joueur : son pseudo pour un compte, `guest:<pseudo>` pour un invité. */
   seat: string;
   rank: number;
   /** Participants de la course, bots compris. */
   players: number;
+  /** Autres comptes de la course qui ont tapé : sans eux, la course ne compte pas au classement (STAT-8). */
+  rivals: number;
   /** MPM net (H-21). */
   wpm: number;
   /** Part des frappes justes, entre 0 et 1. */
@@ -25,6 +30,9 @@ export interface RaceResult {
 export function raceResults(race: RaceState, now: number): RaceResult[] {
   if (race.phase !== 'finished') return [];
   const table = standings(race, now);
+  const accounts = race.racers
+    .filter(({ seat, driver, typing }) => seat.kind === 'human' && driver === 'player' && typing.keystrokes > 0 && !seat.id.startsWith(GUEST_SEAT_PREFIX))
+    .map(({ seat }) => seat.id);
   return race.racers.flatMap((racer): RaceResult[] => {
     const { seat, driver, status, typing, keys, endedAt } = racer;
     if (seat.kind !== 'human' || driver !== 'player' || (status !== 'finished' && status !== 'timeout')) return [];
@@ -35,6 +43,7 @@ export function raceResults(race: RaceState, now: number): RaceResult[] {
         seat: seat.id,
         rank: row.rank,
         players: race.racers.length,
+        rivals: accounts.filter((id) => id !== seat.id).length,
         wpm: row.wpm,
         accuracy: row.accuracy,
         errors: typing.errors,

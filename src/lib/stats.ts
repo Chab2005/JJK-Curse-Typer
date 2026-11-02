@@ -18,10 +18,11 @@ const columns = {
   keystrokes: results.keystrokes,
   rank: results.rank,
   players: results.players,
+  rivals: results.rivals,
   createdAt: results.createdAt,
 };
 
-type Row = { wpm: number; accuracy: number; errors: number; keystrokes: number; rank: number | null; players: number | null; createdAt: Date };
+type Row = { wpm: number; accuracy: number; errors: number; keystrokes: number; rank: number | null; players: number | null; rivals: number | null; createdAt: Date };
 
 const toRecord = (row: Row): GameRecord => ({
   wpm: row.wpm,
@@ -30,6 +31,7 @@ const toRecord = (row: Row): GameRecord => ({
   keystrokes: row.keystrokes,
   rank: row.rank,
   players: row.players,
+  rivals: row.rivals,
   at: row.createdAt.toISOString(),
 });
 

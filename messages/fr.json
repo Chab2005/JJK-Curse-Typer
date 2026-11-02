@@ -510,7 +510,7 @@
     "profileLabel": "Voir le profil de {name}",
     "empty": "Aucun exorciste ne porte ce nom.",
     "pagination": "Pages du classement",
-    "eligibility": "Les joueurs apparaissent après {games} courses terminées. Le score moyen porte sur leurs 5 dernières courses.",
+    "eligibility": "Les joueurs apparaissent dès qu'ils finissent une course contre un autre compte. Seules ces courses comptent ; le score moyen porte sur les 5 dernières.",
     "noPlayers": "Personne n'est encore classé. Termine des courses pour prendre la première place."
   },
   "Profile": {

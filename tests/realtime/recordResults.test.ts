@@ -22,6 +22,7 @@ const result = (seat: string, extra: Partial<RaceResult> = {}): RaceResult => ({
   seat,
   rank: 1,
   players: 3,
+  rivals: 1,
   wpm: 72,
   accuracy: 0.955,
   errors: 3,
@@ -46,7 +47,7 @@ describe('recordRaceResults', () => {
     where.mockResolvedValue([{ id: 7, key: 'yuji' }]);
     await recordRaceResults([result('Yuji', { rank: 2 })], AT);
     expect(insert).toHaveBeenCalledWith([
-      { userId: 7, wpm: 72, accuracy: 95.5, durationSeconds: 42, rank: 2, players: 3, errors: 3, keystrokes: 240, createdAt: AT },
+      { userId: 7, wpm: 72, accuracy: 95.5, durationSeconds: 42, rank: 2, players: 3, rivals: 1, errors: 3, keystrokes: 240, createdAt: AT },
     ]);
   });
 
@@ -66,7 +67,7 @@ describe('recordRaceResults', () => {
     await recordRaceResults([result('guest:Nobara')], AT);
     expect(where).not.toHaveBeenCalled();
     expect(takeGuestGames('guest:Nobara', AT.getTime())).toEqual([
-      { wpm: 72, accuracy: 95.5, durationSeconds: 42, at: AT.getTime(), rank: 1, players: 3, errors: 3, keystrokes: 240 },
+      { wpm: 72, accuracy: 95.5, durationSeconds: 42, at: AT.getTime(), rank: 1, players: 3, rivals: 1, errors: 3, keystrokes: 240 },
     ]);
   });
 

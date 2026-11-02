@@ -510,7 +510,7 @@
     "profileLabel": "View {name}'s profile",
     "empty": "No exorcist goes by that name.",
     "pagination": "Ranking pages",
-    "eligibility": "Players appear after {games} finished races. The average score covers their last 5 races.",
+    "eligibility": "Players appear once they finish a race against another account. Only those races count; the average score covers the last 5.",
     "noPlayers": "No one is ranked yet. Finish races to claim the first spot."
   },
   "Profile": {

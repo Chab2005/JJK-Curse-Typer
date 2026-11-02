@@ -50,6 +50,13 @@
       "when": 1791398911276,
       "tag": "0006_invite_claimed_name",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1793591573980,
+      "tag": "0007_thankful_absorbing_man",
+      "breakpoints": true
     }
   ]
 }

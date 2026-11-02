@@ -27,6 +27,8 @@ export interface GameRecord {
   /** `null` pour une partie enregistrée avant le classement. */
   rank: number | null;
   players: number | null;
+  /** Autres comptes de la course ; absent ou `null` pour une partie enregistrée avant. */
+  rivals?: number | null;
   /** Date ISO. */
   at: string;
 }

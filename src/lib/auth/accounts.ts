@@ -27,6 +27,7 @@ const guestGameRow = (userId: number, g: GuestGame) => ({
   durationSeconds: g.durationSeconds,
   rank: g.rank ?? null,
   players: g.players ?? null,
+  rivals: g.rivals ?? null,
   errors: g.errors ?? 0,
   keystrokes: g.keystrokes ?? 0,
   createdAt: new Date(g.at),

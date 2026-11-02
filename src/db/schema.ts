@@ -67,6 +67,8 @@ export const results = pgTable(
     /** Rang et nombre de participants (bots compris) ; `null` pour une course enregistrée avant leur ajout. */
     rank: integer("rank"),
     players: integer("players"),
+    /** Autres comptes de la course ; seules les courses qui en ont comptent au classement. `null` avant son ajout. */
+    rivals: integer("rivals"),
     errors: integer("errors").default(0).notNull(),
     keystrokes: integer("keystrokes").default(0).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
