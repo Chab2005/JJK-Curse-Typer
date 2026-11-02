@@ -1,12 +1,31 @@
 import { screen, within } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import CharacterSheet from '@/components/characters/CharacterSheet';
 import { CHARACTERS } from '@/components/shared/characters';
 import { renderWithIntl } from '../../render';
 
 const gojo = CHARACTERS.find((c) => c.id === 'gojo')!;
 
+vi.mock('@/components/characters/PixelDomain', () => ({
+  default: ({ character }: { character: string }) => <div data-testid="domain-preview" data-character={character} />,
+}));
+
 describe('CharacterSheet (smoke)', () => {
+  it.each([
+    ['gojo', 'Unlimited Void'],
+    ['megumi', 'Chimera Shadow Garden'],
+    ['yuta', 'Mutual Authentic Love'],
+    ['sukuna', 'Malevolent Shrine'],
+  ])('shows the approved domain on the %s file', (id, name) => {
+    renderWithIntl(<CharacterSheet character={CHARACTERS.find((c) => c.id === id)!} />);
+    expect(screen.getByRole('heading', { name })).toBeInTheDocument();
+    expect(screen.getByTestId('domain-preview')).toHaveAttribute('data-character', id);
+  });
+
+  it('keeps unimplemented domains off the other character files', () => {
+    renderWithIntl(<CharacterSheet character={CHARACTERS.find((c) => c.id === 'maki')!} />);
+    expect(screen.queryByTestId('domain-preview')).not.toBeInTheDocument();
+  });
   it('renders the file of the character with its technique', () => {
     renderWithIntl(<CharacterSheet character={gojo} />);
 

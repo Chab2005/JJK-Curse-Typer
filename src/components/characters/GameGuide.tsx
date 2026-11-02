@@ -1,11 +1,11 @@
 import { useTranslations } from 'next-intl';
 import type { CSSProperties, ReactNode } from 'react';
-import { Chevrons } from '@/components/shared/ChevronButton';
 import type { CharacterId } from '@/components/shared/characters';
 import { ENERGY_MAX } from '@/game/energy';
 import { spriteStyle } from './characterSprites';
 import EnergyDemo from './EnergyDemo';
 import GojoDomain, { DomainScene } from './GojoDomain';
+import styles from './GameGuide.module.css';
 
 /** Énergie minimale pour déployer une extension du territoire, et durée pendant laquelle la technique est ensuite bloquée. */
 const DOMAIN_MIN_ENERGY = 1000;
@@ -88,10 +88,8 @@ export default function GameGuide() {
               </div>
             </div>
 
-            <div aria-hidden="true" className="flex items-center justify-center">
-              <span className="flex h-12 w-6 rotate-90 -scale-x-100 text-primary-container lg:rotate-0">
-                <Chevrons className="size-full" />
-              </span>
+            <div aria-hidden="true" className="relative min-h-12">
+              <span className={styles.stepDivider} />
             </div>
 
             <div className="flex flex-col gap-[22px]">

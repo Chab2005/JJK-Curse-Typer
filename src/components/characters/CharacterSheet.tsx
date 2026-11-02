@@ -10,6 +10,7 @@ import { CHARACTERS, type Character } from '@/components/shared/characters';
 import { neighbours } from './characterPages';
 import { CHARACTER_STYLES } from './characterStyles';
 import { SPRITES, spriteBox } from './characterSprites';
+import PixelDomain from './PixelDomain';
 
 /** Vignettes des autres fiches : illustration cadrée sur le buste. */
 const MINI_WIDTH = 300;
@@ -72,6 +73,16 @@ export default function CharacterSheet({ character }: { character: Character }) 
               </div>
               <p className="text-base leading-[25px]">{t(`techniqueDetails.${character.id}`)}</p>
             </BevelFrame>
+
+            {(character.id === 'gojo' || character.id === 'megumi' || character.id === 'yuta' || character.id === 'sukuna') && (
+              <BevelFrame frame={cardFrame} className="overflow-hidden bg-surface">
+                <PixelDomain character={character.id} />
+                <div className="flex flex-col gap-1.5 px-6 py-[18px]">
+                  <p className="font-label-code text-[11px] font-bold uppercase tracking-[0.24em] text-outline">{t('domainTitle')}</p>
+                  <h2 className={`text-xl ${style.ink}`}>{t(`domains.${character.id}`)}</h2>
+                </div>
+              </BevelFrame>
+            )}
 
             <div className="bevel flex items-start gap-4 bg-surface-container-low px-6 py-[22px]">
               <span aria-hidden="true" className="material-symbols-outlined text-[28px] text-tertiary">bolt</span>

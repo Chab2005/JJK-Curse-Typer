@@ -1,0 +1,8 @@
+/* Séparateur vertical fixe, en retrait du cadre et transparent aux deux extrémités. */
+.stepDivider {
+  position: absolute;
+  inset-block: 0;
+  left: 50%;
+  width: 1px;
+  background: linear-gradient(to bottom, transparent, var(--color-primary-container) 22%, var(--color-primary-container) 78%, transparent);
+}

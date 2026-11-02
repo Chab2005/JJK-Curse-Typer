@@ -138,6 +138,13 @@
     "breadcrumb": "Breadcrumb",
     "portraitAlt": "{name}, full-length illustration",
     "techniqueTitle": "Innate technique",
+    "domainTitle": "Domain Expansion",
+    "domains": {
+      "gojo": "Unlimited Void",
+      "megumi": "Chimera Shadow Garden",
+      "yuta": "Mutual Authentic Love",
+      "sukuna": "Malevolent Shrine"
+    },
     "abilityTitle": "Race ability",
     "abilitySoon": "Coming soon",
     "abilitySoonText": "Its effect, energy cost and duration will be revealed soon.",
