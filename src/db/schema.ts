@@ -1,4 +1,5 @@
 import { customType, index, integer, pgTable, primaryKey, real, serial, text, timestamp } from "drizzle-orm/pg-core";
+import type { Level } from "../game/levels";
 
 const bytea = customType<{ data: Buffer }>({ dataType: () => "bytea" });
 
@@ -18,6 +19,10 @@ export const users = pgTable("users", {
   /** Photo téléversée (PROF-5), déjà redimensionnée en WebP ; `null` : initiales. */
   avatar: bytea("avatar"),
   avatarVersion: integer("avatar_version").default(0).notNull(),
+  /** Expérience totale cumulée (STAT-9). */
+  xp: integer("xp").default(0).notNull(),
+  /** Grade atteint, toujours égal à `levelForXp(xp)` (voir `src/game/levels.ts`). */
+  level: text("level").$type<Level>().default("grade_4").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

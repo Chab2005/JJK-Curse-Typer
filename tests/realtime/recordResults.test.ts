@@ -6,9 +6,11 @@ import { clearGuestResults, takeGuestGames } from '@/lib/guestResults';
 const insert = vi.fn();
 const upsert = vi.fn();
 const where = vi.fn();
+const update = vi.fn();
 
 vi.mock('@/db/client', () => ({
   getDb: () => ({
+    update: () => ({ set: () => ({ where: () => update() }) }),
     select: () => ({ from: () => ({ where: (...args: unknown[]) => where(...args) }) }),
     insert: (table: unknown) => ({
       values: (rows: unknown) => (table === keyStats ? { onConflictDoUpdate: () => upsert(rows) } : insert(rows)),
@@ -40,9 +42,16 @@ beforeEach(() => {
   insert.mockReset();
   upsert.mockReset();
   where.mockReset();
+  update.mockReset();
 });
 
 describe('recordRaceResults', () => {
+  it('donne de l’XP à un compte face à un autre compte, pas sans (STAT-9)', async () => {
+    where.mockResolvedValue([{ id: 7, key: 'yuji' }, { id: 8, key: 'megumi' }]);
+    await recordRaceResults([result('Yuji'), result('Megumi', { rivals: 0 })], AT);
+    expect(update).toHaveBeenCalledTimes(1);
+  });
+
   it('écrit la course d’un compte en base, précision en pourcentage (STAT-8)', async () => {
     where.mockResolvedValue([{ id: 7, key: 'yuji' }]);
     await recordRaceResults([result('Yuji', { rank: 2 })], AT);

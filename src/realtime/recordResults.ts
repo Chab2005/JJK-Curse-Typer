@@ -3,10 +3,12 @@
 import { inArray, sql } from 'drizzle-orm';
 import { getDb } from '@/db/client';
 import { keyStats, results, users } from '@/db/schema';
+import { raceXp } from '@/game/levels';
 import { GUEST_SEAT_PREFIX, type RaceResult } from '@/game/results';
 import type { GuestGame } from '@/lib/auth/guest';
 import { usernameKey } from '@/lib/auth/validation';
 import { holdGuestGame } from '@/lib/guestResults';
+import { awardXp } from '@/lib/xp';
 
 /** Borne du cookie d'invité (`gameSchema`). */
 const MAX_GUEST_SECONDS = 3600;
@@ -62,6 +64,13 @@ export async function recordRaceResults(list: readonly RaceResult[], at: Date): 
             avgMs: sql`(${keyStats.avgMs} + excluded.avg_ms) / 2`,
           },
         });
+    }
+
+    // XP et grade (STAT-9) : seulement face à un autre compte, comme le classement.
+    for (const { userId, result } of saved) {
+      const durationSeconds = result.durationMs / 1000;
+      const gain = raceXp({ wpm: result.wpm, accuracy: result.accuracy, durationSeconds, rank: result.rank, rivals: result.rivals, finished: result.status === 'finished' });
+      await awardXp(db, userId, gain);
     }
   } catch (error) {
     console.error('[race] results not saved', error);

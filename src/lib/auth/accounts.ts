@@ -2,6 +2,8 @@ import 'server-only';
 import { and, eq } from 'drizzle-orm';
 import { db } from '@/db';
 import { oauthAccounts, results, users } from '@/db/schema';
+import { raceXp } from '@/game/levels';
+import { awardXp } from '@/lib/xp';
 import type { Guest, GuestGame } from './guest';
 import { hashPassword } from './password';
 import { usernameKey } from './validation';
@@ -33,6 +35,13 @@ const guestGameRow = (userId: number, g: GuestGame) => ({
   createdAt: new Date(g.at),
 });
 
+/** XP des courses d'un invité (STAT-9) ; le cookie ne dit pas si une course a fini par le temps limite. */
+const guestGamesXp = (games: readonly GuestGame[]) =>
+  games.reduce(
+    (sum, g) => sum + raceXp({ wpm: g.wpm, accuracy: g.accuracy / 100, durationSeconds: g.durationSeconds, rank: g.rank ?? null, rivals: g.rivals ?? null, finished: true }),
+    0,
+  );
+
 export type CreateAccountResult = { ok: true; userId: number } | { ok: false; error: 'taken' };
 
 /**
@@ -60,6 +69,7 @@ export async function createAccount(input: {
         await tx.insert(results).values(
           games.map((g) => guestGameRow(user.id, g)),
         );
+        await awardXp(tx, user.id, guestGamesXp(games));
       }
       return user.id;
     });
@@ -73,7 +83,8 @@ export async function createAccount(input: {
 /** Rattache les courses d'un invité à un compte existant qui se connecte (STAT-7, H-19). */
 export async function attachGuestGames(userId: number, guest: Guest | null): Promise<void> {
   if (!guest || guest.games.length === 0) return;
-  await db.insert(results).values(
-    guest.games.map((g) => guestGameRow(userId, g)),
-  );
+  await db.transaction(async (tx) => {
+    await tx.insert(results).values(guest.games.map((g) => guestGameRow(userId, g)));
+    await awardXp(tx, userId, guestGamesXp(guest.games));
+  });
 }

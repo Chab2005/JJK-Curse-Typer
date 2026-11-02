@@ -57,6 +57,13 @@
       "when": 1793591573980,
       "tag": "0007_thankful_absorbing_man",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1793623826107,
+      "tag": "0008_user_levels",
+      "breakpoints": true
     }
   ]
 }
