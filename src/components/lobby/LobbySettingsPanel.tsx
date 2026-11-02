@@ -4,7 +4,9 @@ import { useFormatter, useTranslations } from 'next-intl';
 import { useRef, useState } from 'react';
 import { CHAR_KINDS, TEXT_LANGUAGES, textCharsLabel } from '@/components/lobbies/lobbySearch';
 import BevelCheck from '@/components/shared/BevelCheck';
-import BevelFrame, { cardFrame, goldFrame } from '@/components/shared/BevelFrame';
+import BevelFrame, { cardFrame } from '@/components/shared/BevelFrame';
+import BevelPanel from '@/components/shared/BevelPanel';
+import ChevronButton from '@/components/shared/ChevronButton';
 import BevelSelect from '@/components/shared/BevelSelect';
 import Reserve from '@/components/shared/Reserve';
 import Segmented from '@/components/shared/Segmented';
@@ -25,14 +27,14 @@ export default function LobbySettingsPanel({ settings, participantCount, editabl
   const t = useTranslations('Lobby.settings');
 
   return (
-    <BevelFrame as="section" aria-labelledby="settings-title" frame={cardFrame} className="flex flex-col gap-5 bg-surface-container-low px-6 pt-6 pb-7">
+    <BevelPanel as="section" aria-labelledby="settings-title" className="flex flex-col gap-4 px-6 pt-6 pb-7">
       <div className="flex flex-col gap-1">
-        <h2 id="settings-title" className="text-xl uppercase tracking-[0.12em]">{t('title')}</h2>
+        <h2 id="settings-title" className="text-[22px] uppercase tracking-[0.08em]">{t('title')}</h2>
         {!editable && <p className="text-[14px] text-outline">{t('readOnly')}</p>}
       </div>
       <SettingsSummary settings={settings} />
       {editable && <SettingsDialog settings={settings} participantCount={participantCount} onSave={onChange} />}
-    </BevelFrame>
+    </BevelPanel>
   );
 }
 
@@ -62,15 +64,10 @@ function SettingsDialog({ settings, participantCount, onSave }: { settings: Lobb
 
   return (
     <>
-      <button
-        type="button"
-        onClick={open}
-        aria-haspopup="dialog"
-        className="flex min-h-11 w-full items-center justify-center gap-2 border border-surface-container-highest px-4 text-[13px] uppercase tracking-[0.12em] text-on-surface transition-colors hover:border-primary hover:text-primary"
-      >
-        <span aria-hidden="true" className="material-symbols-outlined w-[18px] shrink-0 overflow-hidden text-[18px]!">edit</span>
+      <ChevronButton type="button" size="sm" chevrons={false} onClick={open} aria-haspopup="dialog" frame="w-full" className="font-label-code text-[11px] uppercase tracking-[0.16em]">
+        <span aria-hidden="true" className="material-symbols-outlined w-4 shrink-0 overflow-hidden text-[16px]! text-primary">edit</span>
         {t('edit')}
-      </button>
+      </ChevronButton>
 
       <dialog
         ref={dialogRef}
@@ -90,18 +87,14 @@ function SettingsDialog({ settings, participantCount, onSave }: { settings: Lobb
             <SettingsForm settings={draft} participantCount={participantCount} onChange={(patch) => setDraft((d) => ({ ...d, ...patch }))} />
           </div>
 
-          <div className="grid grid-cols-2 gap-3 border-t border-surface-container-highest px-6 pt-4 pb-6 sm:px-8">
-            <button
-              type="button"
-              onClick={close}
-              className="min-h-13 border border-surface-container-highest text-[15px] uppercase tracking-[0.12em] text-on-surface transition-colors hover:border-primary hover:text-primary"
-            >
+          <div className="flex justify-center gap-2.5 border-t border-[#8f1022]/60 px-6 pt-4 pb-6 sm:px-8">
+            <ChevronButton type="button" size="sm" chevrons={false} onClick={close} className="font-label-code text-[11px] uppercase tracking-[0.16em]">
               {t('cancel')}
-            </button>
-            <BevelFrame as="button" type="button" onClick={save} frame={`group flex ${goldFrame}`} className="flex min-h-[50px] flex-1 items-center justify-center gap-2 bg-primary-container text-on-primary-container transition-colors group-hover:bg-inverse-primary text-[15px] uppercase tracking-[0.12em]">
-              <span aria-hidden="true" className="material-symbols-outlined text-[19px]">save</span>
+            </ChevronButton>
+            <ChevronButton type="button" size="sm" chevrons={false} variant="primary" onClick={save} className="font-label-code text-[11px] uppercase tracking-[0.16em]">
+              <span aria-hidden="true" className="material-symbols-outlined text-[16px]">save</span>
               {t('save')}
-            </BevelFrame>
+            </ChevronButton>
           </div>
         </BevelFrame>
       </dialog>
@@ -136,9 +129,9 @@ function SettingsSummary({ settings }: { settings: LobbySettings }) {
   return (
     <dl className="flex flex-col">
       {rows.map(([label, value]) => (
-        <div key={label} className="flex items-baseline justify-between gap-4 border-b border-primary/10 py-2.5 last:border-b-0">
-          <dt className="text-[14px] text-on-surface-variant">{label}</dt>
-          <dd className="font-label-code text-right text-[14px] text-on-surface">{value}</dd>
+        <div key={label} className="flex min-h-[42px] items-center justify-between gap-4 border-t border-[#8f1022]/45 py-2">
+          <dt className="font-grotesk text-[14px] text-on-surface-variant">{label}</dt>
+          <dd className="font-label-code text-right text-[13px] text-on-primary-container">{value}</dd>
         </div>
       ))}
     </dl>

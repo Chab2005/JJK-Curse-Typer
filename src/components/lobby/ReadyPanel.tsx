@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl';
-import BevelFrame, { goldFrame } from '@/components/shared/BevelFrame';
+import ChevronButton from '@/components/shared/ChevronButton';
 import Reserve from '@/components/shared/Reserve';
 import type { StartBlocker, ViewerRole } from './lobbyRoom';
 
@@ -56,18 +56,14 @@ export default function ReadyPanel({
             player: (
               <div className="flex flex-col gap-3">
                 {ready ? (
-                  <button
-                    type="button"
-                    onClick={onToggleReady}
-                    className="flex min-h-15 items-center justify-center gap-3 border border-tertiary text-[17px] uppercase tracking-[0.12em] text-tertiary transition-colors hover:bg-tertiary hover:text-on-tertiary"
-                  >
-                    <span aria-hidden="true" className="material-symbols-outlined text-[22px]">undo</span>
+                  <ChevronButton type="button" onClick={onToggleReady} frame="w-full" className={actionFace}>
+                    <span aria-hidden="true" className="material-symbols-outlined text-[20px] text-primary">undo</span>
                     {t('unready')}
-                  </button>
+                  </ChevronButton>
                 ) : (
                   <PrimaryButton icon="check_circle" onClick={onToggleReady}>{t('ready')}</PrimaryButton>
                 )}
-                <p className="text-[14px] leading-5 text-on-surface-variant">{t('waitHost')}</p>
+                <p className="text-center text-[15px] leading-5 text-[#c9aeaf]">{t('waitHost')}</p>
               </div>
             ),
             spectator: (
@@ -85,12 +81,15 @@ export default function ReadyPanel({
       )}
 
       {spectating !== null && !racing && (
-        <button
+        <ChevronButton
           type="button"
+          size="sm"
+          chevrons={false}
           onClick={onToggleSpectating}
           disabled={spectating && !canPlay}
           title={spectating && !canPlay ? t('full') : undefined}
-          className="flex min-h-11 items-center justify-center gap-2 border border-surface-container-highest px-4 text-[13px] uppercase tracking-[0.12em] text-on-surface transition-colors enabled:hover:border-secondary enabled:hover:text-secondary disabled:cursor-not-allowed disabled:text-outline"
+          frame="w-full disabled:opacity-40"
+          className="font-label-code text-[11px] uppercase tracking-[0.16em]"
         >
           <Reserve
             active={spectating ? 'play' : 'spectate'}
@@ -99,7 +98,7 @@ export default function ReadyPanel({
               play: <Label icon="sports_esports">{t('play')}</Label>,
             }}
           />
-        </button>
+        </ChevronButton>
       )}
     </div>
   );
@@ -108,34 +107,33 @@ export default function ReadyPanel({
 function Label({ icon, children }: { icon: string; children: React.ReactNode }) {
   return (
     <span className="flex items-center justify-center gap-2">
-      <span aria-hidden="true" className="material-symbols-outlined text-[18px]">{icon}</span>
+      <span aria-hidden="true" className="material-symbols-outlined text-[16px] text-secondary">{icon}</span>
       {children}
     </span>
   );
 }
 
 function Blocker({ id, children }: { id?: string; children: React.ReactNode }) {
-  return <p id={id} className="text-[14px] leading-5 text-on-surface-variant">{children}</p>;
+  return <p id={id} className="text-center text-[15px] leading-5 text-[#c9aeaf]">{children}</p>;
 }
 
-/** Habillage du bouton principal (cadre doré biseauté), partagé avec le lien pour quitter le lobby. */
-export const primaryFrame = `group flex ${goldFrame} transition-transform hover:-translate-y-0.5`;
-export const primaryFace =
-  'flex min-h-15 flex-grow items-center justify-center gap-3 bg-primary-container text-[17px] uppercase tracking-[0.12em] text-on-primary-container transition-colors group-hover:bg-inverse-primary';
+/** Face des grands boutons-flèches du salon (prêt, lancer, quitter). */
+export const actionFace = 'text-[17px] uppercase tracking-[0.12em] whitespace-nowrap';
 
+// Bouton principal : plaque cramoisie flanquée de chevrons ; désactivé (départ impossible), il s'éteint.
 function PrimaryButton({ icon, disabled, describedBy, onClick, children }: { icon: string; disabled?: boolean; describedBy?: string; onClick: () => void; children: React.ReactNode }) {
   return (
-    <BevelFrame
-      as="button"
+    <ChevronButton
       type="button"
+      variant="primary"
       disabled={disabled}
       aria-describedby={describedBy}
       onClick={onClick}
-      frame={`${primaryFrame} disabled:pointer-events-none disabled:bg-none disabled:bg-outline-variant`}
-      className={`${primaryFace} group-disabled:bg-surface-container-high group-disabled:text-outline`}
+      frame="w-full disabled:opacity-40 disabled:saturate-0"
+      className={actionFace}
     >
-      <span aria-hidden="true" className="material-symbols-outlined text-[22px]">{icon}</span>
+      <span aria-hidden="true" className="material-symbols-outlined text-[20px]">{icon}</span>
       {children}
-    </BevelFrame>
+    </ChevronButton>
   );
 }

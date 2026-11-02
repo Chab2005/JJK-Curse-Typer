@@ -714,6 +714,15 @@ kbd,
   .hcard-r { --h: 24px; display: flex; flex: 1; padding: 1px; background: rgb(225 29 72 / 0.35); }
   .hcard-c { --h: 23.5px; flex: 1; background: radial-gradient(120% 120% at 50% 0%, #2a0b10 0%, #150608 55%, #0c0304 100%); }
 
+  /* Panneau biseauté (BevelPanel) : les mêmes quatre couches, en coins coupés (profil, salon d'attente). --b = taille du biseau. */
+  .bpanel, .bpanel-g, .bpanel-r, .bpanel-c {
+    clip-path: polygon(var(--b) 0, calc(100% - var(--b)) 0, 100% var(--b), 100% calc(100% - var(--b)), calc(100% - var(--b)) 100%, var(--b) 100%, 0 calc(100% - var(--b)), 0 var(--b));
+  }
+  .bpanel { --b: 18px; display: flex; padding: 1px; background: #8f1022; }
+  .bpanel-g { --b: 17.5px; display: flex; flex: 1; min-width: 0; padding: 3px; background: #0b0405; }
+  .bpanel-r { --b: 16px; display: flex; flex: 1; min-width: 0; padding: 1px; background: rgb(225 29 72 / 0.4); }
+  .bpanel-c { --b: 15.5px; flex: 1; min-width: 0; background: radial-gradient(120% 120% at 50% 0%, #2a0b10 0%, #150608 55%, #0c0304 100%); }
+
   /* Rangée pointée (tableaux des arènes et du classement) : le fond dessine le filet (--row-frame), ::before la face. */
   .hx-row {
     --h: 22px;

@@ -54,11 +54,23 @@ export default function CopyButton({
     </span>
   );
   const border = 'border border-surface-container-highest text-on-surface transition-colors enabled:hover:border-primary enabled:hover:text-primary disabled:cursor-not-allowed disabled:text-outline';
-  const iconBox = bare ? 'size-10 text-on-surface-variant transition-colors hover:bg-surface-container-highest hover:text-primary' : `size-11 ${border}`;
+  const iconBox = 'size-10 text-on-surface-variant transition-colors hover:bg-surface-container-highest hover:text-primary';
 
   return (
     <>
-      {iconOnly ? (
+      {iconOnly && !bare ? (
+        // Icône seule (code du lobby) : un carré biseauté au filet cramoisi.
+        <button
+          type="button"
+          onClick={onClick}
+          disabled={disabled}
+          aria-label={labels[state]}
+          title={label}
+          className="group bevel flex shrink-0 bg-primary-container p-px disabled:cursor-not-allowed disabled:bg-outline-variant"
+        >
+          <span className="bevel grid size-[42px] place-items-center bg-[#170608] text-primary transition-colors group-enabled:group-hover:bg-[#3a0c14] group-disabled:text-outline">{iconNode}</span>
+        </button>
+      ) : iconOnly ? (
         <button type="button" onClick={onClick} disabled={disabled} aria-label={labels[state]} title={label} className={`grid shrink-0 place-items-center ${iconBox}`}>
           {iconNode}
         </button>

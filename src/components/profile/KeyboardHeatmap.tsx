@@ -3,11 +3,16 @@
 import { useFormatter, useTranslations } from 'next-intl';
 import { useState } from 'react';
 import BevelCheck from '@/components/shared/BevelCheck';
+import BevelPanel from '@/components/shared/BevelPanel';
 import Segmented from '@/components/shared/Segmented';
 import { type HeatKey, type HeatmapMode, type KeyStat, type KeyTone, heatmap, weakestKeys } from './keyboard';
 
-// Couleurs validées pour le daltonisme sur fond sombre ; encre foncée sur les trois (contraste AA).
-const TONES: Record<KeyTone, string> = { weak: 'bg-[#d4364b]', average: 'bg-[#c9a23a]', strong: 'bg-[#3f9a63]' };
+// Trois tons de luminosités différentes (vert sombre, cramoisi, or clair), chacun avec son encre (contraste AA).
+const TONES: Record<KeyTone, string> = {
+  weak: 'bg-primary-container text-on-primary-container',
+  average: 'bg-gold text-[#2a1a00]',
+  strong: 'bg-[#2f7d55] text-[#eafff2]',
+};
 /** Décalage de chaque rangée, en largeurs de touche, comme sur un vrai clavier. */
 const INDENTS = [0, 0.5, 0.75, 1.25, 3];
 const MODES = ['errors', 'speed'] as const;
@@ -27,10 +32,10 @@ export default function KeyboardHeatmap({ stats }: { stats: KeyStat[] }) {
   const describe = (key: HeatKey) => (key.tone ? t('keyLabel', { key: keyName(key), value: value(key), tone: t(`tones.${key.tone}`) }) : t('keyUnused', { key: keyName(key) }));
 
   return (
-    <section aria-labelledby="heatmap-title" className="bevel flex flex-col gap-5 bg-surface-container-low px-5 py-6 sm:px-7">
+    <BevelPanel as="section" aria-labelledby="heatmap-title" className="flex flex-col gap-5 px-5 pt-6 pb-7 sm:px-8">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 id="heatmap-title" className="flex items-center gap-2 text-[15px] uppercase tracking-[0.14em] text-on-surface-variant">
-          <span aria-hidden="true" className="material-symbols-outlined text-lg text-primary">keyboard</span>
+        <h2 id="heatmap-title" className="flex items-center gap-2.5 text-[20px] uppercase tracking-[0.1em] text-on-surface">
+          <span aria-hidden="true" className="material-symbols-outlined text-[20px] text-primary-container">keyboard</span>
           {t('title')}
         </h2>
         <div className="flex flex-wrap items-center gap-2">
@@ -44,7 +49,7 @@ export default function KeyboardHeatmap({ stats }: { stats: KeyStat[] }) {
       <ul aria-label={t('legend')} className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[14px] text-on-surface-variant">
         {(['weak', 'average', 'strong'] as const).map((tone) => (
           <li key={tone} className="flex items-center gap-2">
-            <span aria-hidden="true" className={`size-3.5 ${TONES[tone]}`} />
+            <span aria-hidden="true" className={`size-2.5 rotate-45 ${TONES[tone]}`} />
             {t(`tones.${tone}`)}
           </li>
         ))}
@@ -61,7 +66,7 @@ export default function KeyboardHeatmap({ stats }: { stats: KeyStat[] }) {
                   key={key.label}
                   title={describe(key)}
                   aria-label={describe(key)}
-                  className={`flex h-(--u) flex-col items-center justify-center gap-0.5 ${key.tone ? `${TONES[key.tone]} text-[#1a0f11]` : 'bg-surface-container-high text-outline'}`}
+                  className={`bevel-var flex h-(--u) flex-col items-center justify-center gap-0.5 [--b:6px] ${key.tone ? TONES[key.tone] : 'bg-[#241417] text-outline'}`}
                   style={{ width: `calc(var(--u) * ${key.width ?? 1} + ${((key.width ?? 1) - 1) * 6}px)` }}
                 >
                   <span aria-hidden="true" className="font-label-code text-[15px] leading-none font-bold">{keyName(key)}</span>
@@ -74,17 +79,19 @@ export default function KeyboardHeatmap({ stats }: { stats: KeyStat[] }) {
       </div>
 
       {weakest.length > 0 && (
-        <div className="flex flex-wrap items-center gap-2.5 border-t border-surface-container-highest pt-4">
-          <p className="text-[13px] uppercase tracking-[0.14em] text-on-surface-variant">{t('weakest')}</p>
+        <div className="flex flex-wrap items-center gap-2.5 border-t border-[#8f1022]/60 pt-[18px]">
+          <p className="font-label-code mr-1.5 text-[11px] font-bold uppercase tracking-[0.2em] text-primary-container">{t('weakest')}</p>
           <ul className="flex flex-wrap gap-2">
             {weakest.map((key) => (
-              <li key={key.label} className="font-label-code bg-error-container/60 px-2.5 py-1 text-[13px] text-on-error-container">
-                {keyName(key)} · {value(key)}
+              <li key={key.label} className="hx-cut flex bg-primary-container p-px [--h:10px]">
+                <span className="hx-cut font-label-code flex min-h-[30px] items-center bg-linear-to-b from-[#3a0c14] to-[#170608] px-5 text-[13px] text-primary-fixed [--h:9.5px]">
+                  {keyName(key)} · {value(key)}
+                </span>
               </li>
             ))}
           </ul>
         </div>
       )}
-    </section>
+    </BevelPanel>
   );
 }

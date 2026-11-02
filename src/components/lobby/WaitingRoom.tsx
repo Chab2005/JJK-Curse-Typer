@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { joinLobbyAction, leaveLobbyAction, updateLobbyAction } from '@/app/actions/lobbies';
 import PageIntro from '@/components/shared/PageIntro';
+import Pointer from '@/components/shared/Pointer';
 import { useRouter } from '@/i18n/navigation';
 import GuestJoinCard from './GuestJoinCard';
 import InviteCard from './InviteCard';
@@ -111,23 +112,24 @@ export default function WaitingRoom({
             eyebrow={t('eyebrow')}
             title={room.name}
             watermark={room.code}
+            chevrons
             intro={
               <span className="flex flex-wrap items-center gap-x-4 gap-y-1">
                 {host && t('hostedBy', { host: 'kind' in host ? participantName(host) : host.name })}
-                <span className={`font-label-code inline-flex items-center gap-1.5 text-[12px] font-bold uppercase tracking-[0.14em] ${room.status === 'racing' ? 'text-primary' : 'text-tertiary'}`}>
-                  <span aria-hidden="true" className={`size-[7px] rounded-full ${room.status === 'racing' ? 'bg-primary' : 'bg-tertiary'}`} />
+                <span className={`font-label-code inline-flex items-center gap-2.5 text-[12px] uppercase tracking-[0.16em] ${room.status === 'racing' ? 'text-primary' : 'text-tertiary'}`}>
+                  <Pointer />
                   {t(`status.${room.status}`)}
                 </span>
               </span>
             }
           />
         </div>
-        <div className="w-full lg:w-[360px]">
+        <div className="w-full lg:w-[380px]">
           <InviteCard code={room.code} visibility={room.settings.visibility} isHost={isHost} refreshKey={inviteRefreshKey} />
         </div>
       </div>
 
-      <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_360px]">
+      <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_380px]">
         <div className="flex flex-col gap-10">
           <ParticipantList
             room={room}

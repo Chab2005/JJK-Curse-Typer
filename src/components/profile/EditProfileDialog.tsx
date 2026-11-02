@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 import { useRef, useState } from 'react';
 import Avatar from '@/components/shared/Avatar';
 import BevelFrame, { cardFrame, goldFrame } from '@/components/shared/BevelFrame';
+import ChevronButton from '@/components/shared/ChevronButton';
 import { CHARACTERS, type CharacterId } from '@/components/shared/characters';
 import { type ProfileEditErrors, normalizeGithub, validateProfileEdit } from './profileEdit';
 
@@ -15,7 +16,7 @@ export interface EditableProfile {
 }
 
 // Dialogue de modification du profil (PROF-1, PROF-3) : avatar, pseudo, liens GitHub et Discord.
-// <dialog> natif : focus piégé, Échap pour fermer, retour du focus sur le bouton ⋯.
+// <dialog> natif : focus piégé, Échap pour fermer, retour du focus sur le bouton « Modifier le profil ».
 export default function EditProfileDialog({ profile, onSave }: { profile: EditableProfile; onSave: (next: EditableProfile) => void }) {
   const t = useTranslations('Profile.edit');
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -40,17 +41,10 @@ export default function EditProfileDialog({ profile, onSave }: { profile: Editab
 
   return (
     <>
-      <BevelFrame
-        as="button"
-        type="button"
-        onClick={open}
-        aria-label={t('open')}
-        aria-haspopup="dialog"
-        frame="group flex bg-outline-variant transition-colors hover:bg-primary"
-        className="flex size-11 items-center justify-center bg-surface-container-lowest text-on-surface-variant transition-colors group-hover:bg-surface-container-high group-hover:text-primary"
-      >
-        <span aria-hidden="true" className="material-symbols-outlined text-[22px]">more_horiz</span>
-      </BevelFrame>
+      <ChevronButton type="button" size="sm" onClick={open} aria-haspopup="dialog" className="font-label-code text-[11px] uppercase tracking-[0.16em]">
+        <span aria-hidden="true" className="material-symbols-outlined text-[16px] text-primary">edit</span>
+        {t('open')}
+      </ChevronButton>
 
       <dialog
         ref={dialogRef}

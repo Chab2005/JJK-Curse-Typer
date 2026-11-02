@@ -10,8 +10,8 @@ export default function SpectatorList({ spectators, viewerId, isHost, onKick }: 
 
   return (
     <section aria-labelledby="spectators-title" className="flex flex-col gap-3">
-      <h2 id="spectators-title" className="flex items-center gap-2 text-[15px] uppercase tracking-[0.14em] text-on-surface-variant">
-        <span aria-hidden="true" className="material-symbols-outlined text-[18px]">visibility</span>
+      <h2 id="spectators-title" className="font-label-code flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-secondary">
+        <span aria-hidden="true" className="material-symbols-outlined text-[16px]">visibility</span>
         {t('title')}{' '}
         <span className="font-label-code text-[13px]">({spectators.length})</span>
       </h2>
@@ -20,11 +20,13 @@ export default function SpectatorList({ spectators, viewerId, isHost, onKick }: 
       ) : (
         <ul aria-labelledby="spectators-title" className="flex flex-wrap gap-2">
           {spectators.map((spectator) => (
-            <li key={spectator.id} className="flex min-h-11 items-center gap-2 bg-surface-container-low py-1 pr-1 pl-1.5">
-              <Avatar avatar={spectator.avatar} name={spectator.name} src={spectator.photo} size={28} />
-              <span className="font-grotesk text-[14px] text-on-surface">{spectator.name}</span>
-              {spectator.id === viewerId && <span className="font-label-code pr-2 text-[12px] text-primary">{tParticipants('you')}</span>}
-              {isHost && spectator.id !== viewerId && <IconButton icon="person_remove" label={t('kick', { name: spectator.name })} onClick={() => onKick(spectator)} />}
+            <li key={spectator.id} className="hx-cut flex bg-[#3a2a4a] p-px [--h:12px]">
+              <span className="hx-cut flex min-h-11 items-center gap-2 bg-linear-to-b from-[#1a1222] to-[#0e0a12] py-1 pr-4 pl-5 [--h:11.5px]">
+                <Avatar avatar={spectator.avatar} name={spectator.name} src={spectator.photo} size={28} shape="bevel" />
+                <span className="font-grotesk text-[14px] text-secondary-fixed">{spectator.name}</span>
+                {spectator.id === viewerId && <span className="font-label-code text-[12px] text-primary">{tParticipants('you')}</span>}
+                {isHost && spectator.id !== viewerId && <IconButton icon="person_remove" label={t('kick', { name: spectator.name })} onClick={() => onKick(spectator)} />}
+              </span>
             </li>
           ))}
         </ul>
