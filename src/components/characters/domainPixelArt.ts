@@ -1,5 +1,5 @@
-/** Approved native pixel art for Gojo and Megumi (BON-6, UI-4). */
-export type DomainCharacter = 'gojo' | 'megumi';
+/** Approved native pixel art for Gojo, Megumi and Yuta (BON-6, UI-4). */
+export type DomainCharacter = 'gojo' | 'megumi' | 'yuta';
 type Context = CanvasRenderingContext2D;
 type Point = [number, number];
 
@@ -114,10 +114,77 @@ export function createDomainRenderer(canvas: HTMLCanvasElement, character: Domai
     const stamp=spriteCanvas;if(showCharacter&&stamp){for(let y=0;y<8;y++){if(y%3===0)continue;c.drawImage(stamp,(Math.floor(t*8.9)%8)*34,53-y*3,34,1,183+Math.round(Math.sin(t+y)*1),163+y,34,1);}}
   }
 
+  // Yuta: chipped stone and planted swords, all drawn on the native pixel grid.
+  const yp={ink:'#211e2e',sky:['#594456','#886777','#b88d89','#e6b89b','#f6d5ac'],stone:['#d4ccbc','#a59b9f','#6d6478','#474253'],ground:['#b39589','#796878','#4c4158','#211c30'],rope:['#3e2034','#722d44','#a54c5a','#d3827c'],gold:'#c6aa70',blade:'#c4d2d2'};
+  function stone(c: Context,x: number,y: number,w: number,h: number,seed: number){
+    const notch=2+Math.floor(rand(seed)*3),pts: Point[]=[[x,y+notch],[x+w-2,y],[x+w,y+h-3],[x+w-4,y+h],[x,y+h]];
+    poly(c,pts,yp.stone[0]);poly(c,[[x+w-3,y],[x+w+4,y-3],[x+w+6,y+h-5],[x+w,y+h-3]],yp.stone[2]);
+    path(c,[[x,y+notch],[x+w-2,y]],yp.stone[1]);
+    for(let k=0;k<3;k++){const xx=x+3+Math.floor(rand(seed+k+40)*Math.max(2,w-6)),yy=y+Math.floor(rand(seed+k+20)*h);path(c,[[xx,yy],[xx-2,yy+3],[xx+1,yy+5]],yp.stone[1]);}
+    for(let k=0;k<2;k++){const xx=x+2+Math.floor(rand(seed+k+10)*(w-4));line(c,xx,y,xx+1,y-4,yp.stone[3]);}
+  }
+  function cross(c: Context,x: number,foot: number,size: number,seed: number){
+    const w=Math.max(3,Math.round(9*size)),h=Math.round(75*size),y=foot-h;
+    stone(c,x-w/2,y,w,h,seed);stone(c,x-25*size,y+20*size,49*size,12*size,seed+12);
+    path(c,[[x-1,y+h*.5],[x-4,y+h*.57],[x,y+h*.64],[x-2,y+h*.71]],yp.stone[2]);
+  }
+  const yutaBack=character==='yuta'?layer(c=>{
+    dither(c,yp.sky,(x,y)=>Math.min(3.99,y/31+.18*Math.sin(x*.02)));
+    for(let i=0;i<8;i++){const y=12+i*12,x=-20+Math.floor(rand(i+440)*150);poly(c,[[x,y+4],[x+70,y],[x+140,y+4],[x+230,y+3],[x+250,y+6],[x,y+7]],yp.sky[Math.min(3,Math.floor(y/31))]);}
+    for(let i=0;i<16;i++){const x=Math.floor(rand(i+480)*400),y=120+Math.floor(rand(i+500)*6),h=14+Math.floor(rand(i+520)*20);rect(c,x,y-h,3,h,'#ab8a86');rect(c,x-5,y-h+6,14,3,'#ab8a86');}
+    rect(c,0,125,400,95,yp.ground[0]);
+    for(let y=126;y<220;y++){
+      const f=(y-126)/94*3,low=Math.min(2,Math.floor(f)),fraction=f-low;
+      for(let x=0;x<400;x++)if(fraction>(bayer[(y%4)*4+x%4]+.5)/16)rect(c,x,y,1,1,yp.ground[low+1]);else rect(c,x,y,1,1,yp.ground[low]);
+    }
+    for(let i=0;i<28;i++){const x=rand(i+580)*W,y=129+rand(i+610)*91;line(c,200+(x-200)*.15,126,x,y,yp.ground[2]);}
+  }):null;
+  const yutaRuins=character==='yuta'?layer(c=>{
+    for(let i=0;i<8;i++){const x=16+i*51+rand(i+650)*18;if(x>171&&x<231)continue;cross(c,x,146+rand(i+670)*12,.36+rand(i+690)*.2,i+710);}
+    cross(c,66,160,1.35,750);cross(c,328,163,1.24,770);
+    cross(c,15,155,.68,790);cross(c,384,158,.7,810);cross(c,128,152,.61,830);cross(c,275,152,.6,850);
+    for(let i=0;i<44;i++){const x=Math.floor(rand(i+900)*400),y=141+Math.floor(rand(i+950)*79),s=2+Math.floor(rand(i+980)*5);poly(c,[[x,y],[x+s,y-2],[x+s+4,y+1],[x+2,y+3]],yp.stone[i%3===0?0:1]);poly(c,[[x+2,y+3],[x+s+4,y+1],[x+s+3,y+5],[x+2,y+6]],yp.stone[3]);}
+  }):null;
+  function katana(c: Context,s: {x: number;y: number;h: number;angle: number;width: number}){
+    const dx=Math.sin(s.angle),dy=-Math.cos(s.angle),nx=Math.cos(s.angle),ny=Math.sin(s.angle),point=(d: number): Point=>[s.x+dx*d,s.y+dy*d],guard=point(s.h*.73),tip=point(s.h),handle=point(s.h*.76);
+    const blade: Point[]=[point(0),[guard[0]-nx,guard[1]-ny],[guard[0]+nx,guard[1]+ny],[s.x+1,s.y-3]];poly(c,blade,yp.stone[3]);line(c,s.x,s.y,...guard,yp.blade);
+    line(c,...handle,...tip,yp.ink,Math.max(1,s.width));
+    for(let j=0;j<5;j++){const pos=point(s.h*(.8+j*.04));rect(c,...pos,1,1,j%2?yp.stone[1]:yp.rope[2]);}
+    line(c,guard[0]-nx*s.width*1.6,guard[1]-ny*s.width*1.6,guard[0]+nx*s.width*1.6,guard[1]+ny*s.width*1.6,yp.gold);rect(c,...tip,Math.max(1,s.width),1,yp.gold);
+  }
+  const swords=Array.from({length:130},(_,i)=>{const depth=rand(i+1100),y=130+depth*95,x=rand(i+1200)*400;return{x,y,h:9+depth*61,angle:(rand(i+1300)-.5)*.34,width:depth>.7?3:depth>.35?2:1,tier:depth>.76?3:depth>.4?2:depth>.17?1:0};}).filter(s=>!(Math.abs(s.x-200)<20&&s.y>143&&s.y<177));
+  const swordLayers=character==='yuta'?[0,1,2,3].map(tier=>layer(c=>swords.filter(s=>s.tier===tier).sort((a,b)=>a.y-b.y).forEach(s=>katana(c,s)))):[];
+  function knotBand(c: Context,start: Point,curves: [number,number,number,number,number,number][],range: Point | null=null){
+    const pts: Point[]=[start];let previous=start;
+    for(const [x1,y1,x2,y2,x3,y3]of curves){for(let j=1;j<=32;j++){const t=j/32,u=1-t;pts.push([u*u*u*previous[0]+3*u*u*t*x1+3*u*t*t*x2+t*t*t*x3,u*u*u*previous[1]+3*u*u*t*y1+3*u*t*t*y2+t*t*t*y3]);}previous=[x3,y3];}
+    const normals=pts.map((p,i): Point=>{const a=pts[Math.max(0,i-1)],b=pts[Math.min(pts.length-1,i+1)],dx=b[0]-a[0],dy=b[1]-a[1],d=Math.hypot(dx,dy)||1;return[-dy/d,dx/d];});
+    const first=range?Math.round(range[0]*(pts.length-1)):0,last=range?Math.round(range[1]*(pts.length-1)):pts.length-1;
+    const taper=(i: number)=>1-(1-8/16)*ease((i/(pts.length-1)-.78)/.22);
+    const toPixel=(p: Point,n: Point,offset: number,i: number): Point=>[207+(p[0]+n[0]*offset*taper(i))*.54,64+(p[1]+n[1]*offset*taper(i))*.54];
+    function ribbon(extra: number,color: string){const shape: Point[]=[];for(let i=first;i<=last;i++)shape.push(toPixel(pts[i],normals[i],8+extra,i));for(let i=last;i>=first;i--)shape.push(toPixel(pts[i],normals[i],-8-extra,i));poly(c,shape,color);}
+    ribbon(2,yp.rope[0]);ribbon(0,yp.rope[1]);
+    for(const [offset,color]of ([[-4,yp.rope[2]],[-2,yp.rope[3]],[1,yp.rope[2]],[5,yp.rope[0]]] as [number,string][])){const fiber: Point[]=[];for(let i=first;i<=last;i++)fiber.push(toPixel(pts[i],normals[i],offset,i));path(c,fiber,color);}
+  }
+  const yutaCord=character==='yuta'?layer(c=>{
+    const left: [number,number,number,number,number,number][]=[[-43,-78,-38,-37,-25,-12],[-16,5,8,29,22,34],[44,52,65,24,59,5],[57,-19,41,-35,22,-20],[0,-2,-150,18,-410,-40]];
+    const right: [number,number,number,number,number,number][]=[[45,-79,36,-40,22,-13],[14,5,2,23,-11,32],[-34,50,-61,26,-59,8],[-61,-20,-35,-35,-18,-19],[6,-1,150,18,390,-40]];
+    knotBand(c,[-40,-118],left);knotBand(c,[42,-122],right);knotBand(c,[-40,-118],left,[.2,.4]);
+  }):null;
+  function yuta(c: Context,t: number){
+    c.drawImage(yutaBack!,0,0);const ruins=ease((t-.45)/1.5),cord=ease((t-1.4)/1.5);
+    if(ruins)c.drawImage(yutaRuins!,0,Math.round((1-ruins)*15));
+    if(cord)c.drawImage(yutaCord!,0,Math.round(Math.sin(t*.65)+(1-cord)*-18));
+    for(let tier=0;tier<3;tier++){const reveal=ease((t-.8-tier*.43)/1.25);if(reveal)c.drawImage(swordLayers[tier],0,Math.round((1-reveal)*(18+tier*18)));}
+    oval(c,200,162,18,2,yp.ink);actor(c,t,200,162);
+    const front=ease((t-1.9)/1.2);if(front)c.drawImage(swordLayers[3],0,Math.round((1-front)*100));
+    for(let i=0;i<25;i++){const x=Math.floor(rand(i+1500)*400+Math.sin(t*.3+i)*3),y=Math.floor((rand(i+1550)*170-t*(1.5+rand(i+1580)*2)+10000)%170);if(t>1.5)rect(c,x,y,1,1,i%4===0?'#f6d5ac':'#b88d89');}
+    for(let i=0;i<swords.length;i+=16){const s=swords[i];if(Math.sin(t*.9+i)> .97&&s.tier>0&&s.tier<3&&t>3){const x=Math.round(s.x+Math.sin(s.angle)*s.h*.4),y=Math.round(s.y-s.h*.4);line(c,x-2,y,x+2,y,'#f8e8ca');line(c,x,y-3,x,y+3,'#f8e8ca');}}
+  }
+
   function draw(time: number) {
     if(disposed)return;
     lastTime=time;
-    if(character==='gojo')gojo(context!,time);else megumi(context!,time);
+    if(character==='gojo')gojo(context!,time);else if(character==='megumi')megumi(context!,time);else yuta(context!,time);
   }
   return {draw,dispose(){disposed=true;sprite.onload=null;}};
 }

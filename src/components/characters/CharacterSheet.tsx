@@ -74,7 +74,7 @@ export default function CharacterSheet({ character }: { character: Character }) 
               <p className="text-base leading-[25px]">{t(`techniqueDetails.${character.id}`)}</p>
             </BevelFrame>
 
-            {(character.id === 'gojo' || character.id === 'megumi') && (
+            {(character.id === 'gojo' || character.id === 'megumi' || character.id === 'yuta') && (
               <BevelFrame frame={cardFrame} className="overflow-hidden bg-surface">
                 <PixelDomain character={character.id} />
                 <div className="flex flex-col gap-1.5 px-6 py-[18px]">
