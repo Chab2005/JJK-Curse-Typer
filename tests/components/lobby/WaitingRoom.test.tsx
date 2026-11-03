@@ -305,4 +305,14 @@ describe('WaitingRoom of a created lobby (realtime)', () => {
     expect(screen.getByRole('heading', { name: 'Choose a name' })).toBeInTheDocument();
     expect(lobbyActionsMock.joinLobbyAction).not.toHaveBeenCalled();
   });
+
+  it('applies the character chosen on its page once the player is in the lobby', async () => {
+    const joined = { ...ROOM, participants: [...ROOM.participants, { kind: 'human' as const, id: 'Nobara', name: 'Nobara', avatar: null, ready: false }] };
+    lobbyActionsMock.joinLobbyAction.mockResolvedValue(joined);
+    renderWithIntl(<WaitingRoom initialRoom={joined} viewerId="Nobara" live character="sukuna" />);
+
+    await waitFor(() => expect(lobbyActionsMock.updateLobbyAction).toHaveBeenCalledWith(joined.code, { type: 'setCharacter', id: 'Nobara', character: 'sukuna' }));
+    expect(screen.getByRole('button', { name: 'Ryomen Sukuna' })).toHaveAttribute('aria-pressed', 'true');
+  });
 });
+

@@ -2,6 +2,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import Footer from '@/components/layout/Footer';
 import SiteHeader from '@/components/layout/SiteHeader';
+import { findCharacter } from '@/components/characters/characterPages';
 import WaitingRoom from '@/components/lobby/WaitingRoom';
 import type { Locale } from '@/i18n/config';
 import { getViewerId } from '@/lib/currentUser';
@@ -17,12 +18,12 @@ export async function generateMetadata({ params, searchParams }: PageProps<'/[lo
 }
 
 // Salon d'attente d'un lobby (LOB-5 à LOB-9, LOB-11) ; ?spectate=1 pour y entrer en spectateur,
-// ?invite=<jeton> pour entrer dans un lobby privé (LOB-4). Un lobby fermé au visiteur répond comme un code inconnu.
+// ?invite=<jeton> pour entrer dans un lobby privé (LOB-4), ?character=<id> pour y prendre ce personnage. Un lobby fermé au visiteur répond comme un code inconnu.
 // La page ne fait qu'afficher : le salon d'attente entre dans le lobby une fois chargé dans le navigateur.
 export default async function LobbyPage({ params, searchParams }: PageProps<'/[locale]/lobby/[code]'>) {
   const { locale, code } = await params;
   setRequestLocale(locale as Locale);
-  const { spectate, invite } = await searchParams;
+  const { spectate, invite, character } = await searchParams;
   const room = await openLobby(decodeURIComponent(code), { spectate: spectate === '1', invite });
   if (!room) notFound();
   const viewerId = await getViewerId();
@@ -42,6 +43,7 @@ export default async function LobbyPage({ params, searchParams }: PageProps<'/[l
           live={live}
           invite={typeof invite === 'string' ? invite : undefined}
           spectate={spectate === '1'}
+          character={typeof character === 'string' ? findCharacter(character)?.id : undefined}
         />
       </main>
       <Footer />

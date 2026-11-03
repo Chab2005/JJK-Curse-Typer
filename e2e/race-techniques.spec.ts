@@ -99,3 +99,13 @@ test('opens a domain', async ({ page }, testInfo) => {
   await expect(page.getByRole('dialog')).toBeHidden();
 });
 
+test('Play on a character page lands in a public lobby with that character', async ({ page }) => {
+  await register(page, 'play');
+  await page.goto('/characters/gojo');
+  await page.getByRole('button', { name: /Play Satoru/ }).click();
+  await page.waitForURL(/\/lobby\/[A-Z0-9]{3}-[A-Z0-9]{3}$/);
+
+  await expect(page.getByRole('button', { name: 'Satoru Gojo' })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByRole('definition').filter({ hasText: /^Public$/ })).toBeVisible();
+});
+

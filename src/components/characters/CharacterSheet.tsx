@@ -11,6 +11,7 @@ import { CHARACTER_STYLES } from './characterStyles';
 import { SPRITES, spriteBox } from './characterSprites';
 import { DOMAIN_SECONDS } from '@/game/abilities';
 import PixelDomain from './PixelDomain';
+import PlayCharacterButton from './PlayCharacterButton';
 import Shortcut from './Shortcut';
 import Abilities from './Abilities';
 import TechniqueExample from './TechniqueExample';
@@ -36,12 +37,7 @@ export default function CharacterSheet({ character }: { character: Character }) 
   const hasDomain = character.id === 'gojo' || character.id === 'megumi' || character.id === 'yuta' || character.id === 'sukuna';
 
   // Avec une seule carte, le bouton reste sous la carte plutôt que sous le cadre du portrait.
-  const play = (
-    <ChevronButton as={Link} href="/lobbies" frame={hasDomain ? 'justify-self-end lg:col-start-2 lg:row-start-3' : 'mt-auto self-end'} className="gap-2.5 text-sm uppercase tracking-[0.16em] whitespace-nowrap">
-      {t('play', { name: character.name.split(' ')[0] })}
-      <span aria-hidden="true" className="material-symbols-outlined text-lg">arrow_forward</span>
-    </ChevronButton>
-  );
+  const play = <PlayCharacterButton character={character.id} label={t('play', { name: character.name.split(' ')[0] })} className={hasDomain ? 'justify-self-end lg:col-start-2 lg:row-start-3' : 'mt-auto self-end'} />;
 
   return (
     <>
