@@ -1,0 +1,80 @@
+{
+  "id": "max-elephant",
+  "motion": "water",
+  "frameWidth": 768,
+  "frameHeight": 224,
+  "columns": 8,
+  "rows": 1,
+  "frames": 8,
+  "frameDurationsMs": [
+    300,
+    140,
+    100,
+    120,
+    180,
+    120,
+    120,
+    300
+  ],
+  "loop": false,
+  "direction": "right",
+  "spriteSheet": "max-elephant-water.png",
+  "preview": "max-elephant-water.gif",
+  "anchor": {
+    "x": 192,
+    "y": 214
+  },
+  "maxSpriteHeight": 176,
+  "paletteColors": 20,
+  "uniqueFrames": 8,
+  "bounds": [
+    {
+      "x": 68,
+      "y": 47,
+      "width": 262,
+      "height": 167
+    },
+    {
+      "x": 82,
+      "y": 39,
+      "width": 328,
+      "height": 175
+    },
+    {
+      "x": 82,
+      "y": 38,
+      "width": 421,
+      "height": 176
+    },
+    {
+      "x": 83,
+      "y": 38,
+      "width": 602,
+      "height": 176
+    },
+    {
+      "x": 82,
+      "y": 39,
+      "width": 604,
+      "height": 175
+    },
+    {
+      "x": 82,
+      "y": 44,
+      "width": 494,
+      "height": 170
+    },
+    {
+      "x": 83,
+      "y": 45,
+      "width": 366,
+      "height": 169
+    },
+    {
+      "x": 68,
+      "y": 46,
+      "width": 262,
+      "height": 168
+    }
+  ]
+}
