@@ -1,0 +1,79 @@
+{
+  "id": "nue",
+  "motion": "hover",
+  "direction": "left",
+  "frameWidth": 192,
+  "frameHeight": 256,
+  "columns": 8,
+  "rows": 1,
+  "frames": 8,
+  "frameDurationsMs": [
+    140,
+    140,
+    140,
+    140,
+    140,
+    140,
+    140,
+    140
+  ],
+  "loop": true,
+  "pixelStep": 2,
+  "paletteColors": 20,
+  "targetSkullHeight": 32,
+  "skullHeight": 31,
+  "groundY": 246,
+  "spriteSheet": "nue-hover.png",
+  "preview": "nue-hover.gif",
+  "uniqueFrames": 8,
+  "bounds": [
+    {
+      "x": 52,
+      "y": 108,
+      "width": 88,
+      "height": 112
+    },
+    {
+      "x": 54,
+      "y": 120,
+      "width": 90,
+      "height": 100
+    },
+    {
+      "x": 52,
+      "y": 126,
+      "width": 98,
+      "height": 96
+    },
+    {
+      "x": 52,
+      "y": 128,
+      "width": 98,
+      "height": 94
+    },
+    {
+      "x": 52,
+      "y": 126,
+      "width": 96,
+      "height": 94
+    },
+    {
+      "x": 54,
+      "y": 118,
+      "width": 90,
+      "height": 100
+    },
+    {
+      "x": 54,
+      "y": 112,
+      "width": 86,
+      "height": 106
+    },
+    {
+      "x": 54,
+      "y": 108,
+      "width": 90,
+      "height": 108
+    }
+  ]
+}
