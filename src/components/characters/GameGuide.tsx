@@ -44,8 +44,10 @@ const RACE: { id: CharacterId; x: number }[] = [
 const CAST = { from: 2, to: 0 };
 const laneCenter = (lane: number) => lane * LANE_GAP + LANE_HEIGHT / 2;
 
-/** Éclair d'impact façon Black Flash : quelques branches brisées autour du point touché. */
-const SPARK_PATH = 'M0 0 L5 -3 L3 -9 L10 -14 L9 -21 M0 0 L6 2 L11 -1 L18 3 L25 1 M0 0 L-4 4 L-2 10 L-9 15 L-10 22 M0 0 L-6 -2 L-10 -8 L-17 -9 M0 0 L2 6 L8 9 L9 17';
+/** Black Flash de Yuji, bande de 16 images de 96 px (même fichier que la capacité « Black Flash »). */
+const BLACK_FLASH = '/images/characters/anim/techniques/yuji/black-flash.png';
+const BLACK_FLASH_FRAMES = 16;
+const BLACK_FLASH_SHEET = 96 * BLACK_FLASH_FRAMES;
 
 /** Barre cramoisie au bas des trois cartes, dans le dégradé du bouton « Jouer ». */
 const CARD_BAR = 'pointer-events-none absolute inset-x-0 bottom-0 h-1.5 bg-linear-to-b from-primary-container via-[#a3102f] to-[#6e0718]';
@@ -306,13 +308,13 @@ function RaceDemo() {
           className="guide-cast absolute -mt-[5px] -ml-[5px] size-2.5 rounded-[50%] bg-on-primary-container"
           style={{ '--x1': start.x, '--y1': start.y, '--x2': end.x, '--y2': end.y } as CSSProperties}
         />
-        <svg viewBox="-32 -32 64 64" className="guide-spark absolute -mt-8 -ml-8 size-16" style={{ left: end.x, top: end.y }}>
-          <g fill="none" strokeLinejoin="round" strokeLinecap="round">
-            <path d={SPARK_PATH} stroke="#e11d48" strokeWidth={6} opacity={0.55} />
-            <path d={SPARK_PATH} stroke="#ff2d55" strokeWidth={3} />
-            <path d={SPARK_PATH} stroke="#050505" strokeWidth={1.2} />
-          </g>
-        </svg>
+        {/* Black Flash de Yuji (bande de 16 images de 96 px) centrée sur le point touché. */}
+        <span className="guide-spark absolute -mt-12 -ml-12 block size-24" style={{ left: end.x, top: end.y }}>
+          <span
+            className="block size-full [image-rendering:pixelated] motion-reduce:hidden"
+            style={{ background: `url(${BLACK_FLASH}) 0 0 / ${BLACK_FLASH_SHEET}px 96px no-repeat`, animation: `sprite-idle ${BLACK_FLASH_FRAMES * 80}ms steps(${BLACK_FLASH_FRAMES}) infinite`, '--sprite-end': `-${BLACK_FLASH_SHEET}px` } as CSSProperties}
+          />
+        </span>
       </div>
     </div>
   );
