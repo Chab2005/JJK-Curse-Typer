@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { GRACE_KEYS, openPrompt, promptChoice, promptKey, type CastPrompt, type CastStep } from '@/game/castPrompt';
+import { GRACE_KEYS, openPrompt, promptChoice, promptKey, promptPreview, type CastPrompt, type CastStep } from '@/game/castPrompt';
 import { BACKSPACE } from '@/game/typing';
 
 const OPTIONS = [
@@ -60,5 +60,25 @@ describe('promptKey', () => {
     const prompt = openPrompt('technique', [{ id: 'mahoraga', name }]);
     expect(type(prompt, [...name])).toEqual({ status: 'cast', id: 'mahoraga' });
     expect(type(prompt, [...'With this treasure, I summon... E'])).toEqual({ status: 'failed' });
+  });
+});
+
+describe('promptPreview', () => {
+  const preview = (keys: readonly string[]) => {
+    const step = type(opened(), keys);
+    return step.status === 'open' ? promptPreview(step.prompt).id : null;
+  };
+
+  it('propose la première capacité tant que rien n’est tapé', () => {
+    expect(preview([])).toBe('cleave');
+  });
+
+  it('remplace la proposition par celle qui commence comme la frappe', () => {
+    expect(preview(['d'])).toBe('dismantle');
+    expect(preview(['d', 'i', 'v'])).toBe('divineFlames');
+  });
+
+  it('garde la proposition après une faute pardonnée', () => {
+    expect(preview(['d', 'x'])).toBe('dismantle');
   });
 });
