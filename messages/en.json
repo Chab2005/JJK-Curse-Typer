@@ -305,7 +305,8 @@
     "rulesTitle": "Shared rules",
     "controls": {
       "title": "Controls",
-      "intro": "Hold Alt and press a key. For a domain or a technique, then type its exact name to cast it.",
+      "intro": "Hold {key} and press a key. For a domain or a technique, then type its exact name to cast it.",
+      "warning": "Make sure none of your macros or system shortcuts use {combos}: they would take over and the site would never receive the keys.",
       "domain": {
         "label": "Open a domain",
         "hint": "then type its name"

@@ -305,7 +305,8 @@
     "rulesTitle": "Règles communes",
     "controls": {
       "title": "Commandes",
-      "intro": "Maintenez Alt et appuyez sur une touche. Pour un territoire ou une technique, tapez ensuite son nom exact pour la lancer.",
+      "intro": "Maintenez {key} et appuyez sur une touche. Pour un territoire ou une technique, tapez ensuite son nom exact pour la lancer.",
+      "warning": "Vérifiez qu'aucune de vos macros ni aucun raccourci système n'utilise {combos} : ils prendraient le dessus et le site ne recevrait jamais les touches.",
       "domain": {
         "label": "Déployer un territoire",
         "hint": "puis tapez son nom"

@@ -4,6 +4,7 @@ import type { CharacterId } from '@/components/shared/characters';
 import { BINDING_VOW_PROGRESS, DOMAIN_SECONDS, type Ability } from '@/game/abilities';
 import { ENERGY_MAX } from '@/game/energy';
 import { spriteStyle } from './characterSprites';
+import ControlsIntro from './ControlsIntro';
 import EnergyDemo from './EnergyDemo';
 import GojoDomain, { DomainScene } from './GojoDomain';
 import Shortcut from './Shortcut';
@@ -207,7 +208,7 @@ export default function GameGuide() {
 
         <section aria-labelledby="controls-title" className="flex flex-col gap-[18px]">
           <p id="controls-title" className="font-label-code text-[12px] font-bold uppercase tracking-[0.32em] text-primary-container">{t('controls.title')}</p>
-          <p className="max-w-[720px] text-base leading-[25px] text-on-surface-variant">{t('controls.intro')}</p>
+          <ControlsIntro />
           <ul className="grid gap-3 md:grid-cols-3">
             {CONTROLS.map((ability) => (
               <li key={ability} className="bevel flex items-center gap-4 bg-surface-container-low px-5 py-4">

@@ -50,4 +50,26 @@ describe('GameGuide (smoke)', () => {
       expect(within(row as HTMLElement).getByText(key)).toBeInTheDocument();
     }
   });
+
+  it('warns that macros and system shortcuts must not use the Alt combos', () => {
+    renderWithIntl(<GameGuide />);
+
+    const controls = within(screen.getByRole('region', { name: 'Controls' }));
+    expect(controls.getByText(/Hold Alt and press a key/)).toBeInTheDocument();
+    expect(controls.getByRole('note')).toHaveTextContent('Make sure none of your macros or system shortcuts use Alt + Q, Alt + W, or Alt + X');
+  });
+
+  it('shows Option (⌥) instead of Alt on a Mac', () => {
+    vi.spyOn(navigator, 'userAgent', 'get').mockReturnValue('Mozilla/5.0 (Macintosh; Intel Mac OS X 14.7; rv:132.0) Gecko/20100101 Firefox/132.0');
+    renderWithIntl(<GameGuide />);
+
+    const controls = within(screen.getByRole('region', { name: 'Controls' }));
+    expect(controls.getByText(/Hold Option \(⌥\) and press a key/)).toBeInTheDocument();
+    expect(controls.getByRole('note')).toHaveTextContent('⌥ + Q, ⌥ + W, or ⌥ + X');
+    const row = controls.getByText('Open a domain').closest('li') as HTMLElement;
+    expect(within(row).getByText('⌥')).toBeInTheDocument();
+    expect(within(row).getByText('Option')).toBeInTheDocument();
+    expect(within(row).queryByText('Alt')).not.toBeInTheDocument();
+    vi.restoreAllMocks();
+  });
 });
