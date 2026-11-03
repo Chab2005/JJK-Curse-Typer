@@ -967,7 +967,7 @@
       }
     },
     "cast": {
-      "title": "Tapez son nom",
+      "title": "Tapez votre capacité",
       "costValue": "{cost, number} EO",
       "costAll": "Toute l’EO · min {cost, number}",
       "domainCost": "Dès {cost, number} EO",

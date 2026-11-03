@@ -24,7 +24,8 @@ export default function CastDialog({ prompt, costOf }: { prompt: CastPrompt<Cast
   }, [prompt.typed, name]);
 
   return (
-    <div role="dialog" aria-modal="true" aria-label={t('title')} onMouseDown={(e) => e.preventDefault()} className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+    <div role="dialog" aria-modal="true" aria-labelledby="cast-title" onMouseDown={(e) => e.preventDefault()} className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-2.5 bg-black/40 px-4">
+      <p id="cast-title" className="font-label-code text-center text-[11px] uppercase tracking-[0.2em] text-on-surface-variant">{t('title')}</p>
       <div className="hx-cut flex w-[min(100%,560px)] bg-primary-container p-px [--h:14px]">
         <div className="hx-cut flex min-h-[58px] w-full min-w-0 items-center justify-between gap-6 bg-[radial-gradient(120%_160%_at_50%_0%,#2a0b10_0%,#170608_55%,#0c0304_100%)] px-[30px] [--h:13.5px]">
           <span ref={lineRef} data-testid="cast-line" className="font-label-code min-w-0 overflow-hidden text-[20px] leading-7 whitespace-pre">

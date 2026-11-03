@@ -239,7 +239,7 @@ describe('RaceScreen', () => {
     it('opens the window on Alt+W, keeps the focus on the text, and casts once the name is typed', async () => {
       const { field } = await ready();
       alt(field, 'KeyW');
-      expect(screen.getByRole('dialog', { name: 'Type its name' })).toBeInTheDocument();
+      expect(screen.getByRole('dialog', { name: 'Type your ability' })).toBeInTheDocument();
       expect(field).toHaveFocus();
 
       typed(field, 'Toad');

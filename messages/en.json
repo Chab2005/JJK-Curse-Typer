@@ -967,7 +967,7 @@
       }
     },
     "cast": {
-      "title": "Type its name",
+      "title": "Type your ability",
       "costValue": "{cost, number} CE",
       "costAll": "All CE · min {cost, number}",
       "domainCost": "From {cost, number} CE",

@@ -35,7 +35,7 @@ async function startRace(page: Page) {
 
 test('casts by typing the name, without ever leaving the text field', async ({ page }, testInfo) => {
   const field = await startRace(page);
-  const modal = page.getByRole('dialog', { name: 'Type its name' });
+  const modal = page.getByRole('dialog', { name: 'Type your ability' });
   const caret = page.locator('[data-caret]');
 
   await page.keyboard.press('Alt+w');
