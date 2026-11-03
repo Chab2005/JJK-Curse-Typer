@@ -1,0 +1,72 @@
+{
+  "id": "max-elephant",
+  "motion": "running",
+  "frameWidth": 384,
+  "frameHeight": 224,
+  "columns": 8,
+  "rows": 1,
+  "frames": 8,
+  "frameDurationMs": 100,
+  "fps": 10,
+  "loop": true,
+  "direction": "right",
+  "spriteSheet": "max-elephant-running.png",
+  "preview": "max-elephant-running.gif",
+  "anchor": {
+    "x": 192,
+    "y": 214
+  },
+  "maxSpriteHeight": 176,
+  "paletteColors": 16,
+  "uniqueFrames": 8,
+  "bounds": [
+    {
+      "x": 50,
+      "y": 46,
+      "width": 285,
+      "height": 168
+    },
+    {
+      "x": 51,
+      "y": 55,
+      "width": 278,
+      "height": 156
+    },
+    {
+      "x": 53,
+      "y": 54,
+      "width": 270,
+      "height": 157
+    },
+    {
+      "x": 53,
+      "y": 55,
+      "width": 270,
+      "height": 156
+    },
+    {
+      "x": 49,
+      "y": 55,
+      "width": 285,
+      "height": 159
+    },
+    {
+      "x": 48,
+      "y": 56,
+      "width": 281,
+      "height": 156
+    },
+    {
+      "x": 46,
+      "y": 56,
+      "width": 270,
+      "height": 158
+    },
+    {
+      "x": 53,
+      "y": 56,
+      "width": 273,
+      "height": 157
+    }
+  ]
+}
