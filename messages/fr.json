@@ -967,14 +967,7 @@
       }
     },
     "cast": {
-      "kind": {
-        "technique": "Technique",
-        "domain": "Extension du territoire"
-      },
       "title": "Tapez son nom",
-      "grace": "Grâce",
-      "graceLeft": "{count, plural, one {# touche pardonnée restante} other {# touches pardonnées restantes}}",
-      "hint": "Les {count} premières touches servent seulement à choisir. Ensuite, une faute et le lancement échoue. Votre EO n’est pas touchée.",
       "costValue": "{cost, number} EO",
       "costAll": "Toute l’EO · min {cost, number}",
       "domainCost": "Dès {cost, number} EO",

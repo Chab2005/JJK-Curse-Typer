@@ -37,6 +37,9 @@ export function promptChoice<Id extends string>(prompt: CastPrompt<Id>): Id | nu
   return prompt.typed !== '' && found.length === 1 ? found[0].id : null;
 }
 
+/** Capacité affichée : la première qui commence comme la frappe. La frappe reste toujours le début d'un nom. */
+export const promptPreview = <Id extends string>(prompt: CastPrompt<Id>): CastOption<Id> => matches(prompt, prompt.typed)[0];
+
 export function promptKey<Id extends string>(prompt: CastPrompt<Id>, key: string): CastStep<Id> {
   const inGrace = prompt.keys < GRACE_KEYS;
 

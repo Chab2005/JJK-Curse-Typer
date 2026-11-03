@@ -14,7 +14,7 @@ import { startTyping, typeKey, type TypingState } from '@/game/typing';
 import { useRouter } from '@/i18n/navigation';
 import { claimRaceResultsAction } from '@/app/actions/races';
 import AbilityBar from './AbilityBar';
-import CastDialog, { type CastRow } from './CastDialog';
+import CastDialog from './CastDialog';
 import ConfirmDialog from './ConfirmDialog';
 import Countdown from './Countdown';
 import DomainBackdrop from './DomainBackdrop';
@@ -291,10 +291,11 @@ export default function RaceScreen({
   const clockMs = typing?.finishedAt ?? myElapsed;
   const clock = race && race.timerMs > 0 ? formatClock(race.timerMs - clockMs) : formatClock(clockMs);
 
-  const castCost = ({ cost, spendsAll }: { cost: number; spendsAll?: boolean }) => t(spendsAll ? 'cast.costAll' : 'cast.costValue', { cost });
-  const castRows: CastRow[] = prompt?.kind === 'domain'
-    ? [{ id: 'domain', name: castName('domain'), cost: t('cast.domainCost', { cost: DOMAIN_MIN_ENERGY }) }]
-    : techniques.map((technique) => ({ id: technique.id, name: castName(technique.id), cost: castCost(technique) }));
+  const castCost = (id: CastAbility) => {
+    const technique = techniques.find((candidate) => candidate.id === id);
+    if (!technique) return t('cast.domainCost', { cost: DOMAIN_MIN_ENERGY });
+    return t(technique.spendsAll ? 'cast.costAll' : 'cast.costValue', { cost: technique.cost });
+  };
 
   const hasEnergy = race !== null && race.bonus && character !== null && hasCursedEnergy(character);
   const abilityList: { ability: Ability; ready: boolean }[] = [
@@ -302,7 +303,8 @@ export default function RaceScreen({
     { ability: 'technique', ready: racing && castableTechniques.length > 0 },
     { ability: 'vow', ready: racing && blockerOf('vow') === null },
   ];
-  const domainOwner = Object.values(view.domains)[0] ?? null;
+  // Une course finie ferme tout : la room n'annonce pas les territoires encore ouverts à l'arrivée.
+  const domainOwner = phase === 'finished' ? null : (Object.values(view.domains)[0] ?? null);
   const hits = view.hits.filter((hit) => now - hit.at < HIT_MS);
   const stunned = racing && stunnedAt(powers, elapsed);
   const shownInput = typing && powers.lagUntil > elapsed ? laggedInput(trail, now, typing.input) : typing?.input;
@@ -402,7 +404,7 @@ export default function RaceScreen({
         </div>
       </main>
 
-      {prompt && racing && <CastDialog prompt={prompt} rows={castRows} />}
+      {prompt && racing && <CastDialog prompt={prompt} costOf={castCost} />}
 
       <ConfirmDialog
         open={pending !== null}

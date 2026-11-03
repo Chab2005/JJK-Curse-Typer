@@ -248,6 +248,18 @@ describe('RaceScreen', () => {
       expect(field).toHaveFocus();
     });
 
+    it('shows one line that completes what is typed, with its CE cost', async () => {
+      const { field } = await ready();
+      alt(field, 'KeyW');
+      expect(screen.getByTestId('cast-line')).toHaveTextContent('Rabbit Escape');
+      expect(screen.getByText('100 CE')).toBeInTheDocument();
+
+      typed(field, 'T');
+      expect(screen.getByTestId('cast-line')).toHaveTextContent('Toad');
+      expect(screen.getByText('450 CE')).toBeInTheDocument();
+      expect(screen.queryByText('Rabbit Escape')).not.toBeInTheDocument();
+    });
+
     it('sends the typed name to the window, not to the race text', async () => {
       const { field, container } = await ready();
       alt(field, 'KeyW');
@@ -330,6 +342,13 @@ describe('RaceScreen', () => {
       domain(true);
       expect(screen.getByTestId('race-domain')).toBeInTheDocument();
       domain(false);
+      expect(screen.queryByTestId('race-domain')).not.toBeInTheDocument();
+    });
+
+    it('drops an open domain when the race ends', async () => {
+      await ready();
+      socket.receive({ type: 'tick', phase: 'racing', elapsed: 1200, standings: [], notices: [{ kind: 'domain', by: 'Yuji_BlackFlash', character: 'gojo', open: true }] });
+      socket.receive({ type: 'tick', phase: 'finished', elapsed: 1400, standings: [standing('Megumi_Shadows', 1, 'finished')] });
       expect(screen.queryByTestId('race-domain')).not.toBeInTheDocument();
     });
 

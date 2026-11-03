@@ -967,14 +967,7 @@
       }
     },
     "cast": {
-      "kind": {
-        "technique": "Technique",
-        "domain": "Domain Expansion"
-      },
       "title": "Type its name",
-      "grace": "Grace",
-      "graceLeft": "{count, plural, one {# forgiven key left} other {# forgiven keys left}}",
-      "hint": "The first {count} keys only pick your ability. After that, one mistake and the cast fails. Your CE stays untouched.",
       "costValue": "{cost, number} CE",
       "costAll": "All CE · min {cost, number}",
       "domainCost": "From {cost, number} CE",

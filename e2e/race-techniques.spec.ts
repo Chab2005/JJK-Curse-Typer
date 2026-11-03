@@ -48,8 +48,11 @@ test('casts by typing the name, without ever leaving the text field', async ({ p
 
   // Deux fautes pardonnées, puis le nom.
   await page.keyboard.type('zqR');
+  await expect(page.getByTestId('cast-line')).toHaveText('Rabbit Escape');
+  await page.keyboard.type('o');
+  await expect(page.getByTestId('cast-line')).toHaveText('Round Deer');
   await page.screenshot({ path: testInfo.outputPath('cast-dialog.png') });
-  await page.keyboard.type('ound Deer');
+  await page.keyboard.type('und Deer');
   await expect(modal).toBeHidden();
   await expect(field).toBeFocused();
   await expect(page.getByText('Ward ready')).toBeVisible();

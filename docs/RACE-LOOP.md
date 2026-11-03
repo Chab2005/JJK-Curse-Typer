@@ -177,7 +177,7 @@ Chaque étape : tests d'abord dans `tests/game/` ou `tests/realtime/`, puis le c
 
 Remplace les trois bonus génériques de la section 6 : chaque personnage a ses techniques (`CHARACTER_ABILITIES`), payées en énergie occulte.
 
-- **Lancement** : Alt + W (technique) ou Alt + Q (territoire) ouvre une fenêtre que le joueur ne peut pas fermer. Il y tape le nom de la capacité (`castPrompt.ts`) : les 3 premières frappes sont pardonnées et servent à choisir, ensuite une faute ferme la fenêtre sans rien coûter. Mahoraga demande toute l'incantation. Alt + X scelle le pacte contraignant sans fenêtre. Le champ de frappe garde le focus : c'est lui qui reçoit le nom.
+- **Lancement** : Alt + W (technique) ou Alt + Q (territoire) ouvre une fenêtre d'une ligne que le joueur ne peut pas fermer : elle propose un nom et son coût, et le complète selon la frappe. Il y tape le nom de la capacité (`castPrompt.ts`) : les 3 premières frappes sont pardonnées et servent à choisir, ensuite une faute ferme la fenêtre sans rien coûter. Mahoraga demande toute l'incantation. Alt + X scelle le pacte contraignant sans fenêtre. Le champ de frappe garde le focus : c'est lui qui reçoit le nom.
 - **Cible** : au hasard dans la moitié de tête, lanceur exclu (BON-3). La puissance suit le retard du lanceur sur le meneur (BON-4) : durées `seconds` à `maxSeconds`, mots ajoutés.
 - **Parades** : Rouge annule, Cerf rond et Manipulation du ciel renvoient, Lapins d'évasion esquive. Seul Lapins d'évasion protège d'un territoire.
 - **Territoire** : 1000 EP minimum, 10 s, 100 EP drainés et un effet par seconde, techniques bloquées pendant et 10 s après. Maki y est immunisée.
