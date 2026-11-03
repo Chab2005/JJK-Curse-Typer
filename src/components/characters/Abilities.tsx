@@ -111,8 +111,8 @@ function ShikigamiCorner({ scene }: { scene: ShikigamiScene }) {
       style={{ width: scene.width, height: scene.height }}>
       {scene.sprites.map((sprite, i) => (
         <Fragment key={i}>
-          <div className={`absolute [image-rendering:pixelated] ${sprite.hover ? 'group-hover/card:invisible' : ''}`} style={shikigamiStyle(sprite.idle, sprite, scene.scale)} />
-          {sprite.hover && <div className="invisible absolute [image-rendering:pixelated] group-hover/card:visible" style={shikigamiStyle(sprite.hover, sprite, scene.scale)} />}
+          <div className={`absolute [image-rendering:pixelated] motion-reduce:animate-none! ${sprite.hover ? 'group-hover/card:invisible motion-reduce:group-hover/card:visible' : ''}`} style={shikigamiStyle(sprite.idle, sprite, scene.scale)} />
+          {sprite.hover && <div className="invisible absolute [image-rendering:pixelated] group-hover/card:visible motion-reduce:hidden" style={shikigamiStyle(sprite.hover, sprite, scene.scale)} />}
         </Fragment>
       ))}
     </div>

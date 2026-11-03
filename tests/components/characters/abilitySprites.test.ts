@@ -5,8 +5,72 @@ import { describe, expect, it } from 'vitest';
 import { ABILITY_SPRITES, shikigamiStyle } from '@/components/characters/abilitySprites';
 
 describe('abilitySprites', () => {
-  it('draws the shikigami that have pixel art, the others not yet', () => {
-    expect(Object.keys(ABILITY_SPRITES)).toEqual(['rabbitEscape', 'toad', 'maxElephant', 'nue', 'roundDeer', 'divineDogs', 'mahoraga']);
+  it('draws the shikigami, Gojo’s orbs and Nobara’s nails', () => {
+    expect(Object.keys(ABILITY_SPRITES)).toEqual(expect.arrayContaining(['rabbitEscape', 'toad', 'maxElephant', 'nue', 'roundDeer', 'divineDogs', 'mahoraga', 'blue', 'red', 'purple', 'resonance', 'hairpin']));
+  });
+
+  it.each(['blue', 'red', 'purple'] as const)('gives %s a luminous plasma core and 32 frames of flowing energy', async (id) => {
+    const { idle, hover } = ABILITY_SPRITES[id]!.sprites[0];
+    expect(idle.frames).toBe(32);
+    expect(hover!.frames).toBe(32);
+    const { data, info } = await sharp(path.join('public', idle.file)).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+    let bright = 0;
+    for (let y = 42; y <= 54; y++) for (let x = 42; x <= 54; x++) {
+      const i = (y * info.width + x) * 4;
+      if (Math.min(data[i], data[i + 1], data[i + 2]) > 180 && data[i + 3] === 255) bright++;
+    }
+    expect(bright).toBeGreaterThan(100);
+  });
+
+  it('starts Hollow Purple with separate Blue and Red orbs, then fuses them into a bright purple core', async () => {
+    const { hover } = ABILITY_SPRITES.purple!.sprites[0];
+    const { data, info } = await sharp(path.join('public', hover!.file)).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+    const pixel = (frame: number, x: number, y: number) => data.subarray((y * info.width + frame * hover!.w + x) * 4, (y * info.width + frame * hover!.w + x) * 4 + 4);
+    expect(pixel(0, 48, 48)[3]).toBeLessThan(32);
+    let blue = 0, red = 0;
+    for (let y = 30; y < 66; y++) for (let x = 4; x < 92; x++) {
+      const [r, g, b, a] = pixel(0, x, y);
+      if (x < 48 && b > r * 1.5 && g > 90 && a > 100) blue++;
+      if (x > 48 && r > b * 1.5 && a > 100) red++;
+    }
+    expect(blue).toBeGreaterThan(30);
+    expect(red).toBeGreaterThan(30);
+    let bright = 0;
+    for (let y = 42; y <= 54; y++) for (let x = 42; x <= 54; x++) {
+      const [r, g, b, a] = pixel(20, x, y);
+      if (Math.min(r, g, b) > 180 && a === 255) bright++;
+    }
+    expect(bright).toBeGreaterThan(80);
+    expect(hover!.frameMs).toBeGreaterThan(ABILITY_SPRITES.purple!.sprites[0].idle.frameMs);
+  });
+
+  it.each(['blue', 'red', 'purple', 'resonance', 'hairpin'] as const)('gives %s a transparent, animated idle and a distinct hover effect that fits its reserved space', async (id) => {
+    const scene = ABILITY_SPRITES[id]!;
+    expect(scene).toBeDefined();
+    const sprite = scene.sprites[0];
+    expect(sprite.hover).toBeDefined();
+    expect(sprite.hover!.file).not.toBe(sprite.idle.file);
+    for (const strip of [sprite.idle, sprite.hover!]) {
+      const { data, info } = await sharp(path.join('public', strip.file)).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+      expect(info.width).toBe(strip.w * strip.frames!);
+      expect(info.height).toBe(strip.h);
+      const frames = Array.from({ length: strip.frames! }, (_, frame) => {
+        const pixels = [];
+        for (let y = 0; y < info.height; y++) {
+          const start = (y * info.width + frame * strip.w) * 4;
+          pixels.push(data.subarray(start, start + strip.w * 4));
+          // Transparent frame edges keep particles from being cut off between frames.
+          expect(data[start + 3]).toBe(0);
+          expect(data[start + (strip.w - 1) * 4 + 3]).toBe(0);
+        }
+        return Buffer.concat(pixels).toString('base64');
+      });
+      expect(new Set(frames).size).toBe(strip.frames);
+      const style = shikigamiStyle(strip, sprite, scene.scale);
+      expect(Number(style.width)).toBeLessThanOrEqual(scene.width);
+      expect(Number(style.height)).toBeLessThanOrEqual(scene.height);
+      expect(Math.abs(Number(style.bottom))).toBe(0);
+    }
   });
 
   it('flies Nue in place and strikes with lightning on hover, lowered by the 31 px the lightning strip draws it higher', () => {
