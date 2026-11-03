@@ -1,0 +1,70 @@
+{
+  "id": "rabbit-escape",
+  "motion": "idle",
+  "frameWidth": 128,
+  "frameHeight": 160,
+  "columns": 8,
+  "rows": 1,
+  "frames": 8,
+  "frameDurationMs": 200,
+  "fps": 5,
+  "loop": true,
+  "direction": "right",
+  "spriteSheet": "rabbit-escape-idle.png",
+  "preview": "rabbit-escape-idle.gif",
+  "anchor": {
+    "x": 64,
+    "y": 150
+  },
+  "uniqueFrames": 8,
+  "bounds": [
+    {
+      "x": 36,
+      "y": 74,
+      "width": 57,
+      "height": 76
+    },
+    {
+      "x": 36,
+      "y": 73,
+      "width": 56,
+      "height": 77
+    },
+    {
+      "x": 36,
+      "y": 76,
+      "width": 57,
+      "height": 74
+    },
+    {
+      "x": 36,
+      "y": 78,
+      "width": 56,
+      "height": 72
+    },
+    {
+      "x": 36,
+      "y": 77,
+      "width": 56,
+      "height": 73
+    },
+    {
+      "x": 36,
+      "y": 73,
+      "width": 55,
+      "height": 77
+    },
+    {
+      "x": 36,
+      "y": 74,
+      "width": 58,
+      "height": 76
+    },
+    {
+      "x": 36,
+      "y": 73,
+      "width": 56,
+      "height": 77
+    }
+  ]
+}
