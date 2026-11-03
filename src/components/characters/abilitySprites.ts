@@ -58,6 +58,12 @@ const spark = (id: string): ShikigamiScene => {
   };
 };
 
+/** Sukuna's slashes: one 8-frame strike, replayed faster on hover. */
+const slash = (id: string): ShikigamiScene => {
+  const animation: Strip = { file: `/images/characters/anim/techniques/sukuna/${id}.png`, w: 96, h: 96, frames: 8, frameMs: 140, foot: 0 };
+  return { width: 96, height: 96, scale: 1, sprites: [{ left: 0, idle: animation, hover: { ...animation, frameMs: 70 } }] };
+};
+
 const divineFlame = (): ShikigamiScene => {
   const scene = effect('sukuna', 'divine-flame', 16, 100, 70);
   return { ...scene, sprites: scene.sprites.map((sprite) => ({
@@ -69,6 +75,8 @@ const divineFlame = (): ShikigamiScene => {
 export const ABILITY_SPRITES: Partial<Record<AbilityId, ShikigamiScene>> = {
   divergentFist: spark('divergent-fist'),
   blackFlash: spark('black-flash'),
+  cleave: slash('cleave'),
+  dismantle: slash('dismantle'),
   divineFlames: divineFlame(),
   rabbitEscape: {
     width: 100,
