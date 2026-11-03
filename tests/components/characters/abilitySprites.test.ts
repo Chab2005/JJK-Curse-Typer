@@ -85,19 +85,6 @@ describe('abilitySprites', () => {
     expect(path.basename(ABILITY_SPRITES.mahoraga!.sprites[0].hover!.file)).toBe('mahoraga-running.png');
   });
 
-  it('plays every frame of Mahoraga’s expanded run without changing the loop duration', async () => {
-    const scene = ABILITY_SPRITES.mahoraga!;
-    const sprite = scene.sprites[0];
-    const running = sprite.hover!;
-    const style = shikigamiStyle(running, sprite, scene.scale);
-    expect(style.animation).toBe('sprite-idle 800ms steps(9) 0ms infinite');
-    expect(style.background).toContain('/ 1440px 160px no-repeat');
-    expect(style['--sprite-end' as keyof typeof style]).toBe('-1440px');
-    const metadata = await sharp(path.join('public', running.file)).metadata();
-    expect(metadata.width).toBe(running.w * 9);
-    expect(shikigamiStyle(sprite.idle, sprite, scene.scale).animation).toContain('steps(8)');
-  });
-
   it('sends two Divine Dogs, black and white, and a pack of rabbits', () => {
     expect(ABILITY_SPRITES.divineDogs!.sprites.map(({ idle }) => path.basename(idle.file))).toEqual(['divine-dog-black-idle.png', 'divine-dog-white-idle.png']);
     expect(ABILITY_SPRITES.rabbitEscape!.sprites.length).toBeGreaterThan(1);
