@@ -277,6 +277,16 @@ kbd,
   animation: race-pop 320ms ease-out both;
 }
 
+/* Le territoire se déploie depuis le haut de l'écran, là où est la piste. */
+@keyframes race-domain {
+  from { clip-path: circle(0 at 50% 28%); }
+  to { clip-path: circle(150% at 50% 28%); }
+}
+
+.race-domain {
+  animation: race-domain 700ms ease-out both;
+}
+
 /* Guide de /characters : petites démonstrations en boucle (frappe, énergie, techniques, territoires). */
 /* La frappe se dévoile caractère par caractère : `--chars` est la longueur de la phrase. */
 .guide-typed {
@@ -602,6 +612,7 @@ kbd,
 /* Animations jamais bloquantes et coupées sur demande (UI-7, UI-8). */
 @media (prefers-reduced-motion: reduce) {
   .race-pop,
+  .race-domain,
   .guide-typed,
   .guide-runner,
   .ce-skin,

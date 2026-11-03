@@ -13,6 +13,11 @@
   aspect-ratio: auto;
 }
 
+.fill {
+  height: 100%;
+  aspect-ratio: auto;
+}
+
 .canvas {
   display: block;
   width: 100%;

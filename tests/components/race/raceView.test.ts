@@ -1,17 +1,20 @@
 import { describe, expect, it } from 'vitest';
 import type { RaceSnapshot, ServerMessage } from '@/game/protocol';
-import type { RacerSeat, Standing } from '@/game/race';
-import { RUN_MS, charState, formatClock, initialRaceView, raceViewReducer, runnerCharacter, splitWords, trackRunners } from '@/components/race/raceView';
+import { LAG_MS } from '@/game/powers';
+import type { RaceNotice, RacerSeat, Standing } from '@/game/race';
+import { HIT_MS, RUN_MS, charState, formatClock, initialRaceView, laggedInput, raceViewReducer, runnerCharacter, splitWords, trackRunners, trimTrail, type RaceView, type TrailEntry } from '@/components/race/raceView';
 
 const seat = (id: string, kind: 'human' | 'bot' = 'human'): RacerSeat => ({ id, name: id, avatar: null, kind, level: kind === 'bot' ? 'grade_1' : null });
 const SEATS = [seat('me'), seat('ann'), seat('bot-1', 'bot')];
 
-const SNAPSHOT: RaceSnapshot = { phase: 'countdown', startsIn: 5000, timerMs: 0, bonus: true, text: 'abcdefghij', mode: 'accumulate', seats: SEATS };
+const SNAPSHOT: RaceSnapshot = { phase: 'countdown', startsIn: 5000, timerMs: 0, bonus: true, gameMode: 'normal', text: 'abcdefghij', mode: 'accumulate', seats: SEATS };
 
 const standing = (id: string, rank: number, progress: number, status: Standing['status'] = 'racing'): Standing => ({
   id,
   rank,
   progress,
+  total: 10,
+  marks: [],
   wpm: 50,
   accuracy: 1,
   energy: 0,
@@ -148,5 +151,60 @@ describe('formatClock', () => {
     expect(formatClock(0)).toBe('0:00');
     expect(formatClock(65_400)).toBe('1:05');
     expect(formatClock(-300)).toBe('0:00');
+  });
+});
+
+describe('capacités', () => {
+  const welcomed = raceViewReducer(initialRaceView, { type: 'welcome', you: 'me', race: SNAPSHOT, typing: null }, 1000);
+  const tick = (view: RaceView, notices: RaceNotice[], at: number) => raceViewReducer(view, { type: 'tick', phase: 'racing', elapsed: 0, standings: [], notices }, at);
+
+  it('retient la dernière annonce et le coup à dessiner', () => {
+    const notice: RaceNotice = { kind: 'cast', by: 'ann', ability: 'nue', target: 'me', outcome: 'hit' };
+    const view = tick(welcomed, [notice], 2000);
+    expect(view.notice).toEqual({ notice, at: 2000 });
+    expect(view.hits).toEqual([{ target: 'me', ability: 'nue', at: 2000 }]);
+    expect(tick(view, [], 2000 + HIT_MS).hits).toEqual([]);
+  });
+
+  it('ne dessine pas de coup esquivé', () => {
+    expect(tick(welcomed, [{ kind: 'cast', by: 'ann', ability: 'nue', target: 'me', outcome: 'dodged' }], 2000).hits).toEqual([]);
+  });
+
+  it('dessine le Black Flash tiré en tapant', () => {
+    expect(tick(welcomed, [{ kind: 'blackFlash', by: 'ann', target: 'me' }], 2000).hits).toEqual([{ target: 'me', ability: 'blackFlash', at: 2000 }]);
+  });
+
+  it('suit les territoires ouverts', () => {
+    const open = tick(welcomed, [{ kind: 'domain', by: 'ann', character: 'gojo', open: true }], 2000);
+    expect(open.domains).toEqual({ ann: 'gojo' });
+    expect(tick(open, [{ kind: 'domain', by: 'ann', character: 'gojo', open: false }], 3000).domains).toEqual({});
+  });
+
+  it('ajoute à la piste un coureur invoqué', () => {
+    const summon: RacerSeat = { id: 'mahoraga:ann', name: 'Mahoraga', avatar: null, kind: 'bot', level: null, summon: true };
+    expect(raceViewReducer(welcomed, { type: 'seats', seats: [...SEATS, summon] }, 2000).race?.seats).toHaveLength(4);
+  });
+
+  it('place chacun selon la longueur de son propre texte', () => {
+    const [runner] = trackRunners([seat('me')], [{ ...standing('me', 1, 5), total: 20 }], 'me', 10);
+    expect(runner.x).toBe(0.25);
+  });
+});
+
+describe('laggedInput', () => {
+  const trail: TrailEntry[] = [{ at: 1000, before: '', input: 'a' }, { at: 1100, before: 'a', input: 'ab' }];
+
+  it('montre la saisie telle qu’elle était LAG_MS plus tôt', () => {
+    expect(laggedInput(trail, 1000, 'ab')).toBe('');
+    expect(laggedInput(trail, 1000 + LAG_MS, 'ab')).toBe('a');
+    expect(laggedInput(trail, 1100 + LAG_MS, 'ab')).toBe('ab');
+  });
+
+  it('montre la saisie du moment sans frappe récente', () => {
+    expect(laggedInput([], 1000, 'ab')).toBe('ab');
+  });
+
+  it('oublie les vieilles frappes', () => {
+    expect(trimTrail(trail, 1100 + 2 * LAG_MS)).toEqual([]);
   });
 });

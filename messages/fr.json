@@ -378,7 +378,7 @@
     },
     "charge": {
       "title": "Chargez l'énergie occulte",
-      "text": "Chaque caractère juste remplit la barre, plus vite en série sans faute. L'énergie paie vos techniques et votre territoire.",
+      "text": "Chaque caractère juste remplit la barre, plus vite en série sans faute. L'énergie paie vos techniques et votre territoire. De temps en temps, une touche juste déclenche un Éclair noir : il étourdit un coureur de tête et double votre charge pendant quelques secondes.",
       "label": "Énergie occulte",
       "max": "/ {max, number} EP",
       "status": {
@@ -407,7 +407,7 @@
     "rules": {
       "host": {
         "title": "L'hôte décide",
-        "text": "Avant la course, l'hôte peut désactiver les techniques pour une course au clavier pure."
+        "text": "Avant la course, l’hôte choisit le mode : Normal, EO illimitée, Sans territoire, ou Restriction céleste pour une course au clavier pure."
       },
       "finish": {
         "title": "Tout le monde finit",
@@ -430,7 +430,7 @@
     "tags": {
       "max": "Max {max, number} EP",
       "streak": "Série = charge plus rapide",
-      "top3": "Cible : le top 3",
+      "top3": "Cible : la moitié de tête",
       "behind": "+ fort si en retard",
       "leaders": "Les meneurs aussi",
       "domainMin": "Dès {min, number} EP",
@@ -444,7 +444,7 @@
     "rulesTitle": "Règles communes",
     "controls": {
       "title": "Commandes",
-      "intro": "Maintenez {key} et appuyez sur une touche. Pour un territoire ou une technique, tapez ensuite son nom exact pour la lancer.",
+      "intro": "Maintenez {key} et appuyez sur une touche. Pour un territoire ou une technique, tapez ensuite son nom exact pour la lancer. Vos 3 premières touches sont pardonnées et servent seulement à choisir : ensuite, une faute et le lancement échoue, sans coûter d’EO.",
       "warning": "Vérifiez qu'aucune de vos macros ni aucun raccourci système n'utilise {combos} : ils prendraient le dessus et le site ne recevrait jamais les touches.",
       "domain": {
         "label": "Déployer un territoire",
@@ -678,10 +678,6 @@
         "accumulate": "Les fautes restent dans le texte et coûtent des points.",
         "block": "Impossible d'avancer sans taper le bon caractère."
       },
-      "bonus": "Techniques",
-      "bonusToggle": "Activer les techniques",
-      "bonusOn": "Activées",
-      "bonusOff": "Désactivées",
       "capacity": "Capacité",
       "capacityHint": "Entre {min} et {max} participants.",
       "capacityValue": "{count} participants",
@@ -695,12 +691,29 @@
         "public": "Affiché dans la liste des lobbies. Tout le monde peut rejoindre.",
         "code": "Absent de la liste des lobbies. On rejoint avec le code ou un lien d'invitation.",
         "private": "Absent de la liste des lobbies. On rejoint seulement avec un lien d'invitation."
+      },
+      "gameMode": "Mode de jeu",
+      "gameModes": {
+        "normal": "Normal",
+        "unlimitedCe": "EO illimitée",
+        "noDomain": "Sans territoire",
+        "heavenly": "Restriction céleste"
+      },
+      "gameModeHints": {
+        "normal": "Énergie occulte, techniques, territoires et Éclair noir.",
+        "unlimitedCe": "Tout le monde part plein et rien ne coûte d’EO. Maki n’en a toujours pas.",
+        "noDomain": "Les techniques restent actives, mais personne ne peut ouvrir de territoire.",
+        "heavenly": "Une pure course au clavier : ni énergie occulte, ni rien qui en dépende."
       }
     },
     "guest": {
       "title": "Choisissez un pseudo",
       "text": "Choisissez un nom d'exorciste pour rejoindre ce lobby.",
       "submit": "Rejoindre le lobby"
+    },
+    "character": {
+      "title": "Votre exorciste",
+      "hint": "Votre exorciste décide de vos techniques et de votre territoire pour la course."
     }
   },
   "Leaderboard": {
@@ -891,7 +904,8 @@
     },
     "typing": {
       "label": "Tapez le texte",
-      "focus": "Cliquez ici pour taper"
+      "focus": "Cliquez ici pour taper",
+      "stunned": "Étourdi"
     },
     "spectator": {
       "title": "Mode spectateur",
@@ -902,7 +916,8 @@
       "finished": "Arrivé",
       "timeout": "Temps écoulé",
       "stopped": "Arrêté",
-      "abandoned": "Abandon"
+      "abandoned": "Abandon",
+      "summoned": "Mahoraga invoqué"
     },
     "summary": {
       "finished": "Arrivé !",
@@ -922,7 +937,8 @@
       "wpmValue": "{value} MPM",
       "state": "État",
       "you": "(vous)",
-      "backToLobby": "Retour au lobby"
+      "backToLobby": "Retour au lobby",
+      "summoned": "Mahoraga prend votre place"
     },
     "leave": {
       "title": "Quitter la course ?",
@@ -935,7 +951,61 @@
       "body": "Vous arrêtez de courir, mais vous pouvez continuer à regarder les autres.",
       "confirm": "Abandonner"
     },
-    "footer": "Restez concentré, exorciste."
+    "footer": "Restez concentré, exorciste.",
+    "abilities": {
+      "domain": "Territoire",
+      "technique": "Technique",
+      "vow": "Pacte contraignant",
+      "marks": {
+        "stunned": "Étourdi",
+        "lagging": "Frappe retardée",
+        "sealed": "Scellé",
+        "untouchable": "Intouchable",
+        "warded": "Parade prête",
+        "boosted": "EO accélérée",
+        "domain": "Territoire ouvert"
+      }
+    },
+    "cast": {
+      "kind": {
+        "technique": "Technique",
+        "domain": "Extension du territoire"
+      },
+      "title": "Tapez son nom",
+      "grace": "Grâce",
+      "graceLeft": "{count, plural, one {# touche pardonnée restante} other {# touches pardonnées restantes}}",
+      "hint": "Les {count} premières touches servent seulement à choisir. Ensuite, une faute et le lancement échoue. Votre EO n’est pas touchée.",
+      "costValue": "{cost, number} EO",
+      "costAll": "Toute l’EO · min {cost, number}",
+      "domainCost": "Dès {cost, number} EO",
+      "mahoraga": "With this treasure, I summon...  Eight-Handled Sword Divergent Sila Divine General Mahoraga",
+      "failed": "Lancement raté : mauvais nom",
+      "blocked": {
+        "mode": "Ce mode ne le permet pas",
+        "none": "Vous n’avez pas cette capacité",
+        "energy": "Pas assez d’énergie occulte",
+        "stunned": "Vous êtes étourdi",
+        "sealed": "Vos techniques sont scellées",
+        "locked": "Votre technique est épuisée",
+        "domainOpen": "Votre territoire est ouvert",
+        "vowed": "Vous avez renoncé à votre technique",
+        "chain": "Lancez d’abord Découpe puis Démantèlement",
+        "notRacing": "La course n’est pas en cours",
+        "noTarget": "Plus personne à toucher"
+      }
+    },
+    "notices": {
+      "self": "{name} utilise {ability}",
+      "hit": "{name} touche {target} avec {ability}",
+      "dodged": "{target} esquive {ability}",
+      "deflected": "{target} pare {ability}",
+      "reflected": "{target} renvoie {ability} à {name}",
+      "domainOpen": "{name} : {domain} !",
+      "domainClose": "{domain} se referme",
+      "blackFlash": "Éclair noir ! {name} frappe {target}",
+      "vow": "{name} scelle un pacte contraignant",
+      "summon": "{name} invoque Mahoraga !"
+    }
   },
   "Auth": {
     "username": "Nom d'utilisateur",

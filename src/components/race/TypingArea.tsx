@@ -2,7 +2,9 @@
 
 import { useTranslations } from 'next-intl';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import type { Ability } from '@/game/abilities';
 import { BACKSPACE } from '@/game/typing';
+import { shortcutAbility } from './abilityShortcut';
 import { type CharState, charState, splitWords } from './raceView';
 
 /** Hauteur d'une ligne de texte (text-typing-stream) : trois lignes visibles à la fois. */
@@ -16,8 +18,23 @@ const CHAR_STYLE: Record<CharState, string> = {
 };
 
 // Zone où le joueur tape (maquette « Course ») : le texte, l'état de chaque caractère et le curseur.
-// Un champ invisible posé sur le texte capte la frappe, accents composés compris.
-export default function TypingArea({ text, input, active, onKey }: { text: string; input: string; active: boolean; onKey: (key: string) => void }) {
+// Un champ invisible posé sur le texte capte la frappe, accents composés compris. Il garde le focus même quand la fenêtre
+// de lancement est ouverte (`casting`) : c'est lui qui reçoit le nom tapé, le joueur n'a jamais à recliquer sur le texte.
+export default function TypingArea({
+  text,
+  input,
+  active,
+  casting = false,
+  onKey,
+  onAbility,
+}: {
+  text: string;
+  input: string;
+  active: boolean;
+  casting?: boolean;
+  onKey: (key: string) => void;
+  onAbility?: (ability: Ability) => void;
+}) {
   const t = useTranslations('Race.typing');
   const fieldRef = useRef<HTMLInputElement>(null);
   const streamRef = useRef<HTMLDivElement>(null);
@@ -27,7 +44,7 @@ export default function TypingArea({ text, input, active, onKey }: { text: strin
 
   useEffect(() => {
     if (active) fieldRef.current?.focus();
-  }, [active]);
+  }, [active, casting]);
 
   // La ligne du curseur reste la deuxième ligne visible : le texte défile sous le joueur.
   useLayoutEffect(() => {
@@ -79,6 +96,14 @@ export default function TypingArea({ text, input, active, onKey }: { text: strin
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
         onKeyDown={(e) => {
+          const ability = shortcutAbility(e);
+          if (ability) {
+            e.preventDefault();
+            if (active) onAbility?.(ability);
+            return;
+          }
+          // Tab sortirait du champ : la fenêtre de lancement n'aurait plus de clavier.
+          if (casting && e.key === 'Tab') e.preventDefault();
           if (e.key !== 'Backspace') return;
           e.preventDefault();
           if (active) onKey(BACKSPACE);

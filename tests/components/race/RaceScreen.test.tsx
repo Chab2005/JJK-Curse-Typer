@@ -1,7 +1,8 @@
-import { act, screen, waitFor, within } from '@testing-library/react';
+import { act, fireEvent, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import RaceScreen from '@/components/race/RaceScreen';
 import type { ClientMessage, RaceSnapshot, ServerMessage } from '@/game/protocol';
+import { startPowers } from '@/game/powers';
 import type { RacerSeat, Standing } from '@/game/race';
 import { startTyping } from '@/game/typing';
 import { raceActionsMock } from '../../actions';
@@ -51,13 +52,14 @@ const race = (overrides: Partial<RaceSnapshot> = {}): RaceSnapshot => ({
   startsIn: -1000,
   timerMs: 0,
   bonus: false,
+  gameMode: 'heavenly',
   text: 'abc def',
   mode: 'accumulate',
   seats: SEATS,
   ...overrides,
 });
 
-const standing = (id: string, rank: number, status: Standing['status'] = 'racing'): Standing => ({ id, rank, progress: 0, wpm: 40, accuracy: 1, energy: 120, status, endedAt: null });
+const standing = (id: string, rank: number, status: Standing['status'] = 'racing'): Standing => ({ id, rank, progress: 0, total: 7, wpm: 40, accuracy: 1, energy: 120, status, endedAt: null, marks: [] });
 
 let socket: FakeWebSocket;
 
@@ -128,6 +130,8 @@ describe('RaceScreen', () => {
     socket.receive({
       type: 'resync',
       typing: { text: 'abc def', mode: 'accumulate', input: 'ab', keystrokes: 2, errors: 0, streak: 2, peak: 2, lastT: 400, finishedAt: null },
+      acked: 0,
+      powers: startPowers(),
     });
     expect(container.querySelector('[data-caret]')).toHaveTextContent('c');
   });
@@ -216,5 +220,124 @@ describe('RaceScreen', () => {
     socket.receive({ type: 'welcome', you: 'Megumi_Shadows', race: race(), typing: null });
     finish();
     expect(raceActionsMock.claimRaceResultsAction).not.toHaveBeenCalled();
+  });
+
+  describe('casting (BON-*)', () => {
+    const TEXT = 'abc def ghi';
+    const ready = async () => {
+      const view = start({ you: 'Megumi_Shadows', race: race({ bonus: true, gameMode: 'normal', text: TEXT }) });
+      socket.receive({ type: 'tick', phase: 'racing', elapsed: 1000, standings: [{ ...standing('Megumi_Shadows', 1), energy: 1500 }, standing('Yuji_BlackFlash', 2)] });
+      await waitFor(() => expect(screen.getByLabelText('Type the text')).toHaveFocus());
+      return { ...view, field: screen.getByLabelText('Type the text') };
+    };
+    const alt = (field: HTMLElement, code: string) => fireEvent.keyDown(field, { altKey: true, code, key: '∑' });
+    const typed = (field: HTMLElement, text: string) => {
+      for (const char of text) fireEvent.input(field, { target: { value: char } });
+    };
+    const casts = () => socket.sent.filter((m) => m.type === 'cast');
+
+    it('opens the window on Alt+W, keeps the focus on the text, and casts once the name is typed', async () => {
+      const { field } = await ready();
+      alt(field, 'KeyW');
+      expect(screen.getByRole('dialog', { name: 'Type its name' })).toBeInTheDocument();
+      expect(field).toHaveFocus();
+
+      typed(field, 'Toad');
+      expect(casts()).toEqual([{ type: 'cast', ability: 'toad' }]);
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+      expect(field).toHaveFocus();
+    });
+
+    it('sends the typed name to the window, not to the race text', async () => {
+      const { field, container } = await ready();
+      alt(field, 'KeyW');
+      typed(field, 'To');
+      expect(container.querySelector('[data-caret]')).toHaveTextContent('a');
+      expect(socket.sent.some((m) => m.type === 'keys')).toBe(false);
+    });
+
+    it('cannot be closed by the player, but a mistake after the grace closes it for free', async () => {
+      const { field } = await ready();
+      alt(field, 'KeyW');
+      fireEvent.keyDown(field, { key: 'Escape' });
+      fireEvent.mouseDown(screen.getByRole('dialog'));
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
+
+      typed(field, 'Toax');
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+      expect(casts()).toEqual([]);
+      expect(await screen.findByText('Cast failed: wrong name')).toBeInTheDocument();
+      typed(field, 'a');
+      await waitFor(() => expect(socket.sent.some((m) => m.type === 'keys')).toBe(true));
+    });
+
+    it('asks for the whole incantation for Mahoraga', async () => {
+      const { field } = await ready();
+      alt(field, 'KeyW');
+      typed(field, 'With this treasure, I summon...  Eight-Handled Sword Divergent Sila Divine General Mahoraga');
+      expect(casts()).toEqual([{ type: 'cast', ability: 'mahoraga' }]);
+    });
+
+    it('opens the domain with Alt+Q and makes the vow at once with Alt+X', async () => {
+      const { field } = await ready();
+      alt(field, 'KeyQ');
+      typed(field, 'Chimera Shadow Garden');
+      alt(field, 'KeyX');
+      expect(casts()).toEqual([{ type: 'cast', ability: 'domain' }, { type: 'cast', ability: 'vow' }]);
+    });
+
+    it('says why when nothing can be cast', async () => {
+      const { field } = await ready();
+      socket.receive({ type: 'tick', phase: 'racing', elapsed: 1200, standings: [{ ...standing('Megumi_Shadows', 1), energy: 50 }] });
+      alt(field, 'KeyW');
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+      expect(await screen.findByText('Not enough cursed energy')).toBeInTheDocument();
+    });
+
+    it('replays unconfirmed keys on the text the server changed', async () => {
+      const { field, container } = await ready();
+      typed(field, 'ab');
+      socket.receive({ type: 'sync', typing: startTyping(`${TEXT} extra`, 'accumulate'), acked: 0, powers: startPowers() });
+      expect(container.querySelector('[data-caret]')).toHaveTextContent('c');
+      expect(screen.getByText(`${TEXT} extra`)).toBeInTheDocument();
+    });
+
+    it('blocks typing while stunned, and a stun interrupts the window', async () => {
+      const { field, container } = await ready();
+      alt(field, 'KeyW');
+      socket.receive({ type: 'sync', typing: startTyping(TEXT, 'accumulate'), acked: 0, powers: { ...startPowers(), stun: { from: 0, until: 600_000 } } });
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+      expect(screen.getByRole('status')).toHaveTextContent('Stunned');
+      typed(field, 'a');
+      expect(container.querySelector('[data-caret]')).toHaveTextContent('a');
+    });
+
+    it('announces what other players cast', async () => {
+      await ready();
+      socket.receive({
+        type: 'tick',
+        phase: 'racing',
+        elapsed: 1200,
+        standings: [standing('Yuji_BlackFlash', 1)],
+        notices: [{ kind: 'cast', by: 'Yuji_BlackFlash', ability: 'blackFlash', target: 'Megumi_Shadows', outcome: 'hit' }],
+      });
+      expect(await screen.findByText('Yuji_BlackFlash hits Megumi_Shadows with Black Flash')).toBeInTheDocument();
+    });
+
+    it('spreads an open domain behind the whole screen until it closes', async () => {
+      await ready();
+      const domain = (open: boolean) => socket.receive({ type: 'tick', phase: 'racing', elapsed: 1200, standings: [], notices: [{ kind: 'domain', by: 'Yuji_BlackFlash', character: 'gojo', open }] });
+      domain(true);
+      expect(screen.getByTestId('race-domain')).toBeInTheDocument();
+      domain(false);
+      expect(screen.queryByTestId('race-domain')).not.toBeInTheDocument();
+    });
+
+    it('gives Maki neither energy nor abilities', () => {
+      const seats: RacerSeat[] = [{ ...SEATS[0], avatar: 'maki' }, SEATS[1]];
+      start({ race: race({ bonus: true, gameMode: 'normal', seats }) });
+      expect(screen.queryByRole('button', { name: /Technique/ })).not.toBeInTheDocument();
+      expect(screen.queryByText('Cursed energy')).not.toBeInTheDocument();
+    });
   });
 });

@@ -22,10 +22,11 @@ export interface SummaryRow {
 }
 
 // Seuls les bots sont arrêtés (`stopped`) : un joueur n'a jamais cet en-tête.
-const HEADING: Record<Exclude<RacerStatus, 'racing' | 'stopped'>, 'finished' | 'abandoned' | 'timeout'> = {
+const HEADING: Record<Exclude<RacerStatus, 'racing' | 'stopped'>, 'finished' | 'abandoned' | 'timeout' | 'summoned'> = {
   finished: 'finished',
   abandoned: 'abandoned',
   timeout: 'timeout',
+  summoned: 'summoned',
 };
 
 const percent = (accuracy: number) => Math.round(accuracy * 100);

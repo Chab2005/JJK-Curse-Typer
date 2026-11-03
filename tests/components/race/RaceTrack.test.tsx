@@ -8,9 +8,9 @@ import { renderWithIntl } from '../../render';
 const seat = (id: string, kind: 'human' | 'bot' = 'human'): RacerSeat => ({ id, name: id, avatar: null, kind, level: null });
 
 const RUNNERS: TrackRunner[] = [
-  { seat: seat('Megumi'), x: 0.3, rank: 2, wpm: 61, status: 'racing', leader: false, you: true, big: true, lane: 0, character: 'megumi', running: true },
-  { seat: seat('Yuji'), x: 0.6, rank: 1, wpm: 80, status: 'racing', leader: true, you: false, big: true, lane: 1, character: 'yuji', running: false },
-  { seat: seat('1', 'bot'), x: 1, rank: 3, wpm: 70, status: 'finished', leader: false, you: false, big: false, lane: 2, character: 'todo', running: false },
+  { seat: seat('Megumi'), x: 0.3, rank: 2, wpm: 61, status: 'racing', leader: false, you: true, big: true, lane: 0, character: 'megumi', running: true, marks: [] },
+  { seat: seat('Yuji'), x: 0.6, rank: 1, wpm: 80, status: 'racing', leader: true, you: false, big: true, lane: 1, character: 'yuji', running: false, marks: [] },
+  { seat: seat('1', 'bot'), x: 1, rank: 3, wpm: 70, status: 'finished', leader: false, you: false, big: false, lane: 2, character: 'todo', running: false, marks: [] },
 ];
 
 describe('RaceTrack (RACE-2, RACE-3)', () => {
