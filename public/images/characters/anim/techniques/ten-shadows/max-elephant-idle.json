@@ -1,0 +1,72 @@
+{
+  "id": "max-elephant",
+  "motion": "idle",
+  "frameWidth": 384,
+  "frameHeight": 224,
+  "columns": 8,
+  "rows": 1,
+  "frames": 8,
+  "frameDurationMs": 200,
+  "fps": 5,
+  "loop": true,
+  "direction": "right",
+  "spriteSheet": "max-elephant-idle.png",
+  "preview": "max-elephant-idle.gif",
+  "anchor": {
+    "x": 192,
+    "y": 214
+  },
+  "maxSpriteHeight": 176,
+  "paletteColors": 16,
+  "uniqueFrames": 8,
+  "bounds": [
+    {
+      "x": 82,
+      "y": 49,
+      "width": 262,
+      "height": 165
+    },
+    {
+      "x": 82,
+      "y": 44,
+      "width": 272,
+      "height": 170
+    },
+    {
+      "x": 82,
+      "y": 38,
+      "width": 279,
+      "height": 176
+    },
+    {
+      "x": 82,
+      "y": 49,
+      "width": 262,
+      "height": 165
+    },
+    {
+      "x": 82,
+      "y": 49,
+      "width": 264,
+      "height": 165
+    },
+    {
+      "x": 82,
+      "y": 49,
+      "width": 264,
+      "height": 165
+    },
+    {
+      "x": 83,
+      "y": 49,
+      "width": 264,
+      "height": 165
+    },
+    {
+      "x": 82,
+      "y": 49,
+      "width": 265,
+      "height": 165
+    }
+  ]
+}
