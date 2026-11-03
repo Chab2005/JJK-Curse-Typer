@@ -26,7 +26,7 @@ export type Shikigami = {
 };
 
 /** `width` × `height` : place prise dans le coin, en px affichés ; `scale` : taille affichée / taille du fichier ;
- *  `beside` : le titre et l'effet restent en colonne à gauche du shikigami au lieu de passer dessous. */
+ *  `beside` : le titre, l'effet et le pied de carte restent en colonne à gauche, le shikigami centré seul sur toute la hauteur à droite. */
 export type ShikigamiScene = { width: number; height: number; scale?: number; beside?: boolean; sprites: readonly Shikigami[] };
 
 const strip = (file: string, frameMs: number, w = 128, { zoom = 1, foot = 10, h = FRAME_H, frames = FRAMES } = {}): Strip => ({ file: `${DIR}/${file}`, w, h, frames, frameMs, zoom, foot });
@@ -90,16 +90,17 @@ export const ABILITY_SPRITES: Partial<Record<AbilityId, ShikigamiScene>> = {
     width: 122,
     height: 70,
     sprites: [
-      { idle: strip('divine-dog-black-idle.png', 200), left: -11, flip: true },
-      { idle: strip('divine-dog-white-idle.png', 200), left: 32, delay: 4, flip: true },
+      { idle: strip('divine-dog-black-idle.png', 200), hover: strip('divine-dog-black-running.png', 80), left: -11, flip: true },
+      { idle: strip('divine-dog-white-idle.png', 200), hover: strip('divine-dog-white-running.png', 80, 160), left: 32, delay: 4, flip: true },
     ],
   },
+  // Course de 9 images sur 800 ms : l'image où la lame passait au bras arrière a été retirée.
   mahoraga: {
-    width: 94,
-    height: 128,
-    scale: 0.5,
+    width: 170,
+    height: 232,
+    scale: 0.9,
     beside: true,
-    sprites: [{ idle: strip('mahoraga-idle.png', 200, 320, { h: 320 }), hover: strip('mahoraga-running.png', 100, 320, { h: 320 }), left: -37 }],
+    sprites: [{ idle: strip('mahoraga-idle.png', 200, 320, { h: 320 }), hover: strip('mahoraga-running.png', 800 / 9, 320, { h: 320, frames: 9 }), left: -67 }],
   },
   blue: effect('limitless', 'blue', 32, 50),
   red: effect('limitless', 'red', 32, 50),
