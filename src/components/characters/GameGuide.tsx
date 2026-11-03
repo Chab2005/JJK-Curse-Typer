@@ -173,15 +173,17 @@ export default function GameGuide() {
 
         <div className="flex flex-col gap-[18px]">
           <p className="font-label-code text-[12px] font-bold uppercase tracking-[0.32em] text-primary-container">{t('rulesTitle')}</p>
-          <ul className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+          <ul className="grid auto-rows-fr gap-5 md:grid-cols-2 lg:grid-cols-4">
             <RuleCard title={t('rules.host.title')} text={t('rules.host.text')}>
-              <span className="font-label-code text-[11px] uppercase tracking-[0.18em] text-outline">{t('rules.techniques')}</span>
-              <span className="guide-switch hx-cut relative h-[30px] w-[62px] transition-colors duration-300 [--h:10px]">
+              <span className="guide-switch hx-cut relative h-[30px] w-[62px] shrink-0 transition-colors duration-300 [--h:10px]">
                 <span className="guide-switch-knob bevel-var absolute top-[5px] size-5 transition-[left,background-color] duration-300 [--b:5px] motion-reduce:transition-none" />
               </span>
-              <span className="font-label-code text-[11px] uppercase tracking-[0.14em]">
-                <span className="font-label-code text-outline group-hover:hidden">{t('rules.off')}</span>
-                <span className="font-label-code hidden text-primary group-hover:inline">{t('rules.on')}</span>
+              <span className="flex min-w-0 flex-col gap-1">
+                <span className="font-label-code text-[11px] uppercase tracking-[0.18em] text-outline">{t('rules.techniques')}</span>
+                <span className="font-label-code text-[11px] uppercase tracking-[0.14em]">
+                  <span className="font-label-code text-outline group-hover:hidden">{t('rules.off')}</span>
+                  <span className="font-label-code hidden text-primary group-hover:inline">{t('rules.on')}</span>
+                </span>
               </span>
             </RuleCard>
             <RuleCard title={t('rules.finish.title')} text={t('rules.finish.text')}>
@@ -213,13 +215,13 @@ export default function GameGuide() {
           <ControlsIntro />
           <ul className="grid gap-3 md:grid-cols-3">
             {CONTROLS.map((ability) => (
-              <li key={ability} className="bevel flex items-center gap-4 bg-surface-container-low px-5 py-4">
+              <FiletCard key={ability} faceClassName="items-center gap-4 px-5 py-4">
                 <Shortcut ability={ability} />
                 <span className="flex min-w-0 flex-col gap-0.5">
-                  <span className="font-grotesk text-[17px] font-semibold text-on-surface">{t(`controls.${ability}.label`)}</span>
-                  <span className="text-sm text-outline">{t(`controls.${ability}.hint`)}</span>
+                  <span className="font-grotesk text-[17px] font-semibold text-on-primary-container">{t(`controls.${ability}.label`)}</span>
+                  <span className="text-sm text-on-surface-variant">{t(`controls.${ability}.hint`)}</span>
                 </span>
-              </li>
+              </FiletCard>
             ))}
           </ul>
         </section>
@@ -320,18 +322,25 @@ function RaceDemo() {
   );
 }
 
-// Règle commune : carte à double filet qui monte et s'allume au survol, avec sa petite animation en tête.
+// Règle commune : carte à double filet, avec sa petite animation en tête.
 function RuleCard({ title, text, children }: { title: string; text: string; children: ReactNode }) {
   return (
-    <li className="group flex transition-[translate,filter] duration-250 hover:-translate-y-[5px] hover:drop-shadow-[0_0_14px_rgb(225_29_72/0.4)] motion-reduce:transition-none">
-      <div className="bevel-var flex flex-1 bg-[#4a1218] p-px transition-colors duration-250 [--b:12px] group-hover:bg-primary-container">
-        <div className="bevel-var flex flex-1 bg-[#0b0405] p-[3px] [--b:11.5px]">
-          <div className="bevel-var flex flex-1 bg-primary-container/20 p-px transition-colors duration-250 [--b:10px] group-hover:bg-primary-container/55">
-            <div className="bevel-var flex flex-1 flex-col gap-3 bg-[radial-gradient(120%_120%_at_50%_0%,#1f080c,#0c0304_70%)] px-6 pt-[22px] pb-[26px] [--b:9.5px]">
-              <div aria-hidden="true" className="relative mb-1.5 flex h-16 items-center gap-3.5 border-b border-dashed border-[#2a1416] px-1">{children}</div>
-              <h3 className="font-grotesk text-xl font-semibold text-on-primary-container">{title}</h3>
-              <p className="text-[15px] leading-[23px] text-on-surface-variant">{text}</p>
-            </div>
+    <FiletCard faceClassName="flex-col gap-3 px-6 pt-[22px] pb-[26px]">
+      <div aria-hidden="true" className="relative mb-1.5 flex h-16 items-center gap-3.5 border-b border-dashed border-[#2a1416] px-1">{children}</div>
+      <h3 className="font-grotesk text-xl font-semibold text-on-primary-container">{title}</h3>
+      <p className="text-[15px] leading-[23px] text-on-surface-variant">{text}</p>
+    </FiletCard>
+  );
+}
+
+// Carte à double filet des règles et des commandes, qui monte et s'allume au survol.
+function FiletCard({ faceClassName, children }: { faceClassName: string; children: ReactNode }) {
+  return (
+    <li className="group flex min-w-0 transition-[translate,filter] duration-250 hover:-translate-y-[5px] hover:drop-shadow-[0_0_14px_rgb(225_29_72/0.4)] motion-reduce:transition-none">
+      <div className="bevel-var flex min-w-0 flex-1 bg-[#4a1218] p-px transition-colors duration-250 [--b:12px] group-hover:bg-primary-container">
+        <div className="bevel-var flex min-w-0 flex-1 bg-[#0b0405] p-[3px] [--b:11.5px]">
+          <div className="bevel-var flex min-w-0 flex-1 bg-primary-container/20 p-px transition-colors duration-250 [--b:10px] group-hover:bg-primary-container/55">
+            <div className={`bevel-var flex min-w-0 flex-1 bg-[radial-gradient(120%_120%_at_50%_0%,#1f080c,#0c0304_70%)] [--b:9.5px] ${faceClassName}`}>{children}</div>
           </div>
         </div>
       </div>
