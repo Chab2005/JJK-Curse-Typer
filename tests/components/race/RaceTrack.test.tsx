@@ -1,5 +1,5 @@
 import { screen, within } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import RaceTrack from '@/components/race/RaceTrack';
 import type { TrackRunner } from '@/components/race/raceView';
 import type { RacerSeat } from '@/game/race';
@@ -44,5 +44,15 @@ describe('RaceTrack (RACE-2, RACE-3)', () => {
     renderWithIntl(<RaceTrack runners={RUNNERS} banner="You passed Yuji!" nameOf={(s) => s.name} />);
 
     expect(screen.getByText('You passed Yuji!')).toBeInTheDocument();
+  });
+
+  it('draws two hits landing on a racer in the same tick without a key clash', () => {
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const hits = [{ target: 'Yuji', ability: 'nue', at: 1000 }, { target: 'Yuji', ability: 'blackFlash', at: 1000 }, { target: 'Yuji', ability: 'blackFlash', at: 1000 }] as const;
+    renderWithIntl(<RaceTrack runners={RUNNERS} banner="" nameOf={(seat) => seat.name} hits={hits} />);
+
+    expect(screen.getAllByTestId('runner-hit')).toHaveLength(3);
+    expect(error).not.toHaveBeenCalled();
+    error.mockRestore();
   });
 });

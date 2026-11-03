@@ -113,9 +113,10 @@ export default function RaceTrack({
                   style={runner.seat.summon ? mahoragaStyle(runner.running) : spriteStyle(runner.character, runner.running ? 'running' : 'idle', runner.big ? SCALE.big : SCALE.small)}
                 />
                 <span aria-hidden="true" className={`absolute -bottom-[3px] left-1/2 h-2 w-11 -translate-x-1/2 rounded-[50%] ${runner.you ? 'bg-primary-container/55' : 'bg-black/60'}`} />
-                {hits.filter((hit) => hit.target === runner.seat.id).map((hit) => {
+                {hits.filter((hit) => hit.target === runner.seat.id).map((hit, index) => {
                   const style = hitStyle(hit.ability);
-                  return style && <span key={hit.at} aria-hidden="true" data-testid="runner-hit" className="absolute left-1/2 z-20 block -translate-x-1/2 motion-reduce:hidden" style={{ ...style, left: '50%', bottom: 0 }} />;
+                  // Plusieurs coups peuvent tomber dans le même tick, même deux fois la même technique.
+                  return style && <span key={`${hit.at}:${index}`} aria-hidden="true" data-testid="runner-hit" className="absolute left-1/2 z-20 block -translate-x-1/2 motion-reduce:hidden" style={{ ...style, left: '50%', bottom: 0 }} />;
                 })}
               </span>
               {runner.you && (
