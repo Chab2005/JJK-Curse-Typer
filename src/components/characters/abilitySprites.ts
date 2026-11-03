@@ -45,7 +45,20 @@ const effect = (folder: string, id: string, frames = 16, frameMs = 90, hoverFram
   }],
 });
 
+/** Yuji's sparks share their colors and timing; hover uses the denser original generation. */
+const spark = (id: string): ShikigamiScene => {
+  const animation: Strip = { file: `/images/characters/anim/techniques/yuji/${id}.png`, w: 96, h: 96, frames: 16, frameMs: 80, foot: 0 };
+  return {
+    width: 96,
+    height: 96,
+    scale: 1,
+    sprites: [{ left: 0, idle: animation, hover: { ...animation, file: animation.file.replace('.png', '-hover.png'), frameMs: 55 } }],
+  };
+};
+
 export const ABILITY_SPRITES: Partial<Record<AbilityId, ShikigamiScene>> = {
+  divergentFist: spark('divergent-fist'),
+  blackFlash: spark('black-flash'),
   rabbitEscape: {
     width: 100,
     height: 60,
