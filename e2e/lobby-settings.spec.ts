@@ -32,7 +32,10 @@ test('changing every setting never moves the dialog', async ({ page }) => {
       await dialog.getByRole('option').last().click();
     }],
     ['errors', () => dialog.getByRole('group', { name: 'Errors' }).getByRole('button', { name: 'Block until fixed' }).click()],
-    ['bonus', () => dialog.getByText('Enable techniques').click()],
+    ['mode', async () => {
+      await dialog.getByRole('combobox', { name: 'Game mode' }).click();
+      await dialog.getByRole('option').last().click();
+    }],
     ['capacity', () => dialog.getByRole('button', { name: 'Increase Capacity' }).click()],
     ['access', () => dialog.getByRole('group', { name: 'Access' }).getByRole('button', { name: 'Public' }).click()],
   ];

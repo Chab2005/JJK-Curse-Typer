@@ -16,6 +16,9 @@ test('a finished race is saved and shows on the player profile', async ({ page }
   const dialog = page.getByRole('dialog');
   await dialog.getByLabel(/^Length \(words\)/).fill('10');
   await dialog.getByLabel(/^Length \(words\)/).press('Tab');
+  // Sans capacités : le bot ne peut ni étourdir le joueur ni allonger son texte.
+  await dialog.getByRole('combobox', { name: 'Game mode' }).click();
+  await dialog.getByRole('option', { name: 'Heavenly Restricted' }).click();
   await dialog.getByRole('button', { name: 'Save' }).click();
   await expect(dialog).toBeHidden();
 

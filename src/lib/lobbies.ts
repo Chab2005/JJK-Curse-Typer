@@ -7,7 +7,8 @@ import { pickQuickLobby } from '@/components/home/quickPlay';
 import { CHAR_KINDS, type LobbySummary, TEXT_LANGUAGES } from '@/components/lobbies/lobbySearch';
 import { SAMPLE_LOBBIES } from '@/components/lobbies/sampleLobbies';
 import { isListed, lobbySummary } from '@/components/lobby/lobbyAccess';
-import { BOT_LEVELS, CONTENT_MODES, ERROR_MODES, LOBBY_VISIBILITIES, isEmpty, lobbyReducer, type LobbyAction, type LobbyRoom, type Spectator } from '@/components/lobby/lobbyRoom';
+import { CHARACTERS, type CharacterId } from '@/components/shared/characters';
+import { BOT_LEVELS, CONTENT_MODES, ERROR_MODES, GAME_MODES, LOBBY_VISIBILITIES, isEmpty, lobbyReducer, type LobbyAction, type LobbyRoom, type Spectator } from '@/components/lobby/lobbyRoom';
 import { newLobbyCode, newLobbyRoom, viewLobby } from '@/components/lobby/newLobby';
 import { showSampleData } from '@/lib/sampleData';
 import { findSampleRoom } from '@/components/lobby/sampleRooms';
@@ -113,6 +114,8 @@ export function clearLobbies() {
   listeners().clear();
 }
 
+const CHARACTER_IDS = CHARACTERS.map(({ id }) => id) as [CharacterId, ...CharacterId[]];
+
 const settingsPatchSchema = z
   .object({
     languages: z.array(z.enum(TEXT_LANGUAGES)),
@@ -122,7 +125,7 @@ const settingsPatchSchema = z
     practice: z.string().max(40),
     timer: z.number().finite(),
     errorMode: z.enum(ERROR_MODES),
-    bonus: z.boolean(),
+    gameMode: z.enum(GAME_MODES),
     capacity: z.number().finite(),
     visibility: z.enum(LOBBY_VISIBILITIES),
   })
@@ -131,6 +134,7 @@ const settingsPatchSchema = z
 
 const lobbyActionSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('setReady'), ready: z.boolean() }),
+  z.object({ type: z.literal('setCharacter'), character: z.enum(CHARACTER_IDS) }),
   z.object({ type: z.literal('updateSettings'), patch: settingsPatchSchema }),
   z.object({ type: z.literal('addBot'), level: z.enum(BOT_LEVELS) }),
   z.object({ type: z.literal('kick'), id: z.string().max(64) }),
@@ -145,6 +149,7 @@ export function parseLobbyAction(input: unknown, viewer: string): LobbyAction | 
   if (!result.success) return null;
   const action = result.data;
   if (action.type === 'setReady') return { type: 'setReady', id: viewer, ready: action.ready };
+  if (action.type === 'setCharacter') return { type: 'setCharacter', id: viewer, character: action.character };
   if (action.type === 'setSpectating') return { type: 'setSpectating', id: viewer, spectating: action.spectating };
   return { ...action, by: viewer };
 }

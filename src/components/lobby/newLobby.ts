@@ -12,7 +12,8 @@ export const DEFAULT_LOBBY_SETTINGS: LobbySettings = {
   practice: '',
   timer: 0,
   errorMode: 'accumulate',
-  bonus: false,
+  gameMode: 'normal',
+  bonus: true,
   capacity: 10,
   visibility: 'private',
 };

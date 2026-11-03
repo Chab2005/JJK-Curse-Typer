@@ -22,6 +22,7 @@ const SETTINGS: LobbySettings = {
   practice: '',
   timer: 0,
   errorMode: 'accumulate',
+  gameMode: 'normal',
   bonus: true,
   capacity: 4,
   visibility: 'private',
@@ -65,13 +66,13 @@ describe('setReady (LOB-9)', () => {
 
 describe('updateSettings (LOB-5)', () => {
   it("applique les changements de l'hôte", () => {
-    const next = lobbyReducer(room(), { type: 'updateSettings', by: 'Gojo', patch: { bonus: false, errorMode: 'block' } });
-    expect(next.settings).toMatchObject({ bonus: false, errorMode: 'block' });
+    const next = lobbyReducer(room(), { type: 'updateSettings', by: 'Gojo', patch: { gameMode: 'heavenly', errorMode: 'block' } });
+    expect(next.settings).toMatchObject({ gameMode: 'heavenly', bonus: false, errorMode: 'block' });
   });
 
   it("ignore les changements d'un autre joueur", () => {
     const before = room();
-    expect(lobbyReducer(before, { type: 'updateSettings', by: 'Yuji', patch: { bonus: false } })).toBe(before);
+    expect(lobbyReducer(before, { type: 'updateSettings', by: 'Yuji', patch: { gameMode: 'heavenly' } })).toBe(before);
   });
 
   it('garde au moins une langue (TXT-1)', () => {
@@ -318,3 +319,20 @@ describe('start / finish (LOB-7)', () => {
     expect(lobbyReducer(ready, { type: 'finish' })).toBe(ready);
   });
 });
+
+describe('setCharacter', () => {
+  it('donne son personnage à un joueur humain, sans passer par l’hôte', () => {
+    const before = room();
+    const human = before.participants.find((p) => p.kind === 'human' && p.id !== before.hostId)!;
+    const next = lobbyReducer(before, { type: 'setCharacter', id: human.id, character: 'sukuna' });
+    expect(next.participants.find((p) => p.id === human.id)).toMatchObject({ avatar: 'sukuna' });
+  });
+
+  it('ignore un inconnu et une course en cours', () => {
+    const before = room();
+    expect(lobbyReducer(before, { type: 'setCharacter', id: 'nobody', character: 'gojo' })).toBe(before);
+    const racing = { ...before, status: 'racing' as const };
+    expect(lobbyReducer(racing, { type: 'setCharacter', id: before.hostId, character: 'gojo' })).toBe(racing);
+  });
+});
+

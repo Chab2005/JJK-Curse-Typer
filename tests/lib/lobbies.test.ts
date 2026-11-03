@@ -151,7 +151,9 @@ describe('parseLobbyAction', () => {
   });
 
   it('valide les réglages envoyés', () => {
-    expect(parseLobbyAction({ type: 'updateSettings', patch: { words: 80, bonus: true } }, HOST.id)).toEqual({ type: 'updateSettings', by: HOST.id, patch: { words: 80, bonus: true } });
+    expect(parseLobbyAction({ type: 'setCharacter', character: 'gojo', id: 'someone-else' }, HOST.id)).toEqual({ type: 'setCharacter', id: HOST.id, character: 'gojo' });
+    expect(parseLobbyAction({ type: 'setCharacter', character: 'nanami' }, HOST.id)).toBeNull();
+    expect(parseLobbyAction({ type: 'updateSettings', patch: { words: 80, gameMode: 'noDomain' } }, HOST.id)).toEqual({ type: 'updateSettings', by: HOST.id, patch: { words: 80, gameMode: 'noDomain' } });
     expect(parseLobbyAction({ type: 'updateSettings', patch: { visibility: 'code' } }, HOST.id)).toEqual({ type: 'updateSettings', by: HOST.id, patch: { visibility: 'code' } });
     expect(parseLobbyAction({ type: 'updateSettings', patch: { visibility: 'secret' } }, HOST.id)).toBeNull();
     expect(parseLobbyAction({ type: 'updateSettings', patch: { languages: ['de'] } }, HOST.id)).toBeNull();

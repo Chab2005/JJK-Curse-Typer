@@ -2,11 +2,12 @@
 // Le serveur (src/lib/lobbies.ts) le rejoue sur les lobbies créés ; la page s'en sert aussi pour un retour immédiat.
 import type { CharacterId } from '@/components/shared/characters';
 import type { CharKind, TextLanguage } from '@/components/lobbies/lobbySearch';
+import { GAME_MODES, modeHasBonus, type GameMode } from '@/game/abilities';
 import { BOT_LEVELS, type BotLevel } from '@/game/bots';
 import { ERROR_MODES, type ErrorMode } from '@/game/typing';
 
 // Gestion des erreurs (RACE-7, H-22) et niveaux de bots (BOT-2) : définis par le moteur de jeu.
-export { BOT_LEVELS, ERROR_MODES, type BotLevel, type ErrorMode };
+export { BOT_LEVELS, ERROR_MODES, GAME_MODES, type BotLevel, type ErrorMode, type GameMode };
 
 export const CONTENT_MODES = ['sentences', 'words'] as const;
 export type ContentMode = (typeof CONTENT_MODES)[number];
@@ -35,6 +36,8 @@ export interface LobbySettings {
   practice: string;
   timer: number;
   errorMode: ErrorMode;
+  /** Règles des capacités ; `bonus` en découle, toujours tenu à jour par le réducteur. */
+  gameMode: GameMode;
   bonus: boolean;
   capacity: number;
   visibility: LobbyVisibility;
@@ -80,6 +83,8 @@ export interface LobbyRoom {
 
 export type LobbyAction =
   | { type: 'setReady'; id: string; ready: boolean }
+  /** Personnage du joueur : il décide de ses capacités en course. */
+  | { type: 'setCharacter'; id: string; character: CharacterId }
   | { type: 'updateSettings'; by: string; patch: Partial<LobbySettings> }
   | { type: 'addBot'; by: string; level: BotLevel }
   | { type: 'kick'; by: string; id: string }
@@ -116,8 +121,11 @@ export function normalizePractice(text: string): string {
 
 function updateSettings(room: LobbyRoom, patch: Partial<LobbySettings>): LobbySettings {
   const next = { ...room.settings, ...patch };
+  const gameMode = (GAME_MODES as readonly string[]).includes(next.gameMode) ? next.gameMode : room.settings.gameMode;
   return {
     ...next,
+    gameMode,
+    bonus: modeHasBonus(gameMode),
     languages: next.languages.length > 0 ? next.languages : room.settings.languages,
     words: clamp(next.words, WORDS_MIN, WORDS_MAX),
     capacity: clamp(next.capacity, Math.max(MIN_PARTICIPANTS, room.participants.length), MAX_CAPACITY),
@@ -151,6 +159,11 @@ function transferHost(room: LobbyRoom, id: string): LobbyRoom {
 function setReady(room: LobbyRoom, id: string, ready: boolean): LobbyRoom {
   if (!room.participants.some((p) => p.kind === 'human' && p.id === id)) return room;
   return { ...room, participants: room.participants.map((p) => (p.kind === 'human' && p.id === id ? { ...p, ready } : p)) };
+}
+
+function setCharacter(room: LobbyRoom, id: string, character: CharacterId): LobbyRoom {
+  if (!room.participants.some((p) => p.kind === 'human' && p.id === id)) return room;
+  return { ...room, participants: room.participants.map((p) => (p.kind === 'human' && p.id === id ? { ...p, avatar: character } : p)) };
 }
 
 function join(room: LobbyRoom, person: Spectator, spectate: boolean): LobbyRoom {
@@ -196,6 +209,7 @@ export function lobbyReducer(room: LobbyRoom, action: LobbyAction): LobbyRoom {
   if (action.type === 'finish') return finish(room);
   if (room.status !== 'waiting') return room;
   if (action.type === 'setReady') return setReady(room, action.id, action.ready);
+  if (action.type === 'setCharacter') return setCharacter(room, action.id, action.character);
   if (action.type === 'setSpectating') return setSpectating(room, action.id, action.spectating);
   // Les autres actions sont réservées à l'hôte (LOB-5, LOB-8, LOB-11).
   if (action.by !== room.hostId) return room;

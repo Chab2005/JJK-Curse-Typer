@@ -12,6 +12,7 @@ const SETTINGS: LobbySettings = {
   practice: ',.',
   timer: 90,
   errorMode: 'block',
+  gameMode: 'heavenly',
   bonus: false,
   capacity: 12,
   visibility: 'code',
@@ -28,7 +29,7 @@ describe('LobbySettingsPanel (LOB-5)', () => {
     expect(screen.getByText('a-Z 0-9')).toBeInTheDocument();
     expect(screen.getByText('1.5 min')).toBeInTheDocument();
     expect(screen.getByText('Block until fixed')).toBeInTheDocument();
-    expect(screen.getByText('Disabled')).toBeInTheDocument();
+    expect(screen.getByText('Heavenly Restricted')).toBeInTheDocument();
     expect(screen.getByText('12 participants')).toBeInTheDocument();
     expect(screen.getByText('Code')).toBeInTheDocument();
   });
@@ -48,7 +49,8 @@ describe('LobbySettingsPanel (LOB-5)', () => {
 
     await user.click(screen.getByRole('button', { name: 'Edit settings' }));
     await user.click(screen.getByRole('button', { name: 'Real text' }));
-    await user.click(screen.getByRole('checkbox', { name: 'Enable techniques' }));
+    await user.click(screen.getByRole('combobox', { name: 'Game mode' }));
+    await user.click(screen.getByRole('option', { name: 'Unlimited CE' }));
     await user.click(screen.getByRole('checkbox', { name: 'Digits (0-9)' }));
     await user.click(screen.getByRole('combobox', { name: 'Race timer' }));
     await user.click(screen.getByRole('option', { name: '3 min' }));
@@ -57,7 +59,7 @@ describe('LobbySettingsPanel (LOB-5)', () => {
 
     await user.click(screen.getByRole('button', { name: 'Save' }));
     expect(onChange).toHaveBeenCalledOnce();
-    expect(onChange).toHaveBeenCalledWith({ content: 'sentences', bonus: true, chars: ['uppercase'], timer: 180, visibility: 'private' });
+    expect(onChange).toHaveBeenCalledWith({ content: 'sentences', gameMode: 'unlimitedCe', chars: ['uppercase'], timer: 180, visibility: 'private' });
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
@@ -66,12 +68,13 @@ describe('LobbySettingsPanel (LOB-5)', () => {
     const { user } = renderWithIntl(<LobbySettingsPanel settings={SETTINGS} participantCount={3} editable onChange={onChange} />);
 
     await user.click(screen.getByRole('button', { name: 'Edit settings' }));
-    await user.click(screen.getByRole('checkbox', { name: 'Enable techniques' }));
+    await user.click(screen.getByRole('combobox', { name: 'Game mode' }));
+    await user.click(screen.getByRole('option', { name: 'Unlimited CE' }));
     await user.click(screen.getByRole('button', { name: 'Cancel' }));
     expect(onChange).not.toHaveBeenCalled();
 
     await user.click(screen.getByRole('button', { name: 'Edit settings' }));
-    expect(screen.getByRole('checkbox', { name: 'Enable techniques' })).not.toBeChecked();
+    expect(screen.getByRole('combobox', { name: 'Game mode' })).toHaveTextContent('Heavenly Restricted');
   });
 
   it('sends nothing when saved without changes', async () => {

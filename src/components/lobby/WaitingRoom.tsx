@@ -6,6 +6,7 @@ import { joinLobbyAction, leaveLobbyAction, updateLobbyAction } from '@/app/acti
 import PageIntro from '@/components/shared/PageIntro';
 import Pointer from '@/components/shared/Pointer';
 import { useRouter } from '@/i18n/navigation';
+import CharacterPicker from './CharacterPicker';
 import GuestJoinCard from './GuestJoinCard';
 import InviteCard from './InviteCard';
 import LeaveLobbyLink from './LeaveLobbyLink';
@@ -145,6 +146,7 @@ export default function WaitingRoom({
               setAnnouncement(t('announce.newHost', { name: participantName(participant) }));
             }}
           />
+          {me?.kind === 'human' && <CharacterPicker value={me.avatar} onPick={(character) => apply({ type: 'setCharacter', id: viewerId, character })} />}
           <SpectatorList spectators={room.spectators} viewerId={viewerId} isHost={isHost} onKick={kick} />
         </div>
 

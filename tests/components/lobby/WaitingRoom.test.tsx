@@ -17,7 +17,7 @@ const ROOM: LobbyRoom = {
     { kind: 'bot', id: 'bot-1', level: 'grade_1', number: 1 },
   ],
   spectators: [{ id: 'Ijichi_Driver', name: 'Ijichi_Driver', avatar: null }],
-  settings: { languages: ['fr'], content: 'sentences', words: 60, chars: ['uppercase'], practice: '', timer: 0, errorMode: 'accumulate', bonus: true, capacity: 4, visibility: 'public' },
+  settings: { languages: ['fr'], content: 'sentences', words: 60, chars: ['uppercase'], practice: '', timer: 0, errorMode: 'accumulate', gameMode: 'normal', bonus: true, capacity: 4, visibility: 'public' },
 };
 
 const participants = () => within(screen.getByRole('list', { name: /Exorcists/ }));
@@ -244,7 +244,7 @@ describe('WaitingRoom of a created lobby (realtime)', () => {
     expect(FakeEventSource.instances[0].url).toBe('/api/lobbies/ABC-DEF/events');
 
     // The host adds a bot and changes a setting: everyone sees it.
-    const update = { ...joined, participants: [...joined.participants, { kind: 'bot' as const, id: 'bot-2', level: 'grade_4' as const, number: 2 }], settings: { ...joined.settings, bonus: false } };
+    const update = { ...joined, participants: [...joined.participants, { kind: 'bot' as const, id: 'bot-2', level: 'grade_4' as const, number: 2 }], settings: { ...joined.settings, gameMode: 'heavenly' as const, bonus: false } };
     act(() => FakeEventSource.instances[0].onmessage!({ data: JSON.stringify(update) }));
     expect(participants().getByText('Cursed corpse 2')).toBeInTheDocument();
   });

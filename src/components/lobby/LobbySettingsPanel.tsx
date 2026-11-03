@@ -9,7 +9,7 @@ import ChevronButton from '@/components/shared/ChevronButton';
 import BevelSelect from '@/components/shared/BevelSelect';
 import Reserve from '@/components/shared/Reserve';
 import Segmented from '@/components/shared/Segmented';
-import { CONTENT_MODES, ERROR_MODES, LOBBY_VISIBILITIES, type LobbySettings, MAX_CAPACITY, MIN_PARTICIPANTS, TIMER_OPTIONS, WORDS_MAX, WORDS_MIN } from './lobbyRoom';
+import { CONTENT_MODES, ERROR_MODES, GAME_MODES, LOBBY_VISIBILITIES, type LobbySettings, MAX_CAPACITY, MIN_PARTICIPANTS, TIMER_OPTIONS, WORDS_MAX, WORDS_MIN } from './lobbyRoom';
 
 type Patch = Partial<LobbySettings>;
 
@@ -120,7 +120,7 @@ function SettingsSummary({ settings }: { settings: LobbySettings }) {
     [t('practice'), settings.practice || t('practiceNone')],
     [t('timer'), timerLabel(settings.timer)],
     [t('errorMode'), t(`errorModes.${settings.errorMode}`)],
-    [t('bonus'), settings.bonus ? t('bonusOn') : t('bonusOff')],
+    [t('gameMode'), t(`gameModes.${settings.gameMode}`)],
     [t('capacity'), t('capacityValue', { count: settings.capacity })],
     [t('visibility'), t(`visibilities.${settings.visibility}`)],
   ];
@@ -205,11 +205,13 @@ function SettingsForm({ settings, participantCount, onChange }: { settings: Lobb
         <Hints active={settings.errorMode} options={ERROR_MODES} hint={(mode) => t(`errorHints.${mode}`)} />
       </Group>
 
-      <Group legend={t('bonus')}>
-        <div className="flex">
-          <BevelCheck checked={settings.bonus} onChange={(bonus) => onChange({ bonus })}>{t('bonusToggle')}</BevelCheck>
+      <div className="flex flex-col gap-2">
+        <Label htmlFor="settings-game-mode" id="settings-game-mode-label">{t('gameMode')}</Label>
+        <div className="self-start">
+          <BevelSelect id="settings-game-mode" labelId="settings-game-mode-label" options={GAME_MODES} value={settings.gameMode} onChange={(gameMode) => onChange({ gameMode })} optionLabel={(mode) => t(`gameModes.${mode}`)} />
         </div>
-      </Group>
+        <Hints active={settings.gameMode} options={GAME_MODES} hint={(mode) => t(`gameModeHints.${mode}`)} />
+      </div>
 
       <NumberField
         id="settings-capacity"
