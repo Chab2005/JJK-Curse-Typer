@@ -1,0 +1,72 @@
+{
+  "id": "toad",
+  "motion": "idle",
+  "frameWidth": 256,
+  "frameHeight": 160,
+  "columns": 8,
+  "rows": 1,
+  "frames": 8,
+  "frameDurationMs": 200,
+  "fps": 5,
+  "loop": true,
+  "direction": "right",
+  "spriteSheet": "toad-idle.png",
+  "preview": "toad-idle.gif",
+  "anchor": {
+    "x": 72,
+    "y": 150
+  },
+  "maxSpriteHeight": 48,
+  "paletteColors": 12,
+  "uniqueFrames": 8,
+  "bounds": [
+    {
+      "x": 48,
+      "y": 102,
+      "width": 61,
+      "height": 48
+    },
+    {
+      "x": 47,
+      "y": 102,
+      "width": 61,
+      "height": 48
+    },
+    {
+      "x": 48,
+      "y": 102,
+      "width": 61,
+      "height": 48
+    },
+    {
+      "x": 47,
+      "y": 102,
+      "width": 61,
+      "height": 48
+    },
+    {
+      "x": 46,
+      "y": 103,
+      "width": 61,
+      "height": 47
+    },
+    {
+      "x": 46,
+      "y": 103,
+      "width": 61,
+      "height": 47
+    },
+    {
+      "x": 46,
+      "y": 103,
+      "width": 61,
+      "height": 47
+    },
+    {
+      "x": 46,
+      "y": 103,
+      "width": 61,
+      "height": 47
+    }
+  ]
+}

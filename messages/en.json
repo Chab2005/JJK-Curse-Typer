@@ -115,13 +115,13 @@
     "watermark": "Exorcists",
     "cta": "Meet the characters",
     "techniques": {
-      "yuji": "Divergent Fist",
+      "yuji": "Raw Strength",
       "megumi": "Ten Shadows",
-      "nobara": "Resonance",
+      "nobara": "Straw Doll",
       "gojo": "Limitless",
       "maki": "Heavenly Restriction",
-      "yuta": "Rika",
-      "todo": "Boogie Woogie",
+      "yuta": "Copy",
+      "todo": "Boogie-Woogie",
       "sukuna": "Shrine"
     }
   },
@@ -145,15 +145,205 @@
       "yuta": "Mutual Authentic Love",
       "sukuna": "Malevolent Shrine"
     },
-    "abilityTitle": "Race ability",
-    "abilitySoon": "Coming soon",
-    "abilitySoonText": "Its effect, energy cost and duration will be revealed soon.",
+    "domainDetails": {
+      "gojo": "Endless information floods the mind of everyone caught inside: every other exorcist is stuck in place until the domain closes.",
+      "megumi": "Every shikigami of the Ten Shadows answers at once: while the domain is open, all of them activate automatically, every second, except Mahoraga, who is never summoned.",
+      "yuta": "Swords holding every technique Yuta has copied fill the domain. While it is open, he picks one up every second and casts its copied technique, automatically and for free.",
+      "sukuna": "The shrine cuts into everyone’s text: every second, one more word is added to every other exorcist’s text until the domain closes."
+    },
+    "castHint": "then type “{name}”",
+    "domainDuration": "Lasts {seconds} s",
+    "example": {
+      "title": "Race example",
+      "previousAbility": "Previous ability",
+      "nextAbility": "Next ability",
+      "step": "Step {step} / {steps}",
+      "you": "You",
+      "todo": {
+        "track": "Miniature track: Todo, lagging behind, swaps places with the leader.",
+        "before": "Todo is lagging behind and {rival} leads the race: there is a long stretch of typing left to catch up.",
+        "cast": "He presses his technique key, then types its exact name. The word is valid: Todo claps his hands.",
+        "after": "Boogie-Woogie! Todo and {rival} swap places: Todo takes the lead without typing another word, and {rival} drops behind."
+      },
+      "yuji": {
+        "blackFlash": {
+          "track": "Miniature track: Yuji hits Todo with Black Flash, stunning him and boosting cursed energy.",
+          "before": "Yuji is behind {rival}. A well-timed Black Flash can stop the leader in his tracks.",
+          "cast": "Yuji types the technique name. His fist strikes with a burst of black and red cursed energy.",
+          "after": "{rival} is stunned for 2 to 3 s while Yuji catches up. Black Flash also boosts Yuji’s passive cursed energy accumulation.",
+          "energy": "Yuji · CE",
+          "boost": "Yuji · CE ↑",
+          "status": "Stunned · 2–3 s"
+        },
+        "divergentFist": {
+          "track": "Miniature track: Yuji hits Todo twice with Divergent Fist, delaying the rival’s typing.",
+          "before": "Yuji is behind {rival}. Divergent Fist can disrupt the leader’s typing rhythm.",
+          "cast": "Yuji types the technique name. His fist lands first; a second impact of cursed energy follows a moment later.",
+          "after": "For 2 to 3 s, {rival}’s characters appear late after each keypress. Yuji keeps running and closes the gap.",
+          "keys": "Keys",
+          "screen": "Screen",
+          "sample": "flash",
+          "status": "Typing delay · 2–3 s"
+        }
+      },
+      "nobara": {
+        "resonance": {
+          "track": "Miniature track: Nobara drives a nail into her straw doll and stuns Yuji with Resonance.",
+          "before": "Nobara is behind {rival}. Resonance can freeze the leader where he stands.",
+          "cast": "Nobara types the technique name and hammers a nail into her straw doll. The blow resonates straight into her target.",
+          "after": "{rival} is stunned for 3 to 5 s and can’t type. Nobara keeps running and closes the gap.",
+          "status": "Stunned · 3–5 s"
+        },
+        "hairpin": {
+          "track": "Miniature track: Nobara plants her nails with Hairpin, adding words to Yuji’s text.",
+          "before": "Nobara is behind {rival}. Hairpin can make the leader’s race longer.",
+          "cast": "Nobara types the technique name. Her nails burst and plant themselves in her target’s text.",
+          "after": "{rival}’s text gets extra words: his finish line moves away while Nobara closes the gap.",
+          "text": "Rival’s text",
+          "sample": "cursed energy",
+          "added": "straw nail",
+          "status": "+2 words"
+        }
+      }
+    },
     "play": "Play {name}",
     "otherFiles": "Other files",
-    "previous": "Previous",
-    "next": "Next",
+    "previous": "Previous: {name}",
+    "next": "Next: {name}",
     "all": "All characters",
-    "others": "Exorcists",
+    "abilities": {
+      "eyebrow": "Abilities",
+      "duration": "Duration",
+      "cost": "Cost",
+      "costValue": "{cost} CE",
+      "costAll": "All CE · min {cost}",
+      "requires": "Requires",
+      "durations": {
+        "instant": "Instant",
+        "seconds": "{seconds} s",
+        "secondsRange": "{seconds}–{maxSeconds} s",
+        "untilUsed": "Until used",
+        "nextWord": "Next word",
+        "nextWords": "Next {words} words",
+        "restOfRace": "Rest of race"
+      },
+      "yuji": {
+        "title": "his fists",
+        "intro": "Yuji has no spells, only his fists. Costs are in cursed energy (CE).",
+        "items": {
+          "divergentFist": {
+            "name": "Divergent Fist",
+            "effect": "The attacked player’s typing lags: characters show up late after each keypress for 2 to 3 s."
+          },
+          "blackFlash": {
+            "name": "Black Flash",
+            "effect": "Stuns the targeted player for 2 to 3 s and boosts Yuji’s passive CE accumulation rate."
+          }
+        }
+      },
+      "megumi": {
+        "title": "shikigami",
+        "intro": "Each shikigami has its own effect. Costs are in cursed energy (CE).",
+        "items": {
+          "rabbitEscape": {
+            "name": "Rabbit Escape",
+            "effect": "Megumi is untouchable for 3 s, domains included."
+          },
+          "toad": {
+            "name": "Toad",
+            "effect": "Grabs a player: they lose one word."
+          },
+          "maxElephant": {
+            "name": "Max Elephant",
+            "effect": "Pushes Megumi one word ahead."
+          },
+          "nue": {
+            "name": "Nue",
+            "effect": "Stuns a player for 3 s."
+          },
+          "roundDeer": {
+            "name": "Round Deer",
+            "effect": "Sends the next attack back to its sender."
+          },
+          "divineDogs": {
+            "name": "Divine Dogs",
+            "effect": "Clears Megumi’s next word."
+          },
+          "mahoraga": {
+            "name": "Mahoraga",
+            "effect": "Megumi gives up his chance to win to summon it. Mahoraga races as a bot and gets faster the longer it stays."
+          }
+        }
+      },
+      "nobara": {
+        "title": "cursed nails",
+        "intro": "Every strike on the straw doll lands on its target. Costs are in cursed energy (CE).",
+        "items": {
+          "resonance": {
+            "name": "Resonance",
+            "effect": "Stuns the targeted player for 3 to 5 s."
+          },
+          "hairpin": {
+            "name": "Hairpin",
+            "effect": "Adds words to the targeted player’s text."
+          }
+        }
+      },
+      "gojo": {
+        "title": "the six eyes",
+        "intro": "Limitless bends infinity three ways: Blue, Red and Hollow Purple. Costs are in cursed energy (CE).",
+        "items": {
+          "blue": {
+            "name": "Blue",
+            "effect": "Freezes the targeted player in place for 3 to 5 s."
+          },
+          "red": {
+            "name": "Red",
+            "effect": "Deflects the next incoming attack. Stays active until it is used."
+          },
+          "purple": {
+            "name": "Imaginary technique : Hollow Purple",
+            "effect": "Destroys Gojo’s next two words."
+          }
+        }
+      },
+      "sukuna": {
+        "title": "the king of curses",
+        "intro": "Cleave, Dismantle and Divine Flames: each strike destroys the words coming up. Costs are in cursed energy (CE).",
+        "items": {
+          "cleave": {
+            "name": "Cleave",
+            "effect": "Cuts up Sukuna’s next word."
+          },
+          "dismantle": {
+            "name": "Dismantle",
+            "effect": "Crushes Sukuna’s next word to pieces."
+          },
+          "divineFlames": {
+            "name": "Divine Flames",
+            "effect": "Destroys Sukuna’s next three words. Only available right after Cleave then Dismantle; if the chain is broken, it can’t be cast."
+          }
+        }
+      },
+      "yuta": {
+        "title": "his copied techniques",
+        "intro": "Through Rika, Yuta borrows other sorcerers’ techniques. Costs are in cursed energy (CE).",
+        "items": {
+          "jacobsLadder": {
+            "name": "Jacob’s Ladder",
+            "effect": "Seals the targeted player’s techniques: they cannot use any for 3 to 5 s."
+          },
+          "cursedSpeech": {
+            "name": "Cursed Speech",
+            "effect": "“Don’t move.” The targeted player cannot type for 3 to 5 s."
+          },
+          "skyManipulation": {
+            "name": "Sky Manipulation",
+            "effect": "Sends the next attack Yuta receives back to its sender."
+          }
+        }
+      }
+    },
     "descriptions": {
       "yuji": "First-year student at the Tokyo school of sorcery. Vessel of Sukuna, he makes up for his lack of spells with tremendous physical strength.",
       "megumi": "A calm, methodical sorcerer, heir to a technique of the Zenin clan.",
@@ -165,13 +355,13 @@
       "sukuna": "The King of Curses, sealed for a thousand years in twenty fingers. Yuji’s body now serves as his vessel."
     },
     "techniqueDetails": {
-      "yuji": "His cursed energy follows his fists a beat late: every blow lands twice.",
-      "megumi": "He shapes shadows with his hands to summon up to ten shikigami.",
-      "nobara": "Whatever she hits on a straw doll, her target feels.",
-      "gojo": "The Infinity slows down everything that approaches him, until nothing reaches him at all.",
+      "yuji": "Yuji has no innate technique, so he relies on what he has: tremendous physical strength and fists wrapped in cursed energy.",
+      "megumi": "Megumi has access to shikigami. Each one of them has a different effect, affecting either Megumi or another sorcerer.",
+      "nobara": "Nobara drives a cursed nail into a straw doll holding a piece of her target: whatever she strikes on the doll, the target feels, wherever they are.",
+      "gojo": "Limitless brings infinity into the real world: everything that approaches Gojo slows down endlessly and never reaches him. He can also bend it to pull targets in or blast them away.",
       "maki": "Born with almost no cursed energy, she gets a superhuman body and senses in exchange.",
-      "yuta": "He borrows Rika's boundless cursed energy and copies the techniques of those he defeats.",
-      "todo": "One clap is enough to swap the places of two targets.",
+      "yuta": "With his shikigami Rika, Yuta can copy other jujutsu sorcerers’ techniques.",
+      "todo": "When activated, it lets the user swap places with anything that has cursed energy.",
       "sukuna": "Cleave adjusts to its target’s toughness and cursed energy to cut it in a single stroke; Dismantle slices through everything around him. To finish, he unleashes Fuga: an arrow of fire that sets everything ablaze."
     }
   },
@@ -201,7 +391,7 @@
     "catchUp": {
       "eyebrow": "Technique",
       "title": "Catch the leaders",
-      "text": "Every exorcist has their character's. From behind, it strikes the top three, and hits harder the further behind you are."
+      "text": "Every exorcist has their character's. From behind, it strikes the top half of the race, and hits harder the further behind you are."
     },
     "domain": {
       "eyebrow": "Ultimate",
@@ -227,6 +417,11 @@
         "title": "Bots on equal terms",
         "text": "Bots type, charge and cast their techniques with exactly the same rules as you."
       },
+      "vow": {
+        "title": "Binding Vow",
+        "text": "Forfeit your technique for the rest of the race and get {percent}% of the race’s progress at once.",
+        "gain": "+{percent}%"
+      },
       "techniques": "Techniques",
       "on": "On",
       "off": "Off",
@@ -242,9 +437,28 @@
       "drain": "Drains your energy",
       "lock": "Technique locked {seconds} s",
       "none": "No technique, no domain",
-      "immune": "Immune to domains"
+      "noCe": "No CE",
+      "immune": "Immune to domains",
+      "duration": "Lasts {seconds} s"
     },
-    "rulesTitle": "Shared rules"
+    "rulesTitle": "Shared rules",
+    "controls": {
+      "title": "Controls",
+      "intro": "Hold {key} and press a key. For a domain or a technique, then type its exact name to cast it.",
+      "warning": "Make sure none of your macros or system shortcuts use {combos}: they would take over and the site would never receive the keys.",
+      "domain": {
+        "label": "Open a domain",
+        "hint": "then type its name"
+      },
+      "technique": {
+        "label": "Cast a technique",
+        "hint": "then type its name"
+      },
+      "vow": {
+        "label": "Make the Binding Vow",
+        "hint": "forfeits your technique"
+      }
+    }
   },
   "TopExorcists": {
     "eyebrow": "Rankings",
@@ -261,6 +475,14 @@
     "characters": "Characters",
     "profile": "Profile",
     "disclaimer": "Unofficial fan-made school project. Jujutsu Kaisen © Gege Akutami / Shueisha. Character art: Jujutsu Kaisen Phantom Parade (Sumzap); Maki: Jujutsu Kaisen TV anime, season 3 (TOHO). Not affiliated with the rights holders."
+  },
+  "CookieConsent": {
+    "title": "Cookies",
+    "body": "Curse Typer uses essential cookies for your session, guest profile and sign-in. With your consent, it also remembers your language.",
+    "note": "Essential cookies always stay on: the game can't work without them. You can change your mind with the “Cookies” link at the bottom of the page.",
+    "accept": "Accept",
+    "decline": "Decline",
+    "settings": "Cookies"
   },
   "Pagination": {
     "previous": "Previous page",

@@ -1,0 +1,70 @@
+{
+  "id": "divine-dog-white",
+  "motion": "idle",
+  "frameWidth": 128,
+  "frameHeight": 160,
+  "columns": 8,
+  "rows": 1,
+  "frames": 8,
+  "frameDurationMs": 200,
+  "fps": 5,
+  "loop": true,
+  "direction": "right",
+  "spriteSheet": "divine-dog-white-idle.png",
+  "preview": "divine-dog-white-idle.gif",
+  "anchor": {
+    "x": 64,
+    "y": 150
+  },
+  "uniqueFrames": 8,
+  "bounds": [
+    {
+      "x": 10,
+      "y": 59,
+      "width": 108,
+      "height": 91
+    },
+    {
+      "x": 14,
+      "y": 57,
+      "width": 101,
+      "height": 93
+    },
+    {
+      "x": 10,
+      "y": 59,
+      "width": 105,
+      "height": 91
+    },
+    {
+      "x": 14,
+      "y": 59,
+      "width": 98,
+      "height": 91
+    },
+    {
+      "x": 11,
+      "y": 58,
+      "width": 107,
+      "height": 92
+    },
+    {
+      "x": 13,
+      "y": 58,
+      "width": 102,
+      "height": 92
+    },
+    {
+      "x": 11,
+      "y": 59,
+      "width": 105,
+      "height": 91
+    },
+    {
+      "x": 14,
+      "y": 58,
+      "width": 99,
+      "height": 92
+    }
+  ]
+}

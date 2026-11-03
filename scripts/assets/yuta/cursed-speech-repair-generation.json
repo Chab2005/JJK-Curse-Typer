@@ -1,0 +1,10 @@
+{
+  "tool": "built-in image_gen",
+  "prompt": "Use case: precise-object-edit. Repair this Cursed Speech 16-frame pixel-art animation atlas: the purple circular sound echoes currently look broken or have missing pixels. Rebuild the echoes as CLEAN COMPLETE UNBROKEN CIRCULAR OUTLINES with NO HOLES in their strokes. Preserve the concept, fixed central point, centered composition, transparent background, purple palette, 4x4 row-major grid and 16 sequential animation frames. Each cell is precisely 32x32 logical pixels enlarged as crisp square pixel art. Each frame contains two or three COMPLETE concentric purple pixel circles expanding outward from the SAME CENTER, radius between 3 and 12 logical pixels. The outermost circle must be complete and visible in EVERY frame, not just a tiny dot. Stroke thickness is TWO logical pixels so the outlines survive reduction to actual 32x32 resolution. All drawn purple ring pixels are FULLY OPAQUE and solid; only the spaces inside and outside the rings are transparent. Use just three saturated violet/lavender shades plus the transparent background. Do not make any individual pixel of a ring disappear during fading: use darker solid purple shades to fade a whole ring. Radii advance smoothly outward over the frames, with new complete small rings appearing from the center as outer rings dissipate, seamless repeating sound-echo loop. At least 2 logical pixels transparent padding around every cell. NO broken arcs, cracks, missing quadrants, holes within strokes, grain, mottled transparency, blue particles, smoky texture, lightning, splashes, glow haze, center explosion, letters, text, labels, borders or gridlines. Pure simple intact pixel rings on actual transparent alpha.",
+  "resolution": [
+    32,
+    32
+  ],
+  "frames": 16,
+  "export": "Coverage-aware reduction and solid alpha for complete visible ring strokes"
+}

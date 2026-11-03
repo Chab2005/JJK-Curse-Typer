@@ -115,13 +115,13 @@
     "watermark": "Exorcistes",
     "cta": "Vérifier les personnages",
     "techniques": {
-      "yuji": "Divergent Fist",
+      "yuji": "Force brute",
       "megumi": "Dix Ombres",
-      "nobara": "Résonance",
+      "nobara": "Poupée de paille",
       "gojo": "Infini",
       "maki": "Corps céleste",
-      "yuta": "Rika",
-      "todo": "Boogie Woogie",
+      "yuta": "Copie",
+      "todo": "Boogie-Woogie",
       "sukuna": "Shrine"
     }
   },
@@ -145,15 +145,205 @@
       "yuta": "Amour authentique mutuel",
       "sukuna": "Autel démoniaque"
     },
-    "abilityTitle": "Capacité en course",
-    "abilitySoon": "Bientôt dévoilée",
-    "abilitySoonText": "Son effet, son coût en énergie et sa durée seront bientôt dévoilés.",
+    "domainDetails": {
+      "gojo": "Un flot d’informations sans fin submerge tous ceux qui sont pris à l’intérieur : les autres exorcistes restent figés sur place jusqu’à la fermeture du territoire.",
+      "megumi": "Tous les shikigamis des Dix Ombres répondent à la fois : tant que le territoire est ouvert, ils s’activent tous automatiquement, chaque seconde, sauf Mahoraga, qui n’est jamais invoqué.",
+      "yuta": "Des épées portant chaque technique copiée par Yuta emplissent le territoire. Tant qu’il est ouvert, il en saisit une chaque seconde et lance sa technique copiée, automatiquement et gratuitement.",
+      "sukuna": "L’autel taille dans le texte de chacun : chaque seconde, un mot de plus s’ajoute au texte de tous les autres exorcistes jusqu’à la fermeture du territoire."
+    },
+    "castHint": "puis tapez « {name} »",
+    "domainDuration": "Dure {seconds} s",
+    "example": {
+      "title": "Exemple en course",
+      "previousAbility": "Capacité précédente",
+      "nextAbility": "Capacité suivante",
+      "step": "Temps {step} / {steps}",
+      "you": "Vous",
+      "todo": {
+        "track": "Piste miniature : Todo, en retrait, échange sa place avec le meneur.",
+        "before": "Todo est à la traîne et {rival} mène la course : il reste un long chemin à taper pour le rattraper.",
+        "cast": "Il presse la touche de sa technique, puis tape son nom exact. Le mot est valide : Todo frappe dans ses mains.",
+        "after": "Boogie-Woogie ! Todo et {rival} échangent leur place : Todo prend la tête sans avoir tapé un mot de plus, et {rival} se retrouve en retrait."
+      },
+      "yuji": {
+        "blackFlash": {
+          "track": "Piste miniature : Yuji frappe Todo avec l’Éclair noir, l’étourdit et accélère son énergie occulte.",
+          "before": "Yuji est derrière {rival}. Un Éclair noir bien placé peut arrêter le meneur sur sa lancée.",
+          "cast": "Yuji tape le nom de la technique. Son poing frappe dans une explosion d’énergie occulte noire et rouge.",
+          "after": "{rival} est étourdi pendant 2 à 3 s tandis que Yuji le rattrape. L’Éclair noir accélère aussi l’accumulation passive d’énergie occulte de Yuji.",
+          "energy": "Yuji · EO",
+          "boost": "Yuji · EO ↑",
+          "status": "Étourdi · 2–3 s"
+        },
+        "divergentFist": {
+          "track": "Piste miniature : Yuji frappe Todo deux fois avec le Poing divergent et retarde sa frappe.",
+          "before": "Yuji est derrière {rival}. Le Poing divergent peut perturber le rythme de frappe du meneur.",
+          "cast": "Yuji tape le nom de la technique. Son poing touche d’abord ; un second impact d’énergie occulte arrive un instant plus tard.",
+          "after": "Pendant 2 à 3 s, les caractères de {rival} apparaissent en retard après chaque touche. Yuji continue de courir et réduit l’écart.",
+          "keys": "Touches",
+          "screen": "Écran",
+          "sample": "flash",
+          "status": "Frappe décalée · 2–3 s"
+        }
+      },
+      "nobara": {
+        "resonance": {
+          "track": "Piste miniature : Nobara plante un clou dans sa poupée de paille et étourdit Yuji avec la Résonance.",
+          "before": "Nobara est derrière {rival}. La Résonance peut figer le meneur sur place.",
+          "cast": "Nobara tape le nom de la technique et enfonce un clou dans sa poupée de paille. Le coup résonne jusqu’à sa cible.",
+          "after": "{rival} est étourdi pendant 3 à 5 s et ne peut plus taper. Nobara continue de courir et réduit l’écart.",
+          "status": "Étourdi · 3–5 s"
+        },
+        "hairpin": {
+          "track": "Piste miniature : Nobara plante ses clous avec l’Épingle et ajoute des mots au texte de Yuji.",
+          "before": "Nobara est derrière {rival}. L’Épingle peut rallonger la course du meneur.",
+          "cast": "Nobara tape le nom de la technique. Ses clous éclatent et se plantent dans le texte de sa cible.",
+          "after": "Le texte de {rival} reçoit des mots en plus : sa ligne d’arrivée s’éloigne tandis que Nobara réduit l’écart.",
+          "text": "Texte du rival",
+          "sample": "énergie occulte",
+          "added": "paille clou",
+          "status": "+2 mots"
+        }
+      }
+    },
     "play": "Jouer {name}",
     "otherFiles": "Autres fiches",
-    "previous": "Précédent",
-    "next": "Suivant",
+    "previous": "Précédent : {name}",
+    "next": "Suivant : {name}",
     "all": "Toutes les fiches",
-    "others": "Exorcistes",
+    "abilities": {
+      "eyebrow": "Capacités",
+      "duration": "Durée",
+      "cost": "Coût",
+      "costValue": "{cost} EO",
+      "costAll": "Toute l’EO · min {cost}",
+      "requires": "Prérequis",
+      "durations": {
+        "instant": "Instantané",
+        "seconds": "{seconds} s",
+        "secondsRange": "{seconds} à {maxSeconds} s",
+        "untilUsed": "Jusqu’à usage",
+        "nextWord": "Mot suivant",
+        "nextWords": "{words} mots suivants",
+        "restOfRace": "Fin de course"
+      },
+      "yuji": {
+        "title": "ses poings",
+        "intro": "Yuji n’a pas de sortilèges, seulement ses poings. Les coûts sont en énergie occulte (EO).",
+        "items": {
+          "divergentFist": {
+            "name": "Poing divergent",
+            "effect": "La frappe du joueur attaqué subit un décalage : les caractères apparaissent en retard après chaque touche pendant 2 à 3 s."
+          },
+          "blackFlash": {
+            "name": "Éclair noir",
+            "effect": "Étourdit le joueur ciblé pendant 2 à 3 s et accélère l’accumulation passive d’EO de Yuji."
+          }
+        }
+      },
+      "megumi": {
+        "title": "shikigami",
+        "intro": "Chaque shikigami a son propre effet. Les coûts sont en énergie occulte (EO).",
+        "items": {
+          "rabbitEscape": {
+            "name": "Lapins d’évasion",
+            "effect": "Megumi est intouchable pendant 3 s, territoires compris."
+          },
+          "toad": {
+            "name": "Crapaud",
+            "effect": "Attrape un joueur : il perd un mot."
+          },
+          "maxElephant": {
+            "name": "Éléphant Max",
+            "effect": "Fait avancer Megumi d’un mot."
+          },
+          "nue": {
+            "name": "Nue",
+            "effect": "Étourdit un joueur pendant 3 s."
+          },
+          "roundDeer": {
+            "name": "Cerf rond",
+            "effect": "Renvoie la prochaine attaque à son lanceur."
+          },
+          "divineDogs": {
+            "name": "Chiens divins",
+            "effect": "Efface le prochain mot de Megumi."
+          },
+          "mahoraga": {
+            "name": "Mahoraga",
+            "effect": "Megumi renonce à gagner pour l’invoquer. Mahoraga court comme un bot et accélère tant qu’il reste."
+          }
+        }
+      },
+      "nobara": {
+        "title": "clous maudits",
+        "intro": "Chaque coup porté à la poupée de paille frappe sa cible. Les coûts sont en énergie occulte (EO).",
+        "items": {
+          "resonance": {
+            "name": "Résonance",
+            "effect": "Étourdit le joueur ciblé pendant 3 à 5 s."
+          },
+          "hairpin": {
+            "name": "Épingle",
+            "effect": "Ajoute des mots au texte du joueur ciblé."
+          }
+        }
+      },
+      "gojo": {
+        "title": "les six yeux",
+        "intro": "L’Illimité plie l’infini de trois façons : Bleu, Rouge et Violet creux. Les coûts sont en énergie occulte (EO).",
+        "items": {
+          "blue": {
+            "name": "Bleu",
+            "effect": "Fige le joueur ciblé sur place pendant 3 à 5 s."
+          },
+          "red": {
+            "name": "Rouge",
+            "effect": "Dévie la prochaine attaque reçue. Reste actif jusqu’à son utilisation."
+          },
+          "purple": {
+            "name": "Technique imaginaire : Violet creux",
+            "effect": "Détruit les deux prochains mots de Gojo."
+          }
+        }
+      },
+      "sukuna": {
+        "title": "le roi des fléaux",
+        "intro": "Découpe, Démantèlement et Flammes divines : chaque coup détruit les mots à venir. Les coûts sont en énergie occulte (EO).",
+        "items": {
+          "cleave": {
+            "name": "Découpe",
+            "effect": "Découpe le prochain mot de Sukuna."
+          },
+          "dismantle": {
+            "name": "Démantèlement",
+            "effect": "Réduit en morceaux le prochain mot de Sukuna."
+          },
+          "divineFlames": {
+            "name": "Flammes divines",
+            "effect": "Détruit les trois prochains mots de Sukuna. Disponible seulement juste après Découpe puis Démantèlement ; si l’enchaînement est rompu, impossible de la lancer."
+          }
+        }
+      },
+      "yuta": {
+        "title": "ses techniques copiées",
+        "intro": "Grâce à Rika, Yuta emprunte les techniques d’autres exorcistes. Les coûts sont en énergie occulte (EO).",
+        "items": {
+          "jacobsLadder": {
+            "name": "Échelle de Jacob",
+            "effect": "Scelle les techniques du joueur ciblé : il ne peut plus en utiliser pendant 3 à 5 s."
+          },
+          "cursedSpeech": {
+            "name": "Parole maudite",
+            "effect": "« Ne bouge pas. » Le joueur ciblé ne peut plus taper pendant 3 à 5 s."
+          },
+          "skyManipulation": {
+            "name": "Manipulation du ciel",
+            "effect": "Renvoie à son expéditeur la prochaine attaque que Yuta reçoit."
+          }
+        }
+      }
+    },
     "descriptions": {
       "yuji": "Élève de première année à l’école d’exorcisme de Tokyo. Réceptacle de Sukuna, il compense son retard en sorts par une force physique hors norme.",
       "megumi": "Exorciste calme et méthodique, héritier d’une technique du clan Zenin.",
@@ -165,13 +355,13 @@
       "sukuna": "Le Roi des fléaux, scellé depuis mille ans dans vingt doigts. Le corps de Yuji lui sert désormais de réceptacle."
     },
     "techniqueDetails": {
-      "yuji": "Son énergie occulte suit ses poings avec un temps de retard : chaque coup frappe deux fois.",
-      "megumi": "Il forme des ombres avec ses mains pour invoquer jusqu’à dix shikigamis.",
-      "nobara": "Ce qu’elle frappe sur une poupée de paille, sa cible le ressent.",
-      "gojo": "L’Infini ralentit tout ce qui l’approche, jusqu’à ce que plus rien ne l’atteigne.",
+      "yuji": "Yuji n’a pas de technique innée, alors il s’appuie sur ce qu’il a : une force physique hors norme et des poings enrobés d’énergie occulte.",
+      "megumi": "Megumi a accès aux shikigamis. Chacun a un effet différent, qui touche Megumi ou un autre exorciste.",
+      "nobara": "Nobara plante un clou maudit dans une poupée de paille qui contient un morceau de sa cible : ce qu’elle frappe sur la poupée, la cible le ressent, où qu’elle soit.",
+      "gojo": "L’Infini fait entrer l’infini dans le monde réel : tout ce qui approche Gojo ralentit sans fin et ne l’atteint jamais. Il peut aussi le plier pour attirer ses cibles ou les projeter au loin.",
       "maki": "Née presque sans énergie occulte, elle reçoit en échange un corps et des sens surhumains.",
-      "yuta": "Il emprunte l’énergie maudite sans limite de Rika et copie les techniques de ceux qu’il bat.",
-      "todo": "Un claquement de mains suffit pour échanger la place de deux cibles.",
+      "yuta": "Avec son shikigami Rika, Yuta peut copier les techniques des autres exorcistes.",
+      "todo": "Une fois activée, elle permet à son utilisateur d’échanger sa place avec tout ce qui porte de l’énergie occulte.",
       "sukuna": "Cleave s’ajuste à la résistance et à l’énergie occulte de sa cible pour la trancher d’un seul coup ; Dismantle taille en pièces tout ce qui l’entoure. Pour achever, il libère Fuga : une flèche de feu qui embrase tout."
     }
   },
@@ -201,7 +391,7 @@
     "catchUp": {
       "eyebrow": "Technique",
       "title": "Rattrapez les meneurs",
-      "text": "Chaque exorciste a celle de son personnage. Derrière, elle frappe les trois premiers, d'autant plus fort que votre retard est grand."
+      "text": "Chaque exorciste a celle de son personnage. Derrière, elle frappe la moitié de tête de la course, d'autant plus fort que votre retard est grand."
     },
     "domain": {
       "eyebrow": "Atout ultime",
@@ -227,6 +417,11 @@
         "title": "Bots à armes égales",
         "text": "Les bots tapent, chargent et lancent leurs techniques avec exactement les mêmes règles que vous."
       },
+      "vow": {
+        "title": "Pacte contraignant",
+        "text": "Renoncez à votre technique pour le reste de la course et recevez d’un coup {percent} % de la progression.",
+        "gain": "+{percent} %"
+      },
       "techniques": "Techniques",
       "on": "Activées",
       "off": "Désactivées",
@@ -242,9 +437,28 @@
       "drain": "Vide l'énergie",
       "lock": "Technique bloquée {seconds} s",
       "none": "Ni technique ni territoire",
-      "immune": "Immunisée aux territoires"
+      "noCe": "Sans EP",
+      "immune": "Immunisée aux territoires",
+      "duration": "Dure {seconds} s"
     },
-    "rulesTitle": "Règles communes"
+    "rulesTitle": "Règles communes",
+    "controls": {
+      "title": "Commandes",
+      "intro": "Maintenez {key} et appuyez sur une touche. Pour un territoire ou une technique, tapez ensuite son nom exact pour la lancer.",
+      "warning": "Vérifiez qu'aucune de vos macros ni aucun raccourci système n'utilise {combos} : ils prendraient le dessus et le site ne recevrait jamais les touches.",
+      "domain": {
+        "label": "Déployer un territoire",
+        "hint": "puis tapez son nom"
+      },
+      "technique": {
+        "label": "Lancer une technique",
+        "hint": "puis tapez son nom"
+      },
+      "vow": {
+        "label": "Conclure le pacte contraignant",
+        "hint": "renonce à votre technique"
+      }
+    }
   },
   "TopExorcists": {
     "eyebrow": "Classement",
@@ -261,6 +475,14 @@
     "characters": "Personnages",
     "profile": "Profil",
     "disclaimer": "Projet scolaire non officiel, réalisé par des fans. Jujutsu Kaisen © Gege Akutami / Shueisha. Illustrations des personnages : Jujutsu Kaisen Phantom Parade (Sumzap) ; Maki : anime Jujutsu Kaisen, saison 3 (TOHO). Aucune affiliation avec les ayants droit."
+  },
+  "CookieConsent": {
+    "title": "Cookies",
+    "body": "Curse Typer utilise des cookies essentiels pour ta session, ton profil d'invité et la connexion. Avec ton accord, on retient aussi ta langue.",
+    "note": "Les cookies essentiels restent actifs : sans eux, le jeu ne fonctionne pas. Tu peux changer d'avis avec le lien « Cookies » en bas de page.",
+    "accept": "Accepter",
+    "decline": "Refuser",
+    "settings": "Cookies"
   },
   "Pagination": {
     "previous": "Page précédente",

@@ -1,0 +1,79 @@
+{
+  "id": "nue",
+  "motion": "idle",
+  "direction": "left",
+  "frameWidth": 192,
+  "frameHeight": 256,
+  "columns": 8,
+  "rows": 1,
+  "frames": 8,
+  "frameDurationsMs": [
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200
+  ],
+  "loop": true,
+  "pixelStep": 2,
+  "paletteColors": 20,
+  "targetSkullHeight": 32,
+  "skullHeight": 32,
+  "groundY": 246,
+  "spriteSheet": "nue-idle.png",
+  "preview": "nue-idle.gif",
+  "uniqueFrames": 8,
+  "bounds": [
+    {
+      "x": 54,
+      "y": 148,
+      "width": 90,
+      "height": 98
+    },
+    {
+      "x": 54,
+      "y": 144,
+      "width": 92,
+      "height": 102
+    },
+    {
+      "x": 54,
+      "y": 140,
+      "width": 94,
+      "height": 106
+    },
+    {
+      "x": 54,
+      "y": 148,
+      "width": 92,
+      "height": 98
+    },
+    {
+      "x": 54,
+      "y": 148,
+      "width": 90,
+      "height": 98
+    },
+    {
+      "x": 54,
+      "y": 144,
+      "width": 92,
+      "height": 102
+    },
+    {
+      "x": 54,
+      "y": 140,
+      "width": 94,
+      "height": 106
+    },
+    {
+      "x": 54,
+      "y": 148,
+      "width": 92,
+      "height": 98
+    }
+  ]
+}

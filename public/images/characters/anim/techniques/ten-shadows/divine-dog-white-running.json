@@ -1,0 +1,79 @@
+{
+  "id": "divine-dog-white",
+  "motion": "running",
+  "frameWidth": 160,
+  "frameHeight": 160,
+  "columns": 8,
+  "rows": 1,
+  "frames": 8,
+  "frameDurationMs": 80,
+  "fps": 12.5,
+  "loop": true,
+  "loopDurationMs": 640,
+  "direction": "right",
+  "spriteSheet": "divine-dog-white-running.png",
+  "preview": "divine-dog-white-running.gif",
+  "anchor": {
+    "x": 80,
+    "y": 150
+  },
+  "source": "divine-dog-white-running-source.png",
+  "uniqueFrames": 8,
+  "bounds": [
+    {
+      "x": 24,
+      "y": 55,
+      "width": 114,
+      "height": 94
+    },
+    {
+      "x": 29,
+      "y": 58,
+      "width": 110,
+      "height": 92
+    },
+    {
+      "x": 30,
+      "y": 58,
+      "width": 108,
+      "height": 89
+    },
+    {
+      "x": 32,
+      "y": 58,
+      "width": 107,
+      "height": 92
+    },
+    {
+      "x": 8,
+      "y": 61,
+      "width": 144,
+      "height": 69
+    },
+    {
+      "x": 40,
+      "y": 63,
+      "width": 99,
+      "height": 85
+    },
+    {
+      "x": 31,
+      "y": 63,
+      "width": 107,
+      "height": 87
+    },
+    {
+      "x": 32,
+      "y": 62,
+      "width": 106,
+      "height": 86
+    }
+  ],
+  "registration": "Fixed head/nose x; source vertical motion retained",
+  "validation": {
+    "idlePreserved": true,
+    "clippedEdgePixels": 0,
+    "partialAlphaPixels": 0,
+    "gifFrames": 8
+  }
+}

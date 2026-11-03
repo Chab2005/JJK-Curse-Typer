@@ -5,6 +5,8 @@
 //   puis le visiteur est envoyé sur la même page sous le préfixe de la langue.
 // - Chemin sans préfixe (anglais) : redirige vers `/fr/...` si la langue
 //   préférée est le français (cookie de choix explicite, sinon Accept-Language).
+//   Accept-Language ne sert qu'à l'arrivée sur le site : sans cookie (refusé),
+//   un passage à l'anglais depuis le site doit tenir.
 // - Chemin déjà préfixé : servi tel quel par next-intl.
 
 import { LANG_PARAM, defaultLocale, isLocale, locales, type Locale } from './config';
@@ -16,6 +18,8 @@ export type LocaleRequest = {
   search: string;
   acceptLanguage: string | null;
   cookieLocale: string | undefined;
+  /** Navigation lancée depuis une page du site (lien, sélecteur de langue). */
+  fromSite: boolean;
 };
 
 export type LocaleDecision =
@@ -68,7 +72,8 @@ export function resolveLocaleRedirect(req: LocaleRequest): LocaleDecision {
   // Un lien sans préfixe (saisi à la main, retour OAuth) : le cookie de choix,
   // sinon la langue du navigateur (I18N-02), rétablit `/fr/...`.
   const unprefixed = stripLocalePrefix(req.pathname) === req.pathname;
-  const preferred = isLocale(req.cookieLocale) ? req.cookieLocale : matchAcceptLanguage(req.acceptLanguage);
+  const detected = req.fromSite ? undefined : matchAcceptLanguage(req.acceptLanguage);
+  const preferred = isLocale(req.cookieLocale) ? req.cookieLocale : detected;
   if (unprefixed && preferred !== undefined && preferred !== defaultLocale) {
     return { type: 'redirect', pathname: withLocalePrefix(req.pathname, preferred), search: req.search };
   }

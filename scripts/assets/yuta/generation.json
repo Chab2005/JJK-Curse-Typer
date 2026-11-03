@@ -1,0 +1,36 @@
+{
+  "tool": "built-in image_gen",
+  "frames": 16,
+  "layout": "4x4 row-major source atlases, horizontal runtime strips",
+  "resolution": {
+    "jacobsLadder": [
+      64,
+      128
+    ],
+    "cursedSpeech": [
+      32,
+      32
+    ],
+    "skyManipulation": [
+      32,
+      32
+    ]
+  },
+  "prompts": [
+    {
+      "id": "jacobs-ladder",
+      "prompt": "Rework this Jacob's Ladder 16-frame animation sheet with a MUCH BIGGER GROUND IMPACT and MUCH LOWER PIXEL RESOLUTION / COARSER PIXEL ART. Each frame MUST be designed as ONLY 32 pixels wide by 64 pixels tall, enlarged here as big crisp square pixels; absolutely no smooth painting, gradients, fine lines, antialiasing, glow haze or grain. Use only 5 flat colors: dark gold, amber, yellow, pale yellow, white. TRUE TRANSPARENT background. EXACTLY 4 columns by 4 rows, 16 sequential sustained looping frames, sheet aspect ratio 1:2. In each cell: a tall narrow golden TRAPEZOID downward light beam, FLAT TOP about 6 logical pixels wide and flat bottom about 12 pixels wide; beam height about 46 logical pixels. The lower QUARTER of the cell is a LARGE DRAMATIC IMPACT SPLASH OF LIGHT, about 28 pixels wide x 14 pixels tall: white-yellow impact core directly under the beam and two thick broad gold lobes that FLOW LEFT AND RIGHT, curl upward slightly, with big chunky horizontal shockwave tongues. The splash should be MORE THAN TWICE the beam's base width and much larger/thicker than the current thin ground ring. It reads like a powerful waterfall of light hitting invisible ground and pouring out sideways. Keep 2 transparent logical pixels at every edge. NO actual ground or scene. Only ONE OR TWO thick downward bright streaks inside the beam, and big chunky readable silhouette shifts as impact lobes surge outward over the 16 frames. Same anchor and overall dimensions for all frames. No pointed top, no realistic texture, no extra particles, no characters, no text, no labels, no gridlines. Extreme low-resolution retro game VFX, like hand-drawn 32px wide pixel sprites, NOT high resolution art rendered with a pixel filter."
+    },
+    {
+      "id": "cursed-speech",
+      "prompt": "Use case: stylized-concept. Asset type: animated pixel-art game VFX spritesheet on TRUE transparent background. Subject: Cursed Speech, JUST purple sound echoes expanding outward in concentric circles from one fixed central point. Small bright violet center, two or three thin lavender and deep purple circular echo outlines at different radii, rings grow outward then fade as fresh small rings emerge from the same center. No characters, face, mouth, letters, symbols, scenery, lightning, smoke, particles, flowers, orb or solid disk. EXACTLY 16 consecutive frames in a perfectly regular FOUR columns by FOUR rows square grid, row-major order. Identical 32x32 logical pixel cells enlarged with crisp chunky square pixels, limited purple palette, NO antialiasing. Same center in every cell. Largest ring radius 13 logical pixels with at least 2 transparent pixels padding on every edge. Even temporal steps, smooth expanding circular echo loop. True alpha transparent background. No labels, text, borders, watermark or gridlines."
+    },
+    {
+      "id": "sky-manipulation",
+      "prompt": "Use case: stylized-concept. Asset type: animated pixel-art game VFX spritesheet on TRUE transparent background. Subject: Sky Manipulation, a subtle spatial distortion patch: translucent pale cyan and icy blue curved contours bending and rippling like the sky is elastic glass. Two or three gently undulating S-shaped refractive ribbons, a few offset short horizontal contour fragments that reveal the bend, negative transparent space between contours. It must read as warped space, with the ripples traveling smoothly through the small patch, NOT an orb, portal, tornado, water splash, cloud, star, fire or lightning. No scenery and no characters. EXACTLY 16 consecutive frames in a perfectly regular FOUR columns by FOUR rows square grid, row-major order. Each identical cell represents 32x32 logical pixels, enlarged with crisp chunky square pixels, limited pale blue/cyan/white palette, NO antialiasing. Contours remain centered, contained within radius 13 with at least 2 logical transparent pixels at every edge. Consistent scale, coherent subtly moving seamless animation loop. True alpha transparent background. No text, labels, symbols, borders, watermark or gridlines."
+    }
+  ],
+  "pillarRevision": "jacobs-ladder-pillar-generation.json",
+  "cursedSpeechRepair": "cursed-speech-repair-generation.json",
+  "prepare": "node scripts/prepare-yuta-effects.mjs"
+}

@@ -1,0 +1,16 @@
+{
+  "tool": "built-in image_gen",
+  "prompt": "Edit target: the supplied Divine Flame idle sprite sheet. Remove ALL hands, fingers, arms, skin, wristbands and black outlines belonging to anatomy from EVERY frame. Keep ONLY the vertical gathering flame and a few small golden embers, floating freely on true alpha transparency. Reconstruct the full natural fire silhouette where hands previously obscured it. Preserve the exact existing 4-column by 4-row grid, 16-frame sequence, original flame centers, flame scale, warm white/yellow core, golden orange/red tongues, crisp low-resolution pixel-art style and smoothly looping idle flicker. Each isolated flame should be a tall tapered fire shape, compact lower base and curling pointed upper tip, completely within its cell, same center and steady scale across all16 frames. Keep a generous clear transparent margin on all four sides of every frame. Simplify stray noisy specks to a few small embers. Logical sheet512x512,128x128 per frame. Do not add characters, hands, body parts, pedestals, bowls, arrows, text, labels, backgrounds, painted checkerboards, borders or grid lines. Change only removal of anatomy and natural continuation of the flame; keep the sprite sheet layout and palette. Deliver the transparent flame-only sprite sheet.",
+  "reference": "Flame-only revision: remove every hand and arm from the idle animation, retaining only the vertical gathering flame.",
+  "source": "divine-flame-idle-spritesheet.png",
+  "prepare": "node scripts/prepare-sukuna-flame.mjs",
+  "idle": "/images/characters/anim/techniques/sukuna/divine-flame-idle.png",
+  "hover": "/images/characters/anim/techniques/sukuna/divine-flame-hover.png",
+  "hoverSource": "/images/characters/anim/techniques/sukuna/divine-flame-spritesheet-lowres.png",
+  "frameSize": 96,
+  "frames": 16,
+  "idleFrameMs": 100,
+  "hoverFrameMs": 70,
+  "idleLogicalFrameSize": 32,
+  "idleExport": "Idle frames reduced to 32x32 with nearest-neighbor sampling before export; launched arrow preserved unchanged."
+}

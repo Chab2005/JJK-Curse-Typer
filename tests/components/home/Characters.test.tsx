@@ -11,7 +11,7 @@ describe('Characters (smoke)', () => {
     const cards = screen.getAllByRole('listitem');
     expect(cards.map((card) => card.querySelector('p')?.textContent)).toEqual(['Yuji Itadori', 'Megumi Fushiguro', 'Ryomen Sukuna', 'Satoru Gojo']);
     expect(screen.queryByText('Nobara Kugisaki')).not.toBeInTheDocument();
-    expect(screen.getByText('Divergent Fist')).toBeInTheDocument();
+    expect(screen.getByText('Raw Strength')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Meet the characters/ })).toHaveAttribute('href', '/characters');
   });
 
@@ -20,6 +20,6 @@ describe('Characters (smoke)', () => {
 
     const cards = screen.getAllByRole('listitem').map((card) => card.querySelector('a')?.getAttribute('href'));
     expect(cards).toEqual(['/characters/yuji', '/characters/megumi', '/characters/sukuna', '/characters/gojo']);
-    expect(screen.getByRole('link', { name: 'Yuji Itadori, Divergent Fist: open the file' })).toHaveAttribute('href', '/characters/yuji');
+    expect(screen.getByRole('link', { name: 'Yuji Itadori, Raw Strength: open the file' })).toHaveAttribute('href', '/characters/yuji');
   });
 });

@@ -1,15 +1,24 @@
 import { useTranslations } from 'next-intl';
 import type { CSSProperties, ReactNode } from 'react';
 import type { CharacterId } from '@/components/shared/characters';
+import { BINDING_VOW_PROGRESS, DOMAIN_SECONDS, type Ability } from '@/game/abilities';
 import { ENERGY_MAX } from '@/game/energy';
 import { spriteStyle } from './characterSprites';
+import ControlsIntro from './ControlsIntro';
 import EnergyDemo from './EnergyDemo';
 import GojoDomain, { DomainScene } from './GojoDomain';
+import Shortcut from './Shortcut';
 import styles from './GameGuide.module.css';
 
 /** Énergie minimale pour déployer une extension du territoire, et durée pendant laquelle la technique est ensuite bloquée. */
 const DOMAIN_MIN_ENERGY = 1000;
 const DOMAIN_LOCK_SECONDS = 10;
+
+/** Part de la course offerte par le pacte contraignant, en pourcentage. */
+const VOW_PERCENT = Math.round(BINDING_VOW_PROGRESS * 100);
+
+/** Raccourcis listés dans le bloc « Commandes », dans l'ordre des touches. */
+const CONTROLS: Ability[] = ['domain', 'technique', 'vow'];
 
 /** Échelles des bandes de sprites : coureurs de l'étape 1, couloirs de l'étape 3 et Maki, coureur des règles. */
 const RUNNER_SCALE = 0.17;
@@ -35,8 +44,10 @@ const RACE: { id: CharacterId; x: number }[] = [
 const CAST = { from: 2, to: 0 };
 const laneCenter = (lane: number) => lane * LANE_GAP + LANE_HEIGHT / 2;
 
-/** Éclair d'impact façon Black Flash : quelques branches brisées autour du point touché. */
-const SPARK_PATH = 'M0 0 L5 -3 L3 -9 L10 -14 L9 -21 M0 0 L6 2 L11 -1 L18 3 L25 1 M0 0 L-4 4 L-2 10 L-9 15 L-10 22 M0 0 L-6 -2 L-10 -8 L-17 -9 M0 0 L2 6 L8 9 L9 17';
+/** Black Flash de Yuji, bande de 16 images de 96 px (même fichier que la capacité « Black Flash »). */
+const BLACK_FLASH = '/images/characters/anim/techniques/yuji/black-flash.png';
+const BLACK_FLASH_FRAMES = 16;
+const BLACK_FLASH_SHEET = 96 * BLACK_FLASH_FRAMES;
 
 /** Barre cramoisie au bas des trois cartes, dans le dégradé du bouton « Jouer ». */
 const CARD_BAR = 'pointer-events-none absolute inset-x-0 bottom-0 h-1.5 bg-linear-to-b from-primary-container via-[#a3102f] to-[#6e0718]';
@@ -132,6 +143,7 @@ export default function GameGuide() {
                   stacked
                   tags={[
                     { label: t('tags.domainMin', { min: DOMAIN_MIN_ENERGY }), tone: 'hot' },
+                    { label: t('tags.duration', { seconds: DOMAIN_SECONDS }) },
                     { label: t('tags.drain') },
                     { label: t('tags.lock', { seconds: DOMAIN_LOCK_SECONDS }) },
                   ]}
@@ -153,7 +165,7 @@ export default function GameGuide() {
               </span>
             </DomainScene>
             <CardBody number="05" stroke="[-webkit-text-stroke:1px_rgb(229_189_190/0.5)]" eyebrow={t('restriction.eyebrow')} title={t('restriction.title')} text={t('restriction.text')}>
-              <TagList stacked angle={-4} tags={[{ label: t('tags.none') }, { label: t('tags.immune'), tone: 'light' }]} />
+              <TagList stacked angle={-4} tags={[{ label: t('tags.none') }, { label: t('tags.noCe') }, { label: t('tags.immune'), tone: 'light' }]} />
             </CardBody>
             <span aria-hidden="true" className={CARD_BAR} />
           </DoubleFilet>
@@ -161,15 +173,17 @@ export default function GameGuide() {
 
         <div className="flex flex-col gap-[18px]">
           <p className="font-label-code text-[12px] font-bold uppercase tracking-[0.32em] text-primary-container">{t('rulesTitle')}</p>
-          <ul className="grid gap-5 md:grid-cols-3">
+          <ul className="grid auto-rows-fr gap-5 md:grid-cols-2 lg:grid-cols-4">
             <RuleCard title={t('rules.host.title')} text={t('rules.host.text')}>
-              <span className="font-label-code text-[11px] uppercase tracking-[0.18em] text-outline">{t('rules.techniques')}</span>
-              <span className="guide-switch hx-cut relative h-[30px] w-[62px] transition-colors duration-300 [--h:10px]">
+              <span className="guide-switch hx-cut relative h-[30px] w-[62px] shrink-0 transition-colors duration-300 [--h:10px]">
                 <span className="guide-switch-knob bevel-var absolute top-[5px] size-5 transition-[left,background-color] duration-300 [--b:5px] motion-reduce:transition-none" />
               </span>
-              <span className="font-label-code text-[11px] uppercase tracking-[0.14em]">
-                <span className="font-label-code text-outline group-hover:hidden">{t('rules.off')}</span>
-                <span className="font-label-code hidden text-primary group-hover:inline">{t('rules.on')}</span>
+              <span className="flex min-w-0 flex-col gap-1">
+                <span className="font-label-code text-[11px] uppercase tracking-[0.18em] text-outline">{t('rules.techniques')}</span>
+                <span className="font-label-code text-[11px] uppercase tracking-[0.14em]">
+                  <span className="font-label-code text-outline group-hover:hidden">{t('rules.off')}</span>
+                  <span className="font-label-code hidden text-primary group-hover:inline">{t('rules.on')}</span>
+                </span>
               </span>
             </RuleCard>
             <RuleCard title={t('rules.finish.title')} text={t('rules.finish.text')}>
@@ -186,8 +200,31 @@ export default function GameGuide() {
               <span className="material-symbols-outlined guide-bob text-[30px] text-on-surface-variant transition-colors [animation-delay:-0.3s] group-hover:text-on-primary-container">smart_toy</span>
               <span className="font-label-code ml-auto text-[10px] uppercase tracking-[0.18em] text-outline">{t('rules.same')}</span>
             </RuleCard>
+            <RuleCard title={t('rules.vow.title')} text={t('rules.vow.text', { percent: VOW_PERCENT })}>
+              <span className="relative h-2 flex-1 bg-surface-container-high">
+                <span className="absolute inset-y-0 left-0 w-[15%] bg-outline-variant" />
+                <span className="absolute inset-y-0 left-[15%] w-0 bg-primary transition-[width] duration-500 group-hover:w-[30%] motion-reduce:transition-none" />
+              </span>
+              <span className="font-label-code text-[12px] text-outline transition-colors group-hover:text-primary">{t('rules.vow.gain', { percent: VOW_PERCENT })}</span>
+            </RuleCard>
           </ul>
         </div>
+
+        <section aria-labelledby="controls-title" className="flex flex-col gap-[18px]">
+          <p id="controls-title" className="font-label-code text-[12px] font-bold uppercase tracking-[0.32em] text-primary-container">{t('controls.title')}</p>
+          <ControlsIntro />
+          <ul className="grid gap-3 md:grid-cols-3">
+            {CONTROLS.map((ability) => (
+              <FiletCard key={ability} faceClassName="items-center gap-4 px-5 py-4">
+                <Shortcut ability={ability} />
+                <span className="flex min-w-0 flex-col gap-0.5">
+                  <span className="font-grotesk text-[17px] font-semibold text-on-primary-container">{t(`controls.${ability}.label`)}</span>
+                  <span className="text-sm text-on-surface-variant">{t(`controls.${ability}.hint`)}</span>
+                </span>
+              </FiletCard>
+            ))}
+          </ul>
+        </section>
       </div>
     </section>
   );
@@ -273,30 +310,37 @@ function RaceDemo() {
           className="guide-cast absolute -mt-[5px] -ml-[5px] size-2.5 rounded-[50%] bg-on-primary-container"
           style={{ '--x1': start.x, '--y1': start.y, '--x2': end.x, '--y2': end.y } as CSSProperties}
         />
-        <svg viewBox="-32 -32 64 64" className="guide-spark absolute -mt-8 -ml-8 size-16" style={{ left: end.x, top: end.y }}>
-          <g fill="none" strokeLinejoin="round" strokeLinecap="round">
-            <path d={SPARK_PATH} stroke="#e11d48" strokeWidth={6} opacity={0.55} />
-            <path d={SPARK_PATH} stroke="#ff2d55" strokeWidth={3} />
-            <path d={SPARK_PATH} stroke="#050505" strokeWidth={1.2} />
-          </g>
-        </svg>
+        {/* Black Flash de Yuji (bande de 16 images de 96 px) centrée sur le point touché. */}
+        <span className="guide-spark absolute -mt-12 -ml-12 block size-24" style={{ left: end.x, top: end.y }}>
+          <span
+            className="block size-full [image-rendering:pixelated] motion-reduce:hidden"
+            style={{ background: `url(${BLACK_FLASH}) 0 0 / ${BLACK_FLASH_SHEET}px 96px no-repeat`, animation: `sprite-idle ${BLACK_FLASH_FRAMES * 80}ms steps(${BLACK_FLASH_FRAMES}) infinite`, '--sprite-end': `-${BLACK_FLASH_SHEET}px` } as CSSProperties}
+          />
+        </span>
       </div>
     </div>
   );
 }
 
-// Règle commune : carte à double filet qui monte et s'allume au survol, avec sa petite animation en tête.
+// Règle commune : carte à double filet, avec sa petite animation en tête.
 function RuleCard({ title, text, children }: { title: string; text: string; children: ReactNode }) {
   return (
-    <li className="group flex transition-[translate,filter] duration-250 hover:-translate-y-[5px] hover:drop-shadow-[0_0_14px_rgb(225_29_72/0.4)] motion-reduce:transition-none">
-      <div className="bevel-var flex flex-1 bg-[#4a1218] p-px transition-colors duration-250 [--b:12px] group-hover:bg-primary-container">
-        <div className="bevel-var flex flex-1 bg-[#0b0405] p-[3px] [--b:11.5px]">
-          <div className="bevel-var flex flex-1 bg-primary-container/20 p-px transition-colors duration-250 [--b:10px] group-hover:bg-primary-container/55">
-            <div className="bevel-var flex flex-1 flex-col gap-3 bg-[radial-gradient(120%_120%_at_50%_0%,#1f080c,#0c0304_70%)] px-6 pt-[22px] pb-[26px] [--b:9.5px]">
-              <div aria-hidden="true" className="relative mb-1.5 flex h-16 items-center gap-3.5 border-b border-dashed border-[#2a1416] px-1">{children}</div>
-              <h3 className="font-grotesk text-xl font-semibold text-on-primary-container">{title}</h3>
-              <p className="text-[15px] leading-[23px] text-on-surface-variant">{text}</p>
-            </div>
+    <FiletCard faceClassName="flex-col gap-3 px-6 pt-[22px] pb-[26px]">
+      <div aria-hidden="true" className="relative mb-1.5 flex h-16 items-center gap-3.5 border-b border-dashed border-[#2a1416] px-1">{children}</div>
+      <h3 className="font-grotesk text-xl font-semibold text-on-primary-container">{title}</h3>
+      <p className="text-[15px] leading-[23px] text-on-surface-variant">{text}</p>
+    </FiletCard>
+  );
+}
+
+// Carte à double filet des règles et des commandes, qui monte et s'allume au survol.
+function FiletCard({ faceClassName, children }: { faceClassName: string; children: ReactNode }) {
+  return (
+    <li className="group flex min-w-0 transition-[translate,filter] duration-250 hover:-translate-y-[5px] hover:drop-shadow-[0_0_14px_rgb(225_29_72/0.4)] motion-reduce:transition-none">
+      <div className="bevel-var flex min-w-0 flex-1 bg-[#4a1218] p-px transition-colors duration-250 [--b:12px] group-hover:bg-primary-container">
+        <div className="bevel-var flex min-w-0 flex-1 bg-[#0b0405] p-[3px] [--b:11.5px]">
+          <div className="bevel-var flex min-w-0 flex-1 bg-primary-container/20 p-px transition-colors duration-250 [--b:10px] group-hover:bg-primary-container/55">
+            <div className={`bevel-var flex min-w-0 flex-1 bg-[radial-gradient(120%_120%_at_50%_0%,#1f080c,#0c0304_70%)] [--b:9.5px] ${faceClassName}`}>{children}</div>
           </div>
         </div>
       </div>

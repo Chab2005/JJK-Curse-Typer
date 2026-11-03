@@ -1,0 +1,123 @@
+{
+  "id": "mahoraga",
+  "motion": "running",
+  "frameWidth": 320,
+  "frameHeight": 320,
+  "columns": 9,
+  "rows": 1,
+  "frames": 9,
+  "frameDurationMs": 88.9,
+  "fps": 11.25,
+  "loop": true,
+  "direction": "left",
+  "spriteSheet": "mahoraga-running.png",
+  "preview": "mahoraga-running.gif",
+  "anchor": {
+    "x": 160,
+    "y": 310
+  },
+  "maxSpriteHeight": 256,
+  "paletteColors": 22,
+  "pixelStep": 2,
+  "uniqueFrames": 9,
+  "bounds": [
+    {
+      "x": 70,
+      "y": 76,
+      "width": 208,
+      "height": 230
+    },
+    {
+      "x": 86,
+      "y": 76,
+      "width": 190,
+      "height": 230
+    },
+    {
+      "x": 94,
+      "y": 74,
+      "width": 184,
+      "height": 228
+    },
+    {
+      "x": 86,
+      "y": 74,
+      "width": 190,
+      "height": 232
+    },
+    {
+      "x": 42,
+      "y": 74,
+      "width": 226,
+      "height": 228
+    },
+    {
+      "x": 76,
+      "y": 74,
+      "width": 196,
+      "height": 230
+    },
+    {
+      "x": 74,
+      "y": 74,
+      "width": 196,
+      "height": 224
+    },
+    {
+      "x": 74,
+      "y": 72,
+      "width": 200,
+      "height": 232
+    },
+    {
+      "x": 60,
+      "y": 70,
+      "width": 214,
+      "height": 222
+    }
+  ],
+  "wheelOrientation": "horizontal",
+  "headTail": "long, thick and segmented",
+  "registration": {
+    "reference": "wheel/head root, aligned on the idle",
+    "offsetX": 12,
+    "secondHalfLean": {
+      "px": 10,
+      "fromY": 120,
+      "toY": 200
+    }
+  },
+  "stride": "alternating full leftward cycle",
+  "source": "First half preserved; second half from mahoraga-running-right-leg-source.png",
+  "loopDurationMs": 800,
+  "sourceFrameOrder": [
+    1,
+    2,
+    "2–3 transition",
+    3,
+    "right contact",
+    "right support",
+    "right passing",
+    "right push-off",
+    "left landing"
+  ],
+  "legDepth": {
+    "foreground": "right leg",
+    "editedFrames": [
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "source": "mahoraga-leg-depth-source.png",
+    "preserved": "Foot positions, upper body and outer silhouette"
+  },
+  "cutFrames": [
+    {
+      "frame": 5,
+      "source": 4,
+      "reason": "blade on the back arm and 22 px hop"
+    }
+  ]
+}

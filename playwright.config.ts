@@ -12,6 +12,11 @@ export default defineConfig({
   use: {
     baseURL: 'http://localhost:3000',
     trace: 'retain-on-failure',
+    // Choix de cookies déjà fait : la carte du consentement ne couvre pas les pages testées.
+    storageState: {
+      cookies: [{ name: 'cookie_consent', value: 'accepted', domain: 'localhost', path: '/', expires: -1, httpOnly: false, secure: false, sameSite: 'Lax' }],
+      origins: [],
+    },
   },
   projects: [
     { name: 'desktop', use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } } },

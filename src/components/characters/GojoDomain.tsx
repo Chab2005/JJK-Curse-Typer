@@ -7,5 +7,5 @@ export function DomainScene({ children }: { children: ReactNode }) {
 }
 
 export default function GojoDomain() {
-  return <PixelDomain character="gojo" guide />;
+  return <PixelDomain character="gojo" guide zoom={1.3} />;
 }

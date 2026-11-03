@@ -1,0 +1,79 @@
+{
+  "id": "nue",
+  "motion": "lightning",
+  "direction": "left",
+  "frameWidth": 192,
+  "frameHeight": 256,
+  "columns": 8,
+  "rows": 1,
+  "frames": 8,
+  "frameDurationsMs": [
+    240,
+    120,
+    120,
+    80,
+    140,
+    120,
+    120,
+    240
+  ],
+  "loop": false,
+  "pixelStep": 2,
+  "paletteColors": 23,
+  "targetSkullHeight": 32,
+  "skullHeight": 32,
+  "groundY": 246,
+  "spriteSheet": "nue-lightning.png",
+  "preview": "nue-lightning.gif",
+  "uniqueFrames": 8,
+  "bounds": [
+    {
+      "x": 54,
+      "y": 78,
+      "width": 86,
+      "height": 92
+    },
+    {
+      "x": 54,
+      "y": 78,
+      "width": 92,
+      "height": 92
+    },
+    {
+      "x": 54,
+      "y": 78,
+      "width": 100,
+      "height": 92
+    },
+    {
+      "x": 54,
+      "y": 78,
+      "width": 90,
+      "height": 168
+    },
+    {
+      "x": 54,
+      "y": 78,
+      "width": 90,
+      "height": 168
+    },
+    {
+      "x": 54,
+      "y": 78,
+      "width": 90,
+      "height": 168
+    },
+    {
+      "x": 54,
+      "y": 78,
+      "width": 94,
+      "height": 92
+    },
+    {
+      "x": 54,
+      "y": 78,
+      "width": 88,
+      "height": 92
+    }
+  ]
+}

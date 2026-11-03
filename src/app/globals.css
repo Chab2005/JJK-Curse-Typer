@@ -207,6 +207,11 @@ kbd,
   clip-path: polygon(var(--b) 0, 100% 0, 100% calc(100% - var(--b)), calc(100% - var(--b)) 100%, 0 100%, 0 var(--b));
 }
 
+/* L'inverse : coins coupés en haut à droite et en bas à gauche (--b), cadre du portrait des fiches personnage. */
+@utility cut-asym-flip {
+  clip-path: polygon(0 0, calc(100% - var(--b)) 0, 100% var(--b), 100% 100%, var(--b) 100%, 0 calc(100% - var(--b)));
+}
+
 /* Parallélogramme aux deux bords penchés (soulignement des liens d'en-tête) */
 @utility parallelogram {
   clip-path: polygon(5px 0, 100% 0, calc(100% - 5px) 100%, 0 100%);
@@ -299,7 +304,7 @@ kbd,
   70%, 100% { left: calc(var(--finish) * (100% - 56px)); }
 }
 
-/* BON-1: anime CE is luminous fluid wrapped in torn black ink, with detached pools. */
+/* BON-1: the same rolling CE and detached pools, drawn with crisp pixel steps. */
 @property --ce-fill {
   syntax: '<percentage>';
   inherits: true;
@@ -312,6 +317,7 @@ kbd,
   --ce-hot: #b5eef1;
   --ce-edge: #087b9b;
   --ce-ink: #02090f;
+  --ce-bar-shape: polygon(8px 0, 100% 0, 100% 4px, calc(100% - 4px) 4px, calc(100% - 4px) 12px, calc(100% - 8px) 12px, calc(100% - 8px) 100%, 0 100%, 0 12px, 4px 12px, 4px 4px, 8px 4px);
   position: relative;
   isolation: isolate;
   height: 112px;
@@ -339,19 +345,19 @@ kbd,
   position: absolute;
   inset: auto 0 0;
   height: var(--ce-bar-height);
-  clip-path: polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
+  clip-path: var(--ce-bar-shape);
   z-index: 0;
 }
 
 .ce-track, .ce-body, .ce-ticks { position: absolute; inset: 0; }
-.ce-track { background: linear-gradient(180deg, #19212b, #0a0e15); }
+.ce-track { background: linear-gradient(180deg, #19212b 0 40%, #0a0e15 40% 100%); }
 .ce-fill { position: absolute; inset: 0 auto 0 0; width: var(--ce-fill); overflow: hidden; }
 .ce-charge {
   position: absolute;
   inset: 0;
   overflow: hidden;
   /* One smoothly interpolated reveal; the artwork never changes width while charging. */
-  clip-path: polygon(12px 0, var(--ce-fill) 0, var(--ce-fill) calc(100% - var(--ce-bar-height)), calc(var(--ce-fill) - 12px) 100%, 0 100%, 12px calc(100% - var(--ce-bar-height)));
+  clip-path: polygon(0 0, var(--ce-fill) 0, var(--ce-fill) calc(100% - 12px), calc(var(--ce-fill) - 4px) calc(100% - 12px), calc(var(--ce-fill) - 4px) calc(100% - 4px), calc(var(--ce-fill) - 8px) calc(100% - 4px), calc(var(--ce-fill) - 8px) 100%, 0 100%);
   z-index: 1;
 }
 .ce[data-state="empty"] .ce-charge { visibility: hidden; }
@@ -363,7 +369,8 @@ kbd,
 .ce-surface { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .ce-skin, .ce-light, .ce-hot {
   animation: ce-roll 13.7s linear infinite;
-  stroke-linejoin: round;
+  shape-rendering: crispEdges;
+  stroke-linejoin: miter;
   vector-effect: non-scaling-stroke;
 }
 .ce-skin {
@@ -383,6 +390,8 @@ kbd,
   fill: var(--ce-light);
   stroke: var(--ce-ink);
   stroke-width: 3;
+  shape-rendering: crispEdges;
+  stroke-linejoin: miter;
   opacity: 0;
   animation: ce-drift var(--duration) var(--delay) linear infinite;
 }
@@ -390,7 +399,7 @@ kbd,
 
 .ce-body {
   background:
-    linear-gradient(180deg, var(--ce-light), var(--ce-edge) 65%, var(--ce-ink));
+    linear-gradient(180deg, var(--ce-light) 0 30%, var(--ce-edge) 30% 70%, var(--ce-ink) 70% 100%);
   opacity: 0.92;
 }
 .ce-current {
@@ -405,9 +414,9 @@ kbd,
   height: var(--ce-bar-height);
   display: flex;
   z-index: 2;
-  clip-path: polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
+  clip-path: var(--ce-bar-shape);
 }
-.ce-ticks span { flex: 1; border-right: 2px solid rgb(3 8 14 / 0.85); box-shadow: 1px 0 rgb(200 219 232 / 0.2); transform: skewX(-15deg); }
+.ce-ticks span { flex: 1; border-right: 2px solid rgb(3 8 14 / 0.85); box-shadow: 1px 0 rgb(200 219 232 / 0.2); }
 .ce-ticks span:last-child { border: 0; }
 
 @keyframes ce-roll {
@@ -780,7 +789,15 @@ kbd,
   from { transform: translateY(-110%); opacity: 0; }
 }
 
+/* Carte des cookies : monte depuis le bas de l'écran. */
+.cookie-rise { animation: cookie-rise 0.35s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+
+@keyframes cookie-rise {
+  from { transform: translateY(16px); opacity: 0; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .arw, .arw-cap { transition: none; }
   .lang-drop li { animation: none; }
+  .cookie-rise { animation: none; }
 }

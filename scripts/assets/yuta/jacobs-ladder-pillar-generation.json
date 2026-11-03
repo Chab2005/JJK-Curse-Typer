@@ -1,0 +1,22 @@
+{
+  "tool": "built-in image_gen",
+  "prompt": "Use case: precise-object-edit. Edit target: the attached 4x4, 16-frame Jacob's Ladder animation sheet. Change ONLY the downward golden pillar ABOVE the impact flare. Increase the pillar's pixel resolution and shading detail by 2x: finer crisp pixel steps along the trapezoid sides, layered amber/golden-yellow shading, a more luminous pale yellow inner column and several finer descending white-yellow vertical light streaks. Still pixel art, not painterly or realistic. Keep precisely the SAME tall narrow trapezoid silhouette, FLAT top, body width, height, center, anchors and frame-by-frame position. Do NOT thicken the pillar or turn the top pointed. The bottom one-third of every cell contains the APPROVED big chunky ground impact splash: preserve that region EXACTLY, every shape, size, curling lobe, color, frame and timing. Do not redraw it, smooth it or add detail to it. New overall logical frame canvas is 64x128, with the impact retained as 2x-nearest-neighbor pixels from the prior 32x64 design, so ONLY pillar has finer pixels. Exactly 16 frames in the SAME 4 column x 4 row grid, sheet aspect ratio1:2, chronological row-major animation, sustained downward flow loop. True transparent alpha background. No outer glow haze, smoke, extra particles, floor, text, labels, border or gridlines. Only the upper pillar receives extra resolution and detail; the already perfect large chunky impact stays untouched.",
+  "frameWidth": 64,
+  "frameHeight": 128,
+  "frameCount": 16,
+  "protectedImpact": {
+    "source": "jacobs-ladder-approved-impact-strip.png",
+    "originalFrameWidth": 32,
+    "originalFrameHeight": 64,
+    "resize": "nearest-neighbor 2x",
+    "protectedRows": [
+      84,
+      127
+    ]
+  },
+  "displaySize": [
+    64,
+    128
+  ],
+  "prepare": "node scripts/prepare-yuta-effects.mjs"
+}
