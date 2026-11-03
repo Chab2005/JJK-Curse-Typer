@@ -165,7 +165,7 @@ export default function GameGuide() {
               </span>
             </DomainScene>
             <CardBody number="05" stroke="[-webkit-text-stroke:1px_rgb(229_189_190/0.5)]" eyebrow={t('restriction.eyebrow')} title={t('restriction.title')} text={t('restriction.text')}>
-              <TagList stacked angle={-4} tags={[{ label: t('tags.none') }, { label: t('tags.immune'), tone: 'light' }]} />
+              <TagList stacked angle={-4} tags={[{ label: t('tags.none') }, { label: t('tags.noCe') }, { label: t('tags.immune'), tone: 'light' }]} />
             </CardBody>
             <span aria-hidden="true" className={CARD_BAR} />
           </DoubleFilet>

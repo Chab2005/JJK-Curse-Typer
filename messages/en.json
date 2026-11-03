@@ -349,7 +349,7 @@
     "catchUp": {
       "eyebrow": "Technique",
       "title": "Catch the leaders",
-      "text": "Every exorcist has their character's. From behind, it strikes the top three, and hits harder the further behind you are."
+      "text": "Every exorcist has their character's. From behind, it strikes the top half of the race, and hits harder the further behind you are."
     },
     "domain": {
       "eyebrow": "Ultimate",
@@ -395,6 +395,7 @@
       "drain": "Drains your energy",
       "lock": "Technique locked {seconds} s",
       "none": "No technique, no domain",
+      "noCe": "No CE",
       "immune": "Immune to domains",
       "duration": "Lasts {seconds} s"
     },

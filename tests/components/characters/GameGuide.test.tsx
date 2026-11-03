@@ -33,6 +33,12 @@ describe('GameGuide (smoke)', () => {
     expect(screen.getByText('Lasts 10 s')).toBeInTheDocument();
   });
 
+  it('states that heavenly restricted characters have no CE', () => {
+    renderWithIntl(<GameGuide />);
+
+    expect(screen.getByText('No CE')).toBeInTheDocument();
+  });
+
   it('lets a Binding Vow trade the technique for 30% of the race', () => {
     renderWithIntl(<GameGuide />);
 

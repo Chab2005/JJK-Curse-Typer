@@ -349,7 +349,7 @@
     "catchUp": {
       "eyebrow": "Technique",
       "title": "Rattrapez les meneurs",
-      "text": "Chaque exorciste a celle de son personnage. Derrière, elle frappe les trois premiers, d'autant plus fort que votre retard est grand."
+      "text": "Chaque exorciste a celle de son personnage. Derrière, elle frappe la moitié de tête de la course, d'autant plus fort que votre retard est grand."
     },
     "domain": {
       "eyebrow": "Atout ultime",
@@ -395,6 +395,7 @@
       "drain": "Vide l'énergie",
       "lock": "Technique bloquée {seconds} s",
       "none": "Ni technique ni territoire",
+      "noCe": "Sans EP",
       "immune": "Immunisée aux territoires",
       "duration": "Dure {seconds} s"
     },
