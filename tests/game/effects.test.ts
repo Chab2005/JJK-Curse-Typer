@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { DOMAIN_DRAIN, DOMAIN_LOCK_SECONDS, DOMAIN_SECONDS, type CastAbility, type GameMode } from '@/game/abilities';
-import { castAbility, casterPower, mahoragaWpm, MAHORAGA_WPM, resolveFlashes, topHalf } from '@/game/effects';
+import { castAbility, casterPower, mahoragaWpm, MAHORAGA_START_WPM, resolveFlashes, topHalf } from '@/game/effects';
 import { ENERGY_MAX } from '@/game/energy';
 import { BLACK_FLASH_STUN_MS, BOOST_MS, stunnedAt, type RacerPowers } from '@/game/powers';
 import { applyKeys, COUNTDOWN_MS, createRace, raceReducer, standings, type RaceState, type Racer, type RacerSeat } from '@/game/race';
@@ -291,12 +291,16 @@ describe('Mahoraga', () => {
     expect(cast(racing(['megumi', 'yuji'], 'normal', 999), 'p0', 'mahoraga').refused).toBe('energy');
   });
 
-  it('court de plus en plus vite, jusqu’à son plafond', () => {
-    expect(mahoragaWpm(0)).toBe(MAHORAGA_WPM.start);
-    expect(mahoragaWpm(10_000)).toBe(MAHORAGA_WPM.start + 10 * MAHORAGA_WPM.step);
-    expect(mahoragaWpm(10 * 60_000)).toBe(MAHORAGA_WPM.max);
-    const race = tickAt(summoned(), 5000);
-    expect(racer(race, 'mahoraga:p0').typing.input.length).toBeGreaterThan(60);
+  it('double sa vitesse à chaque lettre', () => {
+    expect(mahoragaWpm(0)).toBe(MAHORAGA_START_WPM);
+    expect(mahoragaWpm(1)).toBe(MAHORAGA_START_WPM * 2);
+    expect(mahoragaWpm(3)).toBe(MAHORAGA_START_WPM * 8);
+  });
+
+  it('finit le texte quelques instants après son arrivée, quelle qu’en soit la longueur', () => {
+    const race = tickAt(summoned(), 3000);
+    expect(racer(race, 'mahoraga:p0')).toMatchObject({ status: 'finished' });
+    expect(racer(race, 'mahoraga:p0').endedAt).toBeLessThan(3000);
   });
 
   it('la course attend Mahoraga quand il ne reste plus d’humain', () => {

@@ -67,8 +67,6 @@ export interface Racer {
   flashes: number;
   /** Prochain lancement possible, pour la simulation. */
   nextCastAt: number;
-  /** Instant de l'invocation, pour Mahoraga. */
-  summonedAt: number | null;
 }
 
 /** Ce qu'il faut annoncer à tous (BONUS-03) : vidé à chaque tick. */
@@ -139,7 +137,6 @@ export function createRace({ seats, text, mode, timerMs, bonus, gameMode = bonus
       luck: botSeed,
       flashes: 0,
       nextCastAt: nextBotCast(0, randomStream(botSeed)),
-      summonedAt: null,
     };
   });
   return { phase: 'countdown', startAt: now + COUNTDOWN_MS, timerMs, bonus: modeHasBonus(gameMode), gameMode, text, mode, racers, lastActivityAt: now, rng: hashSeed(`${seed}:rng`), notices: [] };
@@ -201,10 +198,10 @@ export function applyKeys(current: RaceState, id: string, strokes: readonly Keys
   return { race: resolveFlashes(typed, elapsedAt(race, now)), accepted: true };
 }
 
-/** Mahoraga s'adapte : plus il reste, plus il va vite. */
-function adapted(racer: Racer, at: number): BotState {
-  if (racer.summonedAt === null) return racer.bot;
-  const wpm = mahoragaWpm(at - racer.summonedAt);
+/** Mahoraga s'adapte : chaque lettre tapée change sa vitesse. */
+function adapted(racer: Racer): BotState {
+  if (!racer.seat.summon) return racer.bot;
+  const wpm = mahoragaWpm(racer.typing.keystrokes);
   return { ...racer.bot, wpm, profile: { ...racer.bot.profile, wpm } };
 }
 
@@ -218,7 +215,7 @@ function simulate(racer: Racer, until: number, race: RaceState): Racer {
       current = { ...current, bot: { ...current.bot, nextAt: stun.until } };
       continue;
     }
-    const { bot, stroke } = nextBotStroke(adapted(current, at), current.typing);
+    const { bot, stroke } = nextBotStroke(adapted(current), current.typing);
     current = strike({ ...current, bot: at < lagUntil ? { ...bot, nextAt: bot.nextAt + LAG_MS } : bot }, stroke, race);
   }
   return current;

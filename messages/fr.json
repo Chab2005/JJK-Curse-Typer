@@ -271,7 +271,7 @@
           },
           "mahoraga": {
             "name": "Mahoraga",
-            "effect": "Megumi renonce à gagner pour l’invoquer. Mahoraga court comme un bot et accélère tant qu’il reste."
+            "effect": "Megumi renonce à gagner pour l’invoquer. Mahoraga court comme un bot depuis la position de Megumi, et double sa vitesse à chaque lettre tapée."
           }
         }
       },
@@ -893,12 +893,6 @@
       "full": "Énergie au maximum !"
     },
     "hud": {
-      "wpm": "MPM",
-      "accuracy": "Précision",
-      "accuracyValue": "{value} %",
-      "position": "Position",
-      "positionValue": "{rank}/{total}",
-      "elapsed": "Temps",
       "remaining": "Temps restant",
       "abandon": "Abandonner"
     },

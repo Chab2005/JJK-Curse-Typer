@@ -271,7 +271,7 @@
           },
           "mahoraga": {
             "name": "Mahoraga",
-            "effect": "Megumi gives up his chance to win to summon it. Mahoraga races as a bot and gets faster the longer it stays."
+            "effect": "Megumi gives up his chance to win to summon it. Mahoraga races as a bot from where Megumi stood, and doubles its speed with every letter it types."
           }
         }
       },
@@ -893,12 +893,6 @@
       "full": "Full energy!"
     },
     "hud": {
-      "wpm": "WPM",
-      "accuracy": "Accuracy",
-      "accuracyValue": "{value}%",
-      "position": "Position",
-      "positionValue": "{rank}/{total}",
-      "elapsed": "Time",
       "remaining": "Time left",
       "abandon": "Abandon"
     },

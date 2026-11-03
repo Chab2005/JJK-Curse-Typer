@@ -19,8 +19,8 @@ import type { Racer, RaceNotice, RaceState, RacerSeat } from './race';
 import { randomStream } from './random';
 import { correctChars, extendText, moveTo, startTyping, wordStartAt, wordsAhead, wordsBehind, type TypingState } from './typing';
 
-/** Mahoraga part à cette vitesse et gagne `step` MPM chaque seconde, jusqu'à `max`. */
-export const MAHORAGA_WPM = { start: 60, step: 3, max: 220 };
+/** Vitesse de Mahoraga à son arrivée. */
+export const MAHORAGA_START_WPM = 60;
 const MAHORAGA_ERROR_RATE = 0.01;
 const PULSE_MS = 1000;
 /** Sous le territoire de Gojo, l'étourdissement de chaque seconde tient jusqu'à la suivante. */
@@ -35,7 +35,8 @@ const BOT_DOMAIN_CHANCE = 0.5;
 type Random = ReturnType<typeof randomStream>;
 type Context = { t: number; random: Random; words: readonly string[] };
 
-export const mahoragaWpm = (ms: number) => Math.min(MAHORAGA_WPM.max, MAHORAGA_WPM.start + Math.floor(ms / 1000) * MAHORAGA_WPM.step);
+/** Mahoraga s'adapte : sa vitesse double à chaque lettre tapée. */
+export const mahoragaWpm = (letters: number) => MAHORAGA_START_WPM * 2 ** letters;
 
 const share = (racer: Racer) => correctChars(racer.typing) / racer.typing.text.length;
 
@@ -158,7 +159,7 @@ function summon(race: RaceState, casterId: string, { t }: Context): RaceState {
   const seat: RacerSeat = { id: `mahoraga:${casterId}`, name: 'Mahoraga', avatar: null, kind: 'bot', level: null, summon: true };
   const { text, mode } = caster.typing;
   const typing = moveTo(startTyping(text, mode), caster.typing.input.length);
-  const bot = createBot({ wpm: MAHORAGA_WPM.start, errorRate: MAHORAGA_ERROR_RATE }, caster.bot.seed);
+  const bot = createBot({ wpm: MAHORAGA_START_WPM, errorRate: MAHORAGA_ERROR_RATE }, caster.bot.seed);
   const mahoraga: Racer = {
     ...caster,
     seat,
@@ -171,7 +172,6 @@ function summon(race: RaceState, casterId: string, { t }: Context): RaceState {
     bot: { ...bot, nextAt: bot.nextAt + t },
     disconnectedAt: null,
     powers: startPowers(),
-    summonedAt: t,
     flashes: 0,
     revision: 0,
   };

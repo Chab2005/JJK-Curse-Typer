@@ -182,7 +182,7 @@ Remplace les trois bonus génériques de la section 6 : chaque personnage a ses 
 - **Parades** : Rouge annule, Cerf rond et Manipulation du ciel renvoient, Lapins d'évasion esquive. Seul Lapins d'évasion protège d'un territoire.
 - **Territoire** : 1000 EP minimum, 10 s, 100 EP drainés et un effet par seconde, techniques bloquées pendant et 10 s après. Maki y est immunisée.
 - **Black Flash** : 0,4 % de chance par nouveau caractère juste. Étourdit 1,5 s un coureur de la moitié de tête, et double l'énergie gagnée par le frappeur pendant 8 s.
-- **Mahoraga** : Megumi quitte la course (`summoned`), Mahoraga repart de sa position comme bot, 60 MPM puis +3 par seconde jusqu'à 220. La course l'attend comme un humain.
+- **Mahoraga** : Megumi quitte la course (`summoned`), Mahoraga repart de sa position comme bot, à 60 MPM, et double sa vitesse à chaque lettre tapée : il finit le texte en moins d'une seconde. La course l'attend comme un humain.
 - **Modes** (`GameMode`) : `normal`, `unlimitedCe`, `noDomain`, `heavenly` (aucune énergie, aucune capacité, aucun Black Flash ; `bonus` à faux).
 - **Bornes** (BON-7) : une capacité ne franchit jamais la ligne, elle s'arrête au début du dernier mot.
 - **Synchronisation** : le client numérote ses frappes (`strokeLog.ts`). Quand une capacité change un coureur, la room lui envoie `sync` avec sa saisie et `acked` ; il rejoue dessus ce qu'elle n'a pas encore reçu. Une frappe pendant un étourdissement est ignorée des deux côtés.
