@@ -46,7 +46,7 @@ export default function CharacterGrid() {
                         <span className="font-grotesk text-lg font-semibold text-on-primary-container sm:text-xl">{character.name}</span>
                         <span className={`text-[15px] ${CHARACTER_STYLES[character.id].ink}`}>{technique}</span>
                       </span>
-                      <span aria-hidden="true" className="cut-asym absolute right-3.5 bottom-3.5 hidden bg-primary-container p-px [--b:10px] xl:block">
+                      <span aria-hidden="true" className="cut-asym absolute z-10 right-3.5 bottom-3.5 hidden bg-primary-container p-px [--b:10px] xl:block">
                         <span className="cut-asym relative block h-[67px] w-[70px] overflow-hidden bg-[rgb(12_3_4/0.85)] [--b:9.5px]">
                           <span className={`absolute bottom-0 left-1/2 block -translate-x-1/2 motion-reduce:[animation:none]! ${RUNNER_IDLE}`} style={runnerIdleStyle(character.id)} />
                           <span className={`absolute right-[3px] bottom-0 motion-reduce:[animation:none]! ${RUNNER_RUN}`} style={runnerStyle(character.id)} />
