@@ -13,12 +13,14 @@ import { DOMAIN_SECONDS } from '@/game/abilities';
 import PixelDomain from './PixelDomain';
 import Shortcut from './Shortcut';
 import Abilities from './Abilities';
-
-/** Ligne « Alt + touche, puis tapez le nom » sous une technique ou un territoire. */
-const CAST_HINT = 'mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-dashed border-surface-container-high pt-3.5 text-sm text-on-surface-variant';
+import TechniqueExample from './TechniqueExample';
+import { hasTechniqueExample } from './techniqueDemo';
 
 /** Flèche en lance des fiches voisines. */
 const SPEAR = 'h-12 w-36 shrink-0 text-primary-container transition-[translate,filter] duration-300 group-hover:brightness-140 motion-reduce:transition-none lg:h-[70px] lg:w-[210px]';
+
+/** Ligne « Alt + touche, puis tapez le nom » sous un territoire. */
+const CAST_HINT = 'mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-dashed border-surface-container-high pt-3.5 text-sm text-on-surface-variant';
 
 // Fiche d'un personnage (/characters/<id>) : illustration en pied dans un cadre aux coins coupés, technique,
 // extension du territoire, capacités de la technique, puis les fiches voisines.
@@ -96,12 +98,6 @@ export default function CharacterSheet({ character }: { character: Character }) 
                 <p className={`text-xl ${style.ink}`}>{techniques(character.id)}</p>
               </div>
               <p className="text-base leading-[25px]">{t(`techniqueDetails.${character.id}`)}</p>
-              {character.id !== 'maki' && (
-                <p className={CAST_HINT}>
-                  <Shortcut ability="technique" />
-                  <span>{t('castHint', { name: techniques(character.id) })}</span>
-                </p>
-              )}
             </BevelFrame>
 
             {hasDomain && (
@@ -120,6 +116,8 @@ export default function CharacterSheet({ character }: { character: Character }) 
               </BevelFrame>
             )}
 
+            {hasTechniqueExample(character.id) && <TechniqueExample character={character.id} />}
+
             {!hasDomain && play}
           </div>
 
@@ -128,16 +126,16 @@ export default function CharacterSheet({ character }: { character: Character }) 
 
         <Abilities character={character.id} />
 
-        <nav aria-label={t('otherFiles')} className="mt-8 flex flex-wrap items-center justify-between gap-x-6 gap-y-4">
-          <Link href={`/characters/${prev.id}`} aria-label={t('previous', { name: prev.name })} className="group flex min-h-14 items-center gap-3.5">
+        {/* Grille 1fr | auto | 1fr : le bouton reste au centre exact, quelle que soit la longueur des noms voisins. */}
+        <nav aria-label={t('otherFiles')} className="mt-8 grid grid-cols-2 items-center gap-x-6 gap-y-4 lg:grid-cols-[1fr_auto_1fr]">
+          <Link href={`/characters/${prev.id}`} aria-label={t('previous', { name: prev.name })} className="group flex min-h-14 items-center gap-3.5 justify-self-start">
             <SpearArrow direction="left" className={`${SPEAR} group-hover:-translate-x-2`} />
             <span className="font-grotesk text-[17px] font-semibold whitespace-nowrap text-on-surface group-hover:text-primary">{prev.name}</span>
           </Link>
-          <ChevronButton as={Link} href="/characters" className="gap-2.5 text-sm uppercase tracking-[0.16em] whitespace-nowrap">
-            <span aria-hidden="true" className="material-symbols-outlined text-lg">grid_view</span>
+          <ChevronButton as={Link} href="/characters" chevrons={false} frame="col-span-2 row-start-2 justify-self-center lg:col-span-1 lg:col-start-2 lg:row-start-1" className="text-sm uppercase tracking-[0.16em] whitespace-nowrap">
             {t('all')}
           </ChevronButton>
-          <Link href={`/characters/${next.id}`} aria-label={t('next', { name: next.name })} className="group ml-auto flex min-h-14 items-center gap-3.5">
+          <Link href={`/characters/${next.id}`} aria-label={t('next', { name: next.name })} className="group flex min-h-14 items-center gap-3.5 justify-self-end">
             <span className="font-grotesk text-[17px] font-semibold whitespace-nowrap text-on-surface group-hover:text-primary">{next.name}</span>
             <SpearArrow direction="right" className={`${SPEAR} group-hover:translate-x-2`} />
           </Link>
