@@ -85,9 +85,59 @@ describe('abilitySprites', () => {
     expect(path.basename(ABILITY_SPRITES.mahoraga!.sprites[0].hover!.file)).toBe('mahoraga-running.png');
   });
 
+  it('plays every frame of Mahoraga’s expanded run without changing the loop duration', async () => {
+    const scene = ABILITY_SPRITES.mahoraga!;
+    const sprite = scene.sprites[0];
+    const running = sprite.hover!;
+    const style = shikigamiStyle(running, sprite, scene.scale);
+    expect(style.animation).toBe('sprite-idle 800ms steps(9) 0ms infinite');
+    expect(style.background).toContain('/ 1440px 160px no-repeat');
+    expect(style['--sprite-end' as keyof typeof style]).toBe('-1440px');
+    const metadata = await sharp(path.join('public', running.file)).metadata();
+    expect(metadata.width).toBe(running.w * 9);
+    expect(shikigamiStyle(sprite.idle, sprite, scene.scale).animation).toContain('steps(8)');
+  });
+
   it('sends two Divine Dogs, black and white, and a pack of rabbits', () => {
     expect(ABILITY_SPRITES.divineDogs!.sprites.map(({ idle }) => path.basename(idle.file))).toEqual(['divine-dog-black-idle.png', 'divine-dog-white-idle.png']);
     expect(ABILITY_SPRITES.rabbitEscape!.sprites.length).toBeGreaterThan(1);
+  });
+
+  it.each([0, 1])('plays a complete transparent run for Divine Dog %s on hover without resizing its scene', async (index) => {
+    const scene = ABILITY_SPRITES.divineDogs!;
+    const sprite = scene.sprites[index];
+    expect(sprite.hover).toBeDefined();
+    const running = sprite.hover!;
+    expect(running.file).toBe(sprite.idle.file.replace('-idle.png', '-running.png'));
+    const idleStyle = shikigamiStyle(sprite.idle, sprite, scene.scale);
+    const runningStyle = shikigamiStyle(running, sprite, scene.scale);
+    for (const key of ['height', 'bottom', 'transform'] as const) {
+      expect(runningStyle[key]).toBe(idleStyle[key]);
+    }
+    expect(Number(runningStyle.left) + Number(runningStyle.width)).toBe(Number(idleStyle.left) + Number(idleStyle.width));
+    expect(runningStyle.animation).toContain('640ms steps(8)');
+    const { data, info } = await sharp(path.join('public', running.file)).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+    expect([info.width, info.height]).toEqual([running.w * 8, 160]);
+    const frames = Array.from({ length: 8 }, (_, frame) => {
+      const rows = [];
+      let opaque = 0;
+      for (let y = 0; y < 160; y++) {
+        const start = (y * info.width + frame * running.w) * 4;
+        const row = data.subarray(start, start + running.w * 4);
+        rows.push(row);
+        expect(row[3]).toBe(0);
+        expect(row[(running.w - 1) * 4 + 3]).toBe(0);
+        for (let x = 0; x < running.w; x++) {
+          const alpha = row[x * 4 + 3];
+          expect(alpha === 0 || alpha === 255).toBe(true);
+          if (y === 0 || y >= 150) expect(alpha).toBe(0);
+          if (alpha) opaque++;
+        }
+      }
+      expect(opaque).toBeGreaterThan(1200);
+      return Buffer.concat(rows).toString('base64');
+    });
+    expect(new Set(frames).size).toBe(8);
   });
 
   it('points every strip at a file in public/', () => {
