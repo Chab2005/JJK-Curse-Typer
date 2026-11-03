@@ -249,7 +249,7 @@
       },
       "gojo": {
         "title": "les six yeux",
-        "intro": "L’Illimité plie l’infini de trois façons : Bleu, Rouge et Violet. Les coûts sont en énergie occulte (EO).",
+        "intro": "L’Illimité plie l’infini de trois façons : Bleu, Rouge et Violet creux. Les coûts sont en énergie occulte (EO).",
         "items": {
           "blue": {
             "name": "Bleu",
@@ -260,7 +260,7 @@
             "effect": "Dévie la prochaine attaque reçue. Reste actif jusqu’à son utilisation."
           },
           "purple": {
-            "name": "Violet",
+            "name": "Technique imaginaire : Violet creux",
             "effect": "Détruit les deux prochains mots de Gojo."
           }
         }

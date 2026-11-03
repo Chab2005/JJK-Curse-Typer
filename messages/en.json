@@ -249,7 +249,7 @@
       },
       "gojo": {
         "title": "the six eyes",
-        "intro": "Limitless bends infinity three ways: Blue, Red and Purple. Costs are in cursed energy (CE).",
+        "intro": "Limitless bends infinity three ways: Blue, Red and Hollow Purple. Costs are in cursed energy (CE).",
         "items": {
           "blue": {
             "name": "Blue",
@@ -260,7 +260,7 @@
             "effect": "Deflects the next incoming attack. Stays active until it is used."
           },
           "purple": {
-            "name": "Purple",
+            "name": "Imaginary technique : Hollow Purple",
             "effect": "Destroys Gojo’s next two words."
           }
         }
