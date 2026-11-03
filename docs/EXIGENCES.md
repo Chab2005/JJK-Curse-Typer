@@ -113,10 +113,10 @@ Résumé : 40 complètes · 34 partielles · 16 non faites (90 exigences).
 
 | ID | Statut | Fichiers principaux | Tests associés | Notes et choix |
 |---|---|---|---|---|
-| BONUS-01 | Non fait | `src/game/energy.ts` | `tests/game/energy.test.ts` | Une jauge d'énergie existe ; l'attribution aux points de contrôle reste à faire. |
-| BONUS-02 | Non fait | — | — | |
-| BONUS-03 | Non fait | — | — | |
-| BONUS-04 | Non fait | — | — | |
+| BONUS-01 | Écart assumé | `src/game/energy.ts`, `src/game/powers.ts` | `tests/game/energy.test.ts`, `tests/game/powers.test.ts` | Les capacités se paient en énergie occulte (cahier v3) au lieu d'être données aux points de contrôle (voir `docs/RACE-LOOP.md`, section 6). |
+| BONUS-02 | Fait | `src/game/abilities.ts`, `src/game/effects.ts` | `tests/game/effects.test.ts` | Capacités par personnage : étourdir, retarder, sceller, ajouter ou faire perdre des mots (meneurs) ; sauter des mots, parer, échanger les places (retardataires). |
+| BONUS-03 | Fait | `src/game/race.ts` (`RaceNotice`), `src/components/race/raceView.ts` | `tests/realtime/raceRoom.test.ts`, `tests/components/race/raceView.test.ts` | Annonce dans le `tick`, dans la zone d'animation et sur la piste. |
+| BONUS-04 | Fait | `src/game/race.ts` (`Standing.total`), `src/game/typing.ts` | `tests/game/typing.test.ts`, `tests/game/effects.test.ts` | Le classement et la piste suivent la part de course de chacun, sur la longueur de son propre texte. |
 
 ## 5.9 Résultats et statistiques
 
