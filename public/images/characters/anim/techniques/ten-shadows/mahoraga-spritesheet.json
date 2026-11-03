@@ -1,0 +1,27 @@
+{
+  "id": "mahoraga",
+  "file": "mahoraga-spritesheet.png",
+  "direction": "left",
+  "frameWidth": 320,
+  "frameHeight": 320,
+  "columns": 5,
+  "rows": 4,
+  "states": [
+    {
+      "name": "idle",
+      "rows": [
+        0,
+        1
+      ],
+      "frames": 8
+    },
+    {
+      "name": "running",
+      "rows": [
+        2,
+        3
+      ],
+      "frames": 9
+    }
+  ]
+}
