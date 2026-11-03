@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { BACKSPACE, correctChars, isValidKey, startTyping, typeKey, typeKeys, type Keystroke } from '@/game/typing';
+import { BACKSPACE, correctChars, extendText, isValidKey, moveTo, startTyping, typeKey, typeKeys, wordsAhead, wordsBehind, type Keystroke } from '@/game/typing';
 
 const strokes = (keys: string, from = 100, step = 100): Keystroke[] => [...keys].map((key, i) => ({ key, t: from + i * step }));
 
@@ -68,5 +68,42 @@ describe('isValidKey', () => {
     expect(isValidKey('ab')).toBe(false);
     expect(isValidKey('\n')).toBe(false);
     expect(isValidKey('')).toBe(false);
+  });
+});
+
+describe('déplacements imposés par une capacité', () => {
+  const text = 'one two three four';
+
+  it('allonge le texte à la fin, sans toucher à la saisie', () => {
+    const state = typeKeys(startTyping(text, 'accumulate'), [{ key: 'o', t: 10 }]);
+    expect(extendText(state, 'five six')).toMatchObject({ text: `${text} five six`, input: 'o' });
+  });
+
+  it('avance au début du mot voulu, sans dépasser le début du dernier mot', () => {
+    expect(wordsAhead(text, 0, 1)).toBe(4);
+    expect(wordsAhead(text, 5, 1)).toBe(8);
+    expect(wordsAhead(text, 0, 9)).toBe(14);
+    expect(wordsAhead(text, 16, 2)).toBe(16);
+  });
+
+  it('recule au début du mot en cours, ou du mot précédent quand on est au début d’un mot', () => {
+    expect(wordsBehind(text, 6, 1)).toBe(4);
+    expect(wordsBehind(text, 4, 1)).toBe(0);
+    expect(wordsBehind(text, 0, 1)).toBe(0);
+  });
+
+  it('garde les fautes déjà tapées en avançant, et le record de saisie en reculant', () => {
+    const typed = typeKeys(startTyping(text, 'accumulate'), [{ key: 'x', t: 10 }, { key: 'n', t: 20 }]);
+    const ahead = moveTo(typed, 4);
+    expect(ahead.input).toBe('xne ');
+    expect(ahead.peak).toBe(4);
+    const back = moveTo(ahead, 0);
+    expect(back.input).toBe('');
+    expect(back.peak).toBe(4);
+  });
+
+  it('ne déplace plus une saisie finie', () => {
+    const done = typeKeys(startTyping('ab', 'block'), [{ key: 'a', t: 1 }, { key: 'b', t: 2 }]);
+    expect(moveTo(done, 0)).toBe(done);
   });
 });
