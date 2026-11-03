@@ -6,6 +6,7 @@ export type AbilityDuration = 'instant' | 'seconds' | 'secondsRange' | 'untilUse
 
 /** Personnages dont la technique a des capacités détaillées, et leurs identifiants (clés des messages). */
 type AbilityIds = {
+  yuji: 'divergentFist' | 'blackFlash';
   megumi: 'rabbitEscape' | 'toad' | 'maxElephant' | 'nue' | 'roundDeer' | 'divineDogs' | 'mahoraga';
   nobara: 'resonance' | 'hairpin';
   gojo: 'blue' | 'red' | 'purple';
@@ -35,6 +36,10 @@ export type CharacterAbility = {
 };
 
 export const CHARACTER_ABILITIES: Record<AbilityCharacter, readonly CharacterAbility[]> = {
+  yuji: [
+    { id: 'divergentFist', cost: 200, duration: 'secondsRange', seconds: 2, maxSeconds: 3 },
+    { id: 'blackFlash', cost: 150, duration: 'secondsRange', seconds: 2, maxSeconds: 3 },
+  ],
   megumi: [
     { id: 'rabbitEscape', cost: 100, duration: 'seconds', seconds: 3 },
     { id: 'toad', cost: 450, duration: 'instant' },

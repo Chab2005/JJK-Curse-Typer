@@ -115,7 +115,7 @@
     "watermark": "Exorcists",
     "cta": "Meet the characters",
     "techniques": {
-      "yuji": "Black Flash",
+      "yuji": "Raw Strength",
       "megumi": "Ten Shadows",
       "nobara": "Straw Doll",
       "gojo": "Limitless",
@@ -184,6 +184,20 @@
         "nextWord": "Next word",
         "nextWords": "Next {words} words",
         "restOfRace": "Rest of race"
+      },
+      "yuji": {
+        "title": "his fists",
+        "intro": "Yuji has no spells, only his fists. Costs are in cursed energy (CE).",
+        "items": {
+          "divergentFist": {
+            "name": "Divergent Fist",
+            "effect": "The attacked player’s typing lags: characters show up late after each keypress for 2 to 3 s."
+          },
+          "blackFlash": {
+            "name": "Black Flash",
+            "effect": "Stuns the targeted player for 2 to 3 s and boosts Yuji’s passive CE accumulation rate."
+          }
+        }
       },
       "megumi": {
         "title": "shikigami",
@@ -281,7 +295,7 @@
       "sukuna": "The King of Curses, sealed for a thousand years in twenty fingers. Yuji’s body now serves as his vessel."
     },
     "techniqueDetails": {
-      "yuji": "Yuji has no innate technique, so he makes his own: when his cursed energy lands within a millionth of a second of his fist, the blow sparks black and hits two and a half times harder.",
+      "yuji": "Yuji has no innate technique, so he relies on what he has: tremendous physical strength and fists wrapped in cursed energy.",
       "megumi": "Megumi has access to shikigami. Each one of them has a different effect, affecting either Megumi or another sorcerer.",
       "nobara": "Nobara drives a cursed nail into a straw doll holding a piece of her target: whatever she strikes on the doll, the target feels, wherever they are.",
       "gojo": "Limitless brings infinity into the real world: everything that approaches Gojo slows down endlessly and never reaches him. He can also bend it to pull targets in or blast them away.",

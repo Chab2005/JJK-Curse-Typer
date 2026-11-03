@@ -40,7 +40,7 @@ describe('CharacterSheet (smoke)', () => {
     ['megumi', 'Ten Shadows', /Megumi has access to shikigami/],
     ['todo', 'Boogie-Woogie', /swap places with anything that has cursed energy/],
     ['nobara', 'Straw Doll', /whatever she strikes on the doll/],
-    ['yuji', 'Black Flash', /Yuji has no innate technique/],
+    ['yuji', 'Raw Strength', /Yuji has no innate technique/],
   ])('names and describes the %s technique, without a cast hint', (id, name, details) => {
     renderWithIntl(<CharacterSheet character={CHARACTERS.find((c) => c.id === id)!} />);
     expect(screen.getByText(name)).toBeInTheDocument();
@@ -134,9 +134,16 @@ describe('CharacterSheet (smoke)', () => {
   });
 
   it('shows no abilities on a character without any yet', () => {
-    renderWithIntl(<CharacterSheet character={CHARACTERS.find((c) => c.id === 'yuji')!} />);
+    renderWithIntl(<CharacterSheet character={CHARACTERS.find((c) => c.id === 'maki')!} />);
 
     expect(screen.queryByText('Abilities')).not.toBeInTheDocument();
+  });
+
+  it('lists Yuji’s two abilities with their costs', () => {
+    renderWithIntl(<CharacterSheet character={CHARACTERS.find((c) => c.id === 'yuji')!} />);
+
+    expect(screen.getByRole('heading', { level: 3, name: 'Divergent Fist' }).closest('li')).toHaveTextContent('200 CE');
+    expect(screen.getByRole('heading', { level: 3, name: 'Black Flash' }).closest('li')).toHaveTextContent('150 CE');
   });
 
   it('places Max Elephant facing left on its ability card with the running animation ready for hover', () => {

@@ -115,7 +115,7 @@
     "watermark": "Exorcistes",
     "cta": "Vérifier les personnages",
     "techniques": {
-      "yuji": "Black Flash",
+      "yuji": "Force brute",
       "megumi": "Dix Ombres",
       "nobara": "Poupée de paille",
       "gojo": "Infini",
@@ -184,6 +184,20 @@
         "nextWord": "Mot suivant",
         "nextWords": "{words} mots suivants",
         "restOfRace": "Fin de course"
+      },
+      "yuji": {
+        "title": "ses poings",
+        "intro": "Yuji n’a pas de sortilèges, seulement ses poings. Les coûts sont en énergie occulte (EO).",
+        "items": {
+          "divergentFist": {
+            "name": "Poing divergent",
+            "effect": "La frappe du joueur attaqué subit un décalage : les caractères apparaissent en retard après chaque touche pendant 2 à 3 s."
+          },
+          "blackFlash": {
+            "name": "Éclair noir",
+            "effect": "Étourdit le joueur ciblé pendant 2 à 3 s et accélère l’accumulation passive d’EO de Yuji."
+          }
+        }
       },
       "megumi": {
         "title": "shikigami",
@@ -281,7 +295,7 @@
       "sukuna": "Le Roi des fléaux, scellé depuis mille ans dans vingt doigts. Le corps de Yuji lui sert désormais de réceptacle."
     },
     "techniqueDetails": {
-      "yuji": "Yuji n’a pas de technique innée, alors il s’en forge une : quand son énergie occulte frappe moins d’un millionième de seconde après son poing, le coup s’embrase de noir et frappe deux fois et demie plus fort.",
+      "yuji": "Yuji n’a pas de technique innée, alors il s’appuie sur ce qu’il a : une force physique hors norme et des poings enrobés d’énergie occulte.",
       "megumi": "Megumi a accès aux shikigamis. Chacun a un effet différent, qui touche Megumi ou un autre exorciste.",
       "nobara": "Nobara plante un clou maudit dans une poupée de paille qui contient un morceau de sa cible : ce qu’elle frappe sur la poupée, la cible le ressent, où qu’elle soit.",
       "gojo": "L’Infini fait entrer l’infini dans le monde réel : tout ce qui approche Gojo ralentit sans fin et ne l’atteint jamais. Il peut aussi le plier pour attirer ses cibles ou les projeter au loin.",

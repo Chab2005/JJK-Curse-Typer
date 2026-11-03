@@ -7,7 +7,8 @@ describe('characterAbilities', () => {
     expect(hasAbilities('nobara')).toBe(true);
     expect(hasAbilities('gojo')).toBe(true);
     expect(hasAbilities('sukuna')).toBe(true);
-    expect(hasAbilities('yuji')).toBe(false);
+    expect(hasAbilities('yuji')).toBe(true);
+    expect(hasAbilities('todo')).toBe(false);
   });
 
   it('prices the Ten Shadows in cursed energy, Mahoraga taking all of it from 1000', () => {
