@@ -147,12 +147,23 @@
     },
     "domainDetails": {
       "gojo": "Endless information floods the mind of everyone caught inside: every other exorcist is stuck in place until the domain closes.",
-      "megumi": "Every shikigami of the Ten Shadows answers at once: while the domain is open, all of them activate automatically, every second.",
+      "megumi": "Every shikigami of the Ten Shadows answers at once: while the domain is open, all of them activate automatically, every second, except Mahoraga, who is never summoned.",
       "yuta": "Swords holding every technique Yuta has copied fill the domain. While it is open, he picks one up every second and casts its copied technique, automatically and for free.",
       "sukuna": "The shrine cuts into everyone’s text: every second, one more word is added to every other exorcist’s text until the domain closes."
     },
     "castHint": "then type “{name}”",
     "domainDuration": "Lasts {seconds} s",
+    "example": {
+      "title": "Race example",
+      "step": "Step {step} / {steps}",
+      "you": "You",
+      "todo": {
+        "track": "Miniature track: Todo, lagging behind, swaps places with the leader.",
+        "before": "Todo is lagging behind and {rival} leads the race: there is a long stretch of typing left to catch up.",
+        "cast": "He presses his technique key, then types its exact name. The word is valid: Todo claps his hands.",
+        "after": "Boogie-Woogie! Todo and {rival} swap places: Todo takes the lead without typing another word, and {rival} drops behind."
+      }
+    },
     "play": "Play {name}",
     "otherFiles": "Other files",
     "previous": "Previous: {name}",
@@ -164,12 +175,14 @@
       "cost": "Cost",
       "costValue": "{cost} CE",
       "costAll": "All CE · min {cost}",
+      "requires": "Requires",
       "durations": {
         "instant": "Instant",
         "seconds": "{seconds} s",
         "secondsRange": "{seconds}–{maxSeconds} s",
         "untilUsed": "Until used",
         "nextWord": "Next word",
+        "nextWords": "Next {words} words",
         "restOfRace": "Rest of race"
       },
       "megumi": {
@@ -217,6 +230,42 @@
           "hairpin": {
             "name": "Hairpin",
             "effect": "Adds words to the targeted player’s text."
+          }
+        }
+      },
+      "gojo": {
+        "title": "the six eyes",
+        "intro": "Limitless bends infinity three ways: Blue, Red and Purple. Costs are in cursed energy (CE).",
+        "items": {
+          "blue": {
+            "name": "Blue",
+            "effect": "Freezes the targeted player in place for 3 to 5 s."
+          },
+          "red": {
+            "name": "Red",
+            "effect": "Deflects the next incoming attack. Stays active until it is used."
+          },
+          "purple": {
+            "name": "Purple",
+            "effect": "Destroys Gojo’s next two words."
+          }
+        }
+      },
+      "sukuna": {
+        "title": "the king of curses",
+        "intro": "Cleave, Dismantle and Divine Flames: each strike destroys the words coming up. Costs are in cursed energy (CE).",
+        "items": {
+          "cleave": {
+            "name": "Cleave",
+            "effect": "Cuts up Sukuna’s next word."
+          },
+          "dismantle": {
+            "name": "Dismantle",
+            "effect": "Crushes Sukuna’s next word to pieces."
+          },
+          "divineFlames": {
+            "name": "Divine Flames",
+            "effect": "Destroys Sukuna’s next three words. Only available right after Cleave then Dismantle; if the chain is broken, it can’t be cast."
           }
         }
       }

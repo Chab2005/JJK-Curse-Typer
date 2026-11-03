@@ -147,12 +147,23 @@
     },
     "domainDetails": {
       "gojo": "Un flot d’informations sans fin submerge tous ceux qui sont pris à l’intérieur : les autres exorcistes restent figés sur place jusqu’à la fermeture du territoire.",
-      "megumi": "Tous les shikigamis des Dix Ombres répondent à la fois : tant que le territoire est ouvert, ils s’activent tous automatiquement, chaque seconde.",
+      "megumi": "Tous les shikigamis des Dix Ombres répondent à la fois : tant que le territoire est ouvert, ils s’activent tous automatiquement, chaque seconde, sauf Mahoraga, qui n’est jamais invoqué.",
       "yuta": "Des épées portant chaque technique copiée par Yuta emplissent le territoire. Tant qu’il est ouvert, il en saisit une chaque seconde et lance sa technique copiée, automatiquement et gratuitement.",
       "sukuna": "L’autel taille dans le texte de chacun : chaque seconde, un mot de plus s’ajoute au texte de tous les autres exorcistes jusqu’à la fermeture du territoire."
     },
     "castHint": "puis tapez « {name} »",
     "domainDuration": "Dure {seconds} s",
+    "example": {
+      "title": "Exemple en course",
+      "step": "Temps {step} / {steps}",
+      "you": "Vous",
+      "todo": {
+        "track": "Piste miniature : Todo, en retrait, échange sa place avec le meneur.",
+        "before": "Todo est à la traîne et {rival} mène la course : il reste un long chemin à taper pour le rattraper.",
+        "cast": "Il presse la touche de sa technique, puis tape son nom exact. Le mot est valide : Todo frappe dans ses mains.",
+        "after": "Boogie-Woogie ! Todo et {rival} échangent leur place : Todo prend la tête sans avoir tapé un mot de plus, et {rival} se retrouve en retrait."
+      }
+    },
     "play": "Jouer {name}",
     "otherFiles": "Autres fiches",
     "previous": "Précédent : {name}",
@@ -164,12 +175,14 @@
       "cost": "Coût",
       "costValue": "{cost} EO",
       "costAll": "Toute l’EO · min {cost}",
+      "requires": "Prérequis",
       "durations": {
         "instant": "Instantané",
         "seconds": "{seconds} s",
         "secondsRange": "{seconds} à {maxSeconds} s",
         "untilUsed": "Jusqu’à usage",
         "nextWord": "Mot suivant",
+        "nextWords": "{words} mots suivants",
         "restOfRace": "Fin de course"
       },
       "megumi": {
@@ -217,6 +230,42 @@
           "hairpin": {
             "name": "Épingle",
             "effect": "Ajoute des mots au texte du joueur ciblé."
+          }
+        }
+      },
+      "gojo": {
+        "title": "les six yeux",
+        "intro": "L’Illimité plie l’infini de trois façons : Bleu, Rouge et Violet. Les coûts sont en énergie occulte (EO).",
+        "items": {
+          "blue": {
+            "name": "Bleu",
+            "effect": "Fige le joueur ciblé sur place pendant 3 à 5 s."
+          },
+          "red": {
+            "name": "Rouge",
+            "effect": "Dévie la prochaine attaque reçue. Reste actif jusqu’à son utilisation."
+          },
+          "purple": {
+            "name": "Violet",
+            "effect": "Détruit les deux prochains mots de Gojo."
+          }
+        }
+      },
+      "sukuna": {
+        "title": "le roi des fléaux",
+        "intro": "Découpe, Démantèlement et Flammes divines : chaque coup détruit les mots à venir. Les coûts sont en énergie occulte (EO).",
+        "items": {
+          "cleave": {
+            "name": "Découpe",
+            "effect": "Découpe le prochain mot de Sukuna."
+          },
+          "dismantle": {
+            "name": "Démantèlement",
+            "effect": "Réduit en morceaux le prochain mot de Sukuna."
+          },
+          "divineFlames": {
+            "name": "Flammes divines",
+            "effect": "Détruit les trois prochains mots de Sukuna. Disponible seulement juste après Découpe puis Démantèlement ; si l’enchaînement est rompu, impossible de la lancer."
           }
         }
       }
