@@ -8,13 +8,13 @@ import type { CastRefusal } from '@/game/effects';
 import { castBlocker, hasCursedEnergy, hasDomain, racerMarks, startPowers, stunnedAt, techniquesOf, type RacerPowers } from '@/game/powers';
 import { MAX_STROKES_PER_BATCH, type PlayerSync, type ServerMessage } from '@/game/protocol';
 import { leaderGap, type RaceNotice, type RacerSeat } from '@/game/race';
-import { typingScore } from '@/game/scoring';
 import { acknowledge, addStroke, clearPending, emptyLog, markSent, replay, rewindSent, unsent } from '@/game/strokeLog';
 import { startTyping, typeKey, type TypingState } from '@/game/typing';
 import { useRouter } from '@/i18n/navigation';
 import { claimRaceResultsAction } from '@/app/actions/races';
 import AbilityBar from './AbilityBar';
 import CastDialog from './CastDialog';
+import ChevronButton from '@/components/shared/ChevronButton';
 import ConfirmDialog from './ConfirmDialog';
 import Countdown from './Countdown';
 import DomainBackdrop from './DomainBackdrop';
@@ -285,11 +285,9 @@ export default function RaceScreen({
     return leader && leader.progress > 0 ? t('banner.leader', { name: nameById(leader.id) }) : '';
   };
 
-  const myElapsed = Math.max(0, Math.min(elapsed, race && race.timerMs > 0 ? race.timerMs : Infinity));
-  const score = typing ? typingScore(typing, typing.finishedAt ?? myElapsed) : null;
   // Le chrono du joueur s'arrête à son arrivée.
-  const clockMs = typing?.finishedAt ?? myElapsed;
-  const clock = race && race.timerMs > 0 ? formatClock(race.timerMs - clockMs) : formatClock(clockMs);
+  const clockMs = typing?.finishedAt ?? Math.max(0, elapsed);
+  const clock = race && race.timerMs > 0 ? formatClock(race.timerMs - clockMs) : null;
 
   const castCost = (id: CastAbility) => {
     const technique = techniques.find((candidate) => candidate.id === id);
@@ -356,17 +354,7 @@ export default function RaceScreen({
               {you !== null && hasEnergy && <EnergyBar energy={mine?.energy ?? 0} character={character} />}
               {you !== null && hasEnergy && !done && <AbilityBar abilities={abilityList} marks={racerMarks(powers, elapsed)} onUse={onAbility} />}
 
-              {you !== null && score && (
-                <RaceHud
-                  wpm={score.wpm}
-                  accuracy={score.accuracy}
-                  rank={mine?.rank ?? null}
-                  total={seats.length}
-                  clock={clock}
-                  clockLabel={race.timerMs > 0 ? 'remaining' : 'elapsed'}
-                  onAbandon={racing ? () => setPending({ kind: 'abandon' }) : null}
-                />
-              )}
+              {you !== null && clock && <RaceHud clock={clock} />}
 
               {you === null && (
                 <section aria-labelledby="spectating-title" className="flex items-start gap-4 border-l-[3px] border-secondary bg-secondary-container/20 px-5 py-4">
@@ -395,6 +383,15 @@ export default function RaceScreen({
                       <Countdown seconds={Math.max(0, Math.ceil(-elapsed / 1000))} />
                     </div>
                   )}
+                </div>
+              )}
+
+              {racing && (
+                <div className="flex justify-end">
+                  <ChevronButton type="button" size="sm" chevrons={false} onClick={() => setPending({ kind: 'abandon' })} className="font-label-code text-[11px] uppercase tracking-[0.16em]">
+                    <span aria-hidden="true" className="material-symbols-outlined text-[16px] text-primary">flag</span>
+                    {t('hud.abandon')}
+                  </ChevronButton>
                 </div>
               )}
 

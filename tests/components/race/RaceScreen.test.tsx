@@ -352,6 +352,21 @@ describe('RaceScreen', () => {
       expect(screen.queryByTestId('race-domain')).not.toBeInTheDocument();
     });
 
+    it('shows the clock only in a timed race, and Abandon below the text', () => {
+      start({ race: race({ timerMs: 60_000 }) });
+      expect(screen.getByText('Time left')).toBeInTheDocument();
+      expect(screen.queryByText('WPM')).not.toBeInTheDocument();
+      const text = screen.getByLabelText('Type the text');
+      const abandon = screen.getByRole('button', { name: 'Abandon' });
+      expect(text.compareDocumentPosition(abandon) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    });
+
+    it('hides the clock in an untimed race', () => {
+      start();
+      expect(screen.queryByText('Time left')).not.toBeInTheDocument();
+      expect(screen.queryByText('Time')).not.toBeInTheDocument();
+    });
+
     it('gives Maki neither energy nor abilities', () => {
       const seats: RacerSeat[] = [{ ...SEATS[0], avatar: 'maki' }, SEATS[1]];
       start({ race: race({ bonus: true, gameMode: 'normal', seats }) });
