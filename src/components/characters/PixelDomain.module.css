@@ -19,4 +19,6 @@
   height: 100%;
   object-fit: cover;
   image-rendering: pixelated;
+  /* Zoom toward the actor's feet (x 200, y ~160 of 400×220) so the character stays in frame. */
+  transform-origin: 50% 62%;
 }
