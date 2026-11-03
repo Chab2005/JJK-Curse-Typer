@@ -6,7 +6,7 @@ import { auraContour, auraRandom } from './energyAura';
 const SECTIONS = Array.from({ length: ENERGY_SECTIONS }, (_, i) => i);
 const SHAPE = auraContour(0, 1);
 const FRAMES = Object.fromEntries(Array.from({ length: 8 }, (_, frame) => [`--ce-shape-${frame}`, `path("${auraContour(frame, 1)}")`]));
-// Detached, ink-edged pools rather than repeated fire icons (BON-1).
+// Detached pixel pools follow the original drift and timing (BON-1).
 const FRAGMENTS = Array.from({ length: 14 }, (_, i) => ({
   left: `${2 + auraRandom(i + 100) * 96}%`,
   width: `${10 + auraRandom(i + 200) * 20}px`,
@@ -16,7 +16,7 @@ const FRAGMENTS = Array.from({ length: 14 }, (_, i) => ({
   '--drift': `${auraRandom(i + 600) * 54 - 27}px`,
 }));
 
-/** BON-1 / UI-8: ink silhouettes, luminous pools and floating fragments, shared by race and guide. */
+/** BON-1 / UI-8: pixel aura and floating fragments, shared by race and guide. */
 export default function CursedEnergyMeter({ energy, label, valueText, compact = false, character }: {
   energy: number;
   label: string;
@@ -58,7 +58,7 @@ export default function CursedEnergyMeter({ energy, label, valueText, compact = 
           <div className="ce-fragments">
             {FRAGMENTS.map((style, i) => (
               <svg key={i} className="ce-fragment" style={style as CSSProperties} viewBox="0 0 40 30" preserveAspectRatio="none">
-                <path d="M4 18 C-3 8 11 7 12 2 C19 5 25 -2 29 6 C38 7 32 14 38 18 C33 22 29 18 25 26 C17 23 11 31 8 23Z" />
+                <path d="M5 10H10V5H20V0H25V5H30V10H35V15H40V20H30V25H25V30H15V25H5V20H0V10Z" />
               </svg>
             ))}
           </div>

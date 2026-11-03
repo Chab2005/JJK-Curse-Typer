@@ -16,11 +16,20 @@ describe('anime aura contours (BON-1)', () => {
     expect(frames.every((path) => path.endsWith('Z') && !/NaN|Infinity/.test(path))).toBe(true);
   });
 
+  it('draws the rolling aura on a pixel grid with only horizontal and vertical edges', () => {
+    for (let frame = 0; frame < 8; frame += 0.25) {
+      const path = auraContour(frame, 1);
+      expect(path).toMatch(/^M0 180V[\d.]+(?:H[\d.]+V[\d.]+)+H900V180Z$/);
+      const coordinates = [...path.matchAll(/[HV]([\d.]+)/g)].map(([, value]) => Number(value));
+      expect(coordinates.every((value) => Number.isInteger(value / 7.5))).toBe(true);
+    }
+  });
+
   it('keeps every animated contour inside the reserved drawing area', () => {
     for (const strength of [0.38, 0.75, 1]) {
-      for (let frame = 0; frame < 4; frame += 0.25) {
-        const coordinates = [...auraContour(frame, strength).matchAll(/[ML]([\d.]+) ([\d.]+)/g)];
-        expect(coordinates.every(([, x, y]) => Number(x) >= 0 && Number(x) <= 900 && Number(y) >= 0 && Number(y) <= 180)).toBe(true);
+      for (let frame = 0; frame < 8; frame += 0.25) {
+        const coordinates = [...auraContour(frame, strength).matchAll(/([HV])([\d.]+)/g)];
+        expect(coordinates.every(([, axis, value]) => Number(value) >= 0 && Number(value) <= (axis === 'H' ? 900 : 180))).toBe(true);
       }
     }
   });

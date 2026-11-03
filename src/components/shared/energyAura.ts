@@ -5,8 +5,9 @@ export function auraRandom(seed: number): number {
   return ((value ^ (value >>> 16)) >>> 0) / 4294967296;
 }
 
-/** BON-1: equal point counts and a seamless eight-frame cycle allow continuous SVG morphing. */
+/** BON-1: pixel steps retain equal point counts for the same seamless eight-frame morph. */
 export function auraContour(frame: number, strength: number): string {
+  const pixel = 7.5;
   const time = ((frame % 8) / 8) * Math.PI * 2;
   const points = Array.from({ length: 121 }, (_, index) => {
     const x = index * 7.5;
@@ -20,9 +21,9 @@ export function auraContour(frame: number, strength: number): string {
       height += peak * Math.exp(-(((x - center) / width) ** 2));
     }
     height += Math.sin(x * 0.08 + time * 2) * 2;
-    return [x, Math.max(20, 158 - height * strength)];
+    return [x, Math.round(Math.max(20, 158 - height * strength) / pixel) * pixel];
   });
-  let path = 'M0 180';
-  for (const [x, y] of points) path += `L${x.toFixed(1)} ${y.toFixed(1)}`;
-  return `${path}L900 180Z`;
+  let path = `M0 180V${points[0][1]}`;
+  for (const [x, y] of points.slice(1)) path += `H${x}V${y}`;
+  return `${path}H900V180Z`;
 }
