@@ -5,10 +5,12 @@ import { createDomainRenderer, type DomainCharacter } from './domainPixelArt';
 import styles from './PixelDomain.module.css';
 
 /** Domain illustrations (BON-6, UI-4), suspended offscreen and for reduced motion (UI-7). */
-export default function PixelDomain({ character, showCharacter = true, guide = false, children }: {
+export default function PixelDomain({ character, showCharacter = true, guide = false, zoom = 1, children }: {
   character: DomainCharacter;
   showCharacter?: boolean;
   guide?: boolean;
+  /** Enlarges the drawing inside the scene without changing the scene's box. */
+  zoom?: number;
   children?: ReactNode;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -63,7 +65,7 @@ export default function PixelDomain({ character, showCharacter = true, guide = f
 
   return (
     <div aria-hidden="true" data-domain={character} className={`${styles.scene} ${guide ? styles.guide : ''}`}>
-      <canvas ref={canvasRef} width={400} height={220} className={styles.canvas} />
+      <canvas ref={canvasRef} width={400} height={220} className={styles.canvas} style={zoom === 1 ? undefined : { scale: zoom }} />
       {children}
     </div>
   );
