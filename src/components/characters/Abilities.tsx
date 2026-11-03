@@ -2,7 +2,7 @@ import { Fragment } from 'react';
 import { useTranslations } from 'next-intl';
 import BevelFrame from '@/components/shared/BevelFrame';
 import type { CharacterId } from '@/components/shared/characters';
-import { CHARACTER_ABILITIES, hasAbilities, type CharacterAbility } from './characterAbilities';
+import { CHARACTER_ABILITIES, hasAbilities, type AbilityKey, type CharacterAbility } from './characterAbilities';
 import { CHARACTER_STYLES } from './characterStyles';
 import { ABILITY_SPRITES, shikigamiStyle, type ShikigamiScene } from './abilitySprites';
 
@@ -16,7 +16,7 @@ export default function Abilities({ character }: { character: CharacterId }) {
   if (!hasAbilities(character)) return null;
   const abilities = CHARACTER_ABILITIES[character];
 
-  const duration = (ability: CharacterAbility) => t(`durations.${ability.duration}`, { seconds: ability.seconds ?? 0 });
+  const duration = (ability: CharacterAbility) => t(`durations.${ability.duration}`, { seconds: ability.seconds ?? 0, maxSeconds: ability.maxSeconds ?? 0 });
   const cost = (ability: CharacterAbility) => t(ability.spendsAll ? 'costAll' : 'costValue', { cost: ability.cost });
 
   return (
@@ -31,9 +31,11 @@ export default function Abilities({ character }: { character: CharacterId }) {
         <p className="max-w-[460px] text-[15px] leading-[23px] text-on-surface-variant">{t(`${character}.intro`)}</p>
       </div>
 
-      <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {/* Deux capacités se partagent la largeur à parts égales ; au-delà, trois colonnes. */}
+      <ul className={`grid gap-4 sm:grid-cols-2 ${abilities.length > 2 ? 'lg:grid-cols-3' : ''}`}>
         {abilities.map((ability, index) => {
           const scene = ABILITY_SPRITES[ability.id];
+          const key = `${character}.items.${ability.id}` as AbilityKey;
           return (
             <li
               key={ability.id}
@@ -50,9 +52,9 @@ export default function Abilities({ character }: { character: CharacterId }) {
                   <div className={scene?.beside ? 'flow-root' : undefined}>
                     <div className="flex items-baseline gap-3">
                       <span className="font-label-code text-[12px] tracking-[0.16em] text-primary-container">{String(index + 1).padStart(2, '0')}</span>
-                      <h3 className="font-grotesk text-[19px] font-semibold text-on-primary-container">{t(`${character}.items.${ability.id}.name`)}</h3>
+                      <h3 className="font-grotesk text-[19px] font-semibold text-on-primary-container">{t(`${key}.name`)}</h3>
                     </div>
-                    <p className="mt-3 text-[15px] leading-[23px] text-on-surface-variant">{t(`${character}.items.${ability.id}.effect`)}</p>
+                    <p className="mt-3 text-[15px] leading-[23px] text-on-surface-variant">{t(`${key}.effect`)}</p>
                   </div>
                 </div>
                 <p className={`${FOOTER} ${ability.featured ? 'border-outline-variant' : 'border-surface-container-high'}`}>

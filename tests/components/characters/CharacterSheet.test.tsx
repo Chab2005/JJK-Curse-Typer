@@ -104,6 +104,17 @@ describe('CharacterSheet (smoke)', () => {
     expect(section.getByText('Rest of race')).toBeInTheDocument();
   });
 
+  it('lists Resonance and Hairpin under the Straw Doll, Resonance stunning for 3 to 5 s', () => {
+    renderWithIntl(<CharacterSheet character={CHARACTERS.find((c) => c.id === 'nobara')!} />);
+
+    const section = within(screen.getByRole('region', { name: /Straw Doll · cursed nails/ }));
+    const names = section.getAllByRole('heading', { level: 3 }).map((heading) => heading.textContent);
+    expect(names).toEqual(['Resonance', 'Hairpin']);
+    expect(section.getByText('Stuns the targeted player for 3 to 5 s.')).toBeInTheDocument();
+    expect(section.getByText('Adds words to the targeted player’s text.')).toBeInTheDocument();
+    expect(section.getByText('3–5 s')).toBeInTheDocument();
+  });
+
   it('shows no abilities on a character without any yet', () => {
     renderWithIntl(<CharacterSheet character={gojo} />);
 

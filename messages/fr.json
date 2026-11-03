@@ -167,6 +167,7 @@
       "durations": {
         "instant": "Instantané",
         "seconds": "{seconds} s",
+        "secondsRange": "{seconds} à {maxSeconds} s",
         "untilUsed": "Jusqu’à usage",
         "nextWord": "Mot suivant",
         "restOfRace": "Fin de course"
@@ -202,6 +203,20 @@
           "mahoraga": {
             "name": "Mahoraga",
             "effect": "Megumi renonce à gagner pour l’invoquer. Mahoraga court comme un bot et accélère tant qu’il reste."
+          }
+        }
+      },
+      "nobara": {
+        "title": "clous maudits",
+        "intro": "Chaque coup porté à la poupée de paille frappe sa cible. Les coûts sont en énergie occulte (EO).",
+        "items": {
+          "resonance": {
+            "name": "Résonance",
+            "effect": "Étourdit le joueur ciblé pendant 3 à 5 s."
+          },
+          "hairpin": {
+            "name": "Épingle",
+            "effect": "Ajoute des mots au texte du joueur ciblé."
           }
         }
       }

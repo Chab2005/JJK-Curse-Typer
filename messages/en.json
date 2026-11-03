@@ -167,6 +167,7 @@
       "durations": {
         "instant": "Instant",
         "seconds": "{seconds} s",
+        "secondsRange": "{seconds}–{maxSeconds} s",
         "untilUsed": "Until used",
         "nextWord": "Next word",
         "restOfRace": "Rest of race"
@@ -202,6 +203,20 @@
           "mahoraga": {
             "name": "Mahoraga",
             "effect": "Megumi gives up his chance to win to summon it. Mahoraga races as a bot and gets faster the longer it stays."
+          }
+        }
+      },
+      "nobara": {
+        "title": "cursed nails",
+        "intro": "Every strike on the straw doll lands on its target. Costs are in cursed energy (CE).",
+        "items": {
+          "resonance": {
+            "name": "Resonance",
+            "effect": "Stuns the targeted player for 3 to 5 s."
+          },
+          "hairpin": {
+            "name": "Hairpin",
+            "effect": "Adds words to the targeted player’s text."
           }
         }
       }
