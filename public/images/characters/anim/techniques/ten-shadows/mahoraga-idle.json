@@ -1,0 +1,75 @@
+{
+  "id": "mahoraga",
+  "motion": "idle",
+  "frameWidth": 320,
+  "frameHeight": 320,
+  "columns": 8,
+  "rows": 1,
+  "frames": 8,
+  "frameDurationMs": 200,
+  "fps": 5,
+  "loop": true,
+  "direction": "left",
+  "spriteSheet": "mahoraga-idle.png",
+  "preview": "mahoraga-idle.gif",
+  "anchor": {
+    "x": 160,
+    "y": 310
+  },
+  "maxSpriteHeight": 256,
+  "paletteColors": 22,
+  "pixelStep": 2,
+  "uniqueFrames": 8,
+  "bounds": [
+    {
+      "x": 74,
+      "y": 54,
+      "width": 180,
+      "height": 256
+    },
+    {
+      "x": 74,
+      "y": 54,
+      "width": 186,
+      "height": 256
+    },
+    {
+      "x": 74,
+      "y": 54,
+      "width": 182,
+      "height": 256
+    },
+    {
+      "x": 74,
+      "y": 56,
+      "width": 180,
+      "height": 254
+    },
+    {
+      "x": 74,
+      "y": 56,
+      "width": 184,
+      "height": 254
+    },
+    {
+      "x": 74,
+      "y": 56,
+      "width": 186,
+      "height": 254
+    },
+    {
+      "x": 76,
+      "y": 56,
+      "width": 178,
+      "height": 254
+    },
+    {
+      "x": 74,
+      "y": 56,
+      "width": 180,
+      "height": 254
+    }
+  ],
+  "wheelOrientation": "horizontal",
+  "headTail": "long, thick and segmented"
+}
