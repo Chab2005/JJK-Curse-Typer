@@ -155,6 +155,8 @@
     "domainDuration": "Dure {seconds} s",
     "example": {
       "title": "Exemple en course",
+      "previousAbility": "Capacité précédente",
+      "nextAbility": "Capacité suivante",
       "step": "Temps {step} / {steps}",
       "you": "Vous",
       "todo": {
@@ -162,6 +164,46 @@
         "before": "Todo est à la traîne et {rival} mène la course : il reste un long chemin à taper pour le rattraper.",
         "cast": "Il presse la touche de sa technique, puis tape son nom exact. Le mot est valide : Todo frappe dans ses mains.",
         "after": "Boogie-Woogie ! Todo et {rival} échangent leur place : Todo prend la tête sans avoir tapé un mot de plus, et {rival} se retrouve en retrait."
+      },
+      "yuji": {
+        "blackFlash": {
+          "track": "Piste miniature : Yuji frappe Todo avec l’Éclair noir, l’étourdit et accélère son énergie occulte.",
+          "before": "Yuji est derrière {rival}. Un Éclair noir bien placé peut arrêter le meneur sur sa lancée.",
+          "cast": "Yuji tape le nom de la technique. Son poing frappe dans une explosion d’énergie occulte noire et rouge.",
+          "after": "{rival} est étourdi pendant 2 à 3 s tandis que Yuji le rattrape. L’Éclair noir accélère aussi l’accumulation passive d’énergie occulte de Yuji.",
+          "energy": "Yuji · EO",
+          "boost": "Yuji · EO ↑",
+          "status": "Étourdi · 2–3 s"
+        },
+        "divergentFist": {
+          "track": "Piste miniature : Yuji frappe Todo deux fois avec le Poing divergent et retarde sa frappe.",
+          "before": "Yuji est derrière {rival}. Le Poing divergent peut perturber le rythme de frappe du meneur.",
+          "cast": "Yuji tape le nom de la technique. Son poing touche d’abord ; un second impact d’énergie occulte arrive un instant plus tard.",
+          "after": "Pendant 2 à 3 s, les caractères de {rival} apparaissent en retard après chaque touche. Yuji continue de courir et réduit l’écart.",
+          "keys": "Touches",
+          "screen": "Écran",
+          "sample": "flash",
+          "status": "Frappe décalée · 2–3 s"
+        }
+      },
+      "nobara": {
+        "resonance": {
+          "track": "Piste miniature : Nobara plante un clou dans sa poupée de paille et étourdit Yuji avec la Résonance.",
+          "before": "Nobara est derrière {rival}. La Résonance peut figer le meneur sur place.",
+          "cast": "Nobara tape le nom de la technique et enfonce un clou dans sa poupée de paille. Le coup résonne jusqu’à sa cible.",
+          "after": "{rival} est étourdi pendant 3 à 5 s et ne peut plus taper. Nobara continue de courir et réduit l’écart.",
+          "status": "Étourdi · 3–5 s"
+        },
+        "hairpin": {
+          "track": "Piste miniature : Nobara plante ses clous avec l’Épingle et ajoute des mots au texte de Yuji.",
+          "before": "Nobara est derrière {rival}. L’Épingle peut rallonger la course du meneur.",
+          "cast": "Nobara tape le nom de la technique. Ses clous éclatent et se plantent dans le texte de sa cible.",
+          "after": "Le texte de {rival} reçoit des mots en plus : sa ligne d’arrivée s’éloigne tandis que Nobara réduit l’écart.",
+          "text": "Texte du rival",
+          "sample": "énergie occulte",
+          "added": "paille clou",
+          "status": "+2 mots"
+        }
       }
     },
     "play": "Jouer {name}",

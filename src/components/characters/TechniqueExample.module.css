@@ -1,0 +1,57 @@
+.advance {
+  transition: left 2.6s ease-out;
+}
+
+.energy {
+  transition: width 2.6s ease-out;
+}
+
+.impact {
+  image-rendering: pixelated;
+  background-size: 1536px 96px;
+  background-repeat: no-repeat;
+  opacity: 0;
+  animation: impactFrames 880ms steps(16) 600ms, impactVisible 880ms 600ms;
+}
+
+.secondHit {
+  /* L'énergie occulte arrive après le premier coup. */
+  translate: 5px 0;
+  animation-delay: 900ms;
+}
+
+.delayedTyping {
+  width: 0;
+  animation: delayedTyping 1.8s steps(5, end) 600ms forwards;
+}
+
+.addedWords {
+  /* Les mots plantés par l'Épingle arrivent après le clou. */
+  animation: addedWords 500ms ease-out both;
+}
+
+@keyframes impactFrames {
+  from { background-position: 0 0; }
+  to { background-position: -1536px 0; }
+}
+
+@keyframes impactVisible {
+  0%, 99% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes delayedTyping {
+  to { width: 5ch; }
+}
+
+@keyframes addedWords {
+  from { opacity: 0; translate: 0 -12px; }
+  to { opacity: 1; translate: 0 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .advance, .energy { transition: none; }
+  .impact { animation: none; }
+  .delayedTyping { width: 5ch; animation: none; }
+  .addedWords { animation: none; }
+}

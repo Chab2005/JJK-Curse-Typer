@@ -14,7 +14,8 @@ import PixelDomain from './PixelDomain';
 import Shortcut from './Shortcut';
 import Abilities from './Abilities';
 import TechniqueExample from './TechniqueExample';
-import { hasTechniqueExample } from './techniqueDemo';
+import { hasShowcase } from './techniqueDemo';
+import AbilityShowcase from './AbilityShowcase';
 
 /** Flèche en lance des fiches voisines. */
 const SPEAR = 'h-12 w-36 shrink-0 text-primary-container transition-[translate,filter] duration-300 group-hover:brightness-140 motion-reduce:transition-none lg:h-[70px] lg:w-[210px]';
@@ -36,7 +37,7 @@ export default function CharacterSheet({ character }: { character: Character }) 
 
   // Avec une seule carte, le bouton reste sous la carte plutôt que sous le cadre du portrait.
   const play = (
-    <ChevronButton as={Link} href="/lobbies" frame={hasDomain ? 'justify-self-start lg:col-start-2 lg:row-start-3' : 'self-start'} className="gap-2.5 text-sm uppercase tracking-[0.16em] whitespace-nowrap">
+    <ChevronButton as={Link} href="/lobbies" frame={hasDomain ? 'justify-self-end lg:col-start-2 lg:row-start-3' : 'mt-auto self-end'} className="gap-2.5 text-sm uppercase tracking-[0.16em] whitespace-nowrap">
       {t('play', { name: character.name.split(' ')[0] })}
       <span aria-hidden="true" className="material-symbols-outlined text-lg">arrow_forward</span>
     </ChevronButton>
@@ -52,10 +53,11 @@ export default function CharacterSheet({ character }: { character: Character }) 
           <span aria-current="page" className="font-label-code text-on-surface">{character.name}</span>
         </nav>
 
-        {/* En lg, le portrait occupe la rangée des cartes : le bas du coin coupé tombe sur le haut de la carte technique,
-            le bas du cadre sur le bas de la dernière carte. */}
+        {/* Taille commune, calée sur la fiche de Megumi : les cartes ne redimensionnent pas le portrait.
+            En lg, le bas du coin coupé reste aligné sur le haut de la carte technique ;
+            avec un territoire, le cadre descend jusqu'au bas du bouton Jouer. */}
         <article aria-labelledby="character-name" className="grid items-start gap-y-[22px] lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:gap-x-12">
-          <div className="relative h-[600px] lg:col-start-1 lg:row-start-2 lg:h-auto lg:min-h-[620px] lg:self-stretch" style={{ '--glow': style.glow } as CSSProperties}>
+          <div className={`relative h-[600px] lg:col-start-1 lg:row-start-2 lg:min-h-[704px] ${hasDomain ? 'lg:row-span-2 lg:h-auto lg:self-stretch' : 'lg:h-[704px]'}`} style={{ '--glow': style.glow } as CSSProperties}>
             <div aria-hidden="true" className="cut-asym-flip absolute inset-x-0 top-24 bottom-0 lg:-top-16 bg-linear-160 from-primary-container via-(--glow) via-60% to-surface-container-high p-px [--b:64px]">
               <div className={`cut-asym-flip relative h-full overflow-hidden [--b:64px] ${style.tint}`}>
                 <span className="absolute inset-x-0 bottom-0 h-[46%] bg-[repeating-linear-gradient(-58deg,transparent_0_22px,rgb(4_4_13/0.55)_22px_23px)]" />
@@ -69,9 +71,9 @@ export default function CharacterSheet({ character }: { character: Character }) 
               height={1270}
               unoptimized
               priority
-              className="absolute bottom-0 left-[46%] h-full w-auto max-w-none -translate-x-1/2 drop-shadow-[0_24px_30px_rgb(0_0_0/0.65)] lg:h-[calc(100%+160px)]"
+              className="absolute bottom-0 left-[46%] h-full w-auto max-w-none -translate-x-1/2 drop-shadow-[0_24px_30px_rgb(0_0_0/0.65)] lg:h-[864px]"
             />
-            <div aria-hidden="true" className="group/sprite absolute right-5 bottom-5 h-[150px] w-[128px] lg:right-[30px] lg:bottom-[26px]">
+            <div aria-hidden="true" className="group/sprite absolute z-10 right-5 bottom-5 h-[150px] w-[128px] lg:right-[30px] lg:bottom-[26px]">
               <span className="absolute bottom-0 left-1/2 h-[30px] w-[150px] -translate-x-1/2 rounded-[50%] bg-[radial-gradient(ellipse_50%_50%_at_50%_50%,#000_35%,color-mix(in_srgb,var(--glow)_55%,transparent)_62%,transparent_72%)] shadow-[0_0_0_1px_rgb(192_193_255/0.25)]" />
               <div
                 className="absolute right-6 bottom-3 [image-rendering:pixelated] group-hover/sprite:hidden"
@@ -91,7 +93,7 @@ export default function CharacterSheet({ character }: { character: Character }) 
             <p className="text-[17px] leading-[27px] text-on-surface-variant">{t(`descriptions.${character.id}`)}</p>
           </div>
 
-          <div className="flex flex-col gap-[22px] lg:col-start-2 lg:row-start-2">
+          <div className={`flex flex-col gap-[22px] lg:col-start-2 lg:row-start-2 ${hasDomain ? '' : 'lg:self-stretch'}`}>
             <BevelFrame frame={cardFrame} className="flex flex-col gap-2.5 bg-surface px-6 py-[22px]">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <h2 className="font-label-code text-[11px] font-bold uppercase tracking-[0.24em] text-outline">{t('techniqueTitle')}</h2>
@@ -116,7 +118,9 @@ export default function CharacterSheet({ character }: { character: Character }) 
               </BevelFrame>
             )}
 
-            {hasTechniqueExample(character.id) && <TechniqueExample character={character.id} />}
+            {hasShowcase(character.id) ? (
+              <AbilityShowcase character={character.id} />
+            ) : character.id === 'todo' && <TechniqueExample character="todo" />}
 
             {!hasDomain && play}
           </div>

@@ -5,9 +5,39 @@ const position = (character: 'todo', phase: 'before' | 'cast' | 'after', id: 'yo
   exampleRunners(character, phase).find((runner) => runner.id === id)!.x;
 
 describe('techniqueDemo', () => {
-  it('only exists for Todo, whose technique swaps places', () => {
+  it('exists for Todo and Yuji', () => {
     expect(hasTechniqueExample('todo')).toBe(true);
-    expect(hasTechniqueExample('yuji')).toBe(false);
+    expect(hasTechniqueExample('yuji')).toBe(true);
+    expect(hasTechniqueExample('nobara')).toBe(true);
+    expect(hasTechniqueExample('maki')).toBe(false);
+  });
+
+  it.each(['blackFlash', 'divergentFist'] as const)('lets Yuji catch up with %s without swapping places', (ability) => {
+    const before = exampleRunners('yuji', 'before', ability);
+    const after = exampleRunners('yuji', 'after', ability);
+    expect(exampleRunners('yuji', 'cast', ability)).toEqual(before);
+    expect(after[0].x).toBeGreaterThan(before[0].x);
+    expect(after[1].x).toBeGreaterThanOrEqual(before[1].x);
+    expect(after[1].x - after[0].x).toBeLessThan(before[1].x - before[0].x);
+    if (ability === 'blackFlash') expect(after[1].x).toBe(before[1].x);
+    else expect(after[1].x).toBeGreaterThan(before[1].x);
+  });
+
+  it('lets Nobara catch a stunned Yuji with Resonance', () => {
+    const before = exampleRunners('nobara', 'before', 'resonance');
+    const after = exampleRunners('nobara', 'after', 'resonance');
+    expect(before[1].character).toBe('yuji');
+    expect(exampleRunners('nobara', 'cast', 'resonance')).toEqual(before);
+    expect(after[0].x).toBeGreaterThan(before[0].x);
+    expect(after[1].x).toBe(before[1].x);
+  });
+
+  it('pushes Yuji back with Hairpin, his finish line now farther away', () => {
+    const before = exampleRunners('nobara', 'before', 'hairpin');
+    const after = exampleRunners('nobara', 'after', 'hairpin');
+    expect(after[0].x).toBeGreaterThan(before[0].x);
+    expect(after[1].x).toBeLessThan(before[1].x);
+    expect(after[1].x).toBeGreaterThan(after[0].x);
   });
 
   it('starts with Todo behind the rival', () => {

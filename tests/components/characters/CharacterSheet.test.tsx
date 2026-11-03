@@ -48,13 +48,34 @@ describe('CharacterSheet (smoke)', () => {
     expect(screen.queryByText(`then type “${name}”`)).not.toBeInTheDocument();
   });
 
-  it('shows Todo swapping places with the leader in a race example, and no other character', () => {
+  it('shows Todo’s swap and both Yuji showcases below their innate technique', () => {
     const { unmount } = renderWithIntl(<CharacterSheet character={CHARACTERS.find((c) => c.id === 'todo')!} />);
     expect(screen.getByText('Race example')).toBeInTheDocument();
     expect(screen.getByTestId('technique-example')).toBeInTheDocument();
     unmount();
     renderWithIntl(<CharacterSheet character={CHARACTERS.find((c) => c.id === 'yuji')!} />);
-    expect(screen.queryByTestId('technique-example')).not.toBeInTheDocument();
+    expect(screen.getAllByTestId('technique-example')).toHaveLength(1);
+    const technique = screen.getByText('Yuji has no innate technique', { exact: false });
+    expect(technique.compareDocumentPosition(screen.getByTestId('technique-example')) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  it('cycles Yuji’s showcase between his abilities with the side arrows', async () => {
+    const { user } = renderWithIntl(<CharacterSheet character={CHARACTERS.find((c) => c.id === 'yuji')!} />);
+    expect(screen.getByText('Black Flash', { selector: 'span' })).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Next ability' }));
+    expect(screen.getByText('Divergent Fist', { selector: 'span' })).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Previous ability' }));
+    expect(screen.getByText('Black Flash', { selector: 'span' })).toBeInTheDocument();
+  });
+
+  it('cycles Nobara’s showcase between Resonance and Hairpin with the side arrows', async () => {
+    const { user } = renderWithIntl(<CharacterSheet character={CHARACTERS.find((c) => c.id === 'nobara')!} />);
+    expect(screen.getAllByTestId('technique-example')).toHaveLength(1);
+    expect(screen.getByText('Resonance', { selector: 'span' })).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Next ability' }));
+    expect(screen.getByText('Hairpin', { selector: 'span' })).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Previous ability' }));
+    expect(screen.getByText('Resonance', { selector: 'span' })).toBeInTheDocument();
   });
 
   it('gives Maki no technique to cast', () => {
