@@ -8,6 +8,7 @@ describe('characterAbilities', () => {
     expect(hasAbilities('gojo')).toBe(true);
     expect(hasAbilities('sukuna')).toBe(true);
     expect(hasAbilities('yuji')).toBe(true);
+    expect(hasAbilities('yuta')).toBe(true);
     expect(hasAbilities('todo')).toBe(false);
   });
 
@@ -45,5 +46,12 @@ describe('characterAbilities', () => {
   it('gives Sukuna Cleave, Dismantle and a featured Divine Flames that needs both, in order', () => {
     expect(CHARACTER_ABILITIES.sukuna.map(({ id, cost }) => [id, cost])).toEqual([['cleave', 250], ['dismantle', 300], ['divineFlames', 250]]);
     expect(CHARACTER_ABILITIES.sukuna[2]).toMatchObject({ duration: 'nextWords', words: 3, requires: ['cleave', 'dismantle'], featured: true });
+  });
+
+  it("gives Yuta three copied techniques: Jacob's Ladder, Cursed Speech and Sky Manipulation", () => {
+    expect(CHARACTER_ABILITIES.yuta.map(({ id, cost }) => [id, cost])).toEqual([['jacobsLadder', 250], ['cursedSpeech', 300], ['skyManipulation', 200]]);
+    expect(CHARACTER_ABILITIES.yuta[0]).toMatchObject({ duration: 'secondsRange', seconds: 3, maxSeconds: 5 });
+    expect(CHARACTER_ABILITIES.yuta[1]).toMatchObject({ duration: 'secondsRange', seconds: 3, maxSeconds: 5 });
+    expect(CHARACTER_ABILITIES.yuta[2]).toMatchObject({ duration: 'untilUsed' });
   });
 });

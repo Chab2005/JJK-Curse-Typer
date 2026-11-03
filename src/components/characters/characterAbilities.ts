@@ -11,6 +11,8 @@ type AbilityIds = {
   nobara: 'resonance' | 'hairpin';
   gojo: 'blue' | 'red' | 'purple';
   sukuna: 'cleave' | 'dismantle' | 'divineFlames';
+  /** Techniques copiées par Rika : celles d'Inumaki (Parole maudite), de Kirara (Échelle de Jacob) et d'Uro (Manipulation du ciel). */
+  yuta: 'jacobsLadder' | 'cursedSpeech' | 'skyManipulation';
 };
 export type AbilityCharacter = keyof AbilityIds;
 export type AbilityId = AbilityIds[AbilityCharacter];
@@ -62,6 +64,11 @@ export const CHARACTER_ABILITIES: Record<AbilityCharacter, readonly CharacterAbi
     { id: 'cleave', cost: 250, duration: 'nextWord' },
     { id: 'dismantle', cost: 300, duration: 'nextWord' },
     { id: 'divineFlames', cost: 250, duration: 'nextWords', words: 3, requires: ['cleave', 'dismantle'], featured: true },
+  ],
+  yuta: [
+    { id: 'jacobsLadder', cost: 250, duration: 'secondsRange', seconds: 3, maxSeconds: 5 },
+    { id: 'cursedSpeech', cost: 300, duration: 'secondsRange', seconds: 3, maxSeconds: 5 },
+    { id: 'skyManipulation', cost: 200, duration: 'untilUsed' },
   ],
 };
 

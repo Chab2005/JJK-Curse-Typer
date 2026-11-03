@@ -72,12 +72,21 @@ const divineFlame = (): ShikigamiScene => {
   })) };
 };
 
+/** Small pixel grids use integer scales; Jacob's pillar has twice the detail at the same display size. */
+const copiedTechnique = (id: string, w = 32, h = 32, scale = 3): ShikigamiScene => {
+  const animation: Strip = { file: `/images/characters/anim/techniques/yuta/${id}.png`, w, h, frames: 16, frameMs: 100, foot: 0 };
+  return { width: w * scale, height: h * scale, scale, sprites: [{ left: 0, idle: animation, hover: { ...animation, frameMs: 65 } }] };
+};
+
 export const ABILITY_SPRITES: Partial<Record<AbilityId, ShikigamiScene>> = {
   divergentFist: spark('divergent-fist'),
   blackFlash: spark('black-flash'),
   cleave: slash('cleave'),
   dismantle: slash('dismantle'),
   divineFlames: divineFlame(),
+  jacobsLadder: copiedTechnique('jacobs-ladder', 64, 128, 1),
+  cursedSpeech: copiedTechnique('cursed-speech'),
+  skyManipulation: copiedTechnique('sky-manipulation'),
   rabbitEscape: {
     width: 100,
     height: 60,

@@ -282,6 +282,24 @@
             "effect": "Destroys Sukuna’s next three words. Only available right after Cleave then Dismantle; if the chain is broken, it can’t be cast."
           }
         }
+      },
+      "yuta": {
+        "title": "his copied techniques",
+        "intro": "Through Rika, Yuta borrows other sorcerers’ techniques. Costs are in cursed energy (CE).",
+        "items": {
+          "jacobsLadder": {
+            "name": "Jacob’s Ladder",
+            "effect": "Seals the targeted player’s techniques: they cannot use any for 3 to 5 s."
+          },
+          "cursedSpeech": {
+            "name": "Cursed Speech",
+            "effect": "“Don’t move.” The targeted player cannot type for 3 to 5 s."
+          },
+          "skyManipulation": {
+            "name": "Sky Manipulation",
+            "effect": "Sends the next attack Yuta receives back to its sender."
+          }
+        }
       }
     },
     "descriptions": {

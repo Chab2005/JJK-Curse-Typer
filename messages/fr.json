@@ -282,6 +282,24 @@
             "effect": "Détruit les trois prochains mots de Sukuna. Disponible seulement juste après Découpe puis Démantèlement ; si l’enchaînement est rompu, impossible de la lancer."
           }
         }
+      },
+      "yuta": {
+        "title": "ses techniques copiées",
+        "intro": "Grâce à Rika, Yuta emprunte les techniques d’autres exorcistes. Les coûts sont en énergie occulte (EO).",
+        "items": {
+          "jacobsLadder": {
+            "name": "Échelle de Jacob",
+            "effect": "Scelle les techniques du joueur ciblé : il ne peut plus en utiliser pendant 3 à 5 s."
+          },
+          "cursedSpeech": {
+            "name": "Parole maudite",
+            "effect": "« Ne bouge pas. » Le joueur ciblé ne peut plus taper pendant 3 à 5 s."
+          },
+          "skyManipulation": {
+            "name": "Manipulation du ciel",
+            "effect": "Renvoie à son expéditeur la prochaine attaque que Yuta reçoit."
+          }
+        }
       }
     },
     "descriptions": {
