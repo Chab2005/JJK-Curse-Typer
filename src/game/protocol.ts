@@ -1,7 +1,10 @@
 // Messages échangés entre l'écran de course et la room (WebSocket). Le serveur valide tout ce
 // qu'il reçoit avec zod : un client ne peut envoyer que ses frappes, jamais sa progression (RACE-14).
 import { z } from 'zod';
-import type { RacePhase, RacerSeat, Standing } from './race';
+import { CAST_ABILITIES, type CastAbility, type GameMode } from './abilities';
+import type { CastRefusal } from './effects';
+import type { RacerPowers } from './powers';
+import type { RaceNotice, RacePhase, RacerSeat, Standing } from './race';
 import type { ErrorMode, TypingState } from './typing';
 
 /** Frappes envoyées par lot (toutes les ~150 ms) : un lot plus gros est forcément suspect. */
@@ -13,7 +16,10 @@ const clientMessageSchema = z.discriminatedUnion('type', [
   z.object({
     type: z.literal('keys'),
     strokes: z.array(z.object({ key: z.string().min(1).max(16), t: z.number().finite().nonnegative() })).max(MAX_STROKES_PER_BATCH),
+    /** Numéro de la dernière frappe du lot (src/game/strokeLog.ts). */
+    seq: z.number().int().nonnegative().optional(),
   }),
+  z.object({ type: z.literal('cast'), ability: z.enum(CAST_ABILITIES) }),
   z.object({ type: z.literal('abandon') }),
 ]);
 
@@ -36,18 +42,31 @@ export interface RaceSnapshot {
   startsIn: number;
   timerMs: number;
   bonus: boolean;
+  gameMode: GameMode;
   text: string;
   mode: ErrorMode;
   seats: RacerSeat[];
 }
 
+/** Ce que le joueur doit savoir de sa propre saisie quand la room l'a changée : il rejoue dessus ses frappes après `acked`. */
+export interface PlayerSync {
+  typing: TypingState;
+  acked: number;
+  powers: RacerPowers;
+}
+
 export type ServerMessage =
   /** `you` : le siège du joueur, `null` en spectateur ; `typing` sert à reprendre après une coupure. */
-  | { type: 'welcome'; you: string | null; race: RaceSnapshot; typing: TypingState | null }
-  /** Diffusé 5 fois par seconde (TECH-7) : classement agrégé de tous les participants. */
-  | { type: 'tick'; phase: RacePhase; elapsed: number; standings: Standing[] }
+  | { type: 'welcome'; you: string | null; race: RaceSnapshot; typing: TypingState | null; acked?: number; powers?: RacerPowers }
+  /** Diffusé 5 fois par seconde (TECH-7) : classement agrégé de tous les participants, et ce qu'il faut annoncer (BONUS-03). */
+  | { type: 'tick'; phase: RacePhase; elapsed: number; standings: Standing[]; notices?: RaceNotice[] }
   /** Lot de frappes refusé : la saisie validée par le serveur remplace celle du client. */
-  | { type: 'resync'; typing: TypingState };
+  | ({ type: 'resync' } & PlayerSync)
+  /** Une capacité a changé le joueur : sa saisie, ses états. */
+  | ({ type: 'sync' } & PlayerSync)
+  /** Un coureur a rejoint la piste en cours de route (Mahoraga). */
+  | { type: 'seats'; seats: RacerSeat[] }
+  | { type: 'castRefused'; ability: CastAbility; reason: CastRefusal };
 
 const SOCKET_PREFIX = '/ws/race/';
 const CODE_PATTERN = /^[A-Z0-9]{3}-[A-Z0-9]{3}$/;

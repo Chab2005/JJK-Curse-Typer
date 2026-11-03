@@ -1,5 +1,5 @@
 // Énergie gagnée en tapant juste, quand les bonus sont activés (BON-1). Fonctions pures.
-// Elle servira à déclencher les bonus ; pour l'instant elle ne fait que se remplir.
+// Elle paie les techniques et les territoires (src/game/powers.ts).
 import type { TypingState } from './typing';
 
 /** Plafond : 1500 EP, en 15 sections de 100. */
@@ -15,9 +15,9 @@ export function energyGain(streak: number): number {
 }
 
 /** Énergie après la frappe qui fait passer de `before` à `after` : seul un caractère juste qui va plus loin que jamais rapporte. */
-export function energyAfter(energy: number, before: TypingState, after: TypingState): number {
+export function energyAfter(energy: number, before: TypingState, after: TypingState, rate = 1): number {
   if (after.peak <= before.peak) return energy;
-  return Math.min(ENERGY_MAX, energy + energyGain(after.streak));
+  return Math.min(ENERGY_MAX, energy + energyGain(after.streak) * rate);
 }
 
 /** Remplissage de la section `index` (0 à 14), entre 0 et 1. */

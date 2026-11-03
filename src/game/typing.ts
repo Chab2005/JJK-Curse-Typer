@@ -66,6 +66,39 @@ export function typeKey(state: TypingState, { key, t }: Keystroke): TypingState 
 
 export const typeKeys = (state: TypingState, strokes: readonly Keystroke[]) => strokes.reduce(typeKey, state);
 
+/** Ajoute des mots à la fin du texte : la saisie ne bouge pas, seule la ligne d'arrivée s'éloigne. */
+export function extendText(state: TypingState, words: string): TypingState {
+  return state.finishedAt !== null ? state : { ...state, text: `${state.text} ${words}` };
+}
+
+/** Début du dernier mot : une capacité n'y fait jamais passer la ligne, il faut la franchir en tapant. */
+export const lastWordStart = (text: string) => text.lastIndexOf(' ') + 1;
+
+/** Début du mot où tombe `position`, jamais au-delà du dernier mot. */
+export const wordStartAt = (text: string, position: number) => Math.min(lastWordStart(text), text.lastIndexOf(' ', position - 1) + 1);
+
+/** Position `words` mots plus loin, au début d'un mot et jamais au-delà du dernier. */
+export function wordsAhead(text: string, position: number, words: number): number {
+  const last = lastWordStart(text);
+  let at = position;
+  for (let i = 0; i < words && at < last; i++) at = text.indexOf(' ', at) + 1;
+  return Math.max(position, Math.min(at, last));
+}
+
+/** Position `words` mots plus tôt : d'abord le début du mot en cours, s'il est entamé. */
+export function wordsBehind(text: string, position: number, words: number): number {
+  let at = position;
+  for (let i = 0; i < words && at > 0; i++) at = text.lastIndexOf(' ', at - 2) + 1;
+  return at;
+}
+
+/** Déplace le curseur : en avant, le texte sauté compte comme tapé (les fautes déjà faites restent) ; en arrière, la saisie est perdue. */
+export function moveTo(state: TypingState, position: number): TypingState {
+  if (state.finishedAt !== null) return state;
+  const input = position > state.input.length ? state.input + state.text.slice(state.input.length, position) : state.input.slice(0, position);
+  return { ...state, input, peak: Math.max(state.peak, input.length) };
+}
+
 /** Caractères tapés à la bonne place : la progression montrée sur la piste. */
 export function correctChars(state: TypingState): number {
   let count = 0;

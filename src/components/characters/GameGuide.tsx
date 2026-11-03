@@ -1,7 +1,7 @@
 import { useTranslations } from 'next-intl';
 import type { CSSProperties, ReactNode } from 'react';
 import type { CharacterId } from '@/components/shared/characters';
-import { BINDING_VOW_PROGRESS, DOMAIN_SECONDS, type Ability } from '@/game/abilities';
+import { BINDING_VOW_PROGRESS, DOMAIN_LOCK_SECONDS, DOMAIN_MIN_ENERGY, DOMAIN_SECONDS, type Ability } from '@/game/abilities';
 import { ENERGY_MAX } from '@/game/energy';
 import { spriteStyle } from './characterSprites';
 import ControlsIntro from './ControlsIntro';
@@ -9,10 +9,6 @@ import EnergyDemo from './EnergyDemo';
 import GojoDomain, { DomainScene } from './GojoDomain';
 import Shortcut from './Shortcut';
 import styles from './GameGuide.module.css';
-
-/** Énergie minimale pour déployer une extension du territoire, et durée pendant laquelle la technique est ensuite bloquée. */
-const DOMAIN_MIN_ENERGY = 1000;
-const DOMAIN_LOCK_SECONDS = 10;
 
 /** Part de la course offerte par le pacte contraignant, en pourcentage. */
 const VOW_PERCENT = Math.round(BINDING_VOW_PROGRESS * 100);
