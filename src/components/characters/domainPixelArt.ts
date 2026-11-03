@@ -51,7 +51,9 @@ export function createDomainRenderer(canvas: HTMLCanvasElement, character: Domai
     c.putImageData(data,0,0);spriteCanvas=stamp;draw(lastTime);
   };
   if(showCharacter)sprite.src=`/images/characters/domains/${character}-idle.png`;
-  function actor(c: Context,t: number,x=200,feet=160){if(showCharacter&&spriteCanvas)c.drawImage(spriteCanvas,(Math.floor(t*8.9)%8)*34,0,34,54,Math.round(x-17),feet-54,34,54);}
+  function actor(c: Context,t: number,x=200,feet=160,scale=1){if(!showCharacter||!spriteCanvas)return;const w=Math.round(34*scale),h=Math.round(54*scale);c.drawImage(spriteCanvas,(Math.floor(t*8.9)%8)*34,0,34,54,Math.round(x-w/2),feet-h,w,h);}
+  /** Gojo is drawn a bit larger than the sprite file so he holds the centre of his domain. */
+  const GOJO_SCALE=1.15;
   // Gojo: stepped circular contours, discrete star clusters and violet rays.
   const gojoBackground=character==='gojo'?layer(c=>{
     dither(c,['#04040d','#0b0b1e','#19132e','#2c1b48'],(x,y)=>Math.max(0,2.9-Math.hypot((x-200)*.85,y-101)/69));
@@ -73,7 +75,7 @@ export function createDomainRenderer(canvas: HTMLCanvasElement, character: Domai
     if(reveal===1)c.drawImage(ringImages[Math.sin(t*1.3)>.6?1:0],0,0);
     else if(reveal>0){const size=Math.max(1,Math.round(104*reveal));c.drawImage(ringImages[0],148,49,104,104,Math.round(200-size/2),Math.round(101-size/2),size,size);}
     for(let i=0;i<12;i++){const phase=Math.sin(t*1.2+i*2);if(phase>.76&&reveal>.7){const x=Math.floor(rand(i+920)*400),y=Math.floor(rand(i+940)*175);line(c,x-2,y,x+2,y,'#b794d7');line(c,x,y-2,x,y+2,'#b794d7');rect(c,x,y,1,1,'#f3e7fa');}}
-    if(showCharacter){oval(c,200,161,23,3,'#211b39');oval(c,200,160,17,1,'#5c447c');actor(c,t);}
+    if(showCharacter){oval(c,200,161,26,3,'#211b39');oval(c,200,160,20,1,'#5c447c');actor(c,t,200,160,GOJO_SCALE);}
   }
 
   // Megumi: a shallow uneven crown and three tightly overlapping vertebrae.
