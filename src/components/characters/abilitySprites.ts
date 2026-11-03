@@ -17,6 +17,8 @@ export type Shikigami = {
   idle: Strip;
   /** Bande jouée au survol ; sans elle, le shikigami garde son idle. */
   hover?: Strip;
+  /** Played once on hover before the looping hover strip. */
+  transition?: Strip;
   /** Bord gauche de l'image dans la scène, en px affichés. */
   left: number;
   /** Décalage de l'animation, en images, pour que les copies d'un même shikigami ne bougent pas ensemble. */
@@ -56,9 +58,18 @@ const spark = (id: string): ShikigamiScene => {
   };
 };
 
+const divineFlame = (): ShikigamiScene => {
+  const scene = effect('sukuna', 'divine-flame', 16, 100, 70);
+  return { ...scene, sprites: scene.sprites.map((sprite) => ({
+    ...sprite,
+    transition: { ...sprite.idle, file: '/images/characters/anim/techniques/sukuna/divine-flame-transition.png', frames: 8, frameMs: 60 },
+  })) };
+};
+
 export const ABILITY_SPRITES: Partial<Record<AbilityId, ShikigamiScene>> = {
   divergentFist: spark('divergent-fist'),
   blackFlash: spark('black-flash'),
+  divineFlames: divineFlame(),
   rabbitEscape: {
     width: 100,
     height: 60,

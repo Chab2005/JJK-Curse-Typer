@@ -1,0 +1,39 @@
+.transition,
+.hover {
+  visibility: hidden;
+}
+
+:global([data-ability]:hover) .idle {
+  visibility: hidden;
+}
+
+:global([data-ability]:hover) .transition {
+  visibility: visible;
+  animation:
+    sprite-idle var(--transition-duration) steps(var(--transition-frames)),
+    conceal 0s var(--transition-duration) forwards;
+}
+
+:global([data-ability]:hover) .hover {
+  animation:
+    reveal 0s var(--transition-duration) forwards,
+    sprite-idle var(--hover-duration) steps(var(--hover-frames)) var(--transition-duration) infinite;
+}
+
+/* CSS modules rename keyframes locally, so the global sprite-idle from globals.css is not reachable here. */
+@keyframes sprite-idle {
+  to { background-position-x: var(--sprite-end); }
+}
+
+@keyframes conceal {
+  to { visibility: hidden; }
+}
+
+@keyframes reveal {
+  to { visibility: visible; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :global([data-ability]:hover) .idle { visibility: visible; }
+  .transition, .hover { display: none; }
+}

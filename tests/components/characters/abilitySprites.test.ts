@@ -44,7 +44,7 @@ describe('abilitySprites', () => {
     expect(hover!.frameMs).toBeGreaterThan(ABILITY_SPRITES.purple!.sprites[0].idle.frameMs);
   });
 
-  it.each(['blue', 'red', 'purple', 'resonance', 'hairpin'] as const)('gives %s a transparent, animated idle and a distinct hover effect that fits its reserved space', async (id) => {
+  it.each(['blue', 'red', 'purple', 'resonance', 'hairpin', 'divineFlames'] as const)('gives %s a transparent, animated idle and a distinct hover effect that fits its reserved space', async (id) => {
     const scene = ABILITY_SPRITES[id]!;
     expect(scene).toBeDefined();
     const sprite = scene.sprites[0];
@@ -71,6 +71,35 @@ describe('abilitySprites', () => {
       expect(Number(style.height)).toBeLessThanOrEqual(scene.height);
       expect(Math.abs(Number(style.bottom))).toBe(0);
     }
+  });
+
+  it('transforms Divine Flame once before its hover loop, joining the approved endpoint frames', async () => {
+    const sprite = ABILITY_SPRITES.divineFlames!.sprites[0];
+    expect(sprite.transition).toBeDefined();
+    const transition = sprite.transition!;
+    expect(transition.frames).toBe(8);
+    expect(transition.frameMs! * transition.frames!).toBeLessThanOrEqual(500);
+    const image = sharp(path.join('public', transition.file));
+    const metadata = await image.metadata();
+    expect([metadata.width, metadata.height, metadata.hasAlpha]).toEqual([96 * 8, 96, true]);
+    const frame = (file: string, index: number) => sharp(path.join('public', file))
+      .extract({ left: index * 96, top: 0, width: 96, height: 96 }).ensureAlpha().raw().toBuffer();
+    expect(await frame(transition.file, 0)).toEqual(await frame(sprite.idle.file, 0));
+    expect(await frame(transition.file, 7)).toEqual(await frame(sprite.hover!.file, 0));
+    const frames = await Promise.all(Array.from({ length: 8 }, (_, index) => frame(transition.file, index)));
+    expect(new Set(frames.map((pixels) => pixels.toString('base64'))).size).toBe(8);
+  });
+
+  it('gathers Divine Flame at rest and releases the fire arrow on hover', () => {
+    const scene = ABILITY_SPRITES.divineFlames;
+    expect(scene).toBeDefined();
+    const sprite = scene!.sprites[0];
+    expect(path.basename(sprite.idle.file)).toBe('divine-flame-idle.png');
+    expect(path.basename(sprite.hover!.file)).toBe('divine-flame-hover.png');
+    expect(sprite.hover!.frameMs).toBeLessThan(sprite.idle.frameMs);
+    const idle = shikigamiStyle(sprite.idle, sprite, scene!.scale);
+    const hover = shikigamiStyle(sprite.hover!, sprite, scene!.scale);
+    for (const key of ['width', 'height', 'left', 'bottom'] as const) expect(hover[key]).toBe(idle[key]);
   });
 
   it('flies Nue in place and strikes with lightning on hover, lowered by the 31 px the lightning strip draws it higher', () => {

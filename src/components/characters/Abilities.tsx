@@ -1,10 +1,11 @@
-import { Fragment } from 'react';
+import { Fragment, type CSSProperties } from 'react';
 import { useTranslations } from 'next-intl';
 import BevelFrame from '@/components/shared/BevelFrame';
 import type { CharacterId } from '@/components/shared/characters';
 import { CHARACTER_ABILITIES, hasAbilities, type AbilityKey, type CharacterAbility } from './characterAbilities';
 import { CHARACTER_STYLES } from './characterStyles';
 import { ABILITY_SPRITES, shikigamiStyle, type ShikigamiScene } from './abilitySprites';
+import spriteStyles from './AbilitySprite.module.css';
 
 const FOOTER = 'font-label-code mt-auto flex flex-wrap justify-between gap-x-4 gap-y-1 whitespace-nowrap border-t border-dashed pt-3 text-[11px] uppercase tracking-[0.14em] text-outline';
 
@@ -62,6 +63,7 @@ export default function Abilities({ character }: { character: CharacterId }) {
           return (
             <li
               key={ability.id}
+              data-ability={ability.id}
               className={`group/card relative ${ability.featured ? (wide ? 'sm:col-span-2 lg:col-span-3 lg:w-[calc(53.333%-4px)] lg:justify-self-center' : 'sm:col-span-2 sm:w-[calc(50%-8px)] sm:justify-self-center') : ''}`}
             >
               <BevelFrame
@@ -111,8 +113,18 @@ function ShikigamiCorner({ scene }: { scene: ShikigamiScene }) {
       style={{ width: scene.width, height: scene.height }}>
       {scene.sprites.map((sprite, i) => (
         <Fragment key={i}>
-          <div className={`absolute [image-rendering:pixelated] motion-reduce:animate-none! ${sprite.hover ? 'group-hover/card:invisible motion-reduce:group-hover/card:visible' : ''}`} style={shikigamiStyle(sprite.idle, sprite, scene.scale)} />
-          {sprite.hover && <div className="invisible absolute [image-rendering:pixelated] group-hover/card:visible motion-reduce:hidden" style={shikigamiStyle(sprite.hover, sprite, scene.scale)} />}
+          <div className={`absolute [image-rendering:pixelated] motion-reduce:animate-none! ${sprite.transition ? spriteStyles.idle : sprite.hover ? 'group-hover/card:invisible motion-reduce:group-hover/card:visible' : ''}`} style={shikigamiStyle(sprite.idle, sprite, scene.scale)} />
+          {sprite.transition && <div className={`absolute [image-rendering:pixelated] ${spriteStyles.transition}`} style={{
+            ...shikigamiStyle(sprite.transition, sprite, scene.scale), animation: undefined,
+            '--transition-duration': `${sprite.transition.frames! * sprite.transition.frameMs}ms`,
+            '--transition-frames': sprite.transition.frames,
+          } as CSSProperties} />}
+          {sprite.hover && <div className={`absolute [image-rendering:pixelated] ${sprite.transition ? spriteStyles.hover : 'invisible group-hover/card:visible motion-reduce:hidden'}`} style={sprite.transition ? {
+            ...shikigamiStyle(sprite.hover, sprite, scene.scale), animation: undefined,
+            '--transition-duration': `${sprite.transition.frames! * sprite.transition.frameMs}ms`,
+            '--hover-duration': `${sprite.hover.frames! * sprite.hover.frameMs}ms`,
+            '--hover-frames': sprite.hover.frames,
+          } as CSSProperties : shikigamiStyle(sprite.hover, sprite, scene.scale)} />}
         </Fragment>
       ))}
     </div>

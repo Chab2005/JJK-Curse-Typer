@@ -1,0 +1,13 @@
+{
+  "tool": "built-in image_gen",
+  "prompt": "Use case: stylized-concept. Asset: LOW RESOLUTION pixel-art animation sprite sheet for Divine Flame TRANSITION from idle to launched fire arrow.\nInput image 1 is the approved upright idle flame; input image2 is the approved right-facing fire arrow. Both are design references / endpoints. Create only the NEW in-between animation, not either full input sheet. Keep their warm white-yellow/orange/red palette and pixel style. NO HANDS or characters.\nONE transparent sprite sheet, strict 4columns by2rows, exactly8 animation frames read left-to-right then top-to-bottom. Eight frames of a single short continuous transformation: 1 upright compact idle flame; 2 fire contracts toward its middle; 3 compact bright oval with its upper tongue bending RIGHT; 4 fire tilts and flattens toward horizontal; 5 a pointed tip grows toward RIGHT; 6 thin bright horizontal shaft and triangular flame-arrowhead take shape; 7 full arrow sharpens with swept flame barbs and short leftward tail; 8 the approved launched arrow, pointed to the right. This is visible SHAPE TRANSFORMATION, no teleport, explosion, dramatic flare or separate projectile copies. Keep center anchored in every cell, fit safely within cell; gradual continuous change in width and height, same visual brightness. Logical32x32 pixels per frame (simple game effect), very chunky hard square pixel clusters, simple readable silhouette, no additional micro-detail or tiny sparks, no gradients, blur or smoky outlines. No more detail than supplied idle32px and arrow. Keep every frame isolated and centered, generous transparent padding on every side, no touching neighbors. Entire artwork true alpha transparency; no painted checkerboards, background, outlines of cells, grid lines, text, labels, scenery, logos or watermarks. No hands or anatomy. Deliver only8-frame sheet.",
+  "source": "divine-flame-transition-spritesheet.png",
+  "prepare": "node scripts/prepare-sukuna-flame-transition.mjs",
+  "logicalFrameSize": 32,
+  "frames": 8,
+  "frameMs": 60,
+  "durationMs": 480,
+  "loop": false,
+  "endpoints": "First and final frames reuse the approved idle and hover frames exactly.",
+  "playback": "Idle loop → transition once on hover → launched arrow loop. Mouse leave resets immediately to idle; hovering again replays transition. Reduced motion shows the stationary idle."
+}
