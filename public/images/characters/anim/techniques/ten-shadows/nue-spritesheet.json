@@ -1,0 +1,35 @@
+{
+  "id": "nue",
+  "direction": "left",
+  "file": "nue-spritesheet.png",
+  "frameWidth": 192,
+  "frameHeight": 256,
+  "columns": 8,
+  "rows": 4,
+  "states": [
+    {
+      "name": "idle",
+      "row": 0,
+      "frames": 8,
+      "metadata": "nue-idle.json"
+    },
+    {
+      "name": "hover",
+      "row": 1,
+      "frames": 8,
+      "metadata": "nue-hover.json"
+    },
+    {
+      "name": "flying",
+      "row": 2,
+      "frames": 8,
+      "metadata": "nue-flying.json"
+    },
+    {
+      "name": "lightning",
+      "row": 3,
+      "frames": 8,
+      "metadata": "nue-lightning.json"
+    }
+  ]
+}
