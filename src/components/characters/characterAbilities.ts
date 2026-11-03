@@ -2,12 +2,14 @@ import type { CharacterId } from '@/components/shared/characters';
 
 // Capacités d'une technique, détaillées sous la fiche du personnage (/characters/<id>) : coût en énergie occulte
 // et durée. Les noms et effets viennent des messages (Character.abilities.<personnage>.items.<id>).
-export type AbilityDuration = 'instant' | 'seconds' | 'secondsRange' | 'untilUsed' | 'nextWord' | 'restOfRace';
+export type AbilityDuration = 'instant' | 'seconds' | 'secondsRange' | 'untilUsed' | 'nextWord' | 'nextWords' | 'restOfRace';
 
 /** Personnages dont la technique a des capacités détaillées, et leurs identifiants (clés des messages). */
 type AbilityIds = {
   megumi: 'rabbitEscape' | 'toad' | 'maxElephant' | 'nue' | 'roundDeer' | 'divineDogs' | 'mahoraga';
   nobara: 'resonance' | 'hairpin';
+  gojo: 'blue' | 'red' | 'purple';
+  sukuna: 'cleave' | 'dismantle' | 'divineFlames';
 };
 export type AbilityCharacter = keyof AbilityIds;
 export type AbilityId = AbilityIds[AbilityCharacter];
@@ -24,6 +26,10 @@ export type CharacterAbility = {
   seconds?: number;
   /** Maximum d'une durée `secondsRange`. */
   maxSeconds?: number;
+  /** Pour une durée `nextWords` : combien de mots suivants sont touchés. */
+  words?: number;
+  /** Capacités à enchaîner, dans l'ordre, juste avant celle-ci ; si la chaîne est rompue, elle n'est pas disponible. */
+  requires?: readonly AbilityId[];
   /** Carte mise en avant, seule et centrée sur la dernière rangée. */
   featured?: boolean;
 };
@@ -41,6 +47,16 @@ export const CHARACTER_ABILITIES: Record<AbilityCharacter, readonly CharacterAbi
   nobara: [
     { id: 'resonance', cost: 350, duration: 'secondsRange', seconds: 3, maxSeconds: 5 },
     { id: 'hairpin', cost: 250, duration: 'instant' },
+  ],
+  gojo: [
+    { id: 'blue', cost: 300, duration: 'secondsRange', seconds: 3, maxSeconds: 5 },
+    { id: 'red', cost: 250, duration: 'untilUsed' },
+    { id: 'purple', cost: 500, duration: 'instant', featured: true },
+  ],
+  sukuna: [
+    { id: 'cleave', cost: 250, duration: 'nextWord' },
+    { id: 'dismantle', cost: 300, duration: 'nextWord' },
+    { id: 'divineFlames', cost: 250, duration: 'nextWords', words: 3, requires: ['cleave', 'dismantle'], featured: true },
   ],
 };
 

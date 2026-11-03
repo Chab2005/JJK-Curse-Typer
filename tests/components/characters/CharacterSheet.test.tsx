@@ -41,12 +41,20 @@ describe('CharacterSheet (smoke)', () => {
     ['todo', 'Boogie-Woogie', /swap places with anything that has cursed energy/],
     ['nobara', 'Straw Doll', /whatever she strikes on the doll/],
     ['yuji', 'Black Flash', /Yuji has no innate technique/],
-  ])('names the %s technique and tells to type it after Alt+W', (id, name, details) => {
+  ])('names and describes the %s technique, without a cast hint', (id, name, details) => {
     renderWithIntl(<CharacterSheet character={CHARACTERS.find((c) => c.id === id)!} />);
     expect(screen.getByText(name)).toBeInTheDocument();
     expect(screen.getByText(details)).toBeInTheDocument();
-    expect(screen.getByText(`then type “${name}”`)).toBeInTheDocument();
-    expect(screen.getByText('W')).toBeInTheDocument();
+    expect(screen.queryByText(`then type “${name}”`)).not.toBeInTheDocument();
+  });
+
+  it('shows Todo swapping places with the leader in a race example, and no other character', () => {
+    const { unmount } = renderWithIntl(<CharacterSheet character={CHARACTERS.find((c) => c.id === 'todo')!} />);
+    expect(screen.getByText('Race example')).toBeInTheDocument();
+    expect(screen.getByTestId('technique-example')).toBeInTheDocument();
+    unmount();
+    renderWithIntl(<CharacterSheet character={CHARACTERS.find((c) => c.id === 'yuji')!} />);
+    expect(screen.queryByTestId('technique-example')).not.toBeInTheDocument();
   });
 
   it('gives Maki no technique to cast', () => {
@@ -115,9 +123,30 @@ describe('CharacterSheet (smoke)', () => {
     expect(section.getByText('3–5 s')).toBeInTheDocument();
   });
 
+  it('shows Sukuna’s Cleave, Dismantle and Divine Flames with its chain requirement', () => {
+    renderWithIntl(<CharacterSheet character={CHARACTERS.find((c) => c.id === 'sukuna')!} />);
+    const section = within(screen.getByRole('region', { name: /Malevolent Shrine|Shrine/ }));
+    const names = section.getAllByRole('heading', { level: 3 }).map((h) => h.textContent);
+
+    expect(names).toEqual(['Cleave', 'Dismantle', 'Divine Flames']);
+    expect(section.getByText('Cleave → Dismantle')).toBeInTheDocument();
+    expect(section.getByText('Next 3 words')).toBeInTheDocument();
+  });
+
   it('shows no abilities on a character without any yet', () => {
-    renderWithIntl(<CharacterSheet character={gojo} />);
+    renderWithIntl(<CharacterSheet character={CHARACTERS.find((c) => c.id === 'yuji')!} />);
 
     expect(screen.queryByText('Abilities')).not.toBeInTheDocument();
+  });
+
+  it('places Max Elephant facing left on its ability card with the running animation ready for hover', () => {
+    renderWithIntl(<CharacterSheet character={CHARACTERS.find((c) => c.id === 'megumi')!} />);
+    const card = screen.getByRole('heading', { level: 3, name: 'Max Elephant' }).closest('li')!;
+    const corner = within(card).getByTestId('shikigami');
+    const frames = Array.from(corner.children) as HTMLElement[];
+    expect(frames[0]).toHaveStyle({ transform: 'scaleX(-1)' });
+    expect(frames[1]).toHaveStyle({ transform: 'scaleX(-1)' });
+    expect(frames[0].style.background).toContain('max-elephant-idle.png');
+    expect(frames[1].style.background).toContain('max-elephant-running.png');
   });
 });

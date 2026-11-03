@@ -15,8 +15,10 @@ export default function Abilities({ character }: { character: CharacterId }) {
   const techniques = useTranslations('Characters.techniques');
   if (!hasAbilities(character)) return null;
   const abilities = CHARACTER_ABILITIES[character];
+  // Trois colonnes à partir de trois cartes ordinaires ; sinon deux, la carte mise en avant centrée dessous.
+  const wide = abilities.filter((ability) => !ability.featured).length > 2;
 
-  const duration = (ability: CharacterAbility) => t(`durations.${ability.duration}`, { seconds: ability.seconds ?? 0, maxSeconds: ability.maxSeconds ?? 0 });
+  const duration = (ability: CharacterAbility) => t(`durations.${ability.duration}`, { seconds: ability.seconds ?? 0, maxSeconds: ability.maxSeconds ?? 0, words: ability.words ?? 0 });
   const cost = (ability: CharacterAbility) => t(ability.spendsAll ? 'costAll' : 'costValue', { cost: ability.cost });
 
   return (
@@ -31,36 +33,60 @@ export default function Abilities({ character }: { character: CharacterId }) {
         <p className="max-w-[460px] text-[15px] leading-[23px] text-on-surface-variant">{t(`${character}.intro`)}</p>
       </div>
 
-      {/* Deux capacités se partagent la largeur à parts égales ; au-delà, trois colonnes. */}
-      <ul className={`grid gap-4 sm:grid-cols-2 ${abilities.length > 2 ? 'lg:grid-cols-3' : ''}`}>
+      {/* Deux cartes ordinaires se partagent la largeur à parts égales ; au-delà, trois colonnes. */}
+      <ul className={`grid gap-4 sm:grid-cols-2 ${wide ? 'lg:grid-cols-3' : ''}`}>
         {abilities.map((ability, index) => {
           const scene = ABILITY_SPRITES[ability.id];
           const key = `${character}.items.${ability.id}` as AbilityKey;
+          const heading = (
+            <div>
+              <div className="flex items-baseline gap-3">
+                <span className="font-label-code text-[12px] tracking-[0.16em] text-primary-container">{String(index + 1).padStart(2, '0')}</span>
+                <h3 className="font-grotesk text-[19px] font-semibold text-on-primary-container">{t(`${key}.name`)}</h3>
+              </div>
+              <p className="mt-3 text-[15px] leading-[23px] text-on-surface-variant">{t(`${key}.effect`)}</p>
+              {ability.requires && (
+                <p className="font-label-code mt-3 text-[11px] uppercase tracking-[0.14em] text-outline">
+                  {t('requires')}{' '}
+                  <b className="font-medium text-primary">{ability.requires.map((id) => t(`${`${character}.items.${id}` as AbilityKey}.name`)).join(' → ')}</b>
+                </p>
+              )}
+            </div>
+          );
+          const footer = (
+            <p className={`${FOOTER} ${ability.featured ? 'border-outline-variant' : 'border-surface-container-high'}`}>
+              <span>{t('duration')} <b className="font-medium text-on-surface">{duration(ability)}</b></span>
+              <span>{t('cost')} <b className={`font-medium ${ability.featured ? 'text-primary' : 'text-secondary'}`}>{cost(ability)}</b></span>
+            </p>
+          );
           return (
             <li
               key={ability.id}
-              className={`group/card relative ${ability.featured ? 'sm:col-span-2 sm:w-[calc(50%-8px)] sm:justify-self-center lg:col-span-1 lg:col-start-2 lg:w-auto lg:justify-self-stretch' : ''}`}
+              className={`group/card relative ${ability.featured ? (wide ? 'sm:col-span-2 lg:col-span-3 lg:w-[calc(53.333%-4px)] lg:justify-self-center' : 'sm:col-span-2 sm:w-[calc(50%-8px)] sm:justify-self-center') : ''}`}
             >
               <BevelFrame
                 frame={`h-full ${ability.featured ? 'bg-linear-160 from-primary-container to-[#8f1022]' : 'bg-surface-container-high'}`}
-                className={`flex h-full flex-col gap-3 px-[22px] py-5 ${ability.featured ? 'bg-[radial-gradient(120%_140%_at_50%_0%,#2a0a10,#131315_70%)]' : 'bg-surface'}`}
+                className={`flex h-full gap-3 px-[22px] py-5 ${scene?.beside ? 'flex-row' : 'flex-col'} ${ability.featured ? 'bg-[radial-gradient(120%_140%_at_50%_0%,#2a0a10,#131315_70%)]' : 'bg-surface'}`}
               >
-                {/* Place du shikigami dans le coin haut droit : le titre et l'effet s'écoulent autour. */}
-                <div className="flow-root">
-                  {scene && <div className="float-right mb-2 ml-3" style={{ width: scene.width, height: scene.height }} />}
-                  {/* `flow-root` à côté du float : la colonne de texte garde sa largeur jusqu'en bas au lieu de passer sous le shikigami. */}
-                  <div className={scene?.beside ? 'flow-root' : undefined}>
-                    <div className="flex items-baseline gap-3">
-                      <span className="font-label-code text-[12px] tracking-[0.16em] text-primary-container">{String(index + 1).padStart(2, '0')}</span>
-                      <h3 className="font-grotesk text-[19px] font-semibold text-on-primary-container">{t(`${key}.name`)}</h3>
+                {scene?.beside ? (
+                  // Shikigami à côté : le texte et le pied de carte en colonne à gauche, le shikigami seul sur toute la hauteur à droite.
+                  <>
+                    <div className="flex min-w-0 flex-1 flex-col gap-3">
+                      {heading}
+                      {footer}
                     </div>
-                    <p className="mt-3 text-[15px] leading-[23px] text-on-surface-variant">{t(`${key}.effect`)}</p>
-                  </div>
-                </div>
-                <p className={`${FOOTER} ${ability.featured ? 'border-outline-variant' : 'border-surface-container-high'}`}>
-                  <span>{t('duration')} <b className="font-medium text-on-surface">{duration(ability)}</b></span>
-                  <span>{t('cost')} <b className={`font-medium ${ability.featured ? 'text-primary' : 'text-secondary'}`}>{cost(ability)}</b></span>
-                </p>
+                    <div className="shrink-0" style={{ width: scene.width, minHeight: scene.height }} />
+                  </>
+                ) : (
+                  <>
+                    {/* Place du shikigami dans le coin haut droit : le titre et l'effet s'écoulent autour. */}
+                    <div className="flow-root">
+                      {scene && <div className="float-right mb-2 ml-3" style={{ width: scene.width, height: scene.height }} />}
+                      {heading}
+                    </div>
+                    {footer}
+                  </>
+                )}
               </BevelFrame>
               {scene && <ShikigamiCorner scene={scene} />}
             </li>
@@ -78,7 +104,11 @@ export default function Abilities({ character }: { character: CharacterId }) {
  *  ne déclenche pas le survol, seule la carte le fait. */
 function ShikigamiCorner({ scene }: { scene: ShikigamiScene }) {
   return (
-    <div aria-hidden="true" data-testid="shikigami" className="pointer-events-none absolute top-[21px] right-[23px] z-10" style={{ width: scene.width, height: scene.height }}>
+    <div
+      aria-hidden="true"
+      data-testid="shikigami"
+      className={`pointer-events-none absolute right-[23px] z-10 ${scene.beside ? 'top-1/2 -translate-y-1/2' : 'top-[21px]'}`}
+      style={{ width: scene.width, height: scene.height }}>
       {scene.sprites.map((sprite, i) => (
         <Fragment key={i}>
           <div className={`absolute [image-rendering:pixelated] ${sprite.hover ? 'group-hover/card:invisible' : ''}`} style={shikigamiStyle(sprite.idle, sprite, scene.scale)} />
