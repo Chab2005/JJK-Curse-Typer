@@ -12,6 +12,7 @@ function request(overrides: Partial<LocaleRequest>): LocaleRequest {
     search: '',
     acceptLanguage: null,
     cookieLocale: undefined,
+    fromSite: false,
     ...overrides,
   };
 }
@@ -59,6 +60,19 @@ describe('resolveLocaleRedirect — détection sur un chemin sans préfixe', () 
       type: 'redirect',
       pathname: '/fr/lobbies',
       search: '?q=1',
+    });
+  });
+
+  it('sans cookie, ne détecte pas la langue sur une navigation depuis le site', () => {
+    // Visiteur francophone qui a refusé les cookies et vient de choisir l'anglais.
+    expect(resolveLocaleRedirect(request({ pathname: '/stats', acceptLanguage: 'fr', fromSite: true }))).toEqual({
+      type: 'next',
+    });
+    // Le cookie de choix, lui, s'applique toujours.
+    expect(resolveLocaleRedirect(request({ cookieLocale: 'fr', fromSite: true }))).toEqual({
+      type: 'redirect',
+      pathname: '/fr',
+      search: '',
     });
   });
 
