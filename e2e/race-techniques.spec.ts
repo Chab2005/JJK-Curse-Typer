@@ -9,7 +9,7 @@ test.describe.configure({ timeout: 90_000 });
 const INCANTATION = 'With this treasure, I summon...  Eight-Handled Sword Divergent Sila Divine General Mahoraga';
 
 /** Salon en énergie illimitée, Megumi choisi, un bot : la course part, décompte compris. */
-async function startRace(page: Page) {
+async function startRace(page: Page, timer?: string) {
   await register(page, 'cast');
   await page.getByRole('button', { name: 'Create a new lobby' }).click();
   await page.waitForURL(/\/lobby\/[A-Z0-9]{3}-[A-Z0-9]{3}$/);
@@ -18,6 +18,10 @@ async function startRace(page: Page) {
   const dialog = page.getByRole('dialog');
   await dialog.getByRole('combobox', { name: 'Game mode' }).click();
   await dialog.getByRole('option', { name: 'Unlimited CE' }).click();
+  if (timer) {
+    await dialog.getByRole('combobox', { name: 'Race timer' }).click();
+    await dialog.getByRole('option', { name: timer }).click();
+  }
   await dialog.getByRole('button', { name: 'Save' }).click();
   await expect(dialog).toBeHidden();
 
@@ -107,5 +111,13 @@ test('Play on a character page lands in a public lobby with that character', asy
 
   await expect(page.getByRole('button', { name: 'Satoru Gojo' })).toHaveAttribute('aria-pressed', 'true');
   await expect(page.getByRole('definition').filter({ hasText: /^Public$/ })).toBeVisible();
+});
+
+test('shows the time left to the right of the energy bar', async ({ page }, testInfo) => {
+  await startRace(page, '1 min');
+  const energy = (await page.getByText('Cursed energy').boundingBox())!;
+  const clock = (await page.getByText('Time left').boundingBox())!;
+  expect(clock.x).toBeGreaterThan(energy.x + energy.width);
+  await page.screenshot({ path: testInfo.outputPath('timer.png') });
 });
 

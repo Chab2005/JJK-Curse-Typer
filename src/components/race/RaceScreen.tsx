@@ -351,10 +351,17 @@ export default function RaceScreen({
                 domainOpen={domainOwner !== null}
               />
 
-              {you !== null && hasEnergy && <EnergyBar energy={mine?.energy ?? 0} character={character} />}
+              {you !== null && (hasEnergy || clock) && (
+                <div className="flex flex-wrap items-center justify-end gap-x-6 gap-y-3">
+                  {hasEnergy && (
+                    <div className="min-w-60 flex-1">
+                      <EnergyBar energy={mine?.energy ?? 0} character={character} />
+                    </div>
+                  )}
+                  {clock && <RaceHud clock={clock} />}
+                </div>
+              )}
               {you !== null && hasEnergy && !done && <AbilityBar abilities={abilityList} marks={racerMarks(powers, elapsed)} onUse={onAbility} />}
-
-              {you !== null && clock && <RaceHud clock={clock} />}
 
               {you === null && (
                 <section aria-labelledby="spectating-title" className="flex items-start gap-4 border-l-[3px] border-secondary bg-secondary-container/20 px-5 py-4">
