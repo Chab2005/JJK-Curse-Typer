@@ -29,8 +29,9 @@ describe('CharacterPicker', () => {
     await user.click(screen.getByRole('button', { name: 'Change' }));
 
     const dialog = within(screen.getByRole('dialog', { name: 'Choose your exorcist' }));
-    expect(dialog.getByRole('button', { name: 'Satoru Gojo' })).toHaveAttribute('aria-pressed', 'true');
-    await user.click(dialog.getByRole('button', { name: 'Ryomen Sukuna' }));
+    expect(dialog.getByRole('button', { name: 'Satoru' })).toHaveAttribute('aria-pressed', 'true');
+    expect(dialog.queryByText('Satoru Gojo')).not.toBeInTheDocument();
+    await user.click(dialog.getByRole('button', { name: 'Ryomen' }));
 
     expect(onPick).toHaveBeenCalledWith('sukuna');
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();

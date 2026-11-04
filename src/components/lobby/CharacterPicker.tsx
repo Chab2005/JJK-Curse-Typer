@@ -2,11 +2,15 @@
 
 import { useTranslations } from 'next-intl';
 import { useRef, type ReactNode } from 'react';
+import { spriteStyle } from '@/components/characters/characterSprites';
 import Avatar from '@/components/shared/Avatar';
 import BevelPanel from '@/components/shared/BevelPanel';
 import ChevronButton from '@/components/shared/ChevronButton';
 import { CHARACTERS, type CharacterId } from '@/components/shared/characters';
 import Reserve from '@/components/shared/Reserve';
+
+/** Taille des personnages dans les cases de la fenêtre de choix, en fraction du fichier. */
+const SPRITE_SCALE = 0.27;
 
 // Exorciste du joueur, au-dessus de la liste des participants (canvas « Lobby · style cramoisi ») : son portrait, ce qu'il sait faire,
 // et un bouton qui ouvre le choix. Sans choix, la course en tire un, stable, du siège.
@@ -61,10 +65,12 @@ export default function CharacterPicker({ value, onPick }: { value: CharacterId 
                     onPick(id);
                     close();
                   }}
-                  className={`flex min-h-11 w-full flex-col items-center gap-2 border-2 bg-[#110506] px-2 pt-3 pb-2.5 transition-colors hover:border-primary-container/60 ${value === id ? 'border-primary-container' : 'border-transparent'}`}
+                  className={`flex aspect-square w-full flex-col items-center justify-center gap-1.5 border-2 bg-[#110506] transition-colors hover:border-primary-container/60 ${value === id ? 'border-primary-container' : 'border-transparent'}`}
                 >
-                  <Avatar avatar={id} name={name} size={64} />
-                  <span className="font-grotesk text-center text-[14px] leading-[18px] text-on-surface">{name}</span>
+                  <span aria-hidden="true" className="flex h-[90px] items-end">
+                    <span className="block motion-reduce:[animation:none]!" style={spriteStyle(id, 'idle', SPRITE_SCALE)} />
+                  </span>
+                  <span className="font-grotesk text-[14px] leading-[18px] text-on-surface">{name.split(' ')[0]}</span>
                 </button>
               </li>
             ))}

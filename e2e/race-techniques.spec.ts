@@ -30,7 +30,7 @@ async function startRace(page: Page, timer?: string) {
   const listTop = () => list.evaluate((el) => el.getBoundingClientRect().top + window.scrollY);
   const before = await listTop();
   await page.getByRole('button', { name: 'Choose' }).click();
-  await page.getByRole('dialog').getByRole('button', { name: 'Megumi Fushiguro' }).click();
+  await page.getByRole('dialog').getByRole('button', { name: 'Megumi' }).click();
   await expect(page.getByRole('region', { name: 'Your exorcist' }).getByText('Megumi Fushiguro')).toBeVisible();
   expect(await listTop()).toBe(before);
   await page.getByRole('button', { name: 'Add a bot' }).click();
@@ -122,6 +122,11 @@ test('Play on a character page lands in a public lobby with that character', asy
   await page.getByRole('button', { name: 'Change' }).click();
   await page.waitForTimeout(300);
   await page.screenshot({ path: testInfo.outputPath('lobby-modal.png') });
+
+  // Chaque exorciste a la même case carrée.
+  const cells = await page.getByRole('dialog').getByRole('list').getByRole('button').evaluateAll((buttons) => buttons.map((el) => el.getBoundingClientRect()).map(({ width, height }) => [Math.round(width), Math.round(height)]));
+  expect(cells).toHaveLength(8);
+  expect(new Set(cells.flat()).size).toBe(1);
 });
 
 test('shows the time left to the right of the energy bar', async ({ page }, testInfo) => {
