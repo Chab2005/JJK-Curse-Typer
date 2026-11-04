@@ -121,9 +121,13 @@ describe('runnerCharacter', () => {
     expect(runnerCharacter({ ...seat('me'), avatar: 'gojo' })).toBe('gojo');
   });
 
-  it('donne à un bot ou un joueur sans personnage un personnage stable, tiré de son siège', () => {
+  it('donne Yuji à un joueur sans personnage', () => {
+    expect(runnerCharacter(seat('me'))).toBe('yuji');
+  });
+
+  it('donne à un bot sans personnage un personnage stable, tiré de son siège', () => {
     expect(runnerCharacter(seat('bot-1', 'bot'))).toBe(runnerCharacter(seat('bot-1', 'bot')));
-    const picks = new Set(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'].map((id) => runnerCharacter(seat(id))));
+    const picks = new Set(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'].map((id) => runnerCharacter(seat(id, 'bot'))));
     expect(picks.size).toBeGreaterThan(1);
   });
 });

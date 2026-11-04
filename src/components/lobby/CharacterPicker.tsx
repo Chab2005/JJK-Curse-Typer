@@ -3,23 +3,23 @@
 import { useTranslations } from 'next-intl';
 import { useRef, type ReactNode } from 'react';
 import { spriteStyle } from '@/components/characters/characterSprites';
-import Avatar from '@/components/shared/Avatar';
 import BevelPanel from '@/components/shared/BevelPanel';
 import ChevronButton from '@/components/shared/ChevronButton';
-import { CHARACTERS, type CharacterId } from '@/components/shared/characters';
+import { CHARACTERS, DEFAULT_CHARACTER, type CharacterId } from '@/components/shared/characters';
 import Reserve from '@/components/shared/Reserve';
 
-/** Taille des personnages dans les cases de la fenêtre de choix, en fraction du fichier. */
+/** Taille des personnages, dans le bloc et dans les cases de la fenêtre de choix, en fraction du fichier. */
 const SPRITE_SCALE = 0.27;
 
-// Exorciste du joueur, au-dessus de la liste des participants (canvas « Lobby · style cramoisi ») : son portrait, ce qu'il sait faire,
-// et un bouton qui ouvre le choix. Sans choix, la course en tire un, stable, du siège.
+// Exorciste du joueur, au-dessus de la liste des participants (canvas « Lobby · style cramoisi ») : son sprite, ce qu'il sait faire,
+// et un bouton qui ouvre le choix. Chacun part avec le personnage de base.
 // Toutes les descriptions sont superposées (<Reserve>) : changer d'exorciste ne déplace pas la liste en dessous.
 export default function CharacterPicker({ value, onPick }: { value: CharacterId | null; onPick: (character: CharacterId) => void }) {
   const t = useTranslations('Lobby.character');
   const tDetails = useTranslations('Character.techniqueDetails');
   const dialogRef = useRef<HTMLDialogElement>(null);
-  const chosen = CHARACTERS.find(({ id }) => id === value);
+  const current = value ?? DEFAULT_CHARACTER;
+  const chosen = CHARACTERS.find(({ id }) => id === current)!;
   const close = () => dialogRef.current?.close();
 
   const details = Object.fromEntries(CHARACTERS.map(({ id }) => [id, <p key={id} className="text-[16px] leading-6 text-on-surface-variant">{tDetails(id)}</p>])) as Record<CharacterId, ReactNode>;
@@ -30,15 +30,17 @@ export default function CharacterPicker({ value, onPick }: { value: CharacterId 
         <h2 id="character-title" className="font-label-code text-[11px] font-bold uppercase tracking-[0.2em] text-primary-container">{t('title')}</h2>
 
         <div className="flex items-center gap-4">
-          <Avatar avatar={value} name={chosen?.name ?? '?'} size={72} shape="bevel" />
-          <p className="font-grotesk min-w-0 flex-1 text-[22px] leading-7 font-semibold">{chosen?.name ?? t('none')}</p>
+          <span aria-hidden="true" className="flex h-[90px] w-16 shrink-0 items-end justify-center">
+          <span data-testid="exorcist-sprite" className="block motion-reduce:[animation:none]!" style={spriteStyle(current, 'idle', SPRITE_SCALE)} />
+        </span>
+          <p className="font-grotesk min-w-0 flex-1 text-[22px] leading-7 font-semibold">{chosen.name}</p>
           <ChevronButton type="button" size="sm" chevrons={false} aria-haspopup="dialog" onClick={() => dialogRef.current?.showModal()} className="font-label-code text-[11px] uppercase tracking-[0.16em]">
             <span aria-hidden="true" className="material-symbols-outlined text-[16px] text-primary">person_search</span>
-            <Reserve active={chosen ? 'change' : 'choose'} variants={{ choose: t('choose'), change: t('change') }} />
+            {t('change')}
           </ChevronButton>
         </div>
 
-        <Reserve active={value ?? 'none'} variants={{ ...details, none: <p className="text-[16px] leading-6 text-on-surface-variant">{t('hint')}</p> }} />
+        <Reserve active={current} variants={details} />
       </section>
 
       {/* <dialog> natif, comme les paramètres : focus piégé, Échap ou clic à côté pour fermer, retour du focus sur le bouton. */}
@@ -60,12 +62,12 @@ export default function CharacterPicker({ value, onPick }: { value: CharacterId 
               <li key={id}>
                 <button
                   type="button"
-                  aria-pressed={value === id}
+                  aria-pressed={current === id}
                   onClick={() => {
                     onPick(id);
                     close();
                   }}
-                  className={`flex aspect-square w-full flex-col items-center justify-center gap-1.5 border-2 bg-[#110506] transition-colors hover:border-primary-container/60 ${value === id ? 'border-primary-container' : 'border-transparent'}`}
+                  className={`flex aspect-square w-full flex-col items-center justify-center gap-1.5 border-2 bg-[#110506] transition-colors hover:border-primary-container/60 ${current === id ? 'border-primary-container' : 'border-transparent'}`}
                 >
                   <span aria-hidden="true" className="flex h-[90px] items-end">
                     <span className="block motion-reduce:[animation:none]!" style={spriteStyle(id, 'idle', SPRITE_SCALE)} />

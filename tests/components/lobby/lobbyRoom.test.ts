@@ -210,7 +210,7 @@ const person = (id: string) => ({ id, name: id, avatar: null });
 describe('join', () => {
   it('fait entrer un nouveau venu comme participant pas encore prêt', () => {
     const next = lobbyReducer(room(), { type: 'join', person: person('Nobara'), spectate: false });
-    expect(next.participants.at(-1)).toEqual({ kind: 'human', id: 'Nobara', name: 'Nobara', avatar: null, photo: null, ready: false });
+    expect(next.participants.at(-1)).toEqual({ kind: 'human', id: 'Nobara', name: 'Nobara', avatar: 'yuji', photo: null, ready: false });
   });
 
   it('garde la photo téléversée du nouveau venu, joueur ou spectateur (PROF-5)', () => {
@@ -333,6 +333,26 @@ describe('setCharacter', () => {
     expect(lobbyReducer(before, { type: 'setCharacter', id: 'nobody', character: 'gojo' })).toBe(before);
     const racing = { ...before, status: 'racing' as const };
     expect(lobbyReducer(racing, { type: 'setCharacter', id: before.hostId, character: 'gojo' })).toBe(racing);
+  });
+});
+
+describe('personnage de base', () => {
+  it('donne Yuji à qui entre comme joueur sans personnage, et garde celui qu’il a', () => {
+    const joined = lobbyReducer(room(), { type: 'join', person: person('Nobara'), spectate: false });
+    expect(joined.participants.at(-1)).toMatchObject({ avatar: 'yuji' });
+    const chosen = lobbyReducer(room(), { type: 'join', person: { ...person('Nobara'), avatar: 'gojo' }, spectate: false });
+    expect(chosen.participants.at(-1)).toMatchObject({ avatar: 'gojo' });
+  });
+
+  it('donne Yuji au spectateur qui passe joueur', () => {
+    const before = room();
+    const next = lobbyReducer(before, { type: 'setSpectating', id: 'Ijichi', spectating: false });
+    expect(next.participants.at(-1)).toMatchObject({ id: 'Ijichi', avatar: 'yuji' });
+  });
+
+  it('laisse le spectateur sans personnage', () => {
+    const next = lobbyReducer(room(), { type: 'join', person: person('Nobara'), spectate: true });
+    expect(next.spectators.at(-1)).toMatchObject({ avatar: null });
   });
 });
 

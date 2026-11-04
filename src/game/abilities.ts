@@ -1,6 +1,6 @@
 // Règles des capacités en course (BON-*) : durée des territoires, pacte contraignant, raccourcis, modes de jeu
 // et capacités de chaque personnage. Les noms et effets affichés viennent des messages (Character.abilities).
-import { CHARACTERS, type CharacterId } from '@/components/shared/characters';
+import { CHARACTERS, DEFAULT_CHARACTER, type CharacterId } from '@/components/shared/characters';
 import type { RacerSeat } from './race';
 
 /** Une extension du territoire reste ouverte 10 s, et son effet se répète chaque seconde. */
@@ -159,9 +159,10 @@ export type CastAbility = TechniqueId | 'domain' | 'vow';
 /** Technique touchant un autre coureur (les autres agissent sur le lanceur). */
 export const isTargeted = (id: TechniqueId) => !['skipWords', 'ward', 'untouchable', 'summon'].includes(TECHNIQUE_EFFECTS[id].kind);
 
-/** Personnage du coureur : celui qu'il a choisi, sinon (bot, compte sans personnage) un personnage stable tiré de son siège. */
+/** Personnage du coureur : celui qu'il a choisi, sinon celui de base pour un joueur, et pour un bot un personnage stable tiré de son siège. */
 export function racerCharacter(seat: RacerSeat): CharacterId {
   if (seat.avatar) return seat.avatar;
+  if (seat.kind === 'human') return DEFAULT_CHARACTER;
   const hash = [...seat.id].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7);
   return CHARACTERS[hash % CHARACTERS.length].id;
 }

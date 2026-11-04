@@ -713,9 +713,6 @@
     },
     "character": {
       "title": "Your exorcist",
-      "hint": "Pick an exorcist: it decides your techniques and your domain for the race.",
-      "none": "No exorcist chosen",
-      "choose": "Choose",
       "change": "Change",
       "modalTitle": "Choose your exorcist",
       "close": "Close"

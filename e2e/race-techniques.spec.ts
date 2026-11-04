@@ -29,7 +29,8 @@ async function startRace(page: Page, timer?: string) {
   const list = page.getByRole('heading', { name: /^Exorcists/ });
   const listTop = () => list.evaluate((el) => el.getBoundingClientRect().top + window.scrollY);
   const before = await listTop();
-  await page.getByRole('button', { name: 'Choose' }).click();
+  await expect(page.getByRole('region', { name: 'Your exorcist' }).getByText('Yuji Itadori')).toBeVisible();
+  await page.getByRole('button', { name: 'Change' }).click();
   await page.getByRole('dialog').getByRole('button', { name: 'Megumi' }).click();
   await expect(page.getByRole('region', { name: 'Your exorcist' }).getByText('Megumi Fushiguro')).toBeVisible();
   expect(await listTop()).toBe(before);

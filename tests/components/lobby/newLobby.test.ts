@@ -58,3 +58,10 @@ describe('viewLobby', () => {
     expect(viewLobby(room, { id: '', name: '', avatar: null }, false)).toBe(room);
   });
 });
+
+describe('hôte sans personnage', () => {
+  it('part avec Yuji', () => {
+    expect(newLobbyRoom('ABC-DEF', 'Salon', { id: 'a', name: 'a', avatar: null }).participants[0]).toMatchObject({ avatar: 'yuji' });
+  });
+});
+

@@ -6,17 +6,18 @@ import { renderWithIntl } from '../../render';
 const block = () => within(screen.getByRole('region', { name: 'Your exorcist' }));
 
 describe('CharacterPicker', () => {
-  it('invites the player to choose when no exorcist is picked', () => {
+  it('starts on Yuji when nothing was picked', () => {
     renderWithIntl(<CharacterPicker value={null} onPick={() => {}} />);
 
-    expect(block().getByText('No exorcist chosen')).toBeInTheDocument();
-    expect(block().getByRole('button', { name: 'Choose' })).toBeInTheDocument();
+    expect(block().getByText('Yuji Itadori')).toBeInTheDocument();
+    expect(block().getByRole('button', { name: 'Change' })).toBeInTheDocument();
   });
 
   it('shows the chosen exorcist and what they can do', () => {
     renderWithIntl(<CharacterPicker value="todo" onPick={() => {}} />);
 
     expect(block().getByText('Aoi Todo')).toBeInTheDocument();
+    expect(block().getByTestId('exorcist-sprite').style.background).toContain('todo-idle.png');
     expect(block().getByText(/swap places with anything/)).toBeVisible();
     expect(block().getByRole('button', { name: 'Change' })).toBeInTheDocument();
   });
@@ -41,7 +42,8 @@ describe('CharacterPicker', () => {
     const onPick = vi.fn();
     const { user } = renderWithIntl(<CharacterPicker value={null} onPick={onPick} />);
 
-    await user.click(screen.getByRole('button', { name: 'Choose' }));
+    await user.click(screen.getByRole('button', { name: 'Change' }));
+    expect(within(screen.getByRole('dialog')).getByRole('button', { name: 'Yuji' })).toHaveAttribute('aria-pressed', 'true');
     await user.click(screen.getByRole('button', { name: 'Close' }));
 
     expect(onPick).not.toHaveBeenCalled();

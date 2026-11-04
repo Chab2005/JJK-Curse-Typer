@@ -1,6 +1,6 @@
 // Logique pure du salon d'attente d'un lobby (LOB-1, LOB-5 à LOB-9, LOB-11) : état + action → nouvel état.
 // Le serveur (src/lib/lobbies.ts) le rejoue sur les lobbies créés ; la page s'en sert aussi pour un retour immédiat.
-import type { CharacterId } from '@/components/shared/characters';
+import { DEFAULT_CHARACTER, type CharacterId } from '@/components/shared/characters';
 import type { CharKind, TextLanguage } from '@/components/lobbies/lobbySearch';
 import { GAME_MODES, modeHasBonus, type GameMode } from '@/game/abilities';
 import { BOT_LEVELS, type BotLevel } from '@/game/bots';
@@ -171,7 +171,7 @@ function join(room: LobbyRoom, person: Spectator, spectate: boolean): LobbyRoom 
   const { id, name, avatar, photo = null } = person;
   const joinable = !spectate && room.status === 'waiting' && room.participants.length < room.settings.capacity;
   return joinable
-    ? { ...room, participants: [...room.participants, { kind: 'human', id, name, avatar, photo, ready: false }] }
+    ? { ...room, participants: [...room.participants, { kind: 'human', id, name, avatar: avatar ?? DEFAULT_CHARACTER, photo, ready: false }] }
     : { ...room, spectators: [...room.spectators, { id, name, avatar, photo }] };
 }
 
@@ -193,7 +193,7 @@ function setSpectating(room: LobbyRoom, id: string, spectating: boolean): LobbyR
   }
   const spectator = room.spectators.find((s) => s.id === id);
   if (!spectator || room.participants.length >= room.settings.capacity) return room;
-  return { ...room, spectators: room.spectators.filter((s) => s.id !== id), participants: [...room.participants, { kind: 'human', ...spectator, ready: false }] };
+  return { ...room, spectators: room.spectators.filter((s) => s.id !== id), participants: [...room.participants, { kind: 'human', ...spectator, avatar: spectator.avatar ?? DEFAULT_CHARACTER, ready: false }] };
 }
 
 /** Le salon rouvre après la course ; chaque joueur redit qu'il est prêt pour la suivante. */
