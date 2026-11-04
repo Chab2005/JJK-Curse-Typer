@@ -1,7 +1,8 @@
 // Room d'une course : seule détentrice de la vérité (RACE-14). Elle passe chaque message reçu
 // au réducteur pur de src/game/race.ts et diffuse le classement. Les minuteries vivent dans RaceHub.
-import { parseClientMessage, type RaceSnapshot, type ServerMessage } from '@/game/protocol';
-import { applyKeys, elapsedAt, raceReducer, standings, type RaceEvent, type RaceState } from '@/game/race';
+import { castAbility } from '@/game/effects';
+import { parseClientMessage, type PlayerSync, type RaceSnapshot, type ServerMessage } from '@/game/protocol';
+import { applyKeys, elapsedAt, raceReducer, standings, type RaceEvent, type Racer, type RaceState } from '@/game/race';
 import { raceResults, type RaceResult } from '@/game/results';
 
 /** Une connexion WebSocket, réduite à ce dont la room a besoin. */
@@ -13,6 +14,8 @@ interface Client {
   guest: string | null;
   /** Siège tenu, `null` en spectateur. */
   seat: string | null;
+  /** Dernière version de son coureur envoyée au joueur. */
+  revision: number;
 }
 
 export class RaceRoom {
@@ -20,6 +23,8 @@ export class RaceRoom {
   private readonly clients = new Map<Connection, Client>();
   /** Siège de chaque invité : il le retrouve s'il se reconnecte (RACE-13). */
   private readonly seatsByGuest = new Map<string, string>();
+  /** Sièges connus de tous : une invocation s'annonce au tick suivant. */
+  private announcedSeats: number;
 
   /**
    * `ticketSeat` (lobby créé) : chacun reçoit le siège de son ticket, sans ticket il regarde. Sans lui (lobby de
@@ -32,6 +37,7 @@ export class RaceRoom {
     private readonly ticketSeat?: (ticket: string | undefined) => string | null,
   ) {
     this.race = race;
+    this.announcedSeats = race.racers.length;
   }
 
   get phase() {
@@ -48,7 +54,7 @@ export class RaceRoom {
   }
 
   connect(conn: Connection) {
-    this.clients.set(conn, { guest: null, seat: null });
+    this.clients.set(conn, { guest: null, seat: null, revision: 0 });
   }
 
   receive(conn: Connection, raw: string) {
@@ -65,10 +71,18 @@ export class RaceRoom {
       this.reduce({ type: 'abandon', id: client.seat, now: this.now() });
       return;
     }
-    const result = applyKeys(this.race, client.seat, message.strokes, this.now());
+    if (message.type === 'cast') {
+      const { race, refused } = castAbility(this.race, client.seat, message.ability, elapsedAt(this.race, this.now()));
+      this.race = race;
+      if (refused) this.send(conn, { type: 'castRefused', ability: message.ability, reason: refused });
+      this.syncPlayers();
+      return;
+    }
+    const result = applyKeys(this.race, client.seat, message.strokes, this.now(), message.seq);
     this.race = result.race;
-    const typing = this.race.racers.find((r) => r.seat.id === client.seat)?.typing;
-    if (!result.accepted && typing) this.send(conn, { type: 'resync', typing });
+    const racer = this.racer(client.seat);
+    if (!result.accepted && racer) this.send(conn, { type: 'resync', ...playerSync(racer) });
+    this.syncPlayers();
   }
 
   disconnect(conn: Connection) {
@@ -86,8 +100,14 @@ export class RaceRoom {
   tick() {
     const now = this.now();
     this.reduce({ type: 'tick', now });
-    const message = JSON.stringify({ type: 'tick', phase: this.race.phase, elapsed: elapsedAt(this.race, now), standings: standings(this.race, now) } satisfies ServerMessage);
-    for (const conn of this.clients.keys()) conn.send(message);
+    const { notices } = this.race;
+    this.race = { ...this.race, notices: [] };
+    if (this.race.racers.length !== this.announcedSeats) {
+      this.announcedSeats = this.race.racers.length;
+      this.broadcast({ type: 'seats', seats: this.race.racers.map((r) => r.seat) });
+    }
+    this.broadcast({ type: 'tick', phase: this.race.phase, elapsed: elapsedAt(this.race, now), standings: standings(this.race, now), ...(notices.length > 0 && { notices }) });
+    this.syncPlayers();
   }
 
   private join(conn: Connection, client: Client, guest: string, ticket: string | undefined) {
@@ -98,8 +118,9 @@ export class RaceRoom {
       this.seatsByGuest.set(guest, seat);
       this.reduce({ type: 'claim', id: seat, now: this.now() });
     }
-    const typing = seat ? (this.race.racers.find((r) => r.seat.id === seat)?.typing ?? null) : null;
-    this.send(conn, { type: 'welcome', you: seat, race: this.snapshot(), typing });
+    const racer = seat ? this.racer(seat) : undefined;
+    client.revision = racer?.revision ?? 0;
+    this.send(conn, { type: 'welcome', you: seat, race: this.snapshot(), typing: racer?.typing ?? null, ...(racer && { acked: racer.acked, powers: racer.powers }) });
   }
 
   /** Siège humain du ticket, s'il n'est pas déjà tenu par une autre connexion. */
@@ -117,8 +138,22 @@ export class RaceRoom {
   }
 
   private snapshot(): RaceSnapshot {
-    const { phase, startAt, timerMs, bonus, text, mode, racers } = this.race;
-    return { phase, startsIn: startAt - this.now(), timerMs, bonus, text, mode, seats: racers.map((r) => r.seat) };
+    const { phase, startAt, timerMs, bonus, gameMode, text, mode, racers } = this.race;
+    return { phase, startsIn: startAt - this.now(), timerMs, bonus, gameMode, text, mode, seats: racers.map((r) => r.seat) };
+  }
+
+  private racer(seat: string): Racer | undefined {
+    return this.race.racers.find((r) => r.seat.id === seat);
+  }
+
+  /** Prévient chaque joueur dont le coureur a changé par une capacité : il repart de la saisie du serveur. */
+  private syncPlayers() {
+    for (const [conn, client] of this.clients) {
+      const racer = client.seat ? this.racer(client.seat) : undefined;
+      if (!racer || racer.revision === client.revision) continue;
+      client.revision = racer.revision;
+      this.send(conn, { type: 'sync', ...playerSync(racer) });
+    }
   }
 
   private reduce(event: RaceEvent) {
@@ -128,4 +163,11 @@ export class RaceRoom {
   private send(conn: Connection, message: ServerMessage) {
     conn.send(JSON.stringify(message));
   }
+
+  private broadcast(message: ServerMessage) {
+    const data = JSON.stringify(message);
+    for (const conn of this.clients.keys()) conn.send(data);
+  }
 }
+
+const playerSync = ({ typing, acked, powers }: Racer): PlayerSync => ({ typing, acked, powers });

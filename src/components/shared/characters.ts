@@ -15,3 +15,6 @@ export const CHARACTERS = [
 
 export type Character = (typeof CHARACTERS)[number];
 export type CharacterId = Character['id'];
+
+/** Personnage de base d'un joueur qui n'en a pas choisi. */
+export const DEFAULT_CHARACTER: CharacterId = 'yuji';

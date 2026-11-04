@@ -26,6 +26,7 @@ const SETTINGS: LobbySettings = {
   practice: '',
   timer: 0,
   errorMode: 'accumulate',
+  gameMode: 'normal',
   bonus: true,
   capacity: 4,
   visibility: 'private',

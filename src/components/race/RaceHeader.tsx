@@ -18,7 +18,7 @@ export default function RaceHeader({ onLeave, account = null }: { onLeave: ((hre
   };
 
   return (
-    <header className="w-full bg-linear-to-b from-surface-container-lowest/95 to-transparent">
+    <header className="relative z-10 w-full bg-linear-to-b from-surface-container-lowest/95 to-transparent">
       <div className="flex h-19 w-full items-center justify-between gap-space-md px-space-lg lg:px-margin">
         <Link href="/" onClick={guard('/')} aria-label={t('home')} className="flex shrink-0 items-center gap-3 text-on-surface hover:text-on-surface">
           <Brand />

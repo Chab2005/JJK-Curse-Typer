@@ -3,9 +3,11 @@
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { joinLobbyAction, leaveLobbyAction, updateLobbyAction } from '@/app/actions/lobbies';
+import type { CharacterId } from '@/components/shared/characters';
 import PageIntro from '@/components/shared/PageIntro';
 import Pointer from '@/components/shared/Pointer';
 import { useRouter } from '@/i18n/navigation';
+import CharacterPicker from './CharacterPicker';
 import GuestJoinCard from './GuestJoinCard';
 import InviteCard from './InviteCard';
 import LeaveLobbyLink from './LeaveLobbyLink';
@@ -26,12 +28,15 @@ export default function WaitingRoom({
   live = false,
   invite,
   spectate = false,
+  character,
 }: {
   initialRoom: LobbyRoom;
   viewerId: string;
   live?: boolean;
   invite?: string;
   spectate?: boolean;
+  /** Personnage choisi sur sa fiche : le joueur le prend en arrivant. */
+  character?: CharacterId;
 }) {
   const t = useTranslations('Lobby');
   const participantName = useParticipantName();
@@ -60,7 +65,9 @@ export default function WaitingRoom({
           router.replace('/lobbies');
           return;
         }
-        setRoom(next);
+        const pick: LobbyAction | null = character ? { type: 'setCharacter', id: viewerId, character } : null;
+        setRoom(pick ? lobbyReducer(next, pick) : next);
+        if (pick) void updateLobbyAction(next.code, pick).catch(() => {});
         setJoined(true);
         // Le lien ne sert plus : recharger la page ne doit pas le redemander.
         if (window.location.search) window.history.replaceState(null, '', window.location.pathname);
@@ -69,7 +76,7 @@ export default function WaitingRoom({
     return () => {
       cancelled = true;
     };
-  }, [live, viewerId, initialRoom.code, spectate, invite, router]);
+  }, [live, viewerId, initialRoom.code, spectate, invite, character, router]);
 
   useLobbyEvents(live && joined ? room.code : null, setRoom, () => router.push('/lobbies'));
 
@@ -131,6 +138,7 @@ export default function WaitingRoom({
 
       <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_380px]">
         <div className="flex flex-col gap-10">
+          {me?.kind === 'human' && <CharacterPicker value={me.avatar} onPick={(character) => apply({ type: 'setCharacter', id: viewerId, character })} />}
           <ParticipantList
             room={room}
             viewerId={viewerId}

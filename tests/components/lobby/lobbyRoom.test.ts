@@ -22,6 +22,7 @@ const SETTINGS: LobbySettings = {
   practice: '',
   timer: 0,
   errorMode: 'accumulate',
+  gameMode: 'normal',
   bonus: true,
   capacity: 4,
   visibility: 'private',
@@ -65,13 +66,13 @@ describe('setReady (LOB-9)', () => {
 
 describe('updateSettings (LOB-5)', () => {
   it("applique les changements de l'hôte", () => {
-    const next = lobbyReducer(room(), { type: 'updateSettings', by: 'Gojo', patch: { bonus: false, errorMode: 'block' } });
-    expect(next.settings).toMatchObject({ bonus: false, errorMode: 'block' });
+    const next = lobbyReducer(room(), { type: 'updateSettings', by: 'Gojo', patch: { gameMode: 'heavenly', errorMode: 'block' } });
+    expect(next.settings).toMatchObject({ gameMode: 'heavenly', bonus: false, errorMode: 'block' });
   });
 
   it("ignore les changements d'un autre joueur", () => {
     const before = room();
-    expect(lobbyReducer(before, { type: 'updateSettings', by: 'Yuji', patch: { bonus: false } })).toBe(before);
+    expect(lobbyReducer(before, { type: 'updateSettings', by: 'Yuji', patch: { gameMode: 'heavenly' } })).toBe(before);
   });
 
   it('garde au moins une langue (TXT-1)', () => {
@@ -209,7 +210,7 @@ const person = (id: string) => ({ id, name: id, avatar: null });
 describe('join', () => {
   it('fait entrer un nouveau venu comme participant pas encore prêt', () => {
     const next = lobbyReducer(room(), { type: 'join', person: person('Nobara'), spectate: false });
-    expect(next.participants.at(-1)).toEqual({ kind: 'human', id: 'Nobara', name: 'Nobara', avatar: null, photo: null, ready: false });
+    expect(next.participants.at(-1)).toEqual({ kind: 'human', id: 'Nobara', name: 'Nobara', avatar: 'yuji', photo: null, ready: false });
   });
 
   it('garde la photo téléversée du nouveau venu, joueur ou spectateur (PROF-5)', () => {
@@ -318,3 +319,40 @@ describe('start / finish (LOB-7)', () => {
     expect(lobbyReducer(ready, { type: 'finish' })).toBe(ready);
   });
 });
+
+describe('setCharacter', () => {
+  it('donne son personnage à un joueur humain, sans passer par l’hôte', () => {
+    const before = room();
+    const human = before.participants.find((p) => p.kind === 'human' && p.id !== before.hostId)!;
+    const next = lobbyReducer(before, { type: 'setCharacter', id: human.id, character: 'sukuna' });
+    expect(next.participants.find((p) => p.id === human.id)).toMatchObject({ avatar: 'sukuna' });
+  });
+
+  it('ignore un inconnu et une course en cours', () => {
+    const before = room();
+    expect(lobbyReducer(before, { type: 'setCharacter', id: 'nobody', character: 'gojo' })).toBe(before);
+    const racing = { ...before, status: 'racing' as const };
+    expect(lobbyReducer(racing, { type: 'setCharacter', id: before.hostId, character: 'gojo' })).toBe(racing);
+  });
+});
+
+describe('personnage de base', () => {
+  it('donne Yuji à qui entre comme joueur sans personnage, et garde celui qu’il a', () => {
+    const joined = lobbyReducer(room(), { type: 'join', person: person('Nobara'), spectate: false });
+    expect(joined.participants.at(-1)).toMatchObject({ avatar: 'yuji' });
+    const chosen = lobbyReducer(room(), { type: 'join', person: { ...person('Nobara'), avatar: 'gojo' }, spectate: false });
+    expect(chosen.participants.at(-1)).toMatchObject({ avatar: 'gojo' });
+  });
+
+  it('donne Yuji au spectateur qui passe joueur', () => {
+    const before = room();
+    const next = lobbyReducer(before, { type: 'setSpectating', id: 'Ijichi', spectating: false });
+    expect(next.participants.at(-1)).toMatchObject({ id: 'Ijichi', avatar: 'yuji' });
+  });
+
+  it('laisse le spectateur sans personnage', () => {
+    const next = lobbyReducer(room(), { type: 'join', person: person('Nobara'), spectate: true });
+    expect(next.spectators.at(-1)).toMatchObject({ avatar: null });
+  });
+});
+

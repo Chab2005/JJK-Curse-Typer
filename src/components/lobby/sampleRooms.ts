@@ -57,6 +57,7 @@ export function findSampleRoom(code: string, viewer: string, spectate: boolean):
       practice: '',
       timer: lobby.words > 100 ? 180 : 0,
       errorMode: 'accumulate',
+      gameMode: lobby.bonus ? 'normal' : 'heavenly',
       bonus: lobby.bonus,
       capacity: lobby.capacity,
       visibility: 'public',

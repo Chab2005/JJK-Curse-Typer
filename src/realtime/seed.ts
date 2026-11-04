@@ -1,5 +1,6 @@
 // Course tirée d'un lobby (créé depuis l'accueil ou de démonstration) : les sièges, le texte et les réglages
 // viennent du lobby, jamais du client. Un lobby créé n'a de course qu'une fois lancée par son hôte.
+import { CHARACTERS } from '@/components/shared/characters';
 import { createRace, type RaceState, type RacerSeat } from '@/game/race';
 import type { RaceResult } from '@/game/results';
 import { hashSeed } from '@/game/random';
@@ -31,21 +32,21 @@ export function raceFromLobby(code: string, now: number): SeededRace | null {
   if (!lobby) return null;
   const preferred = stored ? stored.hostId : SAMPLE_CURRENT_USER;
 
+  const seed = hashSeed(`${lobby.code}:${now}`);
   const seats = lobby.participants.map((p): RacerSeat =>
     p.kind === 'human'
       ? { id: p.id, name: p.name, avatar: p.avatar, photo: p.photo ?? null, kind: 'human', level: null }
-      : // Le nom d'un bot est son numéro : chaque écran le traduit (« Cadavre maudit 2 »).
-        { id: p.id, name: String(p.number), avatar: null, kind: 'bot', level: p.level },
+      : // Le nom d'un bot est son numéro : chaque écran le traduit (« Cadavre maudit 2 »). Son personnage change à chaque course.
+        { id: p.id, name: String(p.number), avatar: CHARACTERS[hashSeed(`${seed}:${p.id}`) % CHARACTERS.length].id, kind: 'bot', level: p.level },
   );
   const { settings } = lobby;
-  const seed = hashSeed(`${lobby.code}:${now}`);
   const text = generateText(
     { languages: settings.languages, content: settings.content, words: settings.words, chars: settings.chars, practice: settings.practice },
     seed,
   );
 
   return {
-    race: createRace({ seats, text, mode: settings.errorMode, timerMs: settings.timer * 1000, bonus: settings.bonus, now, seed }),
+    race: createRace({ seats, text, mode: settings.errorMode, timerMs: settings.timer * 1000, bonus: settings.bonus, gameMode: settings.gameMode, now, seed }),
     preferredSeat: seats.some((seat) => seat.id === preferred) ? preferred : null,
     ...(stored && {
       ticketSeat: (ticket: string | undefined) => readSeatTicket(ticket, stored.code, authSecret()),

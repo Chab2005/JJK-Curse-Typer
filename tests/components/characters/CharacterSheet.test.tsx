@@ -92,7 +92,7 @@ describe('CharacterSheet (smoke)', () => {
 
     expect(screen.getByRole('heading', { level: 1, name: 'Satoru Gojo' })).toBeInTheDocument();
     expect(screen.getByText('Limitless')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /Play Satoru/ })).toHaveAttribute('href', '/lobbies');
+    expect(screen.getByRole('button', { name: /Play Satoru/ })).toBeInTheDocument();
   });
 
   it('links to the previous and next files by name, and back to all characters', () => {
@@ -167,13 +167,13 @@ describe('CharacterSheet (smoke)', () => {
     expect(screen.getByRole('heading', { level: 3, name: 'Black Flash' }).closest('li')).toHaveTextContent('150 CE');
   });
 
-  it('places Max Elephant facing left on its ability card with the running animation ready for hover', () => {
+  it('places Max Elephant facing right on its ability card with the running animation ready for hover', () => {
     renderWithIntl(<CharacterSheet character={CHARACTERS.find((c) => c.id === 'megumi')!} />);
     const card = screen.getByRole('heading', { level: 3, name: 'Max Elephant' }).closest('li')!;
     const corner = within(card).getByTestId('shikigami');
     const frames = Array.from(corner.children) as HTMLElement[];
-    expect(frames[0]).toHaveStyle({ transform: 'scaleX(-1)' });
-    expect(frames[1]).toHaveStyle({ transform: 'scaleX(-1)' });
+    expect(frames[0].style.transform).toBe('');
+    expect(frames[1].style.transform).toBe('');
     expect(frames[0].style.background).toContain('max-elephant-idle.png');
     expect(frames[1].style.background).toContain('max-elephant-running.png');
   });

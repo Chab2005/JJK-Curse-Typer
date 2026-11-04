@@ -31,7 +31,7 @@ describe('raceFromLobby', () => {
     clearLobbies();
     const lobby = createLobby((host) => host, { id: SAMPLE_CURRENT_USER, name: SAMPLE_CURRENT_USER, avatar: 'megumi' }, 1000);
     updateLobby(lobby.code, { type: 'addBot', by: SAMPLE_CURRENT_USER, level: 'grade_4' });
-    updateLobby(lobby.code, { type: 'updateSettings', by: SAMPLE_CURRENT_USER, patch: { words: 20, bonus: true } });
+    updateLobby(lobby.code, { type: 'updateSettings', by: SAMPLE_CURRENT_USER, patch: { words: 20, gameMode: 'normal' } });
     updateLobby(lobby.code, { type: 'start', by: SAMPLE_CURRENT_USER });
 
     const { race, preferredSeat } = raceFromLobby(lobby.code, 2000)!;

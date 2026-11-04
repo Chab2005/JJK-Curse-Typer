@@ -130,7 +130,7 @@ describe('abilitySprites', () => {
     for (const key of ['height', 'bottom', 'transform'] as const) {
       expect(runningStyle[key]).toBe(idleStyle[key]);
     }
-    expect(Number(runningStyle.left) + Number(runningStyle.width)).toBe(Number(idleStyle.left) + Number(idleStyle.width));
+    expect(runningStyle.left).toBe(idleStyle.left);
     expect(runningStyle.animation).toContain('640ms steps(8)');
     const { data, info } = await sharp(path.join('public', running.file)).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
     expect([info.width, info.height]).toEqual([running.w * 8, 160]);

@@ -134,7 +134,7 @@ Persistance en BD et pages de résultats hors périmètre ; la boucle doit seule
 | BOT-03 | fait | `bots.ts` (`nextBotStroke`) | — |
 | BOT-04 | partiel | — | Bots identifiés. Bonus pas encore faits. |
 | BOT-05 | fait | `random.ts`, `bots.ts` | — |
-| BON-1 à 8 (BONUS-02 à 04) | partiel | `energy.ts` | Seule la jauge d'énergie existe. Distribution, cibles, puissance et les 3 effets restent à faire. `TypingState.text` est déjà propre à chaque joueur, ce qui permet la carapace. |
+| BON-1 à 8 (BONUS-02 à 04) | fait | `abilities.ts`, `powers.ts`, `effects.ts`, `castPrompt.ts`, `strokeLog.ts` | Capacités par personnage à la place de la carapace, du floutage et du gel : voir section 11. |
 | BONUS-01 | écart assumé | — | Règle du cahier v3 retenue à la place (voir section 6). |
 | TECH-07 | fait | `protocol.ts` (zod) | — |
 | PERF-02 | partiel | `protocol.ts` (`MAX_STROKES_PER_BATCH`) | Le client groupe ses frappes (~150 ms). **Pas de limite de débit côté serveur.** |
@@ -172,3 +172,18 @@ Chaque étape : tests d'abord dans `tests/game/` ou `tests/realtime/`, puis le c
 9. [ ] Room : salon d'attente côté serveur, relance avec les mêmes participants et fermeture par l'hôte (COURSE-11), contrôle de l'hôte côté serveur (SEC-01).
 10. [ ] Room : limite de débit des messages par joueur (PERF-02).
 11. [ ] Résultats envoyés une fois en fin de course, pour la persistance (RES-05).
+
+## 11. Capacités en course
+
+Remplace les trois bonus génériques de la section 6 : chaque personnage a ses techniques (`CHARACTER_ABILITIES`), payées en énergie occulte.
+
+- **Lancement** : Alt + W (technique) ou Alt + Q (territoire) ouvre une fenêtre d'une ligne que le joueur ne peut pas fermer : elle propose un nom et son coût, et le complète selon la frappe. Il y tape le nom de la capacité (`castPrompt.ts`) : les 3 premières frappes sont pardonnées et servent à choisir, ensuite une faute ferme la fenêtre sans rien coûter. Mahoraga demande toute l'incantation. Alt + X scelle le pacte contraignant sans fenêtre. Le champ de frappe garde le focus : c'est lui qui reçoit le nom.
+- **Cible** : au hasard dans la moitié de tête, lanceur exclu (BON-3). La puissance suit le retard du lanceur sur le meneur (BON-4) : durées `seconds` à `maxSeconds`, mots ajoutés.
+- **Parades** : Rouge annule, Cerf rond et Manipulation du ciel renvoient, Lapins d'évasion esquive. Seul Lapins d'évasion protège d'un territoire.
+- **Territoire** : 1000 EP minimum, 10 s, 100 EP drainés et un effet par seconde, techniques bloquées pendant et 10 s après. Maki y est immunisée.
+- **Black Flash** : 0,4 % de chance par nouveau caractère juste. Étourdit 1,5 s un coureur de la moitié de tête, et double l'énergie gagnée par le frappeur pendant 8 s.
+- **Mahoraga** : Megumi quitte la course (`summoned`), Mahoraga repart de sa position comme bot, à 60 MPM, et double sa vitesse à chaque lettre tapée : il finit le texte en moins d'une seconde. La course l'attend comme un humain.
+- **Modes** (`GameMode`) : `normal`, `unlimitedCe`, `noDomain`, `heavenly` (aucune énergie, aucune capacité, aucun Black Flash ; `bonus` à faux).
+- **Bornes** (BON-7) : une capacité ne franchit jamais la ligne, elle s'arrête au début du dernier mot.
+- **Synchronisation** : le client numérote ses frappes (`strokeLog.ts`). Quand une capacité change un coureur, la room lui envoie `sync` avec sa saisie et `acked` ; il rejoue dessus ce qu'elle n'a pas encore reçu. Une frappe pendant un étourdissement est ignorée des deux côtés.
+- **Limite connue** : la room vérifie le coût, l'état et le mode, mais pas que le nom a vraiment été tapé (la frappe du nom reste dans le client).

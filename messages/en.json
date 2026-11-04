@@ -271,7 +271,7 @@
           },
           "mahoraga": {
             "name": "Mahoraga",
-            "effect": "Megumi gives up his chance to win to summon it. Mahoraga races as a bot and gets faster the longer it stays."
+            "effect": "Megumi gives up his chance to win to summon it. Mahoraga races as a bot from where Megumi stood, and doubles its speed with every letter it types."
           }
         }
       },
@@ -378,7 +378,7 @@
     },
     "charge": {
       "title": "Charge your cursed energy",
-      "text": "Every correct character fills the bar, faster on a flawless streak. Energy pays for your techniques and your domain.",
+      "text": "Every correct character fills the bar, faster on a flawless streak. Energy pays for your techniques and your domain. Now and then, a correct key lands a Black Flash: it stuns someone up front and doubles your charge for a few seconds.",
       "label": "Cursed energy",
       "max": "/ {max, number} EP",
       "status": {
@@ -407,7 +407,7 @@
     "rules": {
       "host": {
         "title": "The host decides",
-        "text": "Before the race, the host can turn techniques off for a pure keyboard race."
+        "text": "Before the race, the host picks the mode: Normal, Unlimited CE, No Domain, or Heavenly Restricted for a pure keyboard race."
       },
       "finish": {
         "title": "Everyone finishes",
@@ -430,7 +430,7 @@
     "tags": {
       "max": "Max {max, number} EP",
       "streak": "Streak = faster charge",
-      "top3": "Target: the top 3",
+      "top3": "Target: the top half",
       "behind": "Stronger when behind",
       "leaders": "Leaders have one too",
       "domainMin": "From {min, number} EP",
@@ -444,7 +444,7 @@
     "rulesTitle": "Shared rules",
     "controls": {
       "title": "Controls",
-      "intro": "Hold {key} and press a key. For a domain or a technique, then type its exact name to cast it.",
+      "intro": "Hold {key} and press a key. For a domain or a technique, then type its exact name to cast it. Your first 3 keys are forgiven and only pick the ability: after that, one mistake and the cast fails, at no CE cost.",
       "warning": "Make sure none of your macros or system shortcuts use {combos}: they would take over and the site would never receive the keys.",
       "domain": {
         "label": "Open a domain",
@@ -678,10 +678,6 @@
         "accumulate": "Mistakes stay in the text and cost points.",
         "block": "You can't go on until you type the right character."
       },
-      "bonus": "Techniques",
-      "bonusToggle": "Enable techniques",
-      "bonusOn": "Enabled",
-      "bonusOff": "Disabled",
       "capacity": "Capacity",
       "capacityHint": "Between {min} and {max} participants.",
       "capacityValue": "{count} participants",
@@ -695,12 +691,31 @@
         "public": "Listed in the lobby list. Anyone can join.",
         "code": "Hidden from the lobby list. Join with the code or an invite link.",
         "private": "Hidden from the lobby list. Join only with an invite link."
+      },
+      "gameMode": "Game mode",
+      "gameModes": {
+        "normal": "Normal",
+        "unlimitedCe": "Unlimited CE",
+        "noDomain": "No Domain",
+        "heavenly": "Heavenly Restricted"
+      },
+      "gameModeHints": {
+        "normal": "Cursed energy, techniques, domains and Black Flash.",
+        "unlimitedCe": "Everyone starts full and nothing costs CE. Maki still has none.",
+        "noDomain": "Techniques stay on, but nobody can open a domain.",
+        "heavenly": "A pure keyboard race: no cursed energy and nothing that uses it."
       }
     },
     "guest": {
       "title": "Choose a name",
       "text": "Pick an exorcist name to join this lobby.",
       "submit": "Join the lobby"
+    },
+    "character": {
+      "title": "Your exorcist",
+      "change": "Change",
+      "modalTitle": "Choose your exorcist",
+      "close": "Close"
     }
   },
   "Leaderboard": {
@@ -880,18 +895,13 @@
       "full": "Full energy!"
     },
     "hud": {
-      "wpm": "WPM",
-      "accuracy": "Accuracy",
-      "accuracyValue": "{value}%",
-      "position": "Position",
-      "positionValue": "{rank}/{total}",
-      "elapsed": "Time",
       "remaining": "Time left",
       "abandon": "Abandon"
     },
     "typing": {
       "label": "Type the text",
-      "focus": "Click here to type"
+      "focus": "Click here to type",
+      "stunned": "Stunned"
     },
     "spectator": {
       "title": "Spectator mode",
@@ -902,7 +912,8 @@
       "finished": "Finished",
       "timeout": "Time's up",
       "stopped": "Stopped",
-      "abandoned": "Abandoned"
+      "abandoned": "Abandoned",
+      "summoned": "Mahoraga summoned"
     },
     "summary": {
       "finished": "Finished!",
@@ -922,7 +933,8 @@
       "wpmValue": "{value} WPM",
       "state": "Status",
       "you": "(you)",
-      "backToLobby": "Back to the lobby"
+      "backToLobby": "Back to the lobby",
+      "summoned": "Mahoraga takes your place"
     },
     "leave": {
       "title": "Leave the race?",
@@ -935,7 +947,54 @@
       "body": "You stop racing, but you can keep watching the others.",
       "confirm": "Abandon"
     },
-    "footer": "Stay focused, exorcist."
+    "footer": "Stay focused, exorcist.",
+    "abilities": {
+      "domain": "Domain",
+      "technique": "Technique",
+      "vow": "Binding Vow",
+      "marks": {
+        "stunned": "Stunned",
+        "lagging": "Typing delayed",
+        "sealed": "Sealed",
+        "untouchable": "Untouchable",
+        "warded": "Ward ready",
+        "boosted": "CE boosted",
+        "domain": "Domain open"
+      }
+    },
+    "cast": {
+      "title": "Type your ability",
+      "costValue": "{cost, number} CE",
+      "costAll": "All CE · min {cost, number}",
+      "domainCost": "From {cost, number} CE",
+      "mahoraga": "With this treasure, I summon...  Eight-Handled Sword Divergent Sila Divine General Mahoraga",
+      "failed": "Cast failed: wrong name",
+      "blocked": {
+        "mode": "This mode doesn’t allow it",
+        "none": "You have no such ability",
+        "energy": "Not enough cursed energy",
+        "stunned": "You are stunned",
+        "sealed": "Your techniques are sealed",
+        "locked": "Your technique is burnt out",
+        "domainOpen": "Your domain is open",
+        "vowed": "You gave up your technique",
+        "chain": "Cast Cleave then Dismantle first",
+        "notRacing": "The race isn’t running",
+        "noTarget": "No one left to hit"
+      }
+    },
+    "notices": {
+      "self": "{name} uses {ability}",
+      "hit": "{name} hits {target} with {ability}",
+      "dodged": "{target} dodges {ability}",
+      "deflected": "{target} deflects {ability}",
+      "reflected": "{target} sends {ability} back at {name}",
+      "domainOpen": "{name}: {domain}!",
+      "domainClose": "{domain} closes",
+      "blackFlash": "Black Flash! {name} strikes {target}",
+      "vow": "{name} makes a Binding Vow",
+      "summon": "{name} summons Mahoraga!"
+    }
   },
   "Auth": {
     "username": "Username",

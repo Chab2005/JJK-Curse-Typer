@@ -184,3 +184,73 @@ describe('RaceRoom avec tickets (lobby créé)', () => {
     expect(joinWith('guest-bbbbbbbb', 'seat:me').last('welcome')?.you).toBe('me');
   });
 });
+
+describe('RaceRoom capacités (BON-*)', () => {
+  const POWER_SEATS: RacerSeat[] = [
+    { id: 'me', name: 'Me', avatar: 'nobara', kind: 'human', level: null },
+    { id: 'rival', name: 'Rival', avatar: 'gojo', kind: 'human', level: null },
+  ];
+  const LONG = 'abc def ghi jkl mno pqr';
+
+  function powerRoom() {
+    room = new RaceRoom(createRace({ seats: POWER_SEATS, text: LONG, mode: 'accumulate', timerMs: 0, bonus: true, gameMode: 'unlimitedCe', now: T0, seed: 1 }), 'me', () => now);
+    const me = join('guest-aaaaaaaa');
+    const rival = join('guest-bbbbbbbb');
+    now = START + 1000;
+    room.tick();
+    return { me, rival };
+  }
+
+  it('prévient la cible et annonce le coup à tous au tick suivant', () => {
+    const { me, rival } = powerRoom();
+    send(me, { type: 'cast', ability: 'resonance' });
+    expect(rival.last('sync')?.powers.stun).toMatchObject({ from: 1000 });
+
+    now += 200;
+    room.tick();
+    const notice = { kind: 'cast', by: 'me', ability: 'resonance', target: 'rival', outcome: 'hit' };
+    expect(me.last('tick')?.notices).toEqual([notice]);
+    expect(rival.last('tick')?.notices).toEqual([notice]);
+
+    now += 200;
+    room.tick();
+    expect(me.last('tick')?.notices).toBeUndefined();
+    expect(me.last('tick')?.standings.find((s) => s.id === 'rival')?.marks).toContain('stunned');
+  });
+
+  it('dit au joueur pourquoi son lancement est refusé', () => {
+    const { me } = powerRoom();
+    send(me, { type: 'cast', ability: 'blue' });
+    expect(me.last('castRefused')).toEqual({ type: 'castRefused', ability: 'blue', reason: 'none' });
+  });
+
+  it('ignore une capacité inconnue, et un spectateur', () => {
+    const { me } = powerRoom();
+    send(me, { type: 'cast', ability: 'hollowNuke' });
+    expect(me.last('castRefused')).toBeUndefined();
+    const spectator = join('guest-cccccccc');
+    send(spectator, { type: 'cast', ability: 'resonance' });
+    expect(spectator.last('castRefused')).toBeUndefined();
+  });
+
+  it('confirme les frappes reçues dans la prochaine synchronisation', () => {
+    const { me, rival } = powerRoom();
+    send(rival, { type: 'keys', strokes: [{ key: 'a', t: 500 }, { key: 'b', t: 600 }], seq: 2 });
+    send(me, { type: 'cast', ability: 'hairpin' });
+    expect(rival.last('sync')).toMatchObject({ acked: 2, typing: { input: 'ab' } });
+    expect(rival.last('sync')?.typing.text.length).toBeGreaterThan(LONG.length);
+  });
+
+  it('annonce à tous le siège de Mahoraga', () => {
+    const seats: RacerSeat[] = [{ ...POWER_SEATS[0], avatar: 'megumi' }, POWER_SEATS[1]];
+    room = new RaceRoom(createRace({ seats, text: LONG, mode: 'accumulate', timerMs: 0, bonus: true, gameMode: 'unlimitedCe', now: T0, seed: 1 }), 'me', () => now);
+    const me = join('guest-aaaaaaaa');
+    const rival = join('guest-bbbbbbbb');
+    now = START + 1000;
+    room.tick();
+    send(me, { type: 'cast', ability: 'mahoraga' });
+    now += 200;
+    room.tick();
+    expect(rival.last('seats')?.seats.map((s) => s.id)).toEqual(['me', 'rival', 'mahoraga:me']);
+  });
+});

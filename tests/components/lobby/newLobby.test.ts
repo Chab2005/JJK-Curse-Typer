@@ -29,8 +29,8 @@ describe('newLobbyRoom', () => {
     expect(room.settings).toEqual(DEFAULT_LOBBY_SETTINGS);
   });
 
-  it('a des réglages par défaut en vrai texte FR + EN, sans timer ni bonus, privé (LOB-4)', () => {
-    expect(DEFAULT_LOBBY_SETTINGS).toMatchObject({ languages: ['en', 'fr'], content: 'sentences', words: 50, timer: 0, errorMode: 'accumulate', bonus: false, capacity: 10, visibility: 'private' });
+  it('a des réglages par défaut en vrai texte FR + EN, en mode normal, sans timer, privé (LOB-4)', () => {
+    expect(DEFAULT_LOBBY_SETTINGS).toMatchObject({ languages: ['en', 'fr'], content: 'sentences', words: 50, timer: 0, errorMode: 'accumulate', gameMode: 'normal', bonus: true, capacity: 10, visibility: 'private' });
   });
 });
 
@@ -58,3 +58,10 @@ describe('viewLobby', () => {
     expect(viewLobby(room, { id: '', name: '', avatar: null }, false)).toBe(room);
   });
 });
+
+describe('hôte sans personnage', () => {
+  it('part avec Yuji', () => {
+    expect(newLobbyRoom('ABC-DEF', 'Salon', { id: 'a', name: 'a', avatar: null }).participants[0]).toMatchObject({ avatar: 'yuji' });
+  });
+});
+
