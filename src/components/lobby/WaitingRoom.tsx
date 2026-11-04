@@ -138,6 +138,7 @@ export default function WaitingRoom({
 
       <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_380px]">
         <div className="flex flex-col gap-10">
+          {me?.kind === 'human' && <CharacterPicker value={me.avatar} onPick={(character) => apply({ type: 'setCharacter', id: viewerId, character })} />}
           <ParticipantList
             room={room}
             viewerId={viewerId}
@@ -152,7 +153,6 @@ export default function WaitingRoom({
               setAnnouncement(t('announce.newHost', { name: participantName(participant) }));
             }}
           />
-          {me?.kind === 'human' && <CharacterPicker value={me.avatar} onPick={(character) => apply({ type: 'setCharacter', id: viewerId, character })} />}
           <SpectatorList spectators={room.spectators} viewerId={viewerId} isHost={isHost} onKick={kick} />
         </div>
 

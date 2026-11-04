@@ -25,7 +25,14 @@ async function startRace(page: Page, timer?: string) {
   await dialog.getByRole('button', { name: 'Save' }).click();
   await expect(dialog).toBeHidden();
 
-  await page.getByRole('button', { name: 'Megumi Fushiguro' }).click();
+  // Choisir un exorciste ne déplace pas la liste en dessous.
+  const list = page.getByRole('heading', { name: /^Exorcists/ });
+  const listTop = () => list.evaluate((el) => el.getBoundingClientRect().top + window.scrollY);
+  const before = await listTop();
+  await page.getByRole('button', { name: 'Choose' }).click();
+  await page.getByRole('dialog').getByRole('button', { name: 'Megumi Fushiguro' }).click();
+  await expect(page.getByRole('region', { name: 'Your exorcist' }).getByText('Megumi Fushiguro')).toBeVisible();
+  expect(await listTop()).toBe(before);
   await page.getByRole('button', { name: 'Add a bot' }).click();
   await page.getByRole('button', { name: 'Start the race' }).click();
   await page.waitForURL(/\/race$/);
@@ -103,14 +110,18 @@ test('opens a domain', async ({ page }, testInfo) => {
   await expect(page.getByRole('dialog')).toBeHidden();
 });
 
-test('Play on a character page lands in a public lobby with that character', async ({ page }) => {
+test('Play on a character page lands in a public lobby with that character', async ({ page }, testInfo) => {
   await register(page, 'play');
   await page.goto('/characters/gojo');
   await page.getByRole('button', { name: /Play Satoru/ }).click();
   await page.waitForURL(/\/lobby\/[A-Z0-9]{3}-[A-Z0-9]{3}$/);
 
-  await expect(page.getByRole('button', { name: 'Satoru Gojo' })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByRole('region', { name: 'Your exorcist' }).getByText('Satoru Gojo')).toBeVisible();
   await expect(page.getByRole('definition').filter({ hasText: /^Public$/ })).toBeVisible();
+  await page.screenshot({ path: testInfo.outputPath('lobby.png') });
+  await page.getByRole('button', { name: 'Change' }).click();
+  await page.waitForTimeout(300);
+  await page.screenshot({ path: testInfo.outputPath('lobby-modal.png') });
 });
 
 test('shows the time left to the right of the energy bar', async ({ page }, testInfo) => {

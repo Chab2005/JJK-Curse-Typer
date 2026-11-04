@@ -713,7 +713,12 @@
     },
     "character": {
       "title": "Votre exorciste",
-      "hint": "Votre exorciste décide de vos techniques et de votre territoire pour la course."
+      "hint": "Choisissez un exorciste : il décide de vos techniques et de votre territoire pour la course.",
+      "none": "Aucun exorciste choisi",
+      "choose": "Choisir",
+      "change": "Changer",
+      "modalTitle": "Choisissez votre exorciste",
+      "close": "Fermer"
     }
   },
   "Leaderboard": {

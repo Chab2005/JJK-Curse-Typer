@@ -312,7 +312,7 @@ describe('WaitingRoom of a created lobby (realtime)', () => {
     renderWithIntl(<WaitingRoom initialRoom={joined} viewerId="Nobara" live character="sukuna" />);
 
     await waitFor(() => expect(lobbyActionsMock.updateLobbyAction).toHaveBeenCalledWith(joined.code, { type: 'setCharacter', id: 'Nobara', character: 'sukuna' }));
-    expect(screen.getByRole('button', { name: 'Ryomen Sukuna' })).toHaveAttribute('aria-pressed', 'true');
+    expect(within(screen.getByRole('region', { name: 'Your exorcist' })).getByText('Ryomen Sukuna')).toBeInTheDocument();
   });
 });
 
