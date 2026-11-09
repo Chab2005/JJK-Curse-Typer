@@ -24,7 +24,11 @@ interface Entry {
 /** Reçoit le lobby après chaque changement, ou `null` quand il ferme. */
 export type LobbyListener = (room: LobbyRoom | null) => void;
 
-const shared = globalThis as { __createdLobbies?: Map<string, Entry>; __lobbyListeners?: Map<string, Set<LobbyListener>> };
+/** Reçoit le code d'un lobby qui vient de sortir du registre (vidé ou expiré). */
+export type LobbyClosedListener = (code: string) => void;
+
+const shared = globalThis as { __createdLobbies?: Map<string, Entry>; __lobbyListeners?: Map<string, Set<LobbyListener>>; __lobbyClosed?: Set<LobbyClosedListener> };
+const closedListeners = (): Set<LobbyClosedListener> => (shared.__lobbyClosed ??= new Set());
 const store = (): Map<string, Entry> => (shared.__createdLobbies ??= new Map());
 const listeners = (): Map<string, Set<LobbyListener>> => (shared.__lobbyListeners ??= new Map());
 
@@ -34,12 +38,23 @@ function publish(code: string, room: LobbyRoom | null) {
   for (const listener of [...(listeners().get(code) ?? [])]) listener(room);
 }
 
+/** Abonne `listener` à la fermeture des lobbies (SALLE-04 : leurs liens d'invitation tombent avec eux) ; renvoie de quoi se désabonner. */
+export function onLobbyClosed(listener: LobbyClosedListener): () => void {
+  closedListeners().add(listener);
+  return () => void closedListeners().delete(listener);
+}
+
+function announceClosed(code: string) {
+  for (const listener of [...closedListeners()]) listener(code);
+}
+
 function dropExpired(now: number): Map<string, Entry> {
   const lobbies = store();
   for (const [code, entry] of lobbies) {
     if (now - entry.createdAt <= LOBBY_TTL_MS) continue;
     lobbies.delete(code);
     publish(code, null);
+    announceClosed(code);
   }
   return lobbies;
 }
@@ -67,16 +82,16 @@ export function createLobby(name: (host: string) => string, host: Spectator, now
 }
 
 /** Lobby `code` tel que `viewer` le verra en entrant : un lobby créé, sinon un lobby de démonstration ; `null` s'il n'existe pas. */
-export function findLobby(code: string, viewer: string | Spectator, spectate: boolean): LobbyRoom | null {
+export function findLobby(code: string, viewer: string | Spectator, spectate: boolean, now = Date.now()): LobbyRoom | null {
   const person = typeof viewer === 'string' ? { id: viewer, name: viewer, avatar: null } : viewer;
-  const entry = store().get(normalize(code));
+  const entry = dropExpired(now).get(normalize(code));
   if (entry) return viewLobby(entry.room, person, spectate);
   return showSampleData() ? findSampleRoom(code, person.id, spectate) : null;
 }
 
 /** Lobby créé tel qu'enregistré, sans le visiteur ; `null` pour un lobby de démonstration ou inconnu. */
-export function storedLobby(code: string): LobbyRoom | null {
-  return store().get(normalize(code))?.room ?? null;
+export function storedLobby(code: string, now = Date.now()): LobbyRoom | null {
+  return dropExpired(now).get(normalize(code))?.room ?? null;
 }
 
 /** Lobbies créés rendus publics, pour la liste (LOB-2) ; les lobbies à code ou privés n'y sont jamais. */
@@ -102,6 +117,7 @@ export function updateLobby(code: string, action: LobbyAction): LobbyRoom | null
   if (isEmpty(next)) {
     store().delete(key);
     publish(key, null);
+    announceClosed(key);
   } else {
     entry.room = next;
     publish(key, next);

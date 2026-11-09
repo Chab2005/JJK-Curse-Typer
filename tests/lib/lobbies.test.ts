@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { viewerRole } from '@/components/lobby/lobbyRoom';
-import { LOBBY_TTL_MS, clearLobbies, createLobby, findLobby, findQuickLobby, listPublicLobbies, parseLobbyAction, storedLobby, subscribeLobby, updateLobby } from '@/lib/lobbies';
+import { LOBBY_TTL_MS, clearLobbies, createLobby, findLobby, findQuickLobby, listPublicLobbies, onLobbyClosed, parseLobbyAction, storedLobby, subscribeLobby, updateLobby } from '@/lib/lobbies';
 
 const HOST = { id: 'Megumi_Shadows', name: 'Megumi_Shadows', avatar: 'megumi' as const };
 const name = (host: string) => `Lobby de ${host}`;
@@ -9,13 +9,13 @@ beforeEach(() => clearLobbies());
 
 describe('createLobby / findLobby', () => {
   it('garde le nouveau lobby en mémoire et le retrouve par son code, même en minuscules', () => {
-    const room = createLobby(name, HOST, 1000);
+    const room = createLobby(name, HOST, Date.now());
     expect(room.name).toBe('Lobby de Megumi_Shadows');
     expect(findLobby(room.code.toLowerCase(), HOST.id, false)).toEqual(room);
   });
 
   it('fait rejoindre un autre visiteur sans modifier le lobby enregistré', () => {
-    const room = createLobby(name, HOST, 1000);
+    const room = createLobby(name, HOST, Date.now());
     expect(viewerRole(findLobby(room.code, 'Yuji', false)!, 'Yuji')).toBe('player');
     expect(findLobby(room.code, HOST.id, false)!.participants).toHaveLength(1);
   });
@@ -26,19 +26,20 @@ describe('createLobby / findLobby', () => {
   });
 
   it('ne reprend jamais le code d’un lobby de démonstration', () => {
-    for (let i = 0; i < 30; i++) expect(findLobby(createLobby(name, HOST, 1000).code, HOST.id, false)?.hostId).toBe(HOST.id);
+    for (let i = 0; i < 30; i++) expect(findLobby(createLobby(name, HOST, Date.now()).code, HOST.id, false)?.hostId).toBe(HOST.id);
   });
 
   it('oublie les lobbies créés depuis plus de 24 h', () => {
-    const old = createLobby(name, HOST, 1000);
-    createLobby(name, HOST, 1000 + LOBBY_TTL_MS + 1);
-    expect(findLobby(old.code, HOST.id, false)).toBeNull();
+    const old = createLobby(name, HOST, Date.now());
+    const later = Date.now() + LOBBY_TTL_MS + 1;
+    createLobby(name, HOST, later);
+    expect(findLobby(old.code, HOST.id, false, later)).toBeNull();
   });
 });
 
 describe('storedLobby', () => {
   it('renvoie le lobby créé tel qu’enregistré, sans y ajouter de visiteur', () => {
-    const room = createLobby(name, HOST, 1000);
+    const room = createLobby(name, HOST, Date.now());
     expect(storedLobby(room.code.toLowerCase())).toEqual(room);
   });
 
@@ -50,14 +51,14 @@ describe('storedLobby', () => {
 
 describe('findQuickLobby', () => {
   const open = (players: number) => {
-    const room = createLobby(name, HOST, 1000);
+    const room = createLobby(name, HOST, Date.now());
     updateLobby(room.code, { type: 'updateSettings', by: HOST.id, patch: { visibility: 'public' } });
     for (let i = 1; i < players; i++) updateLobby(room.code, { type: 'addBot', by: HOST.id, level: 'grade_1' });
     return room.code;
   };
 
   it('renvoie null sans lobby public ouvert', () => {
-    createLobby(name, HOST, 1000);
+    createLobby(name, HOST, Date.now());
     expect(findQuickLobby(1000)).toBeNull();
   });
 
@@ -69,15 +70,15 @@ describe('findQuickLobby', () => {
 
   it('ignore les lobbies expirés', () => {
     open(2);
-    expect(findQuickLobby(1000 + LOBBY_TTL_MS + 1)).toBeNull();
+    expect(findQuickLobby(Date.now() + LOBBY_TTL_MS + 1)).toBeNull();
   });
 });
 
 describe('listPublicLobbies (LOB-2)', () => {
   it('ne liste que les lobbies créés rendus publics', () => {
-    const hidden = createLobby(name, HOST, 1000);
-    const listed = createLobby(name, HOST, 1000);
-    const byCode = createLobby(name, HOST, 1000);
+    const hidden = createLobby(name, HOST, Date.now());
+    const listed = createLobby(name, HOST, Date.now());
+    const byCode = createLobby(name, HOST, Date.now());
     updateLobby(listed.code, { type: 'updateSettings', by: HOST.id, patch: { visibility: 'public' } });
     updateLobby(byCode.code, { type: 'updateSettings', by: HOST.id, patch: { visibility: 'code' } });
 
@@ -87,21 +88,21 @@ describe('listPublicLobbies (LOB-2)', () => {
   });
 
   it('oublie les lobbies expirés', () => {
-    const room = createLobby(name, HOST, 1000);
+    const room = createLobby(name, HOST, Date.now());
     updateLobby(room.code, { type: 'updateSettings', by: HOST.id, patch: { visibility: 'public' } });
-    expect(listPublicLobbies(1000 + LOBBY_TTL_MS + 1)).toEqual([]);
+    expect(listPublicLobbies(Date.now() + LOBBY_TTL_MS + 1)).toEqual([]);
   });
 });
 
 describe('updateLobby', () => {
   it('rejoue l’action de l’hôte sur le lobby enregistré (LOB-8)', () => {
-    const room = createLobby(name, HOST, 1000);
+    const room = createLobby(name, HOST, Date.now());
     updateLobby(room.code, { type: 'addBot', by: HOST.id, level: 'grade_1' });
     expect(findLobby(room.code, HOST.id, false)!.participants.map((p) => p.id)).toEqual([HOST.id, 'bot-1']);
   });
 
   it('refuse les actions d’hôte venant d’un autre participant', () => {
-    const room = createLobby(name, HOST, 1000);
+    const room = createLobby(name, HOST, Date.now());
     updateLobby(room.code, { type: 'addBot', by: 'Yuji', level: 'grade_1' });
     expect(findLobby(room.code, HOST.id, false)!.participants).toHaveLength(1);
   });
@@ -111,13 +112,13 @@ describe('updateLobby', () => {
   });
 
   it('enregistre un nouveau venu : tout le monde le voit ensuite', () => {
-    const room = createLobby(name, HOST, 1000);
+    const room = createLobby(name, HOST, Date.now());
     updateLobby(room.code, { type: 'join', person: { id: 'Yuji', name: 'Yuji', avatar: null }, spectate: false });
     expect(storedLobby(room.code)!.participants.map((p) => p.id)).toEqual([HOST.id, 'Yuji']);
   });
 
   it('oublie le lobby quand le dernier humain le quitte', () => {
-    const room = createLobby(name, HOST, 1000);
+    const room = createLobby(name, HOST, Date.now());
     updateLobby(room.code, { type: 'addBot', by: HOST.id, level: 'grade_1' });
     updateLobby(room.code, { type: 'leave', id: HOST.id });
     expect(storedLobby(room.code)).toBeNull();
@@ -126,7 +127,7 @@ describe('updateLobby', () => {
 
 describe('subscribeLobby', () => {
   it('prévient les abonnés de chaque changement, puis de la fermeture du lobby', () => {
-    const room = createLobby(name, HOST, 1000);
+    const room = createLobby(name, HOST, Date.now());
     const listener = vi.fn();
     const unsubscribe = subscribeLobby(room.code.toLowerCase(), listener);
 
@@ -186,5 +187,39 @@ describe('parseLobbyAction', () => {
   it('rejette les actions inconnues', () => {
     expect(parseLobbyAction({ type: 'deleteEverything' }, HOST.id)).toBeNull();
     expect(parseLobbyAction('nope', HOST.id)).toBeNull();
+  });
+});
+
+describe('fermeture des lobbies (SALLE-04)', () => {
+  it('prévient les écouteurs de fermeture quand le dernier humain part', () => {
+    const closed = vi.fn();
+    const stop = onLobbyClosed(closed);
+    const room = createLobby(name, HOST, Date.now());
+    updateLobby(room.code, { type: 'leave', id: HOST.id });
+    expect(closed).toHaveBeenCalledWith(room.code);
+    stop();
+  });
+
+  it('prévient aussi à l’expiration, et ne renvoie plus un lobby expiré à la lecture', () => {
+    const closed = vi.fn();
+    const stop = onLobbyClosed(closed);
+    const room = createLobby(name, HOST, 1000);
+    expect(storedLobby(room.code, 1000 + LOBBY_TTL_MS + 1)).toBeNull();
+    expect(closed).toHaveBeenCalledWith(room.code);
+    stop();
+  });
+
+  it('ne laisse pas ouvrir par findLobby un lobby expiré', () => {
+    const room = createLobby(name, HOST, 1000);
+    expect(findLobby(room.code, HOST.id, false, 1000 + LOBBY_TTL_MS + 1)).toBeNull();
+  });
+
+  it('ne prévient pas tant que le lobby vit', () => {
+    const closed = vi.fn();
+    const stop = onLobbyClosed(closed);
+    const room = createLobby(name, HOST, Date.now());
+    updateLobby(room.code, { type: 'addBot', by: HOST.id, level: 'grade_4' });
+    expect(closed).not.toHaveBeenCalled();
+    stop();
   });
 });

@@ -29,7 +29,7 @@ describe('raceFromLobby', () => {
 
   it('prépare aussi la course d’un lobby créé, avec ses bots et ses réglages', () => {
     clearLobbies();
-    const lobby = createLobby((host) => host, { id: SAMPLE_CURRENT_USER, name: SAMPLE_CURRENT_USER, avatar: 'megumi' }, 1000);
+    const lobby = createLobby((host) => host, { id: SAMPLE_CURRENT_USER, name: SAMPLE_CURRENT_USER, avatar: 'megumi' }, Date.now());
     updateLobby(lobby.code, { type: 'addBot', by: SAMPLE_CURRENT_USER, level: 'grade_4' });
     updateLobby(lobby.code, { type: 'updateSettings', by: SAMPLE_CURRENT_USER, patch: { words: 20, gameMode: 'normal' } });
     updateLobby(lobby.code, { type: 'start', by: SAMPLE_CURRENT_USER });
@@ -43,7 +43,7 @@ describe('raceFromLobby', () => {
 
   it('n’ajoute pas l’utilisateur de démonstration à un lobby créé par un vrai compte', () => {
     clearLobbies();
-    const lobby = createLobby((host) => host, { id: 'chab', name: 'Chab', avatar: 'yuji' }, 1000);
+    const lobby = createLobby((host) => host, { id: 'chab', name: 'Chab', avatar: 'yuji' }, Date.now());
     updateLobby(lobby.code, { type: 'addBot', by: 'chab', level: 'grade_4' });
     updateLobby(lobby.code, { type: 'start', by: 'chab' });
 
@@ -54,7 +54,7 @@ describe('raceFromLobby', () => {
 
   it('donne à chaque joueur sa photo téléversée, jamais aux bots (PROF-5)', () => {
     clearLobbies();
-    const lobby = createLobby((host) => host, { id: 'chab', name: 'Chab', avatar: null, photo: '/api/avatar/chab?v=3' }, 1000);
+    const lobby = createLobby((host) => host, { id: 'chab', name: 'Chab', avatar: null, photo: '/api/avatar/chab?v=3' }, Date.now());
     updateLobby(lobby.code, { type: 'addBot', by: 'chab', level: 'grade_4' });
     updateLobby(lobby.code, { type: 'start', by: 'chab' });
 
@@ -64,14 +64,14 @@ describe('raceFromLobby', () => {
 
   it('ne prépare la course d’un lobby créé qu’une fois lancée par l’hôte', () => {
     clearLobbies();
-    const lobby = createLobby((host) => host, { id: 'chab', name: 'Chab', avatar: null }, 1000);
+    const lobby = createLobby((host) => host, { id: 'chab', name: 'Chab', avatar: null }, Date.now());
     updateLobby(lobby.code, { type: 'addBot', by: 'chab', level: 'grade_4' });
     expect(raceFromLobby(lobby.code, 2000)).toBeNull();
   });
 
   it('place chacun d’après son ticket et rouvre le salon à la fin de la course', () => {
     clearLobbies();
-    const lobby = createLobby((host) => host, { id: 'chab', name: 'Chab', avatar: null }, 1000);
+    const lobby = createLobby((host) => host, { id: 'chab', name: 'Chab', avatar: null }, Date.now());
     updateLobby(lobby.code, { type: 'addBot', by: 'chab', level: 'grade_4' });
     updateLobby(lobby.code, { type: 'start', by: 'chab' });
 
