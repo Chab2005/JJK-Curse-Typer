@@ -166,7 +166,7 @@ function summon(race: RaceState, casterId: string, { t }: Context): RaceState {
   const seat: RacerSeat = { id: `mahoraga:${casterId}`, name: 'Mahoraga', avatar: null, kind: 'bot', level: null, summon: true };
   const { text, mode } = caster.typing;
   const typing = moveTo(startTyping(text, mode), caster.typing.input.length);
-  const bot = createBot({ wpm: MAHORAGA_START_WPM, errorRate: MAHORAGA_ERROR_RATE }, caster.bot.seed);
+  const bot = createBot({ wpm: MAHORAGA_START_WPM, errorRate: MAHORAGA_ERROR_RATE, steady: true }, caster.bot.seed);
   const mahoraga: Racer = {
     ...caster,
     seat,

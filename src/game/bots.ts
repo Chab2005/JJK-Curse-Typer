@@ -11,6 +11,8 @@ export interface BotProfile {
   wpm: number;
   /** Probabilité de faute à chaque caractère (BOT-4). */
   errorRate: number;
+  /** Pas de mots difficiles ni d'hésitations : Mahoraga suit sa propre courbe de vitesse. */
+  steady?: boolean;
 }
 
 export const BOT_PROFILES: Record<BotLevel, BotProfile> = {
@@ -38,6 +40,28 @@ const REACTION = { min: 300, spread: 400 };
 /** Temps perdu à remarquer une faute avant de la corriger. */
 const ERROR_PAUSE = 250;
 const LETTERS = 'abcdefghijklmnopqrstuvwxyz';
+
+/** Une fois sur vingt, le bot marque une pause avant un nouveau mot : hésitation seedée (BOT-02). */
+const HESITATION = { chance: 0.05, min: 250, spread: 600 };
+
+/** Mot du texte qui contient la position `index` (les espaces sont de petits mots vides). */
+function wordAt(text: string, index: number): string {
+  const start = text.lastIndexOf(' ', index - 1) + 1;
+  const end = text.indexOf(' ', index);
+  return text.slice(start, end === -1 ? undefined : end);
+}
+
+/**
+ * Difficulté d'un mot pour un bot (BOT-02) : 1 pour un mot court en minuscules, plus pour chaque lettre au-delà de cinq,
+ * pour la ponctuation, les chiffres et les majuscules. Le temps de frappe de chaque touche du mot est multiplié par ce score.
+ */
+export function wordDifficulty(word: string): number {
+  const length = [...word].filter((char) => /\p{L}|\d/u.test(char)).length;
+  const punctuation = (word.match(/[^\p{L}\d\s]/gu) ?? []).length;
+  const digits = (word.match(/\d/g) ?? []).length;
+  const capitals = (word.match(/\p{Lu}/gu) ?? []).length;
+  return Math.min(3, 1 + 0.06 * Math.max(0, length - 5) + 0.2 * punctuation + 0.25 * digits + 0.15 * capitals);
+}
 
 const fluctuate = (profile: BotProfile, roll: number) => Math.round(profile.wpm * (0.75 + 0.5 * roll));
 
@@ -71,7 +95,10 @@ export function nextBotStroke(bot: BotState, typing: TypingState): { bot: BotSta
   }
 
   const wpm = key === ' ' ? fluctuate(bot.profile, random.next()) : bot.wpm;
-  const interval = (60_000 / (wpm * CHARS_PER_WORD)) * (0.6 + 0.8 * random.next());
+  const difficulty = bot.profile.steady ? 1 : wordDifficulty(wordAt(typing.text, typing.input.length));
+  const interval = (60_000 / (wpm * CHARS_PER_WORD)) * (0.6 + 0.8 * random.next()) * difficulty;
+  // Hésitation avant un nouveau mot : le bot reprend son souffle, plus ou moins longtemps.
+  if (!bot.profile.steady && typing.input.length > 0 && typing.text[typing.input.length - 1] === ' ' && random.next() < HESITATION.chance) pause += HESITATION.min + HESITATION.spread * random.next();
   return {
     bot: { ...bot, wpm, queue, nextAt: Math.round(bot.nextAt + interval + pause), seed: random.seed() },
     stroke: { key, t: bot.nextAt },
