@@ -86,7 +86,7 @@ export function listPublicLobbies(now = Date.now()): LobbySummary[] {
 
 /** Lobby où « Jouer maintenant » fait entrer : le plus rempli des lobbies publics ouverts, `null` s'il n'y en a aucun. */
 export function findQuickLobby(now = Date.now()): LobbyRoom | null {
-  return pickQuickLobby([...dropExpired(now).values()].map((entry) => entry.room));
+  return pickQuickLobby([...dropExpired(now).values()]);
 }
 
 /**

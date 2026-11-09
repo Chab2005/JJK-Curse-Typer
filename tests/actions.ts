@@ -12,6 +12,7 @@ export const lobbyActionsMock = {
   listInvitesAction: vi.fn<(code: string) => Promise<InviteLink[] | null>>(async () => []),
   createInvitesAction: vi.fn<(code: string, count: number) => Promise<string[] | null>>(async () => null),
   deleteInviteAction: vi.fn<(code: string, token: string) => Promise<boolean>>(async () => true),
+  createPublicLobbyAction: vi.fn<() => Promise<{ code: string } | null>>(async () => ({ code: 'PUB-LBY' })),
   quickPlayAction: vi.fn(async (): Promise<QuickPlayResult> => ({ code: 'NEW-LBY' })),
 };
 

@@ -21,14 +21,21 @@ export async function createLobbyAction(): Promise<string | null> {
 }
 
 /**
- * « Jouer maintenant » : le lobby public ouvert le plus rempli ; s'il n'y en a aucun, un compte en ouvre un, public cette fois
- * pour que les joueurs suivants y tombent. Un invité sans pseudo doit d'abord en choisir un, et seul un compte peut héberger.
+ * « Jouer maintenant » : le lobby public ouvert le plus proche d'être plein (JOIN-03) ; s'il n'y en a aucun, un compte se voit
+ * proposer d'en créer un public, un invité voit un état vide. Un invité sans pseudo doit d'abord en choisir un.
  */
 export async function quickPlayAction(): Promise<QuickPlayResult> {
   const viewer = await getViewer();
   const open = findQuickLobby();
   if (open) return viewer ? { code: open.code } : { error: 'name' };
-  if (viewer?.kind !== 'user') return { error: 'account' };
+  // Aucun lobby ouvert : on propose à un compte d'en créer un public (rien n'est créé d'office), un invité voit un état vide.
+  return { error: viewer?.kind === 'user' ? 'offer' : 'empty' };
+}
+
+/** Crée un lobby public pour l'offre de « Jouer maintenant » ; `null` si le visiteur n'a pas de compte. */
+export async function createPublicLobbyAction(): Promise<{ code: string } | null> {
+  const viewer = await getViewer();
+  if (viewer?.kind !== 'user') return null;
   const code = await hostLobby(viewer);
   updateLobby(code, { type: 'updateSettings', by: viewer.id, patch: { visibility: 'public' } });
   // Un lobby public dont l'hôte n'ouvre jamais la page ne doit pas rester listé.
