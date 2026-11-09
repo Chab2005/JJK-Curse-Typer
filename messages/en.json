@@ -629,7 +629,6 @@
       "start": "Start the race",
       "blockers": {
         "notEnoughPlayers": "A race needs at least two participants: add a bot or wait for a player.",
-        "noHuman": "A race needs at least one human participant: spectators do not count. Join the race or wait for a player.",
         "notReady": "Waiting for every exorcist to be ready."
       },
       "waitHost": "The host starts the race once everyone is ready.",

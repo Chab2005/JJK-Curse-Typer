@@ -236,12 +236,10 @@ export function readyCount(room: LobbyRoom): number {
   return room.participants.filter((p) => isReady(room, p)).length;
 }
 
-export type StartBlocker = 'notEnoughPlayers' | 'noHuman' | 'notReady';
+export type StartBlocker = 'notEnoughPlayers' | 'notReady';
 
 /** Raison qui empêche l'hôte de lancer la course, ou `null` si elle peut partir (LOB-7). */
 export function startBlocker(room: LobbyRoom): StartBlocker | null {
   if (room.participants.length < MIN_PARTICIPANTS) return 'notEnoughPlayers';
-  // Au moins un humain parmi les participants : les spectateurs n'en font pas partie (COURSE-02).
-  if (!room.participants.some((p) => p.kind === 'human')) return 'noHuman';
   return room.participants.every((p) => isReady(room, p)) ? null : 'notReady';
 }

@@ -44,7 +44,6 @@ export default function ReadyPanel({
             active={blocker ?? 'none'}
             variants={{
               notEnoughPlayers: <Blocker id={blocker === 'notEnoughPlayers' ? 'start-blocker' : undefined}>{t('blockers.notEnoughPlayers')}</Blocker>,
-              noHuman: <Blocker id={blocker === 'noHuman' ? 'start-blocker' : undefined}>{t('blockers.noHuman')}</Blocker>,
               notReady: <Blocker id={blocker === 'notReady' ? 'start-blocker' : undefined}>{t('blockers.notReady')}</Blocker>,
               none: null,
             }}
