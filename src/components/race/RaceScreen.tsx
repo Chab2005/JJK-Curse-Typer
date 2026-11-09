@@ -377,7 +377,7 @@ export default function RaceScreen({
 
               {you !== null && typing && !done && phase !== 'finished' && (
                 <div className="relative pt-4">
-                  <div className={elapsed < 0 ? 'opacity-40 blur-[2px]' : ''}>
+                  <div>
                     <TypingArea text={typing.text} input={shownInput ?? typing.input} active={racing} casting={prompt !== null} onKey={onKey} onAbility={onAbility} />
                   </div>
                   {stunned && (

@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import RaceScreen from '@/components/race/RaceScreen';
 import type { ClientMessage, RaceSnapshot, ServerMessage } from '@/game/protocol';
 import { startPowers } from '@/game/powers';
-import type { RacerSeat, Standing } from '@/game/race';
+import { COUNTDOWN_MS, type RacerSeat, type Standing } from '@/game/race';
 import { startTyping } from '@/game/typing';
 import { raceActionsMock } from '../../actions';
 import { renderWithIntl } from '../../render';
@@ -96,6 +96,18 @@ describe('RaceScreen', () => {
     start({ race: race({ phase: 'countdown', startsIn: 2500 }) });
 
     expect(screen.getByRole('status', { name: 'Countdown' })).toHaveTextContent('3');
+  });
+
+  it('shows 3, 2, 1 and reveals the text, unblurred, once the countdown starts (COURSE-03)', () => {
+    renderWithIntl(<RaceScreen code="TKY-HGH" lobbyName="Tokyo Jujutsu High" account={{ username: 'megumi', displayName: 'Megumi', avatarUrl: null }} />);
+    expect(screen.queryByText('abc def')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Type the text')).not.toBeInTheDocument();
+
+    socket = FakeWebSocket.instances.at(-1)!;
+    socket.open();
+    socket.receive({ type: 'welcome', you: 'Megumi_Shadows', race: race({ phase: 'countdown', startsIn: COUNTDOWN_MS - 500 }), typing: null });
+    expect(screen.getByRole('status', { name: 'Countdown' })).toHaveTextContent('3');
+    expect(screen.getByLabelText('Type the text').closest('.blur-\\[2px\\]')).toBeNull();
   });
 
   it('sends the typed keys to the server, which holds the truth (RACE-14)', async () => {

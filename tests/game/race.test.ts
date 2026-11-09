@@ -70,6 +70,10 @@ describe('claim / release', () => {
     expect(racer(race, 'ann').driver).toBe('sim');
   });
 
+  it('fixe le décompte à 3 secondes (COURSE-03)', () => {
+    expect(COUNTDOWN_MS).toBe(3000);
+  });
+
   it('fixe le délai de reprise à 30 s (COURSE-08)', () => {
     expect(RECONNECT_GRACE_MS).toBe(30_000);
   });

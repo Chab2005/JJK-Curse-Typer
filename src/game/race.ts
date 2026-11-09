@@ -11,8 +11,8 @@ import { hashSeed, nextRandom, randomStream, type Seed } from './random';
 import { rawWpm, typingScore } from './scoring';
 import { correctChars, isValidKey, startTyping, typeKey, type ErrorMode, type Keystroke, type TypingState } from './typing';
 
-/** Décompte visible avant le départ (RACE-1). */
-export const COUNTDOWN_MS = 5000;
+/** Décompte visible avant le départ (COURSE-03). */
+export const COUNTDOWN_MS = 3000;
 /** Coupure tolérée avant l'abandon (COURSE-08). */
 export const RECONNECT_GRACE_MS = 30_000;
 /** Course fermée sans frappe humaine pendant 10 minutes (RACE-12). */
