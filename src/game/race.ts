@@ -67,6 +67,8 @@ export interface Racer {
   flashes: number;
   /** Prochain lancement possible, pour la simulation. */
   nextCastAt: number;
+  /** Effets d'une technique reçus de quelqu'un d'autre (colonne « bonus reçus » des résultats, RES-02). */
+  received: number;
 }
 
 /** Ce qu'il faut annoncer à tous (BONUS-03) : vidé à chaque tick. */
@@ -137,6 +139,7 @@ export function createRace({ seats, text, mode, timerMs, bonus, gameMode = bonus
       luck: botSeed,
       flashes: 0,
       nextCastAt: nextBotCast(0, randomStream(botSeed)),
+      received: 0,
     };
   });
   return { phase: 'countdown', startAt: now + COUNTDOWN_MS, timerMs, bonus: modeHasBonus(gameMode), gameMode, text, mode, racers, lastActivityAt: now, rng: hashSeed(`${seed}:rng`), notices: [] };
@@ -303,10 +306,16 @@ export interface Standing {
   /** Longueur de son texte : une capacité peut l'allonger (BONUS-04). */
   total: number;
   wpm: number;
+  /** MPM brut : toutes les frappes, erreurs comprises (annexe A). */
+  rawWpm: number;
+  /** Fautes commises (RES-02). */
+  errors: number;
   accuracy: number;
   energy: number;
   status: RacerStatus;
   endedAt: number | null;
+  /** Effets de techniques reçus (RES-02). */
+  received: number;
   /** États en cours, visibles de tous (BONUS-03). */
   marks: RacerMark[];
 }
@@ -323,6 +332,9 @@ export function standings(race: RaceState, now: number): Standing[] {
       progress: correctChars(racer.typing),
       total: racer.typing.text.length,
       wpm: score.wpm,
+      rawWpm: score.rawWpm,
+      errors: racer.typing.errors,
+      received: racer.received,
       accuracy: score.accuracy,
       energy: racer.energy,
       status: racer.status,

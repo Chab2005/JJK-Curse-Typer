@@ -4,9 +4,9 @@ import RaceSummary, { type SummaryRow } from '@/components/race/RaceSummary';
 import { renderWithIntl } from '../../render';
 
 const ROWS: SummaryRow[] = [
-  { id: 'yuji', rank: 1, name: 'Yuji', avatar: 'yuji', wpm: 81, accuracy: 0.97, status: 'finished', you: false },
-  { id: 'me', rank: 2, name: 'Megumi', avatar: 'megumi', wpm: 64, accuracy: 0.952, status: 'finished', you: true },
-  { id: 'bot-1', rank: 3, name: 'Cursed corpse 1', avatar: null, wpm: 30, accuracy: 0.9, status: 'racing', you: false },
+  { id: 'yuji', rank: 1, name: 'Yuji', avatar: 'yuji', wpm: 81, rawWpm: 84, errors: 2, endedAt: 30000, received: 1, accuracy: 0.97, status: 'finished', you: false },
+  { id: 'me', rank: 2, name: 'Megumi', avatar: 'megumi', wpm: 64, rawWpm: 67, errors: 2, endedAt: 30000, received: 1, accuracy: 0.952, status: 'finished', you: true },
+  { id: 'bot-1', rank: 3, name: 'Cursed corpse 1', avatar: null, wpm: 30, rawWpm: 33, errors: 2, endedAt: 30000, received: 1, accuracy: 0.9, status: 'racing', you: false },
 ];
 
 describe('RaceSummary', () => {
@@ -23,7 +23,7 @@ describe('RaceSummary', () => {
   it('shows the podium, the rest of the field and the way back once the race is over (RACE-14)', () => {
     const rows: SummaryRow[] = [
       ...ROWS.map((r) => ({ ...r, status: 'finished' as const })),
-      { id: 'bot-2', rank: 4, name: 'Cursed corpse 2', avatar: null, wpm: 22, accuracy: 0.88, status: 'abandoned', you: false },
+      { id: 'bot-2', rank: 4, name: 'Cursed corpse 2', avatar: null, wpm: 22, rawWpm: 25, errors: 2, endedAt: 30000, received: 1, accuracy: 0.88, status: 'abandoned', you: false },
     ];
     renderWithIntl(<RaceSummary rows={rows} you="me" over lobbyCode="TKY-HGH" />);
 
@@ -31,16 +31,17 @@ describe('RaceSummary', () => {
     expect(podium.getByText('Yuji')).toBeInTheDocument();
     expect(podium.getByText('Cursed corpse 1')).toBeInTheDocument();
     const table = screen.getByRole('table', { name: 'Results' });
-    expect(within(table).getAllByRole('row')).toHaveLength(2);
+    // Header + every racer: the podium is repeated in the full table (RES-02).
+    expect(within(table).getAllByRole('row')).toHaveLength(5);
     expect(within(table).getByText('Cursed corpse 2')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Back to the lobby' })).toHaveAttribute('href', '/lobby/TKY-HGH');
   });
 
-  it('skips the table when everyone fits on the podium', () => {
+  it('keeps the top 3 in the full table too (RES-02)', () => {
     renderWithIntl(<RaceSummary rows={ROWS.map((r) => ({ ...r, status: 'finished' }))} you="me" over lobbyCode="TKY-HGH" />);
 
     expect(screen.getByRole('region', { name: 'Race podium' })).toBeInTheDocument();
-    expect(screen.queryByRole('table')).not.toBeInTheDocument();
+    expect(within(screen.getByRole('table', { name: 'Results' })).getAllByRole('row')).toHaveLength(4);
   });
 
   it('tells the player they abandoned', () => {

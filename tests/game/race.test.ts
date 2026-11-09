@@ -255,6 +255,16 @@ describe('standings (RACE-3, RACE-14)', () => {
   });
 });
 
+describe('standings detail columns (RES-02)', () => {
+  it('reports raw WPM, errors and bonuses received for each racer', () => {
+    const race = applyKeys(racing({ seats: SEATS.slice(0, 2) }), 'ann', keys('abx'), START + 6000).race;
+    const [ann] = standings(race, START + 6000).filter((s) => s.id === 'ann');
+    expect(ann).toMatchObject({ errors: 1, received: 0 });
+    expect(ann.rawWpm).toBeGreaterThanOrEqual(ann.wpm);
+    expect(ann.rawWpm).toBeGreaterThan(0);
+  });
+});
+
 describe('leaderGap (RACE-4)', () => {
   const table = [
     { id: 'a', progress: 30 },

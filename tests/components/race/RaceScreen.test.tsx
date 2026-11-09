@@ -59,7 +59,7 @@ const race = (overrides: Partial<RaceSnapshot> = {}): RaceSnapshot => ({
   ...overrides,
 });
 
-const standing = (id: string, rank: number, status: Standing['status'] = 'racing'): Standing => ({ id, rank, progress: 0, total: 7, wpm: 40, accuracy: 1, energy: 120, status, endedAt: null, marks: [] });
+const standing = (id: string, rank: number, status: Standing['status'] = 'racing'): Standing => ({ id, rank, progress: 0, total: 7, wpm: 40, rawWpm: 42, errors: 0, received: 0, accuracy: 1, energy: 120, status, endedAt: null, marks: [] });
 
 let socket: FakeWebSocket;
 

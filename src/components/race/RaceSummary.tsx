@@ -16,7 +16,14 @@ export interface SummaryRow {
   /** Photo téléversée (PROF-5) ; prime sur `avatar`. */
   photo?: string | null;
   wpm: number;
+  /** MPM brut, erreurs comprises (RES-02). */
+  rawWpm: number;
   accuracy: number;
+  errors: number;
+  /** Temps de course en ms depuis le départ ; `null` tant que le coureur n'a pas fini. */
+  endedAt: number | null;
+  /** Effets de techniques reçus. */
+  received: number;
   status: RacerStatus;
   you: boolean;
   /** Participant simulé (BOT-04) : repéré par une pastille. */
@@ -75,7 +82,7 @@ export default function RaceSummary({ rows, you, over, lobbyCode }: { rows: Summ
             {t('over')}
           </h2>
           <RacePodium rows={rows} />
-          {rows.length > 3 && <RaceResultsTable rows={rows.slice(3)} />}
+          <RaceResultsTable rows={rows} />
           <ChevronButton as={Link} href={`/lobby/${lobbyCode}`} variant="primary" frame="self-start" className="text-[15px] uppercase tracking-[0.12em]">
             <span aria-hidden="true" className="material-symbols-outlined text-[18px]">arrow_back</span>
             {t('backToLobby')}

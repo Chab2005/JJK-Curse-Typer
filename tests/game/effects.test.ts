@@ -411,6 +411,14 @@ describe('bots soumis aux techniques comme les humains (BOT-04)', () => {
     expect(race.notices.at(-1)).toMatchObject({ by: 'p0', target: 'b' });
   });
 
+  it('compte les effets reçus (colonne bonus des résultats, RES-02)', () => {
+    const { race } = cast(againstBot(), 'p0', 'resonance', 2000);
+    expect(racer(race, 'b').received).toBe(1);
+    expect(racer(race, 'p0').received).toBe(0);
+    const warded = cast(cast(againstBot(), 'b', 'red').race, 'p0', 'resonance', 2000).race;
+    expect(racer(warded, 'b').received).toBe(0);
+  });
+
   it('laisse un bot se protéger par Rouge, qui annule la technique du joueur', () => {
     const guarded = cast(againstBot(), 'b', 'red').race;
     const { race } = cast(guarded, 'p0', 'resonance', 2000);

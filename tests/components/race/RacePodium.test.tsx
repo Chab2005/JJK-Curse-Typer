@@ -5,9 +5,9 @@ import type { SummaryRow } from '@/components/race/RaceSummary';
 import { renderWithIntl } from '../../render';
 
 const ROWS: SummaryRow[] = [
-  { id: 'yuji', rank: 1, name: 'Yuji', avatar: 'yuji', wpm: 81, accuracy: 0.97, status: 'finished', you: false },
-  { id: 'me', rank: 2, name: 'Megumi', avatar: 'megumi', wpm: 64, accuracy: 0.952, status: 'finished', you: true },
-  { id: 'bot-1', rank: 3, name: 'Cursed corpse 1', avatar: null, wpm: 30, accuracy: 0.9, status: 'timeout', you: false, bot: true },
+  { id: 'yuji', rank: 1, name: 'Yuji', avatar: 'yuji', wpm: 81, rawWpm: 84, errors: 2, endedAt: 30000, received: 1, accuracy: 0.97, status: 'finished', you: false },
+  { id: 'me', rank: 2, name: 'Megumi', avatar: 'megumi', wpm: 64, rawWpm: 67, errors: 2, endedAt: 30000, received: 1, accuracy: 0.952, status: 'finished', you: true },
+  { id: 'bot-1', rank: 3, name: 'Cursed corpse 1', avatar: null, wpm: 30, rawWpm: 33, errors: 2, endedAt: 30000, received: 1, accuracy: 0.9, status: 'timeout', you: false, bot: true },
 ];
 
 describe('RacePodium (smoke)', () => {
