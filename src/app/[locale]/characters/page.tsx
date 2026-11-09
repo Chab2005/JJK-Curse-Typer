@@ -21,7 +21,7 @@ export default async function CharactersPage({ params }: PageProps<'/[locale]/ch
   return (
     <>
       <SiteHeader />
-      <main className="relative w-full flex-1 overflow-hidden bg-surface-container-lowest">
+      <main id="main" className="relative w-full flex-1 overflow-hidden bg-surface-container-lowest">
         <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-[420px] bg-[radial-gradient(ellipse_55%_70%_at_50%_0%,rgb(147_0_10/0.4),transparent_70%)]" />
         <section aria-labelledby="characters-page-title" className="relative mx-auto flex max-w-[1152px] flex-col gap-11 px-6 pt-14 pb-[140px]">
           <PageIntro id="characters-page-title" eyebrow={t('eyebrow')} title={t('title')} intro={t('intro')} watermark={t('watermark')} />

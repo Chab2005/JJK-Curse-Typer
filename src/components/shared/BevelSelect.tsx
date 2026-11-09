@@ -114,7 +114,7 @@ export default function BevelSelect<T extends string | number>({
         onClick={() => (open ? setOpen(false) : show())}
         onKeyDown={onKeyDown}
         onBlur={() => setOpen(false)}
-        className="group hx-cut flex bg-[#8f1022] p-px transition-[filter,background-color] [--h:13px] hover:brightness-140 focus-visible:bg-tertiary focus-visible:outline-none aria-expanded:bg-primary-container"
+        className="group hx-cut flex bg-[#8f1022] p-px transition-[filter,background-color] [--h:13px] hover:brightness-140 focus-visible:bg-tertiary focus-visible:brightness-150 focus-visible:outline-none aria-expanded:bg-primary-container"
       >
         <span className="hx-cut flex min-h-[42px] flex-1 items-center gap-3 bg-[radial-gradient(120%_160%_at_50%_0%,#3a0c14_0%,#170608_55%,#0c0304_100%)] pr-5 pl-6 text-[13px] text-on-primary-container [--h:12.5px]">
           {/* Largeur de l'option la plus longue : changer d'option ne redimensionne pas le bouton. */}

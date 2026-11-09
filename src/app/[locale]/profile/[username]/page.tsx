@@ -43,7 +43,7 @@ export default async function ProfilePage({ params }: PageProps<'/[locale]/profi
     return (
       <>
         <SiteHeader />
-        <main className="relative w-full flex-1 overflow-hidden bg-surface">
+        <main id="main" className="relative w-full flex-1 overflow-hidden bg-surface">
           <ProfileGlow />
           <div className="relative mx-auto flex max-w-[1040px] flex-col gap-8 px-6 pt-14 pb-24">
             <ProfileIdentity
@@ -85,7 +85,7 @@ export default async function ProfilePage({ params }: PageProps<'/[locale]/profi
   return (
     <>
       <SiteHeader />
-      <main className="relative w-full flex-1 overflow-hidden bg-surface">
+      <main id="main" className="relative w-full flex-1 overflow-hidden bg-surface">
         <ProfileGlow />
         <div className="relative mx-auto flex max-w-[1040px] flex-col gap-8 px-6 pt-14 pb-24">
           <ProfileHeader

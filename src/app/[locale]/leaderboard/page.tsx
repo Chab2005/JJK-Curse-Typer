@@ -26,7 +26,7 @@ export default async function LeaderboardPage({ params }: PageProps<'/[locale]/l
   return (
     <>
       <SiteHeader />
-      <main className="relative w-full flex-1 overflow-hidden bg-surface">
+      <main id="main" className="relative w-full flex-1 overflow-hidden bg-surface">
         <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-[420px] bg-[radial-gradient(ellipse_55%_70%_at_50%_0%,rgb(147_0_10/0.4),transparent_70%)]" />
         {/* Lueur du bas, comme la fin de l'accueil : le fond tourne au rouge sombre avant le pied de page. */}
         <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-[640px] bg-linear-to-b from-[#120708]/0 to-[#120708]" />

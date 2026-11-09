@@ -32,7 +32,7 @@ export default async function LobbyPage({ params, searchParams }: PageProps<'/[l
   return (
     <>
       <SiteHeader />
-      <main className="relative w-full flex-1 overflow-hidden bg-surface">
+      <main id="main" className="relative w-full flex-1 overflow-hidden bg-surface">
         <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-[420px] bg-[radial-gradient(ellipse_55%_70%_at_35%_0%,rgb(147_0_10/0.4),transparent_70%)]" />
         <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-[640px] bg-linear-to-b from-transparent to-[#120708]" />
         {/* La clé repart d'un salon neuf pour un autre visiteur (pseudo d'invité choisi) ou en passant par ?spectate=1. */}

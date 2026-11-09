@@ -334,7 +334,7 @@ export default function RaceScreen({
   return (
     <>
       <RaceHeader account={account} onLeave={racing ? (href) => setPending({ kind: 'leave', href }) : null} />
-      <main className="relative w-full flex-1 bg-surface">
+      <main id="main" className="relative w-full flex-1 bg-surface">
         {domainOwner && <DomainBackdrop domain={domainOwner} />}
         <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-[360px] bg-[radial-gradient(ellipse_55%_70%_at_50%_0%,rgb(147_0_10/0.32),transparent_70%)]" />
         <div className="relative mx-auto flex max-w-[1100px] flex-col gap-7 px-6 pt-6 pb-16">

@@ -1142,5 +1142,8 @@
       "text": "Ce personnage n'est pas jouable, ou le lien est mal tapé.",
       "back": "Voir les personnages"
     }
+  },
+  "Layout": {
+    "skip": "Aller au contenu principal"
   }
 }

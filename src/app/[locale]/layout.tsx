@@ -1,3 +1,4 @@
+import SkipLink from "@/components/layout/SkipLink";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
@@ -72,6 +73,7 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[lo
       </head>
       <body className="min-h-screen flex flex-col justify-between bg-surface font-body-regular text-body-regular text-on-surface selection:bg-primary-container selection:text-on-primary-container">
         <NextIntlClientProvider>
+          <SkipLink />
           {children}
           <CookieConsent />
         </NextIntlClientProvider>

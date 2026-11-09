@@ -9,7 +9,7 @@ export default function ErrorPage({ reset }: { reset: () => void }) {
   const t = useTranslations('Error');
 
   return (
-    <main className="relative mx-auto flex w-full max-w-[720px] flex-1 flex-col items-center justify-center gap-5 px-6 py-24 text-center">
+    <main id="main" className="relative mx-auto flex w-full max-w-[720px] flex-1 flex-col items-center justify-center gap-5 px-6 py-24 text-center">
       <p className="font-label-code text-[12px] font-bold uppercase tracking-[0.32em] text-primary-text">{t('eyebrow')}</p>
       <h1 className="text-[clamp(34px,4.5vw,56px)] leading-tight uppercase tracking-[0.08em]">{t('title')}</h1>
       <p className="max-w-[520px] text-lg leading-7 text-on-surface-variant">{t('text')}</p>

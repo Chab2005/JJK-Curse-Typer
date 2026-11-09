@@ -1142,5 +1142,8 @@
       "text": "This character isn't playable, or the link is mistyped.",
       "back": "See the characters"
     }
+  },
+  "Layout": {
+    "skip": "Skip to main content"
   }
 }
