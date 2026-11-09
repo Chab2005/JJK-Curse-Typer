@@ -17,6 +17,7 @@ import CastDialog from './CastDialog';
 import ChevronButton from '@/components/shared/ChevronButton';
 import ConfirmDialog from './ConfirmDialog';
 import Countdown from './Countdown';
+import RaceLiveStats from './RaceLiveStats';
 import DomainBackdrop from './DomainBackdrop';
 import EnergyBar from './EnergyBar';
 import type { HeaderAccount } from '@/components/layout/ProfileAvatar';
@@ -351,8 +352,9 @@ export default function RaceScreen({
                 domainOpen={domainOwner !== null}
               />
 
-              {you !== null && (hasEnergy || clock) && (
+              {you !== null && (
                 <div className="flex flex-wrap items-center justify-end gap-x-6 gap-y-3">
+                  <RaceLiveStats wpm={mine?.wpm ?? 0} accuracy={mine?.accuracy ?? 1} />
                   {hasEnergy && (
                     <div className="min-w-60 flex-1">
                       <EnergyBar energy={mine?.energy ?? 0} character={character} />

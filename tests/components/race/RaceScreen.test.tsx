@@ -110,6 +110,14 @@ describe('RaceScreen', () => {
     expect(screen.getByLabelText('Type the text').closest('.blur-\\[2px\\]')).toBeNull();
   });
 
+  it('shows the player live WPM and accuracy during the race (COURSE-04)', () => {
+    start({ you: 'Megumi_Shadows' });
+    socket.receive({ type: 'tick', phase: 'racing', elapsed: 5000, standings: [{ ...standing('Megumi_Shadows', 1), wpm: 64, accuracy: 0.92 }] });
+    const live = screen.getByRole('group', { name: 'Live stats' });
+    expect(live).toHaveTextContent('64');
+    expect(live).toHaveTextContent('92%');
+  });
+
   it('sends the typed keys to the server, which holds the truth (RACE-14)', async () => {
     const { user } = start();
 
@@ -367,7 +375,6 @@ describe('RaceScreen', () => {
     it('shows the clock only in a timed race, and Abandon below the text', () => {
       start({ race: race({ timerMs: 60_000 }) });
       expect(screen.getByText('Time left')).toBeInTheDocument();
-      expect(screen.queryByText('WPM')).not.toBeInTheDocument();
       const text = screen.getByLabelText('Type the text');
       const abandon = screen.getByRole('button', { name: 'Abandon' });
       expect(text.compareDocumentPosition(abandon) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();

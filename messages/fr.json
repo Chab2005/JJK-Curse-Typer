@@ -912,6 +912,11 @@
       "remaining": "Temps restant",
       "abandon": "Abandonner"
     },
+    "live": {
+      "label": "Statistiques en direct",
+      "wpm": "MPM",
+      "accuracy": "Précision"
+    },
     "typing": {
       "label": "Tapez le texte",
       "focus": "Cliquez ici pour taper",

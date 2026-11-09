@@ -912,6 +912,11 @@
       "remaining": "Time left",
       "abandon": "Abandon"
     },
+    "live": {
+      "label": "Live stats",
+      "wpm": "WPM",
+      "accuracy": "Accuracy"
+    },
     "typing": {
       "label": "Type the text",
       "focus": "Click here to type",
