@@ -31,7 +31,7 @@ describe('levels', () => {
     expect(levelForXp(1_500)).toBe('grade_3');
     expect(levelForXp(9_999)).toBe('grade_3');
     expect(levelForXp(10_000)).toBe('grade_2');
-    expect(levelForXp(10_000_000)).toBe('calamity_grade');
+    expect(levelForXp(10_000_000)).toBe('special_grade');
   });
 
   it('makes each step cost more than the previous one', () => {
@@ -41,6 +41,6 @@ describe('levels', () => {
 
   it('reports progress inside the current grade', () => {
     expect(levelProgress(5_750)).toEqual({ level: 'grade_3', next: 'grade_2', current: 4_250, needed: 8_500, ratio: 0.5 });
-    expect(levelProgress(800_000)).toMatchObject({ level: 'calamity_grade', next: null, ratio: 1 });
+    expect(levelProgress(800_000)).toMatchObject({ level: 'special_grade', next: null, ratio: 1 });
   });
 });

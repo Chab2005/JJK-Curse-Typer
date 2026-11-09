@@ -78,11 +78,11 @@ describe('WaitingRoom host controls (LOB-8, LOB-11)', () => {
     const { user } = renderWithIntl(<WaitingRoom initialRoom={ROOM} viewerId="Satoru_Infinity" />);
 
     await user.click(screen.getByRole('combobox', { name: 'Bot level' }));
-    await user.click(screen.getByRole('option', { name: 'Grade 4' }));
+    await user.click(screen.getByRole('option', { name: 'Noob' }));
     await user.click(screen.getByRole('button', { name: 'Add a bot' }));
 
     expect(participants().getByText('Cursed corpse 2')).toBeInTheDocument();
-    expect(participants().getByText('Bot · Grade 4')).toBeInTheDocument();
+    expect(participants().getByText('Bot · Noob')).toBeInTheDocument();
     expect(screen.getByRole('status')).toHaveTextContent('Cursed corpse 2 joined the lobby.');
     expect(screen.getByRole('button', { name: 'Add a bot' })).toBeDisabled();
     expect(screen.getByText('The lobby is full.')).toBeInTheDocument();

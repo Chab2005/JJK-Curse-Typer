@@ -18,6 +18,28 @@ function race(bot: BotState, mode: ErrorMode, limit = 5000) {
   return { typing, keys };
 }
 
+describe('niveaux (BOT-01)', () => {
+  it('compte cinq niveaux', () => {
+    expect(BOT_LEVELS).toHaveLength(5);
+    expect(Object.keys(BOT_PROFILES)).toEqual([...BOT_LEVELS]);
+  });
+
+  it("tient les MPM et taux d'erreur dans les plages de l'énoncé", () => {
+    const ranges = [
+      { wpm: [10, 20], errorRate: 0.12 },
+      { wpm: [20, 35], errorRate: 0.08 },
+      { wpm: [35, 60], errorRate: 0.05 },
+      { wpm: [70, 100], errorRate: 0.02 },
+      { wpm: [140, Infinity], errorRate: 0.005 },
+    ];
+    BOT_LEVELS.forEach((level, i) => {
+      expect(BOT_PROFILES[level].wpm).toBeGreaterThanOrEqual(ranges[i].wpm[0]);
+      expect(BOT_PROFILES[level].wpm).toBeLessThanOrEqual(ranges[i].wpm[1]);
+      expect(BOT_PROFILES[level].errorRate).toBe(ranges[i].errorRate);
+    });
+  });
+});
+
 describe('nextBotStroke', () => {
   it('est déterministe pour une même graine', () => {
     const a = race(createBot(BOT_PROFILES.grade_2, 1), 'accumulate');
