@@ -72,10 +72,33 @@ export interface Spectator {
   photo?: string | null;
 }
 
+/**
+ * États du salon (COURSE-01) : `waiting` (EN_ATTENTE), `racing` (décompte puis course : la phase fine est dans `RaceState.phase`),
+ * `results` (RÉSULTATS) et `closed` (FERMÉE). La relance et la fermeture voulues par l'hôte sont COURSE-11 ; ici le salon
+ * repasse en attente quand quelqu'un y revient, et se ferme quand plus aucun humain n'y est.
+ */
+export const LOBBY_STATUSES = ['waiting', 'racing', 'results', 'closed'] as const;
+export type LobbyStatus = (typeof LOBBY_STATUSES)[number];
+
+const TRANSITIONS: Record<LobbyStatus, readonly LobbyStatus[]> = {
+  waiting: ['racing', 'closed'],
+  racing: ['results', 'closed'],
+  results: ['waiting', 'closed'],
+  closed: [],
+};
+
+/** Vrai si le diagramme d'états (docs/ARCHITECTURE.md §3) permet de passer de `from` à `to`. */
+export const canTransition = (from: LobbyStatus, to: LobbyStatus) => TRANSITIONS[from].includes(to);
+
+/** Nouvel état du salon, ou le salon inchangé si la transition est interdite. */
+function transition(room: LobbyRoom, to: LobbyStatus): LobbyRoom {
+  return canTransition(room.status, to) ? { ...room, status: to } : room;
+}
+
 export interface LobbyRoom {
   code: string;
   name: string;
-  status: 'waiting' | 'racing';
+  status: LobbyStatus;
   hostId: string;
   /** Dans l'ordre d'arrivée : le plus ancien humain succède à l'hôte (H-18). */
   participants: Participant[];
@@ -99,8 +122,10 @@ export type LobbyAction =
   /** Un humain (hôte compris) passe de joueur à spectateur, ou l'inverse. */
   | { type: 'setSpectating'; id: string; spectating: boolean }
   | { type: 'start'; by: string }
-  /** Fin de la course : le salon rouvre. */
-  | { type: 'finish' };
+  /** Fin de la course : le salon passe en résultats. */
+  | { type: 'finish' }
+  /** Retour au salon depuis les résultats : il rouvre. */
+  | { type: 'reopen' };
 
 export type ViewerRole = 'host' | 'player' | 'spectator';
 
@@ -145,12 +170,13 @@ function addBot(room: LobbyRoom, level: BotLevel): LobbyRoom {
   return { ...room, participants: [...room.participants, { kind: 'bot', id: `bot-${number}`, level, number }] };
 }
 
-export type JoinRefusal = 'banned' | 'racing';
+export type JoinRefusal = 'banned' | 'racing' | 'closed';
 
 /** Raison pour laquelle `id` ne peut pas entrer : expulsé (SALLE-07) ou course lancée (SALLE-09). Quelqu'un déjà dedans n'est jamais refusé. */
 export function joinRefusal(room: LobbyRoom, id: string): JoinRefusal | null {
+  if (room.status === 'closed') return 'closed';
   if (room.banned.includes(id)) return 'banned';
-  if (room.status !== 'waiting' && !isInside(room, id)) return 'racing';
+  if (room.status === 'racing' && !isInside(room, id)) return 'racing';
   return null;
 }
 
@@ -180,7 +206,9 @@ function setCharacter(room: LobbyRoom, id: string, character: CharacterId): Lobb
   return { ...room, participants: room.participants.map((p) => (p.kind === 'human' && p.id === id ? { ...p, avatar: character } : p)) };
 }
 
-function join(room: LobbyRoom, person: Spectator, spectate: boolean): LobbyRoom {
+function join(current: LobbyRoom, person: Spectator, spectate: boolean): LobbyRoom {
+  // Revenir au salon après la course le rouvre (RÉSULTATS → EN_ATTENTE).
+  const room = current.status === 'results' && !joinRefusal(current, person.id) ? reopen(current) : current;
   if (isInside(room, person.id) || joinRefusal(room, person.id)) return room;
   const { id, name, avatar, photo = null } = person;
   const joinable = !spectate && room.participants.length < room.settings.capacity;
@@ -192,6 +220,8 @@ function join(room: LobbyRoom, person: Spectator, spectate: boolean): LobbyRoom 
 function leave(room: LobbyRoom, id: string): LobbyRoom {
   if (!isInside(room, id)) return room;
   const left = { ...room, participants: room.participants.filter((p) => p.id !== id), spectators: room.spectators.filter((s) => s.id !== id) };
+  // Plus aucun humain : le salon est fermé (SALLE-08).
+  if (isEmpty(left)) return { ...transition(left, 'closed'), hostId: '' };
   if (id !== room.hostId) return left;
   // Le plus ancien joueur humain succède à l'hôte (H-18), sinon le plus ancien spectateur.
   const successor = left.participants.find((p) => p.kind === 'human') ?? left.spectators[0];
@@ -210,17 +240,25 @@ function setSpectating(room: LobbyRoom, id: string, spectating: boolean): LobbyR
   return { ...room, spectators: room.spectators.filter((s) => s.id !== id), participants: [...room.participants, { kind: 'human', ...spectator, avatar: spectator.avatar ?? DEFAULT_CHARACTER, ready: false }] };
 }
 
-/** Le salon rouvre après la course ; chaque joueur redit qu'il est prêt pour la suivante. */
+/** La course est finie : RACING → RÉSULTATS. */
 function finish(room: LobbyRoom): LobbyRoom {
-  if (room.status !== 'racing') return room;
-  return { ...room, status: 'waiting', participants: room.participants.map((p) => (p.kind === 'human' ? { ...p, ready: p.id === room.hostId } : p)) };
+  return transition(room, 'results');
+}
+
+/** Retour au salon : RÉSULTATS → EN_ATTENTE ; chaque joueur redit qu'il est prêt pour la suivante. */
+function reopen(room: LobbyRoom): LobbyRoom {
+  const next = transition(room, 'waiting');
+  if (next === room) return room;
+  return { ...next, participants: next.participants.map((p) => (p.kind === 'human' ? { ...p, ready: p.id === next.hostId } : p)) };
 }
 
 export function lobbyReducer(room: LobbyRoom, action: LobbyAction): LobbyRoom {
   // Arrivées, départs et fin de course valent aussi pendant la course.
   if (action.type === 'join') return join(room, action.person, action.spectate);
   if (action.type === 'leave') return leave(room, action.id);
+  if (room.status === 'closed') return room;
   if (action.type === 'finish') return finish(room);
+  if (action.type === 'reopen') return reopen(room);
   if (room.status !== 'waiting') return room;
   if (action.type === 'setReady') return setReady(room, action.id, action.ready);
   if (action.type === 'setCharacter') return setCharacter(room, action.id, action.character);
@@ -237,7 +275,7 @@ export function lobbyReducer(room: LobbyRoom, action: LobbyAction): LobbyRoom {
     case 'transferHost':
       return transferHost(room, action.id);
     case 'start':
-      return startBlocker(room) === null ? { ...room, status: 'racing' } : room;
+      return startBlocker(room) === null ? transition(room, 'racing') : room;
   }
 }
 

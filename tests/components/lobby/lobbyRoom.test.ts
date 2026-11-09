@@ -3,6 +3,7 @@ import {
   type LobbyRoom,
   type LobbySettings,
   MAX_CAPACITY,
+  canTransition,
   TIMER_OPTIONS,
   WORDS_MAX,
   WORDS_MIN,
@@ -349,12 +350,57 @@ describe('start / finish (LOB-7)', () => {
     expect(lobbyReducer(notReady, { type: 'start', by: 'Gojo' })).toBe(notReady);
   });
 
-  it("rouvre le salon après la course : chacun redit qu'il est prêt", () => {
+  it("passe en résultats à la fin de la course, puis rouvre le salon : chacun redit qu'il est prêt (COURSE-01)", () => {
     const racing = lobbyReducer(ready, { type: 'start', by: 'Gojo' });
-    const next = lobbyReducer(racing, { type: 'finish' });
-    expect(next.status).toBe('waiting');
-    expect(next.participants[1]).toMatchObject({ id: 'Yuji', ready: false });
+    const results = lobbyReducer(racing, { type: 'finish' });
+    expect(results.status).toBe('results');
     expect(lobbyReducer(ready, { type: 'finish' })).toBe(ready);
+
+    const reopened = lobbyReducer(results, { type: 'reopen' });
+    expect(reopened.status).toBe('waiting');
+    expect(reopened.participants[1]).toMatchObject({ id: 'Yuji', ready: false });
+  });
+});
+
+describe('machine à états du salon (COURSE-01)', () => {
+  const STATUSES = ['waiting', 'racing', 'results', 'closed'] as const;
+
+  it('n’autorise que les transitions du diagramme', () => {
+    const allowed = [['waiting', 'racing'], ['waiting', 'closed'], ['racing', 'results'], ['racing', 'closed'], ['results', 'waiting'], ['results', 'closed']];
+    for (const from of STATUSES) {
+      for (const to of STATUSES) expect(canTransition(from, to), `${from} → ${to}`).toBe(allowed.some(([a, b]) => a === from && b === to));
+    }
+  });
+
+  it('refuse un départ, un reopen ou une fin hors de leur état', () => {
+    const ready = room({ participants: [human('Gojo', true), human('Yuji', true)] });
+    const racing = room({ status: 'racing' });
+    const results = room({ status: 'results' });
+    expect(lobbyReducer(racing, { type: 'start', by: 'Gojo' })).toBe(racing);
+    expect(lobbyReducer(results, { type: 'start', by: 'Gojo' })).toBe(results);
+    expect(lobbyReducer(ready, { type: 'reopen' })).toBe(ready);
+    expect(lobbyReducer(racing, { type: 'reopen' })).toBe(racing);
+    expect(lobbyReducer(results, { type: 'finish' })).toBe(results);
+  });
+
+  it('gèle les réglages pendant les résultats, comme pendant la course', () => {
+    const results = room({ status: 'results' });
+    expect(lobbyReducer(results, { type: 'updateSettings', by: 'Gojo', patch: { words: 80 } })).toBe(results);
+  });
+
+  it('ferme le salon quand le dernier humain part, et refuse tout ensuite', () => {
+    const alone = room({ participants: [human('Gojo', true)], spectators: [] });
+    const closed = lobbyReducer(alone, { type: 'leave', id: 'Gojo' });
+    expect(closed.status).toBe('closed');
+    expect(lobbyReducer(closed, { type: 'join', person: person('Nobara'), spectate: false })).toBe(closed);
+    expect(lobbyReducer(closed, { type: 'reopen' })).toBe(closed);
+    expect(joinRefusal(closed, 'Nobara')).toBe('closed');
+  });
+
+  it('rouvre le salon en résultats quand quelqu’un y revient', () => {
+    const results = room({ status: 'results' });
+    expect(lobbyReducer(results, { type: 'join', person: person('Yuji'), spectate: false }).status).toBe('waiting');
+    expect(lobbyReducer(results, { type: 'join', person: person('Nobara'), spectate: false }).status).toBe('waiting');
   });
 });
 

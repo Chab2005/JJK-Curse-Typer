@@ -563,7 +563,9 @@
     "hostedBy": "Hôte : {host}",
     "status": {
       "waiting": "En attente de joueurs",
-      "racing": "Course en cours"
+      "racing": "Course en cours",
+      "results": "Course terminée",
+      "closed": "Salon fermé"
     },
     "invite": {
       "title": "Inviter des exorcistes",

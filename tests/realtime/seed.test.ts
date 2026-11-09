@@ -69,7 +69,7 @@ describe('raceFromLobby', () => {
     expect(raceFromLobby(lobby.code, 2000)).toBeNull();
   });
 
-  it('place chacun d’après son ticket et rouvre le salon à la fin de la course', () => {
+  it('place chacun d’après son ticket et passe en résultats à la fin de la course', () => {
     clearLobbies();
     const lobby = createLobby((host) => host, { id: 'chab', name: 'Chab', avatar: null }, Date.now());
     updateLobby(lobby.code, { type: 'addBot', by: 'chab', level: 'grade_4' });
@@ -80,6 +80,9 @@ describe('raceFromLobby', () => {
     expect(seeded.ticketSeat?.(undefined)).toBeNull();
 
     seeded.onEnd?.();
+    expect(storedLobby(lobby.code)?.status).toBe('results');
+    // Revenir au salon le rouvre.
+    updateLobby(lobby.code, { type: 'join', person: { id: 'chab', name: 'Chab', avatar: null }, spectate: false });
     expect(storedLobby(lobby.code)?.status).toBe('waiting');
   });
 

@@ -563,7 +563,9 @@
     "hostedBy": "Hosted by {host}",
     "status": {
       "waiting": "Waiting for players",
-      "racing": "Race in progress"
+      "racing": "Race in progress",
+      "results": "Race over",
+      "closed": "Lobby closed"
     },
     "invite": {
       "title": "Invite exorcists",
