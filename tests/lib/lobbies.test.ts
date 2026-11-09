@@ -160,6 +160,18 @@ describe('parseLobbyAction', () => {
     expect(parseLobbyAction({ type: 'updateSettings', patch: { hostId: 'me' } }, HOST.id)).toBeNull();
   });
 
+  it('borne le timer à 0 ou 30–600 s et la capacité à 2–30 (CONF-01, SALLE-05)', () => {
+    const patch = (value: object) => parseLobbyAction({ type: 'updateSettings', patch: value }, HOST.id);
+    expect(patch({ timer: 600 })).not.toBeNull();
+    expect(patch({ timer: 0 })).not.toBeNull();
+    expect(patch({ timer: 601 })).toBeNull();
+    expect(patch({ timer: 10 })).toBeNull();
+    expect(patch({ timer: 45.5 })).toBeNull();
+    expect(patch({ capacity: 30 })).not.toBeNull();
+    expect(patch({ capacity: 31 })).toBeNull();
+    expect(patch({ capacity: 1 })).toBeNull();
+  });
+
   it('accepte de passer spectateur et de lancer la course, au nom du visiteur', () => {
     expect(parseLobbyAction({ type: 'setSpectating', id: 'Someone_Else', spectating: true }, HOST.id)).toEqual({ type: 'setSpectating', id: HOST.id, spectating: true });
     expect(parseLobbyAction({ type: 'start' }, HOST.id)).toEqual({ type: 'start', by: HOST.id });

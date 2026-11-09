@@ -16,11 +16,13 @@ export type ContentMode = (typeof CONTENT_MODES)[number];
 export const LOBBY_VISIBILITIES = ['public', 'code', 'private'] as const;
 export type LobbyVisibility = (typeof LOBBY_VISIBILITIES)[number];
 
-/** Durées du timer de course en secondes ; 0 = sans timer, jamais plus de 3 min (RACE-9). */
-export const TIMER_OPTIONS = [0, 30, 60, 90, 120, 180] as const;
+/** Durées du timer de course en secondes ; 0 = sans timer, de 30 s à 10 min (CONF-01). */
+export const TIMER_OPTIONS = [0, 30, 60, 90, 120, 180, 240, 300, 600] as const;
 
-/** Plafond système de participants (LOB-6, H-13). */
-export const MAX_CAPACITY = 60;
+/** Plafond système de participants (SALLE-05, CONF-11). */
+export const MAX_CAPACITY = 30;
+export const TIMER_MIN = 30;
+export const TIMER_MAX = 600;
 /** Départ à partir de deux participants, bots compris (LOB-7, H-17). */
 export const MIN_PARTICIPANTS = 2;
 export const WORDS_MIN = 10;
@@ -129,7 +131,7 @@ function updateSettings(room: LobbyRoom, patch: Partial<LobbySettings>): LobbySe
     languages: next.languages.length > 0 ? next.languages : room.settings.languages,
     words: clamp(next.words, WORDS_MIN, WORDS_MAX),
     capacity: clamp(next.capacity, Math.max(MIN_PARTICIPANTS, room.participants.length), MAX_CAPACITY),
-    timer: (TIMER_OPTIONS as readonly number[]).includes(next.timer) ? next.timer : 0,
+    timer: (TIMER_OPTIONS as readonly number[]).includes(next.timer) ? next.timer : room.settings.timer,
     practice: normalizePractice(next.practice),
     visibility: (LOBBY_VISIBILITIES as readonly string[]).includes(next.visibility) ? next.visibility : room.settings.visibility,
   };

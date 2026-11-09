@@ -11,7 +11,7 @@ export const SAMPLE_LOBBIES: LobbySummary[] = [
   { code: 'BGW-OGI', name: 'Boogie Woogie', host: 'Todo_BoogieWoogie', players: 5, capacity: 6, bonus: true, languages: ['fr'], chars: [], words: 45, status: 'waiting' },
   { code: 'MTS-MDT', name: 'Mots maudits', host: 'Toge_Onigiri', players: 3, capacity: 5, bonus: false, languages: ['fr'], chars: ['uppercase', 'accents'], words: 50, status: 'waiting' },
   { code: 'NVC-KYT', name: 'Novices de Kyoto', host: 'Panda_Gorilla', players: 2, capacity: 4, bonus: false, languages: ['en'], chars: [], words: 30, status: 'waiting' },
-  { code: 'SPR-60S', name: 'Sprint 60s', host: 'Yuta_Rika', players: 31, capacity: 40, bonus: true, languages: ['fr', 'en'], chars: ['uppercase', 'digits'], words: 100, status: 'waiting' },
+  { code: 'SPR-60S', name: 'Sprint 60s', host: 'Yuta_Rika', players: 28, capacity: 30, bonus: true, languages: ['fr', 'en'], chars: ['uppercase', 'digits'], words: 100, status: 'waiting' },
   { code: 'CRB-MEI', name: 'Corbeaux', host: 'Mei_Mei', players: 6, capacity: 6, bonus: true, languages: ['fr'], chars: ['uppercase', 'digits', 'punctuation'], words: 80, status: 'waiting' },
   { code: 'SNC-MDT', name: 'Sanctuaire Maudit', host: 'Choso_Blood', players: 3, capacity: 5, bonus: false, languages: ['en'], chars: ['uppercase'], words: 120, status: 'waiting' },
   { code: 'JKP-HKR', name: 'Jackpot', host: 'Hakari_Jackpot', players: 11, capacity: 16, bonus: true, languages: ['en'], chars: ['uppercase', 'digits', 'punctuation'], words: 75, status: 'racing' },

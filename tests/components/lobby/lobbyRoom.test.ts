@@ -3,6 +3,7 @@ import {
   type LobbyRoom,
   type LobbySettings,
   MAX_CAPACITY,
+  TIMER_OPTIONS,
   WORDS_MAX,
   WORDS_MIN,
   isEmpty,
@@ -87,7 +88,7 @@ describe('updateSettings (LOB-5)', () => {
     expect(update(42.6)).toBe(43);
   });
 
-  it('borne la capacité entre le nombre de participants et 60 (LOB-6)', () => {
+  it('borne la capacité entre le nombre de participants et 30 (SALLE-05)', () => {
     const r = room({ participants: [human('Gojo'), human('Yuji'), human('Megumi')] });
     const update = (capacity: number) => lobbyReducer(r, { type: 'updateSettings', by: 'Gojo', patch: { capacity } }).settings.capacity;
     expect(update(1)).toBe(3);
@@ -95,9 +96,22 @@ describe('updateSettings (LOB-5)', () => {
     expect(update(12)).toBe(12);
   });
 
-  it('refuse un timer de plus de trois minutes (RACE-9)', () => {
-    const next = lobbyReducer(room(), { type: 'updateSettings', by: 'Gojo', patch: { timer: 600 } });
-    expect(next.settings.timer).toBe(0);
+  it('fixe le plafond de capacité à 30 (SALLE-05, CONF-11)', () => {
+    expect(MAX_CAPACITY).toBe(30);
+  });
+
+  it('accepte les durées de 4, 5 et 10 minutes (CONF-01)', () => {
+    for (const timer of [240, 300, 600]) {
+      const next = lobbyReducer(room(), { type: 'updateSettings', by: 'Gojo', patch: { timer } });
+      expect(next.settings.timer).toBe(timer);
+    }
+    expect(TIMER_OPTIONS).toEqual([0, 30, 60, 90, 120, 180, 240, 300, 600]);
+  });
+
+  it('refuse un timer inconnu et garde la valeur courante (CONF-01)', () => {
+    const base = lobbyReducer(room(), { type: 'updateSettings', by: 'Gojo', patch: { timer: 60 } });
+    const next = lobbyReducer(base, { type: 'updateSettings', by: 'Gojo', patch: { timer: 45 } });
+    expect(next.settings.timer).toBe(60);
   });
 
   it("change l'accès au lobby (LOB-1)", () => {

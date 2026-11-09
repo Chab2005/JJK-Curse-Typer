@@ -112,7 +112,7 @@ describe('LobbySettingsPanel (LOB-5)', () => {
     await user.type(capacity, '20');
     await user.tab();
     expect(capacity).toHaveValue(20);
-    expect(screen.getByText('Between 3 and 60 participants.')).toBeInTheDocument();
+    expect(screen.getByText('Between 3 and 30 participants.')).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: 'Save' }));
     expect(onChange).toHaveBeenCalledWith({ capacity: 20 });
