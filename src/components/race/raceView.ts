@@ -148,7 +148,26 @@ const STILL: TrackMotion = { now: 0, movedAt: {}, youTypedAt: null };
 
 export const runnerCharacter = racerCharacter;
 
-export function trackRunners(seats: readonly RacerSeat[], standings: readonly Standing[], you: string | null, textLength: number, motion: TrackMotion = STILL): TrackRunner[] {
+/** Qui court en ce moment : le joueur dès qu'il tape, les autres quand la room les voit avancer. Une clé stable (ids joints) : elle ne change que quand quelqu'un se met à courir ou s'arrête. */
+export function runningKey(seats: readonly RacerSeat[], standings: readonly Standing[], you: string | null, motion: TrackMotion): string {
+  const byId = new Map(standings.map((s) => [s.id, s]));
+  return seats
+    .filter((seat) => {
+      const status = byId.get(seat.id)?.status ?? 'racing';
+      const lastMove = seat.id === you ? motion.youTypedAt : motion.movedAt[seat.id];
+      return status === 'racing' && lastMove != null && motion.now - lastMove < RUN_MS;
+    })
+    .map((seat) => seat.id)
+    .join(RUNNING_SEPARATOR);
+}
+
+const RUNNING_SEPARATOR = '\u0000';
+const NOBODY: ReadonlySet<string> = new Set();
+
+export const runningSet = (key: string): ReadonlySet<string> => (key === '' ? NOBODY : new Set(key.split(RUNNING_SEPARATOR)));
+
+/** Coureurs de la piste. `running` : ceux qui courent (voir `runningKey`) ; sans lui, personne n'est dessiné en train de courir. */
+export function trackRunnersFor(seats: readonly RacerSeat[], standings: readonly Standing[], you: string | null, textLength: number, running: ReadonlySet<string> = NOBODY): TrackRunner[] {
   const byId = new Map(standings.map((s) => [s.id, s]));
   return seats.map((seat, i) => {
     const standing = byId.get(seat.id);
@@ -159,11 +178,12 @@ export function trackRunners(seats: readonly RacerSeat[], standings: readonly St
     // Pas de meneur tant que personne n'a tapé un caractère juste.
     const leader = standing?.rank === 1 && (progress > 0 || status === 'finished');
     const isYou = seat.id === you;
-    // Le joueur court dès qu'il tape, sans attendre le tick ; les autres, quand la room les voit avancer.
-    const lastMove = isYou ? motion.youTypedAt : motion.movedAt[seat.id];
-    const running = status === 'racing' && lastMove != null && motion.now - lastMove < RUN_MS;
-    return { seat, x, rank: standing?.rank ?? i + 1, wpm: standing?.wpm ?? 0, status, leader, you: isYou, big: leader || isYou, lane: i % LANES, character: runnerCharacter(seat), running, marks: standing?.marks ?? [] };
+    return { seat, x, rank: standing?.rank ?? i + 1, wpm: standing?.wpm ?? 0, status, leader, you: isYou, big: leader || isYou, lane: i % LANES, character: runnerCharacter(seat), running: running.has(seat.id), marks: standing?.marks ?? [] };
   });
+}
+
+export function trackRunners(seats: readonly RacerSeat[], standings: readonly Standing[], you: string | null, textLength: number, motion: TrackMotion = STILL): TrackRunner[] {
+  return trackRunnersFor(seats, standings, you, textLength, runningSet(runningKey(seats, standings, you, motion)));
 }
 
 export type CharState = 'correct' | 'wrong' | 'pending';

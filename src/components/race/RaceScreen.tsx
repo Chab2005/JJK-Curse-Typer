@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { DOMAIN_MIN_ENERGY, racerCharacter, type Ability, type CastAbility } from '@/game/abilities';
 import { openPrompt, promptKey, type CastPrompt } from '@/game/castPrompt';
 import type { CastRefusal } from '@/game/effects';
@@ -27,7 +27,7 @@ import RaceHud from './RaceHud';
 import RaceSummary, { type SummaryRow } from './RaceSummary';
 import RaceTrack from './RaceTrack';
 import TypingArea from './TypingArea';
-import { HIT_MS, formatClock, initialRaceView, laggedInput, raceViewReducer, trackRunners, trimTrail, type TrailEntry } from './raceView';
+import { HIT_MS, formatClock, initialRaceView, laggedInput, raceViewReducer, runningKey, runningSet, trackRunnersFor, trimTrail, type TrailEntry } from './raceView';
 import { useAbilityNames } from './useAbilityNames';
 import { useRaceSocket } from './useRaceSocket';
 
@@ -243,7 +243,7 @@ export default function RaceScreen({
     setPending(null);
   };
 
-  const seats = race?.seats ?? [];
+  const seats = useMemo(() => race?.seats ?? [], [race]);
   const nameOf = (seat: RacerSeat) => (seat.kind === 'bot' && !seat.summon ? tLobby('botName', { number: seat.name }) : seat.name);
   const nameById = (id: string) => {
     const seat = seats.find((s) => s.id === id);
@@ -308,6 +308,11 @@ export default function RaceScreen({
   const stunned = racing && stunnedAt(powers, elapsed);
   const shownInput = typing && powers.lagUntil > elapsed ? laggedInput(trail, now, typing.input) : typing?.input;
 
+  // La piste ne se redessine que si un classement, un siège ou qui court a changé (PERF-03) : l'horloge de 100 ms n'y suffit pas.
+  const textLength = race?.text.length ?? 0;
+  const runKey = runningKey(seats, standings, you, { now, movedAt: view.movedAt, youTypedAt: typedAt });
+  const runners = useMemo(() => trackRunnersFor(seats, standings, you, textLength, runningSet(runKey)), [seats, standings, you, textLength, runKey]);
+
   const rows: SummaryRow[] = standings.map((s) => {
     const seat = seats.find((candidate) => candidate.id === s.id);
     const isYou = s.id === you;
@@ -350,7 +355,7 @@ export default function RaceScreen({
           {race && (
             <>
               <RaceTrack
-                runners={trackRunners(seats, standings, you, race.text.length, { now, movedAt: view.movedAt, youTypedAt: typedAt })}
+                runners={runners}
                 banner={bannerText()}
                 nameOf={nameOf}
                 hits={hits}

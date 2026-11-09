@@ -79,3 +79,33 @@ describe('RaceTrack (RACE-2, RACE-3)', () => {
     error.mockRestore();
   });
 });
+
+describe('RaceTrack performance (PERF-03)', () => {
+  const crowd = (count: number): TrackRunner[] =>
+    Array.from({ length: count }, (_, i) => ({ seat: seat(`p${i}`), x: i / count, rank: i + 1, wpm: 40 + i, status: 'racing' as const, leader: i === 0, you: i === 3, big: i === 0 || i === 3, lane: i % 4, character: 'yuji' as const, running: i % 2 === 0, marks: [] }));
+
+  it('renders 30 runners, moved with transform and not left', () => {
+    renderWithIntl(<RaceTrack runners={crowd(30)} banner="" nameOf={(s) => s.name} />);
+
+    const plates = screen.getAllByTestId('runner-plate');
+    expect(plates).toHaveLength(30);
+    const runner = plates[5].parentElement!;
+    expect(runner.style.transform).toContain('translateX(');
+    expect(runner.style.left).toBe('');
+    expect(runner.className).toContain('transition-transform');
+  });
+
+  it('does not redraw when its inputs keep the same references', () => {
+    const runners = crowd(30);
+    const hits: never[] = [];
+    const nameOf = vi.fn((s: RacerSeat) => s.name);
+    const { rerender } = renderWithIntl(<RaceTrack runners={runners} banner="b" nameOf={nameOf} hits={hits} />);
+    const calls = nameOf.mock.calls.length;
+    // A new nameOf closure each render (as in RaceScreen) must not defeat the memo.
+    rerender(<RaceTrack runners={runners} banner="b" nameOf={(s) => nameOf(s)} hits={[]} />);
+    expect(nameOf.mock.calls.length).toBe(calls);
+
+    rerender(<RaceTrack runners={crowd(30)} banner="b" nameOf={nameOf} hits={hits} />);
+    expect(nameOf.mock.calls.length).toBeGreaterThan(calls);
+  });
+});

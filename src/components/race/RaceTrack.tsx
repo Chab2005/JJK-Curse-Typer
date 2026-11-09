@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl';
-import type { CSSProperties } from 'react';
+import { memo, type CSSProperties } from 'react';
 import { FramedAvatar } from '@/components/leaderboard/Podium';
 import { ABILITY_SPRITES, shikigamiStyle } from '@/components/characters/abilitySprites';
 import { spriteStyle } from '@/components/characters/characterSprites';
@@ -51,7 +51,7 @@ function hitStyle(ability: TechniqueId): CSSProperties | null {
 
 // Course représentée graphiquement (canvas « Course · style cramoisi ») : la zone d'animation en haut, puis la piste
 // où chacun avance vers la ligne d'arrivée, dessiné en personnage : il court quand il avance, il est au repos sinon.
-export default function RaceTrack({
+function RaceTrackView({
   runners,
   banner,
   nameOf,
@@ -84,7 +84,7 @@ export default function RaceTrack({
         </span>
       </div>
 
-      <div className="relative mx-6 h-[200px] sm:mx-11">
+      <div className="relative mx-6 h-[200px] [container-type:inline-size] sm:mx-11">
         {/* Sol de la piste : une ligne qui rougit vers l'arrivée, et ses graduations. */}
         <div aria-hidden="true" className="absolute inset-x-0 bottom-[34px] h-0.5 bg-linear-to-r from-transparent via-[#8f1022] via-12% to-primary-container" />
         <div aria-hidden="true" className="absolute inset-x-0 bottom-[26px] h-[18px] bg-[repeating-linear-gradient(90deg,rgb(225_29_72/0.35)_0_1px,transparent_1px_10%)]" />
@@ -96,9 +96,10 @@ export default function RaceTrack({
             <div
               key={runner.seat.id}
               title={title}
-              className={`absolute flex -translate-x-1/2 flex-col items-center gap-1 transition-[left] duration-200 ease-linear ${runner.status === 'abandoned' || runner.status === 'summoned' ? 'opacity-40 grayscale' : ''}`}
+              className={`absolute left-0 flex -translate-x-1/2 flex-col items-center gap-1 transition-transform duration-200 ease-linear will-change-transform ${runner.status === 'abandoned' || runner.status === 'summoned' ? 'opacity-40 grayscale' : ''}`}
               style={{
-                left: `calc(${FINISH_ROOM / 2}px + ${runner.x} * (100% - ${FINISH_ROOM}px))`,
+                // `transform` et non `left` (PERF-03) : le déplacement reste sur le compositeur. 100cqw = largeur de la piste.
+                transform: `translateX(calc(${FINISH_ROOM / 2}px + ${runner.x} * (100cqw - ${FINISH_ROOM}px)))`,
                 bottom: runner.you ? 14 : 30 + runner.lane * LANE_STEP,
                 zIndex: runner.you ? 30 : runner.leader ? 20 : 10 - runner.lane,
               }}
@@ -166,3 +167,16 @@ export default function RaceTrack({
     </BevelPanel>
   );
 }
+
+type TrackProps = Parameters<typeof RaceTrackView>[0];
+
+/** Mêmes coureurs (références stables, voir `useMemo` de RaceScreen), même bannière et mêmes coups : rien à redessiner. `nameOf` ne compte pas : il ne dépend que du siège et de la langue. */
+const sameTrack = (a: TrackProps, b: TrackProps) =>
+  a.runners === b.runners &&
+  a.banner === b.banner &&
+  a.domainOpen === b.domainOpen &&
+  (a.hits === b.hits || (a.hits?.length === b.hits?.length && (a.hits ?? []).every((hit, i) => hit === b.hits?.[i])));
+
+// Piste mémoïsée (PERF-03) : l'écran de course se rend toutes les 100 ms, la piste seulement quand quelque chose change.
+const RaceTrack = memo(RaceTrackView, sameTrack);
+export default RaceTrack;
