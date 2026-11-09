@@ -55,6 +55,13 @@ describe('WaitingRoom (LOB-9)', () => {
     expect(participants().getAllByText(/^(Ready|Not ready)$/)).toHaveLength(2);
   });
 
+  it('has a single level-1 heading, the lobby name (A11Y-02)', () => {
+    renderWithIntl(<WaitingRoom initialRoom={ROOM} viewerId="Yuji_BlackFlash" />);
+
+    expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(ROOM.name);
+  });
+
   it('lets a player toggle their ready state', async () => {
     const { user } = renderWithIntl(<WaitingRoom initialRoom={ROOM} viewerId="Yuji_BlackFlash" />);
 

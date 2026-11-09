@@ -25,7 +25,8 @@
     "profileAlt": "Mon profil",
     "menu": {
       "open": "Ouvrir le menu",
-      "close": "Fermer le menu"
+      "close": "Fermer le menu",
+      "nav": "Navigation mobile"
     },
     "login": "Connexion",
     "logout": "Déconnexion"

@@ -14,19 +14,19 @@ export default function LobbyTable({ lobbies }: { lobbies: LobbySummary[] }) {
   const t = useTranslations('Lobbies.table');
 
   return (
-    <table className="block w-full text-left">
+    <table role="table" className="block w-full text-left">
       <caption className="sr-only">{t('caption')}</caption>
-      <thead className="font-label-code block text-[11px] uppercase tracking-[0.16em] text-outline">
-        <tr className={`${COLUMNS} pr-2 pb-2 pl-6 sm:pr-3.5 sm:pl-[59px]`}>
-          <th scope="col" className="font-medium">{t('lobby')}</th>
-          <th scope="col" className="hidden font-medium sm:block">{t('players')}</th>
-          <th scope="col" className="hidden font-medium md:block">{t('language')}</th>
-          <th scope="col" className="hidden font-medium md:block">{t('bonus')}</th>
-          <th scope="col" className="hidden font-medium lg:block">{t('chars')}</th>
-          <th scope="col"><span className="sr-only">{t('action')}</span></th>
+      <thead role="rowgroup" className="font-label-code block text-[11px] uppercase tracking-[0.16em] text-outline">
+        <tr role="row" className={`${COLUMNS} pr-2 pb-2 pl-6 sm:pr-3.5 sm:pl-[59px]`}>
+          <th role="columnheader" scope="col" className="font-medium">{t('lobby')}</th>
+          <th role="columnheader" scope="col" className="hidden font-medium sm:block">{t('players')}</th>
+          <th role="columnheader" scope="col" className="hidden font-medium md:block">{t('language')}</th>
+          <th role="columnheader" scope="col" className="hidden font-medium md:block">{t('bonus')}</th>
+          <th role="columnheader" scope="col" className="hidden font-medium lg:block">{t('chars')}</th>
+          <th role="columnheader" scope="col"><span className="sr-only">{t('action')}</span></th>
         </tr>
       </thead>
-      <tbody className="flex flex-col gap-2.5">
+      <tbody role="rowgroup" className="flex flex-col gap-2.5">
         {lobbies.map((lobby) => (
           <LobbyRow key={lobby.code} lobby={lobby} />
         ))}
@@ -43,8 +43,8 @@ function LobbyRow({ lobby }: { lobby: LobbySummary }) {
   const marker = joinable ? 'bg-primary-container' : lobby.status === 'racing' ? 'bg-secondary' : 'bg-outline-variant';
 
   return (
-    <tr className={`hx-row ${COLUMNS} min-h-[74px] py-2.5 pr-2 pl-6 [--h:14px] sm:pr-3.5 sm:pl-[34px] sm:[--h:22px] ${joinable ? '[--row-frame:#8f1022]' : '[--row-frame:#3a2022]'}`}>
-      <td className="flex min-w-0 items-center gap-4">
+    <tr role="row" className={`hx-row ${COLUMNS} min-h-[74px] py-2.5 pr-2 pl-6 [--h:14px] sm:pr-3.5 sm:pl-[34px] sm:[--h:22px] ${joinable ? '[--row-frame:#8f1022]' : '[--row-frame:#3a2022]'}`}>
+      <td role="cell" className="flex min-w-0 items-center gap-4">
         <span aria-hidden="true" className={`hidden size-2 shrink-0 rotate-45 sm:block ${marker}`} />
         <span className="flex min-w-0 flex-col gap-[3px]">
           <span className="font-grotesk text-[17px] leading-6 text-on-primary-container [overflow-wrap:anywhere] sm:text-[19px]">{lobby.host}</span>
@@ -58,17 +58,17 @@ function LobbyRow({ lobby }: { lobby: LobbySummary }) {
           </span>
         </span>
       </td>
-      <td className="font-label-code hidden text-[15px] whitespace-nowrap sm:block">
+      <td role="cell" className="font-label-code hidden text-[15px] whitespace-nowrap sm:block">
         <span className={`font-label-code ${lobby.players >= lobby.capacity ? 'text-outline' : 'text-on-surface'}`}>
           {t('count', { players: lobby.players, capacity: lobby.capacity })}
         </span>
         {lobby.status === 'racing' && <span className="font-label-code mt-1 block text-[11px] uppercase tracking-widest text-secondary">{t('racing')}</span>}
         {lobby.status === 'waiting' && !joinable && <span className="font-label-code mt-1 block text-[11px] uppercase tracking-widest text-outline">{t('full')}</span>}
       </td>
-      <td className="font-label-code hidden text-[13px] text-[#c9aeaf] md:block">{languagesLabel(lobby)}</td>
-      <td className={`font-label-code hidden text-[13px] md:block ${lobby.bonus ? 'text-tertiary' : 'text-outline'}`}>{lobby.bonus ? t('bonusOn') : t('bonusOff')}</td>
-      <td className="font-label-code hidden text-[13px] text-[#c9aeaf] lg:block">{textCharsLabel(lobby.chars)}</td>
-      <td className="flex justify-end">
+      <td role="cell" className="font-label-code hidden text-[13px] text-[#c9aeaf] md:block">{languagesLabel(lobby)}</td>
+      <td role="cell" className={`font-label-code hidden text-[13px] md:block ${lobby.bonus ? 'text-tertiary' : 'text-outline'}`}>{lobby.bonus ? t('bonusOn') : t('bonusOff')}</td>
+      <td role="cell" className="font-label-code hidden text-[13px] text-[#c9aeaf] lg:block">{textCharsLabel(lobby.chars)}</td>
+      <td role="cell" className="flex justify-end">
         {/* Rejoindre et Regarder ont la même largeur, pour s'aligner d'une rangée à l'autre. */}
         <ChevronButton
           as={Link}

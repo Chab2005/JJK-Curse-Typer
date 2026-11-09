@@ -25,7 +25,8 @@
     "profileAlt": "My profile",
     "menu": {
       "open": "Open menu",
-      "close": "Close menu"
+      "close": "Close menu",
+      "nav": "Mobile navigation"
     },
     "login": "Log in",
     "logout": "Log out"

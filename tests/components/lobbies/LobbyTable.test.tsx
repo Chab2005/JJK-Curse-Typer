@@ -13,3 +13,12 @@ describe('LobbyTable (smoke)', () => {
     expect(screen.getByRole('link', { name: 'Watch Black Flash as a spectator' })).toHaveAttribute('href', '/lobby/BLK-FLS?spectate=1');
   });
 });
+
+describe('LobbyTable semantics (A11Y-02)', () => {
+  it('keeps explicit table roles, since the grid layout can drop the native ones', () => {
+    const { container } = renderWithIntl(<LobbyTable lobbies={SAMPLE_LOBBIES.slice(0, 2)} />);
+    expect(container.querySelectorAll('tr:not([role="row"]), td:not([role="cell"]), th:not([role="columnheader"])')).toHaveLength(0);
+    expect(screen.getByRole('table')).toHaveAttribute('role', 'table');
+    expect(screen.getAllByRole('row')).toHaveLength(3);
+  });
+});
