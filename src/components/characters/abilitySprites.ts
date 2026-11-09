@@ -1,7 +1,7 @@
 import type { CSSProperties } from 'react';
 import type { AbilityId } from './characterAbilities';
 
-// Shikigami en pixel art dans le coin haut droit des cartes de capacités, toujours tournés vers la droite (`flip` pour ceux dessinés vers la gauche). Bandes de
+// Shikigami en pixel art dans le coin haut droit des cartes de capacités, tournés vers la droite par défaut (`flip` pour les retourner vers la gauche ; Toad, Max Elephant, Round Deer, Nue et les Chiens divins regardent à gauche sur la fiche). Bandes de
 // public/images/characters/anim/techniques/ten-shadows/ : `frames` images de `w` × `h` côte à côte (8 par défaut), pattes à 10 px du bas.
 // Comme le sprite de la fiche, ils jouent leur bande idle et passent à `hover` (course, langue…) au survol.
 // Orbes et clous : bandes carrées dans limitless/ et straw-doll/. Une capacité sans entrée n'a pas encore de sprite.
@@ -97,29 +97,29 @@ export const ABILITY_SPRITES: Partial<Record<AbilityId, ShikigamiScene>> = {
       { ...RABBIT, left: -27 },
     ],
   },
-  toad: { width: 92, height: 72, scale: 1.5, sprites: [{ idle: strip('toad-idle.png', 200, 256), hover: strip('toad-tongue.png', 165, 256), left: -67 }] },
+  toad: { width: 92, height: 72, scale: 1.5, sprites: [{ idle: strip('toad-idle.png', 200, 256), hover: strip('toad-tongue.png', 165, 256), left: -220, flip: true }] },
   maxElephant: {
     width: 104,
     height: 68,
     scale: 0.38,
-    sprites: [{ idle: strip('max-elephant-idle.png', 200, 384, { h: 224 }), hover: strip('max-elephant-running.png', 100, 384, { h: 224 }), left: -30 }],
+    sprites: [{ idle: strip('max-elephant-idle.png', 200, 384, { h: 224 }), hover: strip('max-elephant-running.png', 100, 384, { h: 224 }), left: -8, flip: true }],
   },
-  // Dessiné vers la gauche, il est retourné ; il vole sur place et, au survol, la foudre qui étourdit (images de 150 ms en moyenne).
+  // Dessiné vers la gauche : il n'est pas retourné ; il vole sur place et, au survol, la foudre qui étourdit (images de 150 ms en moyenne).
   // `foot` : le bas de la scène frôle ses pattes en vol ; la bande de foudre dessine Nue 31 px plus haut, d'où 31 px
   // de plus pour qu'il reste à la même hauteur et que l'éclair tombe sous la scène.
   nue: {
     width: 72,
     height: 80,
     scale: 0.7,
-    sprites: [{ idle: strip('nue-flying.png', 90, 192, { h: 256, foot: 50 }), hover: strip('nue-lightning.png', 150, 192, { h: 256, foot: 81 }), left: -45, flip: true }],
+    sprites: [{ idle: strip('nue-flying.png', 90, 192, { h: 256, foot: 50 }), hover: strip('nue-lightning.png', 150, 192, { h: 256, foot: 81 }), left: -57 }],
   },
-  roundDeer: { width: 105, height: 128, scale: 1, sprites: [{ idle: strip('round-deer-idle.png', 200), hover: strip('round-deer-running.png', 80, 128, { zoom: 1.2, foot: 8 }), left: -13 }] },
+  roundDeer: { width: 105, height: 128, scale: 1, sprites: [{ idle: strip('round-deer-idle.png', 200), hover: strip('round-deer-running.png', 80, 128, { zoom: 1.2, foot: 8 }), left: -13, flip: true }] },
   divineDogs: {
     width: 122,
     height: 70,
     sprites: [
-      { idle: strip('divine-dog-black-idle.png', 200), hover: strip('divine-dog-black-running.png', 80), left: -10 },
-      { idle: strip('divine-dog-white-idle.png', 200), hover: strip('divine-dog-white-running.png', 80, 160), left: 32, delay: 4 },
+      { idle: strip('divine-dog-black-idle.png', 200), hover: strip('divine-dog-black-running.png', 80), left: -14, flip: true },
+      { idle: strip('divine-dog-white-idle.png', 200), hover: strip('divine-dog-white-running.png', 80, 160), left: 31, delay: 4, flip: true },
     ],
   },
   // Course de 9 images sur 800 ms : l'image où la lame passait au bras arrière a été retirée.

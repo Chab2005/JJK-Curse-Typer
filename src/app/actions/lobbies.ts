@@ -4,7 +4,7 @@ import { headers } from 'next/headers';
 import { getTranslations } from 'next-intl/server';
 import type { QuickPlayResult } from '@/components/home/quickPlay';
 import { canInvite, clientIp, type InviteLink, inviteToClaim, isInviteToken, needsInvite } from '@/components/lobby/lobbyAccess';
-import type { LobbyRoom } from '@/components/lobby/lobbyRoom';
+import { joinRefusal, type LobbyRoom } from '@/components/lobby/lobbyRoom';
 import { getViewer, getViewerId, type Viewer } from '@/lib/currentUser';
 import { claimInvite, createInvites, deleteInvite, deleteInvites, listInvites, revokeInvites } from '@/lib/invites';
 import { createLobby, findQuickLobby, parseLobbyAction, storedLobby, updateLobby } from '@/lib/lobbies';
@@ -53,6 +53,8 @@ export async function joinLobbyAction(code: string, options: { spectate?: boolea
   const viewer = await getViewer();
   const room = typeof code === 'string' ? storedLobby(code) : null;
   if (!viewer || !room) return null;
+  // Expulsé (SALLE-07) ou course lancée (SALLE-09) : refusé avant de consommer le lien.
+  if (joinRefusal(room, viewer.id)) return null;
   const token = inviteToClaim(room, viewer.id, options?.invite);
   const claimed = token !== null && (await claimInvite(token, room.code, clientIp(await headers()), viewer));
   if (needsInvite(room, viewer.id) && !claimed) return null;

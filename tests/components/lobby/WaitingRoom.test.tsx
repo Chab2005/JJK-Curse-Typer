@@ -17,6 +17,7 @@ const ROOM: LobbyRoom = {
     { kind: 'bot', id: 'bot-1', level: 'grade_1', number: 1 },
   ],
   spectators: [{ id: 'Ijichi_Driver', name: 'Ijichi_Driver', avatar: null }],
+  banned: [],
   settings: { languages: ['fr'], content: 'sentences', words: 60, chars: ['uppercase'], practice: '', timer: 0, errorMode: 'accumulate', gameMode: 'normal', bonus: true, capacity: 4, visibility: 'public' },
 };
 

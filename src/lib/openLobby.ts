@@ -1,7 +1,7 @@
 import 'server-only';
 import { headers } from 'next/headers';
 import { clientIp, isInviteToken, needsInvite } from '@/components/lobby/lobbyAccess';
-import type { LobbyRoom } from '@/components/lobby/lobbyRoom';
+import { joinRefusal, type LobbyRoom } from '@/components/lobby/lobbyRoom';
 import { getViewer } from '@/lib/currentUser';
 import { inviteOpens } from '@/lib/invites';
 import { findLobby, storedLobby } from '@/lib/lobbies';
@@ -20,6 +20,7 @@ export async function inviteValid(invite: unknown, code: string): Promise<boolea
 export async function openLobby(code: string, { spectate = false, invite }: { spectate?: boolean; invite?: unknown }): Promise<LobbyRoom | null> {
   const viewer = await getViewer();
   const stored = storedLobby(code);
+  if (stored && viewer && joinRefusal(stored, viewer.id)) return null;
   if (stored && needsInvite(stored, viewer?.id ?? '') && !(await inviteValid(invite, stored.code))) return null;
   return findLobby(code, viewer ? { id: viewer.id, name: viewer.name, avatar: null, photo: viewer.photo } : '', spectate);
 }

@@ -49,6 +49,7 @@ export function findSampleRoom(code: string, viewer: string, spectate: boolean):
     hostId: lobby.host,
     participants,
     spectators,
+    banned: [],
     settings: {
       languages: lobby.languages,
       content: lobby.chars.includes('punctuation') ? 'sentences' : 'words',

@@ -80,6 +80,8 @@ export interface LobbyRoom {
   /** Dans l'ordre d'arrivée : le plus ancien humain succède à l'hôte (H-18). */
   participants: Participant[];
   spectators: Spectator[];
+  /** Humains expulsés par l'hôte : ils ne rentrent plus (SALLE-07). */
+  banned: string[];
   settings: LobbySettings;
 }
 
@@ -143,12 +145,22 @@ function addBot(room: LobbyRoom, level: BotLevel): LobbyRoom {
   return { ...room, participants: [...room.participants, { kind: 'bot', id: `bot-${number}`, level, number }] };
 }
 
+export type JoinRefusal = 'banned' | 'racing';
+
+/** Raison pour laquelle `id` ne peut pas entrer : expulsé (SALLE-07) ou course lancée (SALLE-09). Quelqu'un déjà dedans n'est jamais refusé. */
+export function joinRefusal(room: LobbyRoom, id: string): JoinRefusal | null {
+  if (room.banned.includes(id)) return 'banned';
+  if (room.status !== 'waiting' && !isInside(room, id)) return 'racing';
+  return null;
+}
+
 function kick(room: LobbyRoom, id: string): LobbyRoom {
   if (id === room.hostId) return room;
   const participants = room.participants.filter((p) => p.id !== id);
   const spectators = room.spectators.filter((s) => s.id !== id);
   if (participants.length === room.participants.length && spectators.length === room.spectators.length) return room;
-  return { ...room, participants, spectators };
+  const human = room.participants.some((p) => p.id === id && p.kind === 'human') || room.spectators.some((s) => s.id === id);
+  return { ...room, participants, spectators, banned: human ? [...room.banned, id] : room.banned };
 }
 
 function transferHost(room: LobbyRoom, id: string): LobbyRoom {
@@ -169,9 +181,9 @@ function setCharacter(room: LobbyRoom, id: string, character: CharacterId): Lobb
 }
 
 function join(room: LobbyRoom, person: Spectator, spectate: boolean): LobbyRoom {
-  if (isInside(room, person.id)) return room;
+  if (isInside(room, person.id) || joinRefusal(room, person.id)) return room;
   const { id, name, avatar, photo = null } = person;
-  const joinable = !spectate && room.status === 'waiting' && room.participants.length < room.settings.capacity;
+  const joinable = !spectate && room.participants.length < room.settings.capacity;
   return joinable
     ? { ...room, participants: [...room.participants, { kind: 'human', id, name, avatar: avatar ?? DEFAULT_CHARACTER, photo, ready: false }] }
     : { ...room, spectators: [...room.spectators, { id, name, avatar, photo }] };

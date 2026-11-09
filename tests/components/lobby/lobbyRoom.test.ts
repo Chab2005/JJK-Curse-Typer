@@ -8,6 +8,7 @@ import {
   WORDS_MIN,
   isEmpty,
   isSpectating,
+  joinRefusal,
   lobbyReducer,
   normalizePractice,
   readyCount,
@@ -38,6 +39,7 @@ const room = (overrides: Partial<LobbyRoom> = {}): LobbyRoom => ({
   hostId: 'Gojo',
   participants: [human('Gojo', true), human('Yuji')],
   spectators: [{ id: 'Ijichi', name: 'Ijichi', avatar: null }],
+  banned: [],
   settings: SETTINGS,
   ...overrides,
 });
@@ -235,11 +237,33 @@ describe('join', () => {
     expect(watching.spectators.at(-1)).toMatchObject({ id: 'Nobara', photo });
   });
 
-  it('le met en spectateur s’il le demande, si le salon est plein ou si la course est partie', () => {
+  it('le met en spectateur s’il le demande ou si le salon est plein', () => {
     expect(isSpectating(lobbyReducer(room(), { type: 'join', person: person('Nobara'), spectate: true }), 'Nobara')).toBe(true);
     const full = room({ settings: { ...SETTINGS, capacity: 2 } });
     expect(isSpectating(lobbyReducer(full, { type: 'join', person: person('Nobara'), spectate: false }), 'Nobara')).toBe(true);
-    expect(isSpectating(lobbyReducer(room({ status: 'racing' }), { type: 'join', person: person('Nobara'), spectate: false }), 'Nobara')).toBe(true);
+  });
+
+  it('refuse toute arrivée une fois la course lancée, joueur ou spectateur (SALLE-09)', () => {
+    const racing = room({ status: 'racing' });
+    expect(lobbyReducer(racing, { type: 'join', person: person('Nobara'), spectate: false })).toBe(racing);
+    expect(lobbyReducer(racing, { type: 'join', person: person('Nobara'), spectate: true })).toBe(racing);
+    expect(joinRefusal(racing, 'Nobara')).toBe('racing');
+    expect(joinRefusal(racing, 'Yuji')).toBeNull();
+    expect(joinRefusal(room(), 'Nobara')).toBeNull();
+  });
+
+  it('refuse un joueur expulsé, y compris par le lien spectateur (SALLE-07)', () => {
+    const kicked = lobbyReducer(room(), { type: 'kick', by: 'Gojo', id: 'Yuji' });
+    expect(kicked.banned).toEqual(['Yuji']);
+    expect(lobbyReducer(kicked, { type: 'join', person: person('Yuji'), spectate: false })).toBe(kicked);
+    expect(lobbyReducer(kicked, { type: 'join', person: person('Yuji'), spectate: true })).toBe(kicked);
+    expect(joinRefusal(kicked, 'Yuji')).toBe('banned');
+  });
+
+  it('bannit aussi un spectateur expulsé mais jamais un bot (SALLE-07)', () => {
+    const withBot = lobbyReducer(room(), { type: 'addBot', by: 'Gojo', level: 'grade_4' });
+    expect(lobbyReducer(withBot, { type: 'kick', by: 'Gojo', id: 'Ijichi' }).banned).toEqual(['Ijichi']);
+    expect(lobbyReducer(withBot, { type: 'kick', by: 'Gojo', id: 'bot-1' }).banned).toEqual([]);
   });
 
   it('ne change rien pour quelqu’un déjà dans le salon', () => {

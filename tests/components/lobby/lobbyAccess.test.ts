@@ -43,6 +43,7 @@ const room = (visibility: LobbyVisibility, overrides: Partial<LobbyRoom> = {}): 
     { kind: 'bot', id: 'bot-1', level: 'grade_1', number: 1 },
   ],
   spectators: [{ id: 'Ijichi', name: 'Ijichi', avatar: null }],
+  banned: [],
   settings: { ...SETTINGS, visibility },
   ...overrides,
 });

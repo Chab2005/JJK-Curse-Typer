@@ -38,6 +38,7 @@ export function newLobbyRoom(code: string, name: string, host: Spectator): Lobby
     hostId: host.id,
     participants: [{ kind: 'human', ...host, avatar: host.avatar ?? DEFAULT_CHARACTER, ready: true }],
     spectators: [],
+    banned: [],
     settings: DEFAULT_LOBBY_SETTINGS,
   };
 }
