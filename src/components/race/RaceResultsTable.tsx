@@ -1,4 +1,5 @@
 import { useFormatter, useTranslations } from 'next-intl';
+import BotBadge from './BotBadge';
 import { FramedAvatar } from '@/components/leaderboard/Podium';
 import type { SummaryRow } from './RaceSummary';
 
@@ -37,6 +38,7 @@ export default function RaceResultsTable({ rows }: { rows: SummaryRow[] }) {
                 <FramedAvatar player={{ username: row.name, avatar: row.avatar, photo: row.photo }} size={30} frame="bg-[#8f1022]" />
                 <span className="font-grotesk truncate text-[17px]">{row.name}</span>
                 {row.you && <span className="font-label-code shrink-0 text-[12px] text-primary">{t('you')}</span>}
+                {row.bot && <BotBadge />}
               </span>
             </td>
             <td role="cell" className="font-label-code text-right text-[15px] font-bold whitespace-nowrap text-on-surface">{t('wpmValue', { value: row.wpm })}</td>

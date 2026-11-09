@@ -6,8 +6,8 @@ import { renderWithIntl } from '../../render';
 
 const ROWS: SummaryRow[] = [
   { id: 'nobara', rank: 4, name: 'Nobara', avatar: 'nobara', wpm: 52, accuracy: 0.931, status: 'finished', you: true },
-  { id: 'bot-2', rank: 5, name: 'Cursed corpse 2', avatar: null, wpm: 20, accuracy: 0.8, status: 'abandoned', you: false },
-  { id: 'bot-3', rank: 6, name: 'Cursed corpse 3', avatar: null, wpm: 15, accuracy: 0.85, status: 'stopped', you: false },
+  { id: 'bot-2', rank: 5, name: 'Cursed corpse 2', avatar: null, wpm: 20, accuracy: 0.8, status: 'abandoned', you: false, bot: true },
+  { id: 'bot-3', rank: 6, name: 'Cursed corpse 3', avatar: null, wpm: 15, accuracy: 0.85, status: 'stopped', you: false, bot: true },
 ];
 
 describe('RaceResultsTable (smoke)', () => {
@@ -20,5 +20,13 @@ describe('RaceResultsTable (smoke)', () => {
     expect(within(table).getByText('Abandoned')).toBeInTheDocument();
     expect(within(table).getByText('Stopped')).toBeInTheDocument();
     expect(within(table).getByText('(you)')).toBeInTheDocument();
+  });
+});
+
+describe('RaceResultsTable bot badge (BOT-04)', () => {
+  it('marks bots with a badge and humans without', () => {
+    renderWithIntl(<RaceResultsTable rows={ROWS} />);
+    const rows = within(screen.getByRole('table', { name: 'Results' })).getAllByRole('row').slice(1);
+    expect(rows.map((row) => within(row).queryAllByTestId('bot-badge').length)).toEqual([0, 1, 1]);
   });
 });

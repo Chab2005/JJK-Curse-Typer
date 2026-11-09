@@ -13,6 +13,14 @@ const RUNNERS: TrackRunner[] = [
   { seat: seat('1', 'bot'), x: 1, rank: 3, wpm: 70, status: 'finished', leader: false, you: false, big: false, lane: 2, character: 'todo', running: false, marks: [] },
 ];
 
+describe('RaceTrack bot badge (BOT-04)', () => {
+  it('shows a Bot badge on bot plates only', () => {
+    renderWithIntl(<RaceTrack runners={RUNNERS} banner="" nameOf={(s) => s.name} />);
+    const plates = screen.getAllByTestId('runner-plate');
+    expect(plates.map((plate) => within(plate).queryAllByTestId('bot-badge').length)).toEqual([0, 0, 1]);
+  });
+});
+
 describe('RaceTrack nameplates (COURSE-05)', () => {
   it('shows each racer name, avatar and live WPM on the track, not only in a title', () => {
     renderWithIntl(<RaceTrack runners={RUNNERS} banner="" nameOf={(s) => (s.kind === 'bot' ? `Bot ${s.name}` : s.name)} />);

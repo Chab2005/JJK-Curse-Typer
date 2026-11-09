@@ -8,6 +8,7 @@ import { Chevrons } from '@/components/shared/ChevronButton';
 import type { AbilityId, TechniqueId } from '@/game/abilities';
 import type { RacerMark } from '@/game/powers';
 import type { RacerSeat } from '@/game/race';
+import BotBadge from './BotBadge';
 import type { RaceHit, TrackRunner } from './raceView';
 
 /** Taille des personnages, en fraction du fichier : le meneur et le joueur sont plus gros (RACE-2, RACE-3). */
@@ -128,6 +129,7 @@ export default function RaceTrack({
               >
                 <FramedAvatar player={{ username: name, avatar: runner.seat.avatar ?? runner.character, photo: runner.seat.photo ?? null }} size={16} frame={runner.you ? 'bg-primary-container' : 'bg-[#8f1022]'} />
                 <span className="min-w-0 truncate">{name}</span>
+                {runner.seat.kind === 'bot' && !runner.seat.summon && <BotBadge />}
                 <span className="shrink-0 tabular-nums text-on-surface-variant">{t('wpm', { value: Math.round(runner.wpm) })}</span>
               </span>
               {runner.you && (

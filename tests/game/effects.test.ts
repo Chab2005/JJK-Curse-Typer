@@ -389,3 +389,32 @@ describe('bots', () => {
     expect(race.notices).toEqual([]);
   });
 });
+
+describe('bots soumis aux techniques comme les humains (BOT-04)', () => {
+  /** Un joueur (p0, Nobara) derrière un bot (b, Gojo) déjà bien avancé. */
+  function againstBot(): RaceState {
+    const seats: RacerSeat[] = [human('p0', 'nobara'), { id: 'b', name: '1', avatar: 'gojo', kind: 'bot', level: 'grade_4' }];
+    const base = createRace({ seats, text: TEXT, mode: 'accumulate', timerMs: 0, bonus: true, now: T0, seed: 7 });
+    const started = raceReducer(raceReducer(base, { type: 'claim', id: 'p0', now: T0 }), { type: 'tick', now: START });
+    const ready = { ...started, racers: started.racers.map((r) => ({ ...r, energy: 1500 })) };
+    return at(ready, 'b', 100);
+  }
+
+  it('compte le bot parmi les cibles de la moitié de tête', () => {
+    expect(topHalf(againstBot(), 'p0').map((r) => r.seat.id)).toEqual(['b']);
+  });
+
+  it('étourdit un bot touché par une technique d’un joueur', () => {
+    const { race, refused } = cast(againstBot(), 'p0', 'resonance', 2000);
+    expect(refused).toBeNull();
+    expect(racer(race, 'b').powers.stun).not.toBeNull();
+    expect(race.notices.at(-1)).toMatchObject({ by: 'p0', target: 'b' });
+  });
+
+  it('laisse un bot se protéger par Rouge, qui annule la technique du joueur', () => {
+    const guarded = cast(againstBot(), 'b', 'red').race;
+    const { race } = cast(guarded, 'p0', 'resonance', 2000);
+    expect(racer(race, 'b').powers.stun).toBeNull();
+    expect(race.notices.at(-1)).toMatchObject({ outcome: 'deflected' });
+  });
+});

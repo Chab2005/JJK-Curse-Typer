@@ -7,7 +7,7 @@ import { renderWithIntl } from '../../render';
 const ROWS: SummaryRow[] = [
   { id: 'yuji', rank: 1, name: 'Yuji', avatar: 'yuji', wpm: 81, accuracy: 0.97, status: 'finished', you: false },
   { id: 'me', rank: 2, name: 'Megumi', avatar: 'megumi', wpm: 64, accuracy: 0.952, status: 'finished', you: true },
-  { id: 'bot-1', rank: 3, name: 'Cursed corpse 1', avatar: null, wpm: 30, accuracy: 0.9, status: 'timeout', you: false },
+  { id: 'bot-1', rank: 3, name: 'Cursed corpse 1', avatar: null, wpm: 30, accuracy: 0.9, status: 'timeout', you: false, bot: true },
 ];
 
 describe('RacePodium (smoke)', () => {
@@ -26,5 +26,12 @@ describe('RacePodium (smoke)', () => {
     const { container } = renderWithIntl(<RacePodium rows={[]} />);
 
     expect(container).toBeEmptyDOMElement();
+  });
+});
+
+describe('RacePodium bot badge (BOT-04)', () => {
+  it('marks a bot on the podium', () => {
+    renderWithIntl(<RacePodium rows={ROWS} />);
+    expect(within(screen.getByRole('region', { name: 'Race podium' })).getAllByTestId('bot-badge')).toHaveLength(1);
   });
 });

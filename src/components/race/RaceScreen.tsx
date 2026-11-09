@@ -323,6 +323,7 @@ export default function RaceScreen({
       accuracy: s.accuracy,
       status,
       you: isYou,
+      bot: seat?.kind === 'bot',
     };
   });
 

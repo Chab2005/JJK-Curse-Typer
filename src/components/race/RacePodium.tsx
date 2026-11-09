@@ -1,5 +1,6 @@
 import { useFormatter, useTranslations } from 'next-intl';
 import { FramedAvatar, METALS } from '@/components/leaderboard/Podium';
+import BotBadge from './BotBadge';
 import type { SummaryRow } from './RaceSummary';
 
 // Les trois premiers de la course, en cartes pointées comme le podium du classement général :
@@ -18,6 +19,7 @@ export default function RacePodium({ rows }: { rows: SummaryRow[] }) {
     <>
       {row.name}
       {row.you && <span className="font-label-code ml-2 text-[13px] font-normal text-primary">{t('you')}</span>}
+      {row.bot && <BotBadge className="ml-2 align-middle" />}
     </>
   );
   const racer = (row: SummaryRow) => ({ username: row.name, avatar: row.avatar, photo: row.photo });

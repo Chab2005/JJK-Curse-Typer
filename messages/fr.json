@@ -883,6 +883,7 @@
       "label": "Décompte",
       "go": "Partez !"
     },
+    "bot": "Bot",
     "track": {
       "label": "Piste de course",
       "finish": "Ligne d'arrivée",

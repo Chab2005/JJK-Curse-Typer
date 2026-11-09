@@ -19,6 +19,8 @@ export interface SummaryRow {
   accuracy: number;
   status: RacerStatus;
   you: boolean;
+  /** Participant simulé (BOT-04) : repéré par une pastille. */
+  bot?: boolean;
 }
 
 // Seuls les bots sont arrêtés (`stopped`) : un joueur n'a jamais cet en-tête.
