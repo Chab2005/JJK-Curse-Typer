@@ -23,7 +23,7 @@ export default function CookieConsent() {
       <div className="flex flex-col gap-2">
         <h2
           id="cookie-consent-title"
-          className="flex items-center gap-2.5 font-label-code text-[12px] font-bold uppercase tracking-[0.28em] text-primary-container"
+          className="flex items-center gap-2.5 font-label-code text-[12px] font-bold uppercase tracking-[0.28em] text-primary-text"
         >
           <span aria-hidden="true" className="material-symbols-outlined text-[18px] tracking-normal normal-case">
             cookie

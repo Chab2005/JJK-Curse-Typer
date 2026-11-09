@@ -22,7 +22,7 @@ export default function NotFound({ variant }: { variant: NotFoundVariant }) {
   return (
     <section aria-labelledby="not-found-title" className="relative mx-auto flex max-w-[720px] flex-col items-center gap-5 px-6 pt-24 pb-32 text-center">
       <p aria-hidden="true" className="text-stroke-ghost pointer-events-none absolute top-8 text-[180px] leading-none sm:text-[220px]">404</p>
-      <p className="font-label-code relative text-[12px] font-bold uppercase tracking-[0.32em] text-primary-container">{t(`${variant}.eyebrow`)}</p>
+      <p className="font-label-code relative text-[12px] font-bold uppercase tracking-[0.32em] text-primary-text">{t(`${variant}.eyebrow`)}</p>
       <h1 id="not-found-title" className="relative text-[clamp(34px,4.5vw,56px)] leading-tight uppercase tracking-[0.08em]">{t(`${variant}.title`)}</h1>
       <p className="relative max-w-[520px] text-lg leading-7 text-on-surface-variant">{t(`${variant}.text`)}</p>
       <BevelFrame

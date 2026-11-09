@@ -100,7 +100,7 @@ export default function StatChart({ races, now }: { races: RaceStat[]; now: stri
           footerAlign="end"
         >
           <fieldset className="flex flex-col gap-1.5">
-            <legend className="font-label-code mb-2 text-[11px] font-bold uppercase tracking-[0.2em] text-primary-container">{t('statLegend')}</legend>
+            <legend className="font-label-code mb-2 text-[11px] font-bold uppercase tracking-[0.2em] text-primary-text">{t('statLegend')}</legend>
             {STATS.map((s) => (
               <PlateOption
                 key={s}

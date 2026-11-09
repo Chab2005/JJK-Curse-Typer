@@ -35,7 +35,7 @@ export default function KeyboardHeatmap({ stats }: { stats: KeyStat[] }) {
     <BevelPanel as="section" aria-labelledby="heatmap-title" className="flex flex-col gap-5 px-5 pt-6 pb-7 sm:px-8">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 id="heatmap-title" className="flex items-center gap-2.5 text-[20px] uppercase tracking-[0.1em] text-on-surface">
-          <span aria-hidden="true" className="material-symbols-outlined text-[20px] text-primary-container">keyboard</span>
+          <span aria-hidden="true" className="material-symbols-outlined text-[20px] text-primary-text">keyboard</span>
           {t('title')}
         </h2>
         <div className="flex flex-wrap items-center gap-2">
@@ -80,7 +80,7 @@ export default function KeyboardHeatmap({ stats }: { stats: KeyStat[] }) {
 
       {weakest.length > 0 && (
         <div className="flex flex-wrap items-center gap-2.5 border-t border-[#8f1022]/60 pt-[18px]">
-          <p className="font-label-code mr-1.5 text-[11px] font-bold uppercase tracking-[0.2em] text-primary-container">{t('weakest')}</p>
+          <p className="font-label-code mr-1.5 text-[11px] font-bold uppercase tracking-[0.2em] text-primary-text">{t('weakest')}</p>
           <ul className="flex flex-wrap gap-2">
             {weakest.map((key) => (
               <li key={key.label} className="hx-cut flex bg-primary-container p-px [--h:10px]">

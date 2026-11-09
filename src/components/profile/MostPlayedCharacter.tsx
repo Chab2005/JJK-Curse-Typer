@@ -29,7 +29,7 @@ export default function MostPlayedCharacter({ character, totalGames }: { charact
         </div>
       </div>
       <p className="mt-2.5 flex items-center gap-2 font-label-code text-[11px] uppercase tracking-[0.16em] text-[#c9aeaf]">
-        <span aria-hidden="true" className="material-symbols-outlined text-[16px] text-primary-container">swords</span>
+        <span aria-hidden="true" className="material-symbols-outlined text-[16px] text-primary-text">swords</span>
         {t('title')}
       </p>
       <h2 id="most-played" className="font-grotesk text-[28px] leading-tight font-semibold text-[#fffaf9]">{name}</h2>

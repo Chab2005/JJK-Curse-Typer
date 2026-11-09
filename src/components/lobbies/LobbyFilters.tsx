@@ -55,7 +55,7 @@ export default function LobbyFilters({ filters, onChange }: { filters: Filters; 
 function Group({ legend, hint, children }: { legend: string; hint?: string; children: React.ReactNode }) {
   return (
     <fieldset className="flex flex-col gap-1.5">
-      <legend className="font-label-code mb-2 text-[11px] font-bold uppercase tracking-[0.2em] text-primary-container">{legend}</legend>
+      <legend className="font-label-code mb-2 text-[11px] font-bold uppercase tracking-[0.2em] text-primary-text">{legend}</legend>
       {hint && <p className="mb-1 text-[13px] leading-5 text-outline">{hint}</p>}
       {children}
     </fieldset>

@@ -28,7 +28,7 @@ function ArrowButton({ direction, label, disabled, onClick }: { direction: 'left
       onClick={onClick}
       disabled={disabled}
       aria-label={label}
-      className={`flex min-h-12 min-w-[136px] items-center justify-center px-1 text-primary-container transition-[translate,filter] duration-300 hover:brightness-140 hover:drop-shadow-[0_0_10px_rgb(225_29_72/0.55)] disabled:pointer-events-none disabled:opacity-30 motion-reduce:transition-none ${
+      className={`flex min-h-12 min-w-[136px] items-center justify-center px-1 text-primary-text transition-[translate,filter] duration-300 hover:brightness-140 hover:drop-shadow-[0_0_10px_rgb(225_29_72/0.55)] disabled:pointer-events-none disabled:opacity-30 motion-reduce:transition-none ${
         direction === 'left' ? 'hover:-translate-x-1.5' : 'hover:translate-x-1.5'
       }`}
     >

@@ -64,7 +64,7 @@ export default function GameGuide() {
 
       <div className="relative mx-auto flex max-w-[1152px] flex-col gap-12">
         <div className="flex max-w-[720px] flex-col gap-3.5">
-          <p className="font-label-code text-[12px] font-bold uppercase tracking-[0.32em] text-primary-container">{t('eyebrow')}</p>
+          <p className="font-label-code text-[12px] font-bold uppercase tracking-[0.32em] text-primary-text">{t('eyebrow')}</p>
           <h2 id="guide-title" className="text-[clamp(36px,5vw,64px)] leading-[1.1] uppercase tracking-[0.06em]">
             {t('titleLine1')}
             <br />
@@ -168,7 +168,7 @@ export default function GameGuide() {
         </div>
 
         <div className="flex flex-col gap-[18px]">
-          <p className="font-label-code text-[12px] font-bold uppercase tracking-[0.32em] text-primary-container">{t('rulesTitle')}</p>
+          <p className="font-label-code text-[12px] font-bold uppercase tracking-[0.32em] text-primary-text">{t('rulesTitle')}</p>
           <ul className="grid auto-rows-fr gap-5 md:grid-cols-2 lg:grid-cols-4">
             <RuleCard title={t('rules.host.title')} text={t('rules.host.text')}>
               <span className="guide-switch hx-cut relative h-[30px] w-[62px] shrink-0 transition-colors duration-300 [--h:10px]">
@@ -207,7 +207,7 @@ export default function GameGuide() {
         </div>
 
         <section aria-labelledby="controls-title" className="flex flex-col gap-[18px]">
-          <p id="controls-title" className="font-label-code text-[12px] font-bold uppercase tracking-[0.32em] text-primary-container">{t('controls.title')}</p>
+          <p id="controls-title" className="font-label-code text-[12px] font-bold uppercase tracking-[0.32em] text-primary-text">{t('controls.title')}</p>
           <ControlsIntro />
           <ul className="grid gap-3 md:grid-cols-3">
             {CONTROLS.map((ability) => (
@@ -250,7 +250,7 @@ function Caption({ number, stroke, eyebrow, title, text }: { number: string; str
     <div className="flex items-start gap-[18px]">
       <span aria-hidden="true" className={`font-grotesk text-[64px] leading-[0.8] font-bold text-transparent ${stroke}`}>{number}</span>
       <div className="flex min-w-0 flex-col gap-1.5">
-        {eyebrow && <p className="font-label-code text-[11px] font-bold uppercase tracking-[0.28em] text-primary-container">{eyebrow}</p>}
+        {eyebrow && <p className="font-label-code text-[11px] font-bold uppercase tracking-[0.28em] text-primary-text">{eyebrow}</p>}
         <h3 className="font-grotesk text-2xl leading-[1.2] font-semibold">{title}</h3>
         <p className="text-base leading-[25px] text-on-surface-variant">{text}</p>
       </div>

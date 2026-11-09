@@ -54,7 +54,7 @@ export default function Characters() {
 
       <div className="relative mx-auto flex max-w-[1240px] flex-col gap-10">
         <div className="flex flex-col gap-2">
-          <p className="font-label-code text-[12px] font-bold uppercase tracking-[0.32em] text-primary-container">{t('eyebrow')}</p>
+          <p className="font-label-code text-[12px] font-bold uppercase tracking-[0.32em] text-primary-text">{t('eyebrow')}</p>
           <h2 id="characters-title" className="text-[clamp(36px,4.5vw,56px)] leading-tight uppercase tracking-[0.08em]">{t('title')}</h2>
         </div>
 

@@ -71,13 +71,13 @@ export default function RaceTrack({
     <BevelPanel as="section" aria-label={t('label')} frame={domainOpen ? SEE_THROUGH : ''}>
       {/* Zone d'animation : dépassements, meneur, plus tard les bonus (RACE-5). */}
       <div className="flex min-h-[58px] items-center justify-center gap-3 border-b border-[#8f1022]/70 px-6 py-3">
-        <span aria-hidden="true" className="flex h-5 w-2.5 shrink-0 text-primary-container">
+        <span aria-hidden="true" className="flex h-5 w-2.5 shrink-0 text-primary-text">
           <Chevrons order="decreasing" className="size-full -scale-x-100" />
         </span>
         <p key={banner} aria-live="polite" className="race-pop text-center text-[20px] tracking-[0.12em] text-on-primary-container uppercase">
           {banner}
         </p>
-        <span aria-hidden="true" className="flex h-5 w-2.5 shrink-0 text-primary-container">
+        <span aria-hidden="true" className="flex h-5 w-2.5 shrink-0 text-primary-text">
           <Chevrons order="decreasing" className="size-full" />
         </span>
       </div>

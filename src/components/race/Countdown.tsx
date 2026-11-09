@@ -9,7 +9,7 @@ export default function Countdown({ seconds }: { seconds: number }) {
 
   return (
     <div role="status" aria-label={t('label')} className="flex items-center justify-center gap-2">
-      <span aria-hidden="true" className="flex h-24 w-9 text-primary-container">
+      <span aria-hidden="true" className="flex h-24 w-9 text-primary-text">
         <Chevrons className="size-full" />
       </span>
       <span key={seconds} className="race-pop drop-shadow-[0_0_30px_rgb(225_29_72/0.45)]">
@@ -17,7 +17,7 @@ export default function Countdown({ seconds }: { seconds: number }) {
           {seconds > 0 ? seconds : t('go')}
         </HexCard>
       </span>
-      <span aria-hidden="true" className="flex h-24 w-9 -scale-x-100 text-primary-container">
+      <span aria-hidden="true" className="flex h-24 w-9 -scale-x-100 text-primary-text">
         <Chevrons className="size-full" />
       </span>
     </div>

@@ -38,7 +38,7 @@ export default function ProfileIdentity({
       </span>
 
       <div className="relative flex min-w-0 flex-1 basis-80 flex-col gap-2.5">
-        <p className="font-label-code flex items-center gap-2.5 text-[12px] font-bold uppercase tracking-[0.32em] text-primary-container">
+        <p className="font-label-code flex items-center gap-2.5 text-[12px] font-bold uppercase tracking-[0.32em] text-primary-text">
           <span aria-hidden="true" className="flex h-[22px] w-3 -scale-x-100">
             <Chevrons order="decreasing" className="size-full" />
           </span>

@@ -48,7 +48,7 @@ export default function RaceSummary({ rows, you, over, lobbyCode }: { rows: Summ
             <div className="flex flex-col gap-2">
               <h2 className="text-[30px] uppercase tracking-[0.1em] text-on-primary-container">{t(heading)}</h2>
               <p className="font-label-code flex items-center gap-2.5 text-[13px] uppercase tracking-[0.16em] text-primary">
-                <Pointer className="text-primary-container" />
+                <Pointer className="text-primary-text" />
                 {t('position', { rank: me.rank, total: rows.length })}
               </p>
               <p className="font-label-code text-[15px] text-on-surface-variant">{t('stats', { wpm: me.wpm, accuracy: percent(me.accuracy) })}</p>
@@ -67,7 +67,7 @@ export default function RaceSummary({ rows, you, over, lobbyCode }: { rows: Summ
       {over && (
         <section aria-labelledby="race-results-title" className="flex flex-col gap-6">
           <h2 id="race-results-title" className="flex items-center gap-3 text-[26px] uppercase tracking-[0.1em] text-on-primary-container">
-            <span aria-hidden="true" className="flex h-[22px] w-3 -scale-x-100 text-primary-container">
+            <span aria-hidden="true" className="flex h-[22px] w-3 -scale-x-100 text-primary-text">
               <Chevrons order="decreasing" className="size-full" />
             </span>
             {t('over')}

@@ -174,7 +174,7 @@ export default function JoinForm({ accountName = null }: { accountName?: string 
         {isCreating ? (
           <span aria-hidden="true" className="material-symbols-outlined animate-spin text-[17px] text-primary">progress_activity</span>
         ) : (
-          <svg aria-hidden="true" viewBox="0 0 10 10" className="size-[7px] rotate-90 text-primary-container">
+          <svg aria-hidden="true" viewBox="0 0 10 10" className="size-[7px] rotate-90 text-primary-text">
             <path d="M5 0 10 10 5 7 0 10z" fill="currentColor" />
           </svg>
         )}

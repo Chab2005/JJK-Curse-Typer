@@ -14,7 +14,7 @@ const CHAR_STYLE: Record<CharState, string> = {
   correct: 'text-on-surface',
   // Une faute est soulignée et surlignée, pas seulement colorée (UI-8).
   wrong: 'text-error bg-error-container/45 underline decoration-error decoration-2 underline-offset-[10px]',
-  pending: 'text-outline/70',
+  pending: 'text-outline',
 };
 
 // Zone où le joueur tape (maquette « Course ») : le texte, l'état de chaque caractère et le curseur.

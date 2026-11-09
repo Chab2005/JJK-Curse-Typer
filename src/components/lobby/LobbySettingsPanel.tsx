@@ -238,13 +238,13 @@ function Hints<T extends string>({ active, options, hint }: { active: T; options
 }
 
 function Label({ htmlFor, id, children }: { htmlFor: string; id?: string; children: React.ReactNode }) {
-  return <label htmlFor={htmlFor} id={id} className="font-label-code text-[11px] font-bold uppercase tracking-[0.2em] text-primary-container">{children}</label>;
+  return <label htmlFor={htmlFor} id={id} className="font-label-code text-[11px] font-bold uppercase tracking-[0.2em] text-primary-text">{children}</label>;
 }
 
 function Group({ legend, children }: { legend: string; children: React.ReactNode }) {
   return (
     <fieldset className="flex flex-col gap-1">
-      <legend className="font-label-code mb-2 text-[11px] font-bold uppercase tracking-[0.2em] text-primary-container">{legend}</legend>
+      <legend className="font-label-code mb-2 text-[11px] font-bold uppercase tracking-[0.2em] text-primary-text">{legend}</legend>
       {children}
     </fieldset>
   );
@@ -311,7 +311,7 @@ function StepButton({ icon, label, disabled, onClick }: { icon: string; label: s
       aria-label={label}
       disabled={disabled}
       onClick={onClick}
-      className="grid w-10 place-items-center text-primary-container transition-colors enabled:hover:text-primary disabled:cursor-not-allowed disabled:text-outline-variant"
+      className="grid w-10 place-items-center text-primary-text transition-colors enabled:hover:text-primary disabled:cursor-not-allowed disabled:text-outline-variant"
     >
       <span aria-hidden="true" className="material-symbols-outlined text-[18px]!">{icon}</span>
     </button>

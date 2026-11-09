@@ -55,7 +55,7 @@ export default function LeaderboardBrowser({ players }: { players: PlayerStats[]
           closeLabel={t('close')}
         >
           <fieldset className="flex flex-col gap-1.5">
-            <legend className="font-label-code mb-2 text-[11px] font-bold uppercase tracking-[0.2em] text-primary-container">{t('sortBy')}</legend>
+            <legend className="font-label-code mb-2 text-[11px] font-bold uppercase tracking-[0.2em] text-primary-text">{t('sortBy')}</legend>
             {CATEGORIES.map((c) => (
               <PlateOption key={c} type="radio" name="leaderboard-category" checked={c === category} onChange={() => sortBy(c)}>
                 {t(`categories.${c}`)}

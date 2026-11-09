@@ -8,7 +8,7 @@ export default function AuthCard({ eyebrow, title, intro, children, footer }: { 
       <div className="relative w-full max-w-[512px] drop-shadow-[0_24px_40px_rgb(0_0_0/0.5)]">
         <BevelPanel className="flex flex-col gap-[18px] px-[34px] pt-9 pb-9">
           <header className="flex flex-col gap-2">
-            <p className="font-label-code text-[12px] font-bold uppercase tracking-[0.32em] text-primary-container">{eyebrow}</p>
+            <p className="font-label-code text-[12px] font-bold uppercase tracking-[0.32em] text-primary-text">{eyebrow}</p>
             <h1 className="text-[34px] leading-[1.15] uppercase tracking-[0.1em] text-on-primary-container">{title}</h1>
             {intro && <p className="text-[17px] leading-[25px] text-on-surface-variant">{intro}</p>}
           </header>

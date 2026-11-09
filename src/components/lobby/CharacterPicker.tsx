@@ -27,7 +27,7 @@ export default function CharacterPicker({ value, onPick }: { value: CharacterId 
   return (
     <>
       <section aria-labelledby="character-title" className="flex flex-col gap-3 border-b border-[#8f1022]/60 pb-6">
-        <h2 id="character-title" className="font-label-code text-[11px] font-bold uppercase tracking-[0.2em] text-primary-container">{t('title')}</h2>
+        <h2 id="character-title" className="font-label-code text-[11px] font-bold uppercase tracking-[0.2em] text-primary-text">{t('title')}</h2>
 
         <div className="flex items-center gap-4">
           <span aria-hidden="true" className="flex h-[90px] w-16 shrink-0 items-end justify-center">
