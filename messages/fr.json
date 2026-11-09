@@ -1,7 +1,17 @@
 {
   "Metadata": {
-    "title": "JJK Type",
+    "title": "Curse Typer : courses de frappe multijoueur",
     "description": "Courses de dactylographie multijoueur dans l'univers de Jujutsu Kaisen."
+  },
+  "Brand": {
+    "logoAlt": "Logo Jujutsu Kaisen"
+  },
+  "Error": {
+    "eyebrow": "Erreur",
+    "title": "Un problème est survenu",
+    "text": "Une erreur inattendue a interrompu cette page. Réessayez ou revenez à l'accueil.",
+    "retry": "Réessayer",
+    "home": "Retour à l'accueil"
   },
   "Header": {
     "home": "JJK : Curse Typer, accueil",
@@ -46,6 +56,7 @@
     "watermark": "Entrer"
   },
   "JoinForm": {
+    "namePlaceholder": "Megumi_Shadows",
     "title": "Sceau de salon",
     "serverActive": "Serveur actif",
     "pinLabel": "PIN",

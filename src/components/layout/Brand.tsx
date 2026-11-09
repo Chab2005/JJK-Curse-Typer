@@ -1,8 +1,11 @@
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 
 // Logo et nom du site, en tête de page (Header, en-tête de course) : empilés comme dans le hero,
 // mais serrés pour que l'en-tête garde sa hauteur.
 export default function Brand() {
+  const t = useTranslations('Brand');
+
   return (
     <span className="flex flex-col items-center gap-0.5">
       <span className="relative block w-[130px] sm:w-[150px]">
@@ -12,7 +15,7 @@ export default function Brand() {
         />
         <Image
           src="/images/jjk-logo.png"
-          alt="Jujutsu Kaisen"
+          alt={t('logoAlt')}
           width={1164}
           height={271}
           sizes="150px"

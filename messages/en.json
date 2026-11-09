@@ -1,7 +1,17 @@
 {
   "Metadata": {
-    "title": "JJK Type",
+    "title": "Curse Typer: multiplayer typing races",
     "description": "Multiplayer typing races in the Jujutsu Kaisen universe."
+  },
+  "Brand": {
+    "logoAlt": "Jujutsu Kaisen logo"
+  },
+  "Error": {
+    "eyebrow": "Error",
+    "title": "Something went wrong",
+    "text": "An unexpected error stopped this page. You can try again or go back home.",
+    "retry": "Try again",
+    "home": "Back to home"
   },
   "Header": {
     "home": "JJK: Curse Typer, home",
@@ -46,6 +56,7 @@
     "watermark": "Enter"
   },
   "JoinForm": {
+    "namePlaceholder": "Megumi_Shadows",
     "title": "Room seal",
     "serverActive": "Server online",
     "pinLabel": "PIN",

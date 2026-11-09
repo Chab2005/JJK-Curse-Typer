@@ -142,7 +142,7 @@ export default function JoinForm({ accountName = null }: { accountName?: string 
           onChange={(e) => setExorcistName(e.target.value)}
           aria-invalid={nameError !== null}
           aria-describedby={nameError ? 'exorcistPseudoError' : undefined}
-          placeholder="Megumi_Shadows"
+          placeholder={t('namePlaceholder')}
           className="field-cut font-grotesk w-full bg-[#0b0405] px-8 py-[13px] text-xl text-on-surface placeholder:text-surface-container-highest aria-invalid:bg-error-container/40"
         />
       </div>

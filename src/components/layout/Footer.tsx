@@ -5,6 +5,7 @@ import CookieSettingsButton from './CookieSettingsButton';
 
 export default function Footer() {
   const t = useTranslations('Footer');
+  const tBrand = useTranslations('Brand');
 
   return (
     <footer className="flex w-full flex-col items-center gap-[22px] border-t border-surface-container-low bg-black px-margin pt-14 pb-9 text-center">
@@ -16,7 +17,7 @@ export default function Footer() {
           />
           <Image
             src="/images/jjk-logo.png"
-            alt="Jujutsu Kaisen"
+            alt={tBrand('logoAlt')}
             width={1164}
             height={271}
             sizes="200px"
