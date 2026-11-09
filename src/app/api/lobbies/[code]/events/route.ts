@@ -4,8 +4,18 @@ import type { LobbyRoom } from '@/components/lobby/lobbyRoom';
 import { getViewerId } from '@/lib/currentUser';
 import { storedLobby, subscribeLobby } from '@/lib/lobbies';
 import { connectViewer } from '@/lib/lobbyPresence';
+import { lobbyCodeSchema } from '@/lib/schemas';
 
 export const dynamic = 'force-dynamic';
+
+/** `decodeURIComponent` qui ne lève pas sur un pourcentage mal formé : le schéma refusera la valeur. */
+function decodeURIComponentSafe(value: string): string {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return '';
+  }
+}
 
 /** Commentaire envoyé régulièrement : un proxy ne coupe pas un flux resté muet. */
 const HEARTBEAT_MS = 25_000;
@@ -14,9 +24,10 @@ const HEARTBEAT_MS = 25_000;
 // quand le visiteur n'y est plus (expulsé, parti) ou que le lobby ferme. Tenir ce flux ouvert compte comme
 // présence dans le lobby (src/lib/lobbyPresence.ts). Réservé à qui est dans le salon.
 export async function GET(request: NextRequest, { params }: RouteContext<'/api/lobbies/[code]/events'>) {
-  const { code } = await params;
+  const code = lobbyCodeSchema.safeParse(decodeURIComponentSafe((await params).code));
+  if (!code.success) return new Response(null, { status: 404 });
   const viewerId = await getViewerId();
-  const room = storedLobby(decodeURIComponent(code));
+  const room = storedLobby(code.data);
   if (!room || !viewerId || !isInside(room, viewerId)) return new Response(null, { status: 404 });
 
   const encoder = new TextEncoder();

@@ -3,12 +3,13 @@
 import { headers } from 'next/headers';
 import { getTranslations } from 'next-intl/server';
 import type { QuickPlayResult } from '@/components/home/quickPlay';
-import { canInvite, clientIp, type InviteLink, inviteToClaim, isInviteToken, needsInvite } from '@/components/lobby/lobbyAccess';
+import { canInvite, clientIp, type InviteLink, inviteToClaim, needsInvite } from '@/components/lobby/lobbyAccess';
 import { joinRefusal, type LobbyRoom } from '@/components/lobby/lobbyRoom';
 import { getViewer, getViewerId, type Viewer } from '@/lib/currentUser';
 import { claimInvite, createInvites, deleteInvite, deleteInvites, listInvites, revokeInvites } from '@/lib/invites';
 import { createLobby, findQuickLobby, parseLobbyAction, storedLobby, updateLobby } from '@/lib/lobbies';
 import { expectViewer } from '@/lib/lobbyPresence';
+import { inviteCountSchema, inviteTokenSchema, joinOptionsSchema, lobbyCodeSchema } from '@/lib/schemas';
 
 // Actions serveur des lobbies créés depuis l'accueil. L'auteur est toujours l'utilisateur courant,
 // jamais celui qu'annonce le navigateur. Chaque changement est diffusé au salon par src/lib/lobbies.ts.
@@ -58,7 +59,11 @@ async function hostLobby(viewer: Viewer): Promise<string> {
  */
 export async function joinLobbyAction(code: string, options: { spectate?: boolean; invite?: string } = {}): Promise<LobbyRoom | null> {
   const viewer = await getViewer();
-  const room = typeof code === 'string' ? storedLobby(code) : null;
+  const parsedCode = lobbyCodeSchema.safeParse(code);
+  const parsedOptions = joinOptionsSchema.safeParse(options);
+  if (!parsedCode.success || !parsedOptions.success) return null;
+  options = parsedOptions.data;
+  const room = storedLobby(parsedCode.data);
   if (!viewer || !room) return null;
   // Expulsé (SALLE-07) ou course lancée (SALLE-09) : refusé avant de consommer le lien.
   if (joinRefusal(room, viewer.id)) return null;
@@ -74,24 +79,27 @@ export async function joinLobbyAction(code: string, options: { spectate?: boolea
 /** Quitte le lobby créé `code` ; l'hôte qui part passe la main au plus ancien joueur (H-18). */
 export async function leaveLobbyAction(code: string): Promise<void> {
   const viewerId = await getViewerId();
-  if (typeof code === 'string' && viewerId) updateLobby(code, { type: 'leave', id: viewerId });
+  const parsed = lobbyCodeSchema.safeParse(code);
+  if (parsed.success && viewerId) updateLobby(parsed.data, { type: 'leave', id: viewerId });
 }
 
 /** Rejoue sur le serveur une action du salon d'attente (LOB-5 à LOB-11) et renvoie le lobby à jour ; `null` pour un lobby de démonstration. */
 export async function updateLobbyAction(code: string, input: unknown): Promise<LobbyRoom | null> {
   const viewerId = await getViewerId();
   const action = parseLobbyAction(input, viewerId);
-  if (typeof code !== 'string' || !action) return null;
-  const before = storedLobby(code);
-  const after = updateLobby(code, action);
+  const parsedCode = lobbyCodeSchema.safeParse(code);
+  if (!parsedCode.success || !action) return null;
+  const before = storedLobby(parsedCode.data);
+  const after = updateLobby(parsedCode.data, action);
   // Une expulsion révoque aussi le lien d'invitation de l'expulsé (LOB-8).
   if (before && after && action.type === 'kick' && after !== before) await revokeInvites(after.code, action.id);
-  return after && storedLobby(code);
+  return after && storedLobby(parsedCode.data);
 }
 
 /** Lobby `code` si l'utilisateur en est l'hôte et peut y créer des liens d'invitation (privé ou à code), `null` sinon. */
 async function invitingLobby(code: unknown): Promise<LobbyRoom | null> {
-  const room = typeof code === 'string' ? storedLobby(code) : null;
+  const parsed = lobbyCodeSchema.safeParse(code);
+  const room = parsed.success ? storedLobby(parsed.data) : null;
   return room && canInvite(room, await getViewerId()) ? room : null;
 }
 
@@ -103,14 +111,15 @@ export async function listInvitesAction(code: string): Promise<InviteLink[] | nu
 
 /** Crée `count` liens à usage unique (LOB-4), sans dépasser `MAX_INVITES`, et renvoie leurs jetons ; `null` si l'utilisateur n'est pas l'hôte. */
 export async function createInvitesAction(code: string, count: number): Promise<string[] | null> {
-  const room = await invitingLobby(code);
-  return room && createInvites(room.code, count);
+  const parsedCount = inviteCountSchema.safeParse(count);
+  const room = parsedCount.success ? await invitingLobby(code) : null;
+  return room && parsedCount.success ? createInvites(room.code, parsedCount.data) : null;
 }
 
 /** Supprime un lien d'invitation du lobby ; `false` si l'utilisateur n'est pas l'hôte. */
 export async function deleteInviteAction(code: string, token: string): Promise<boolean> {
   const room = await invitingLobby(code);
-  if (!room || !isInviteToken(token)) return false;
+  if (!room || !inviteTokenSchema.safeParse(token).success) return false;
   await deleteInvite(room.code, token);
   return true;
 }
