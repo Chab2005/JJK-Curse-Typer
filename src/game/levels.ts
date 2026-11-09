@@ -1,4 +1,4 @@
-// Niveaux des comptes (STAT-9) : les mêmes grades que les bots, de Noob à Impossible. Fonctions pures.
+// Niveaux des comptes (STAT-9) : les mêmes grades que les bots, de Grade 4 à Calamité. Fonctions pures.
 import { BOT_LEVELS, type BotLevel } from './bots';
 
 export const LEVELS = BOT_LEVELS;
@@ -11,6 +11,7 @@ export const LEVEL_XP: Record<Level, number> = {
   grade_2: 10_000,
   grade_1: 50_000,
   special_grade: 200_000,
+  calamity_grade: 750_000,
 };
 
 /** XP bonus des trois premières places d'une course finie. */

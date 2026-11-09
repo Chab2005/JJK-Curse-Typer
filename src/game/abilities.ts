@@ -44,6 +44,7 @@ type AbilityIds = {
   nobara: 'resonance' | 'hairpin';
   gojo: 'blue' | 'red' | 'purple';
   sukuna: 'cleave' | 'dismantle' | 'divineFlames';
+  /** Techniques copiées par Rika : celles d'Inumaki (Parole maudite), de Kirara (Échelle de Jacob) et d'Uro (Manipulation du ciel). */
   yuta: 'jacobsLadder' | 'cursedSpeech' | 'skyManipulation';
 };
 export type AbilityCharacter = keyof AbilityIds;
