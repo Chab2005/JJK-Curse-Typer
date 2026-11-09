@@ -1,5 +1,5 @@
 // BON / UI-7: gather Divine Flame at rest; reuse the approved fire arrow on hover.
-// Run: node scripts/prepare-sukuna-flame.mjs
+// Run: npx tsx scripts/prepare-sukuna-flame.ts
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -11,7 +11,7 @@ const FRAMES = 16;
 const SIZE = 96;
 const IDLE_RESOLUTION = 32;
 
-async function cells(file, size, padding = 0) {
+async function cells(file: string, size: number, padding = 0) {
   const { width, height, hasAlpha } = await sharp(file).metadata();
   if (!width || !height || !hasAlpha) throw new Error('Expected a transparent 4 by 4 sprite sheet.');
   return Promise.all(Array.from({ length: FRAMES }, async (_, index) => {
@@ -27,7 +27,7 @@ async function cells(file, size, padding = 0) {
 await fs.mkdir(output, { recursive: true });
 // Reduce only the idle art to 32 pixels per frame before enlarging for export.
 const idlePixels = await cells(source, IDLE_RESOLUTION);
-const enlargedIdle = async (size, padding = 0) => Promise.all(idlePixels.map((frame) => sharp(frame)
+const enlargedIdle = async (size: number, padding = 0) => Promise.all(idlePixels.map((frame) => sharp(frame)
   .resize(size - padding * 2, size - padding * 2, { kernel: 'nearest' })
   .extend({ top: padding, bottom: padding, left: padding, right: padding, background: '#0000' })
   .png().toBuffer()));
@@ -44,7 +44,7 @@ await fs.writeFile(path.join(output, 'divine-flame-idle-spritesheet-lowres.json'
 
 const idle = await enlargedIdle(SIZE, 4);
 const hover = await cells(path.join(output, 'divine-flame-spritesheet-lowres.png'), SIZE, 4);
-for (const [variant, frames] of [['idle', idle], ['hover', hover]]) {
+for (const [variant, frames] of [['idle', idle], ['hover', hover]] as [string, Buffer[]][]) {
   await sharp({ create: { width: SIZE * FRAMES, height: SIZE, channels: 4, background: '#0000' } })
     .composite(frames.map((input, i) => ({ input, left: i * SIZE, top: 0 })))
     .png().toFile(path.join(output, `divine-flame-${variant}.png`));

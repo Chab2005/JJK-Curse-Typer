@@ -14,8 +14,6 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
-    // Point d'entrée Docker généré par Fly.io (CommonJS).
-    "docker-entrypoint.js",
   ]),
 ]);
 

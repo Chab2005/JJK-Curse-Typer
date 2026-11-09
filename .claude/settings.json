@@ -10,7 +10,7 @@
           },
           {
             "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/new-method.mjs\""
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/new-method.mts\""
           }
         ]
       }

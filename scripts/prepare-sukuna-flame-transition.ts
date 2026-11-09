@@ -37,8 +37,8 @@ await fs.writeFile(path.join(output, 'divine-flame-transition-spritesheet-lowres
   frameMs: 60, durationMs: COUNT * 60, loop: false, next: 'divine-flame-hover.png',
   frames: Array.from({ length: COUNT }, (_, index) => ({ index, x: index % 4 * 128, y: Math.floor(index / 4) * 128, w: 128, h: 128 })),
 }, null, 2) + '\n');
-const sequence = [], delays = [];
-for (const [variant, count, delay] of [['idle', 8, 100], ['transition', COUNT, 60], ['hover', 16, 70]]) {
+const sequence: Buffer[] = [], delays: number[] = [];
+for (const [variant, count, delay] of [['idle', 8, 100], ['transition', COUNT, 60], ['hover', 16, 70]] as [string, number, number][]) {
   for (let i = 0; i < count; i++) {
     const frame = variant === 'transition' ? frames[i] : await sharp(path.join(output, `divine-flame-${variant}.png`))
       .extract({ left: i * SIZE, top: 0, width: SIZE, height: SIZE }).png().toBuffer();

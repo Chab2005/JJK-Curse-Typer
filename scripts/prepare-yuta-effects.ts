@@ -1,5 +1,5 @@
 // BON / UI-7: export generated Yuta VFX to their logical pixel grid and card strips.
-// Run: node scripts/prepare-yuta-effects.mjs
+// Run: npx tsx scripts/prepare-yuta-effects.ts
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -36,7 +36,7 @@ for (const { id, w, h } of effects) {
       // Coverage-aware reduction smears each source stroke over two or three pixels. Keep only
       // the radial coverage peak so every echo stays one logical pixel thick, then make it opaque.
       const coverage = await sharp(frame).ensureAlpha().raw().toBuffer();
-      const alpha = (x, y) => (x < 0 || y < 0 || x >= w || y >= h ? 0 : coverage[(y * w + x) * 4 + 3]);
+      const alpha = (x: number, y: number) => (x < 0 || y < 0 || x >= w || y >= h ? 0 : coverage[(y * w + x) * 4 + 3]);
       let sumX = 0, sumY = 0, sum = 0;
       for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
         sumX += alpha(x, y) * x; sumY += alpha(x, y) * y; sum += alpha(x, y);
@@ -93,7 +93,7 @@ for (const { id, w, h } of effects) {
   if (isLadder) {
     // Copy RGBA directly: alpha compositing can round translucent approved colors by one level.
     const pixels = await Promise.all(frames.map((frame) => sharp(frame).ensureAlpha().raw().toBuffer()));
-    for (const [columns, rows, filename] of [[16, 1, `${id}.png`], [4, 4, `${id}-spritesheet.png`]]) {
+    for (const [columns, rows, filename] of [[16, 1, `${id}.png`], [4, 4, `${id}-spritesheet.png`]] as [number, number, string][]) {
       const width = columns * w, height = rows * h;
       const atlas = Buffer.alloc(width * height * 4);
       pixels.forEach((frame, i) => {

@@ -1,5 +1,5 @@
 // BON / UI-7: slice generated Black Flash art and reuse its frames for Divergent Fist.
-// Run: node scripts/prepare-yuji-sparks.mjs [idle-sheet.png] [hover-sheet.png]
+// Run: npx tsx scripts/prepare-yuji-sparks.ts [idle-sheet.png] [hover-sheet.png]
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -9,7 +9,7 @@ const source = process.argv[2] ?? fileURLToPath(new URL('assets/yuji/black-flash
 const hoverSource = process.argv[3] ?? fileURLToPath(new URL('assets/yuji/black-flash-hover-spritesheet.png', import.meta.url));
 const output = fileURLToPath(new URL('../public/images/characters/anim/techniques/yuji/', import.meta.url));
 const SIZE = 96, FRAMES = 16;
-async function prepare(source, suffix) {
+async function prepare(source: string, suffix: string) {
   const { width, height, hasAlpha } = await sharp(source).metadata();
   if (!width || !height || width !== height || !hasAlpha) throw new Error('Expected a transparent square 4 by 4 sprite sheet.');
   await fs.mkdir(output, { recursive: true });
@@ -35,7 +35,7 @@ async function prepare(source, suffix) {
     }
     cyan.push(await sharp(recolored, { raw: { width: SIZE, height: SIZE, channels: 4 } }).png().toBuffer());
   }
-  for (const [id, frames] of [['black-flash', red], ['divergent-fist', cyan]]) {
+  for (const [id, frames] of [['black-flash', red], ['divergent-fist', cyan]] as [string, Buffer[]][]) {
     await sharp({ create: { width: SIZE * FRAMES, height: SIZE, channels: 4, background: '#0000' } })
       .composite(frames.map((input, i) => ({ input, left: i * SIZE, top: 0 })))
       .png().toFile(path.join(output, `${id}${suffix}.png`));

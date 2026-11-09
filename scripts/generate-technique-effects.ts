@@ -12,11 +12,15 @@ const PALETTES = {
   red: ['#4a0828', '#a90032', '#fa1645', '#ff584e', '#ffa59b', '#fff1e9'],
   purple: ['#260d50', '#5912b6', '#972bff', '#c167ff', '#e9b1ff', '#fff0ff'],
 };
-const rgb = (hex) => hex.slice(1).match(/../g).map((n) => parseInt(n, 16));
+type Kind = keyof typeof PALETTES;
+type Point = [number, number];
+const rgb = (hex: string) => (hex.slice(1).match(/../g) ?? []).map((n) => parseInt(n, 16));
+
+type Canvas = ReturnType<typeof canvas>;
 
 function canvas() {
   const data = Buffer.alloc(SIZE * SIZE * 4);
-  function pixel(x, y, color, alpha = 1) {
+  function pixel(x: number, y: number, color: string, alpha = 1) {
     x = Math.round(x); y = Math.round(y);
     if (x < 1 || y < 1 || x >= SIZE - 1 || y >= SIZE - 1) return;
     const i = (y * SIZE + x) * 4, a = Math.max(0, Math.min(1, alpha));
@@ -26,14 +30,14 @@ function canvas() {
     for (let j = 0; j < 3; j++) data[i + j] = (c[j] * a + data[i + j] * old * (1 - a)) / total;
     data[i + 3] = total * 255;
   }
-  function line(x1, y1, x2, y2, color, alpha = 1) {
+  function line(x1: number, y1: number, x2: number, y2: number, color: string, alpha = 1) {
     const steps = Math.ceil(Math.max(Math.abs(x2 - x1), Math.abs(y2 - y1)));
     for (let i = 0; i <= steps; i++) {
       const t = steps ? i / steps : 0;
       pixel(x1 + (x2 - x1) * t, y1 + (y2 - y1) * t, color, alpha);
     }
   }
-  function arc(cx, cy, radius, start, length, color, squash = 1, tilt = 0, alpha = 1) {
+  function arc(cx: number, cy: number, radius: number, start: number, length: number, color: string, squash = 1, tilt = 0, alpha = 1) {
     const count = Math.ceil(Math.abs(length * radius) * 2);
     for (let i = 0; i <= count; i++) {
       const a = start + length * i / count;
@@ -41,7 +45,7 @@ function canvas() {
       pixel(cx + x * Math.cos(tilt) - y * Math.sin(tilt), cy + x * Math.sin(tilt) + y * Math.cos(tilt), color, alpha);
     }
   }
-  function composite(layer, opacity = 1) {
+  function composite(layer: Buffer, opacity = 1) {
     for (let i = 0; i < layer.length; i += 4) {
       if (!layer[i + 3]) continue;
       const color = `#${layer.subarray(i, i + 3).toString('hex')}`;
@@ -51,13 +55,13 @@ function canvas() {
   return { data, pixel, line, arc, composite };
 }
 
-function spark(c, x, y, color, length = 2) {
+function spark(c: Canvas, x: number, y: number, color: string, length = 2) {
   c.line(x - length, y, x + length, y, color);
   c.line(x, y - length, x, y + length, color);
   c.pixel(x, y, '#fff8ff');
 }
 
-function sphere(c, cx, cy, radius, palette, t, corona = 9) {
+function sphere(c: Canvas, cx: number, cy: number, radius: number, palette: string[], t: number, corona = 9) {
   // The references have white-hot energy, a saturated corona and an unstable, flame-like silhouette.
   // All time terms are whole turns, so the procedural turbulence also loops at the strip boundary.
   const phase = t * TAU;
@@ -82,9 +86,9 @@ function sphere(c, cx, cy, radius, palette, t, corona = 9) {
   }
 }
 
-function ribbon(c, cx, cy, radius, t, offset, palette, front) {
+function ribbon(c: Canvas, cx: number, cy: number, radius: number, t: number, offset: number, palette: string[], front: boolean) {
   const phase = t * TAU, tilt = -0.32;
-  let previous;
+  let previous: Point | undefined;
   for (let i = 0; i <= 100; i++) {
     const u = i / 100, a = u * TAU + offset + phase;
     // Curved, uneven strands slide over and behind the orb, like the hand-wound light in reference 4.
@@ -92,36 +96,36 @@ function ribbon(c, cx, cy, radius, t, offset, palette, front) {
     const wave = Math.sin(a * 3 + offset - phase * 2);
     const x = Math.cos(a) * (radius + 3 + wave * 1.3);
     const y = Math.sin(a) * (radius * 0.37) + Math.sin(a * 2 + phase) * 1.1;
-    const point = [cx + x * Math.cos(tilt) - y * Math.sin(tilt), cy + x * Math.sin(tilt) + y * Math.cos(tilt) + Math.sin(offset) * radius * 0.53];
+    const point: Point = [cx + x * Math.cos(tilt) - y * Math.sin(tilt), cy + x * Math.sin(tilt) + y * Math.cos(tilt) + Math.sin(offset) * radius * 0.53];
     if (previous) {
       c.line(previous[0], previous[1] + 1, point[0], point[1] + 1, palette[3], front ? 0.7 : 0.35);
-      c.line(...previous, ...point, palette[front ? 5 : 4], front ? 0.85 : 0.55);
+      c.line(previous[0], previous[1], point[0], point[1], palette[front ? 5 : 4], front ? 0.85 : 0.55);
     }
     previous = point;
   }
 }
 
-function tendrils(c, cx, cy, radius, t, hover, kind) {
+function tendrils(c: Canvas, cx: number, cy: number, radius: number, t: number, hover: boolean, kind: Kind) {
   const p = PALETTES[kind], phase = t * TAU;
   for (let i = 0; i < (hover ? 11 : 7); i++) {
     const angle = i * 2.399 + Math.sin(phase + i) * 0.12;
     const extent = (hover ? 11 : 7) + Math.sin(phase + i * 2) * 2;
-    let previous;
+    let previous: Point | undefined;
     for (let j = 0; j <= 24; j++) {
       const u = j / 24, r = radius - 2 + u * extent;
       const curl = angle + Math.sin(u * 5 + phase * (kind === 'blue' ? -1 : 1) + i) * u * 0.34;
-      const point = [cx + Math.cos(curl) * r, cy + Math.sin(curl) * r];
+      const point: Point = [cx + Math.cos(curl) * r, cy + Math.sin(curl) * r];
       if (previous) {
         // A dark, twisting seam backed by cyan/red/violet light echoes the cursed wisps in reference 3.
         c.line(previous[0] + 1, previous[1], point[0] + 1, point[1], p[3], (1 - u) * 0.8);
-        c.line(...previous, ...point, i % 3 ? p[4] : p[0], (1 - u) * 0.9);
+        c.line(previous[0], previous[1], point[0], point[1], i % 3 ? p[4] : p[0], (1 - u) * 0.9);
       }
       previous = point;
     }
   }
 }
 
-function redEjection(c, radius, t, hover) {
+function redEjection(c: Canvas, radius: number, t: number, hover: boolean) {
   const p = PALETTES.red;
   // Every packet travels away from the core. Its bright head leads an inward-pointing, tapered tail.
   const count = hover ? 15 : 10;
@@ -153,9 +157,9 @@ function redEjection(c, radius, t, hover) {
   }
 }
 
-const smooth = (value) => { const x = Math.max(0, Math.min(1, value)); return x * x * (3 - 2 * x); };
+const smooth = (value: number) => { const x = Math.max(0, Math.min(1, value)); return x * x * (3 - 2 * x); };
 
-function fusion(t) {
+function fusion(t: number) {
   const c = canvas();
   const converge = smooth(t / 0.43);
   const form = smooth((t - 0.24) / 0.23);
@@ -163,7 +167,7 @@ function fusion(t) {
   const pair = canvas();
   const separation = 16 * (1 - converge);
   const tilt = Math.sin(converge * Math.PI) * 4;
-  for (const [side, palette] of [[-1, PALETTES.blue], [1, PALETTES.red]]) {
+  for (const [side, palette] of [[-1, PALETTES.blue], [1, PALETTES.red]] as [number, string[]][]) {
     const x = 32 + side * separation, y = 32 + side * tilt;
     const radius = 7.3 + converge * 1.2;
     sphere(pair, x, y, radius, palette, t, 5);
@@ -186,7 +190,7 @@ function fusion(t) {
   if (reset > 0) {
     // Crossfade back to the two separated sources so the next fusion starts without a jump.
     const sources = canvas();
-    for (const [side, palette] of [[-1, PALETTES.blue], [1, PALETTES.red]]) {
+    for (const [side, palette] of [[-1, PALETTES.blue], [1, PALETTES.red]] as [number, string[]][]) {
       sphere(sources, 32 + side * 16, 32, 7.3, palette, t, 5);
       ribbon(sources, 32 + side * 16, 32, 6.3, t, side, palette, true);
     }
@@ -195,7 +199,7 @@ function fusion(t) {
   return c.data;
 }
 
-function orb(kind, t, hover) {
+function orb(kind: Kind, t: number, hover: boolean) {
   if (kind === 'purple' && hover) return fusion(t);
   const c = canvas(), p = PALETTES[kind], phase = t * TAU;
   const cy = 32 + Math.sin(phase) * 0.65;
@@ -224,9 +228,9 @@ function orb(kind, t, hover) {
   return c.data;
 }
 
-function nail(c, cx, cy, angle, scale = 1) {
-  const point = (x, y) => [cx + (x * Math.cos(angle) - y * Math.sin(angle)) * scale, cy + (x * Math.sin(angle) + y * Math.cos(angle)) * scale];
-  const line = (x1, y1, x2, y2, color) => c.line(...point(x1, y1), ...point(x2, y2), color);
+function nail(c: Canvas, cx: number, cy: number, angle: number, scale = 1) {
+  const point = (x: number, y: number): Point => [cx + (x * Math.cos(angle) - y * Math.sin(angle)) * scale, cy + (x * Math.sin(angle) + y * Math.cos(angle)) * scale];
+  const line = (x1: number, y1: number, x2: number, y2: number, color: string) => c.line(...point(x1, y1), ...point(x2, y2), color);
   // Flat forged head, bevelled steel shaft and a sharply tapered point.
   for (let x = -3; x <= 3; x++) line(x, -15, x, 12 - Math.abs(x) * 1.5, ['#1a1a30', '#4b4f6b', '#a9b6cf', '#e6eaf5', '#7a87a3', '#3a405a', '#16182a'][x + 3]);
   line(-3, 12, 0, 19, '#7684a0'); line(0, 12, 0, 19, '#e6eaf5'); line(3, 12, 0, 19, '#3a405a');
@@ -234,7 +238,7 @@ function nail(c, cx, cy, angle, scale = 1) {
   line(-6, -16, -6, -14, '#c5d0e0');
 }
 
-function cursedNail(kind, t, hover) {
+function cursedNail(kind: string, t: number, hover: boolean) {
   const c = canvas(), phase = t * TAU, p = PALETTES.purple;
   const impact = hover && kind === 'hairpin';
   const strike = impact ? Math.sin(phase) * 4 : 0;
@@ -276,7 +280,7 @@ async function main() {
     for (const hover of [false, true]) {
       const frames = [];
       for (let i = 0; i < count; i++) {
-        const data = id in PALETTES ? orb(id, i / count, hover) : cursedNail(id, i / count, hover);
+        const data = id in PALETTES ? orb(id as Kind, i / count, hover) : cursedNail(id, i / count, hover);
         frames.push(await sharp(data, { raw: { width: SIZE, height: SIZE, channels: 4 } }).resize(FRAME, FRAME, { kernel: 'nearest' }).png().toBuffer());
       }
       const name = `${id}-${hover ? 'hover' : 'idle'}.png`;

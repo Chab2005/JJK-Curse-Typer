@@ -13,9 +13,9 @@ const file = input.tool_response?.filePath ?? input.tool_input?.file_path;
 if (!file || !existsSync(file)) process.exit(0);
 if (!/\.(ts|tsx|js|jsx|mjs|cjs)$/.test(file) || /\.(test|spec)\.|\.d\.ts$/.test(file)) process.exit(0);
 
-const git = (...args) => execFileSync("git", args, { cwd: path.dirname(file), encoding: "utf8", stdio: "pipe" });
+const git = (...args: string[]) => execFileSync("git", args, { cwd: path.dirname(file), encoding: "utf8", stdio: "pipe" });
 
-let root;
+let root: string;
 try {
   root = git("rev-parse", "--show-toplevel").trim();
 } catch {
@@ -33,10 +33,10 @@ try {
   // New or untracked file: every method in it is new.
 }
 
-const isFunction = (node) =>
+const isFunction = (node: ts.Node | undefined) =>
   node && (ts.isArrowFunction(node) || ts.isFunctionExpression(node));
 
-function methodNames(source) {
+function methodNames(source: string) {
   const sf = ts.createSourceFile(rel, source, ts.ScriptTarget.Latest, true);
   const names = new Set();
   for (const stmt of sf.statements) {
