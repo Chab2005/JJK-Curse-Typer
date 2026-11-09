@@ -629,6 +629,7 @@
       "start": "Lancer la course",
       "blockers": {
         "notEnoughPlayers": "Une course demande au moins deux participants : ajoutez un bot ou attendez un joueur.",
+        "noHuman": "Une course demande au moins un joueur humain : les spectateurs ne comptent pas. Rejoignez la course ou attendez un joueur.",
         "notReady": "En attente que chaque exorciste soit prêt."
       },
       "waitHost": "L'hôte lance la course quand tout le monde est prêt.",

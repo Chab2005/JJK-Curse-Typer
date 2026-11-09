@@ -201,6 +201,16 @@ describe('startBlocker (LOB-7)', () => {
     expect(startBlocker(room({ participants: [human('Gojo', true)] }))).toBe('notEnoughPlayers');
   });
 
+  it('refuse le départ sans participant humain : hôte spectateur et deux bots (COURSE-02)', () => {
+    const bots = [
+      { kind: 'bot' as const, id: 'bot-1', level: 'grade_4' as const, number: 1 },
+      { kind: 'bot' as const, id: 'bot-2', level: 'grade_4' as const, number: 2 },
+    ];
+    const spectatorHost = room({ participants: bots, spectators: [{ id: 'Gojo', name: 'Gojo', avatar: null }], hostId: 'Gojo' });
+    expect(startBlocker(spectatorHost)).toBe('noHuman');
+    expect(lobbyReducer(spectatorHost, { type: 'start', by: 'Gojo' }).status).toBe('waiting');
+  });
+
   it("attend que chaque humain autre que l'hôte soit prêt", () => {
     expect(startBlocker(room())).toBe('notReady');
     expect(startBlocker(room({ participants: [human('Gojo'), human('Yuji', true)] }))).toBeNull();
