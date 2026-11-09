@@ -70,8 +70,17 @@ describe('claim / release', () => {
     expect(racer(race, 'ann').driver).toBe('sim');
   });
 
-  it('abandonne le joueur coupé depuis plus de 60 s', () => {
-    const race = reduce(racing(), { type: 'release', id: 'ann', now: START + 1000 }, { type: 'tick', now: START + 1000 + RECONNECT_GRACE_MS + 1 });
+  it('fixe le délai de reprise à 30 s (COURSE-08)', () => {
+    expect(RECONNECT_GRACE_MS).toBe(30_000);
+  });
+
+  it('accepte la reprise à exactement 30 s (COURSE-08)', () => {
+    const race = reduce(racing(), { type: 'release', id: 'ann', now: START + 1000 }, { type: 'tick', now: START + 1000 + 30_000 });
+    expect(racer(race, 'ann').status).toBe('racing');
+  });
+
+  it('abandonne le joueur coupé depuis plus de 30 s', () => {
+    const race = reduce(racing(), { type: 'release', id: 'ann', now: START + 1000 }, { type: 'tick', now: START + 1000 + 30_000 + 1 });
     expect(racer(race, 'ann')).toMatchObject({ status: 'abandoned' });
   });
 });

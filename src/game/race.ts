@@ -13,8 +13,8 @@ import { correctChars, isValidKey, startTyping, typeKey, type ErrorMode, type Ke
 
 /** Décompte visible avant le départ (RACE-1). */
 export const COUNTDOWN_MS = 5000;
-/** Coupure tolérée avant l'abandon (RACE-13, H-4). */
-export const RECONNECT_GRACE_MS = 60_000;
+/** Coupure tolérée avant l'abandon (COURSE-08). */
+export const RECONNECT_GRACE_MS = 30_000;
 /** Course fermée sans frappe humaine pendant 10 minutes (RACE-12). */
 export const INACTIVITY_MS = 10 * 60_000;
 /** Au-delà, les frappes ne peuvent pas venir d'un humain : le lot est refusé (RACE-14). */
