@@ -43,7 +43,7 @@
     "logoAlt": "Jujutsu Kaisen",
     "subtitle": "Course de frappe multijoueur",
     "arenasOpen": "Arènes ouvertes",
-    "online": "● {count} en ligne",
+    "online": "● {count, number} en ligne",
     "play": "Jouer maintenant",
     "offerCreate": "Aucun lobby public n'est ouvert pour l'instant. Voulez-vous en créer un ?",
     "offerCreateAction": "Créer un lobby public",
@@ -80,20 +80,20 @@
   },
   "PublicLobbies": {
     "title": "Salons publics",
-    "openCount": "{count} ouverts",
+    "openCount": "{count, number} ouverts",
     "join": "Rejoindre",
     "joinLabel": "Rejoindre {name}",
     "all": "Toutes les arènes",
     "mode": {
-      "sprint": "Sprint {seconds}s",
-      "words": "{count} mots"
+      "sprint": "Sprint {seconds, number}s",
+      "words": "{count, number} mots"
     },
     "participants": {
-      "exorcists": "{current}/{max} exorcistes",
-      "ready": "{current}/{max} prêts"
+      "exorcists": "{current, number}/{max, number} exorcistes",
+      "ready": "{current, number}/{max, number} prêts"
     },
     "status": {
-      "startsIn": "Départ dans {seconds}s",
+      "startsIn": "Départ dans {seconds, number}s",
       "waitingSquad": "En attente d'escouade",
       "readyToLaunch": "Prêt à lancer"
     },
@@ -166,7 +166,7 @@
       "sukuna": "L’autel taille dans le texte de chacun : chaque seconde, un mot de plus s’ajoute au texte de tous les autres exorcistes jusqu’à la fermeture du territoire."
     },
     "castHint": "puis tapez « {name} »",
-    "domainDuration": "Dure {seconds} s",
+    "domainDuration": "Dure {seconds, number} s",
     "example": {
       "title": "Exemple en course",
       "previousAbility": "Capacité précédente",
@@ -234,11 +234,11 @@
       "requires": "Prérequis",
       "durations": {
         "instant": "Instantané",
-        "seconds": "{seconds} s",
-        "secondsRange": "{seconds} à {maxSeconds} s",
+        "seconds": "{seconds, number} s",
+        "secondsRange": "{seconds, number} à {maxSeconds, number} s",
         "untilUsed": "Jusqu’à usage",
         "nextWord": "Mot suivant",
-        "nextWords": "{words} mots suivants",
+        "nextWords": "{words, number} mots suivants",
         "restOfRace": "Fin de course"
       },
       "yuji": {
@@ -397,7 +397,7 @@
       "max": "/ {max, number} EP",
       "status": {
         "charging": "En charge",
-        "streak": "Série de {count} sans faute",
+        "streak": "Série de {count, number} sans faute",
         "full": "Énergie pleine"
       },
       "marker": "{min, number} · territoire"
@@ -433,8 +433,8 @@
       },
       "vow": {
         "title": "Pacte contraignant",
-        "text": "Renoncez à votre technique pour le reste de la course et recevez d’un coup {percent} % de la progression.",
-        "gain": "+{percent} %"
+        "text": "Renoncez à votre technique pour le reste de la course et recevez d’un coup {percent, number} % de la progression.",
+        "gain": "+{percent, number} %"
       },
       "techniques": "Techniques",
       "on": "Activées",
@@ -449,11 +449,11 @@
       "leaders": "Les meneurs aussi",
       "domainMin": "Dès {min, number} EP",
       "drain": "Vide l'énergie",
-      "lock": "Technique bloquée {seconds} s",
+      "lock": "Technique bloquée {seconds, number} s",
       "none": "Ni technique ni territoire",
       "noCe": "Sans EP",
       "immune": "Immunisée aux territoires",
-      "duration": "Dure {seconds} s"
+      "duration": "Dure {seconds, number} s"
     },
     "rulesTitle": "Règles communes",
     "controls": {
@@ -501,7 +501,7 @@
   "Pagination": {
     "previous": "Page précédente",
     "next": "Page suivante",
-    "status": "Page {page} / {pageCount}"
+    "status": "Page {page, number} / {pageCount, number}"
   },
   "Lobbies": {
     "metaTitle": "Arènes",
@@ -545,8 +545,8 @@
       "bonus": "Techniques",
       "chars": "Type de texte",
       "action": "Action",
-      "words": "{count} mots",
-      "count": "{players}/{capacity}",
+      "words": "{count, number} mots",
+      "count": "{players, number}/{capacity, number}",
       "racing": "En course",
       "full": "Complet",
       "bonusOn": "Oui",
@@ -587,7 +587,7 @@
         "batchCount": "Lot",
         "createBatch": "Créer {count, plural, one {# lien} other {# liens}}",
         "copiedNote": "Les nouveaux liens vont directement dans votre presse-papiers.",
-        "count": "{count} / {max} liens",
+        "count": "{count, number} / {max, number} liens",
         "full": "Limite atteinte : supprimez des liens pour en créer.",
         "list": "Liens",
         "empty": "Aucun lien pour l'instant.",
@@ -609,7 +609,7 @@
     },
     "participants": {
       "title": "Exorcistes",
-      "count": "{count}/{capacity}",
+      "count": "{count, number}/{capacity, number}",
       "ready": "{count, plural, one {# prêt} other {# prêts}}",
       "host": "Hôte",
       "you": "Vous",
@@ -676,7 +676,7 @@
         "words": "Mots aléatoires"
       },
       "words": "Longueur (mots)",
-      "wordsValue": "{count} mots",
+      "wordsValue": "{count, number} mots",
       "wordsHint": "Entre {min} et {max} mots.",
       "chars": "Caractères",
       "lowercase": "Minuscules seulement",
@@ -696,7 +696,7 @@
       },
       "capacity": "Capacité",
       "capacityHint": "Entre {min} et {max} participants.",
-      "capacityValue": "{count} participants",
+      "capacityValue": "{count, number} participants",
       "visibility": "Accès",
       "visibilities": {
         "public": "Public",
@@ -751,8 +751,8 @@
       "errors": "Erreurs / 100 mots"
     },
     "units": {
-      "wpm": "{value} MPM",
-      "score": "{value} pts"
+      "wpm": "{value, number} MPM",
+      "score": "{value, number} pts"
     },
     "podium": "Podium",
     "tableCaption": "Classement général, trié par {category}",
@@ -771,7 +771,7 @@
     "github": "github.com/{handle}",
     "discord": "Discord : {name}",
     "discordLink": "Profil Discord",
-    "summary": "{games} courses · {wins} victoires · meilleur : {best} MPM",
+    "summary": "{games, number} courses · {wins, number} victoires · meilleur : {best, number} MPM",
     "chart": {
       "title": "Évolution : {stat}",
       "period": "Période",
@@ -792,11 +792,11 @@
         "wins": "Victoires",
         "errors": "Taux d’erreur"
       },
-      "summary": "Graphique : {stat}, {count} points avec courses, dernier : {last}. Utilisez les flèches pour lire chaque point.",
-      "wpm": "{value} MPM",
-      "score": "{value} pts",
+      "summary": "Graphique : {stat}, {count, number} points avec courses, dernier : {last}. Utilisez les flèches pour lire chaque point.",
+      "wpm": "{value, number} MPM",
+      "score": "{value, number} pts",
       "wins": "{count, plural, one {# victoire} other {# victoires}}",
-      "errors": "{value} erreurs / 100 mots",
+      "errors": "{value, number} erreurs / 100 mots",
       "noRace": "Aucune course",
       "races": "{count, plural, one {# course} other {# courses}}",
       "empty": "Aucune course sur cette période.",
@@ -814,7 +814,7 @@
       "scoreUnit": "pts",
       "mostPlayed": {
         "title": "Personnage le plus joué",
-        "usage": "<strong>{count, plural, one {# course} other {# courses}}</strong> · {share} de ses {total}",
+        "usage": "<strong>{count, plural, one {# course} other {# courses}}</strong> · {share} de ses {total, number}",
         "sheet": "Voir la fiche"
       }
     },
@@ -836,7 +836,7 @@
         "errors": "valeur = taux d'erreur",
         "speed": "valeur = délai moyen"
       },
-      "ms": "{value} ms",
+      "ms": "{value, number} ms",
       "space": "Espace",
       "row": "Rangée {number}",
       "keyLabel": "{key} : {value}, {tone}",
@@ -890,8 +890,8 @@
       "label": "Piste de course",
       "finish": "Ligne d'arrivée",
       "standings": "Classement en direct",
-      "row": "{rank}. {name}{you, select, true { (vous)} other {}} : {percent} % · {wpm} MPM · {status}",
-      "wpm": "{value} MPM",
+      "row": "{rank, number}. {name}{you, select, true { (vous)} other {}} : {percent, number} % · {wpm, number} MPM · {status}",
+      "wpm": "{value, number} MPM",
       "leader": "Meneur",
       "you": "Vous"
     },
@@ -909,7 +909,7 @@
     "energy": {
       "label": "Énergie",
       "cursedLabel": "Énergie occulte",
-      "value": "{value} / {max} EP",
+      "value": "{value, number} / {max, number} EP",
       "full": "Énergie au maximum !"
     },
     "hud": {
@@ -942,8 +942,8 @@
       "finished": "Arrivé !",
       "abandoned": "Vous avez abandonné la course",
       "timeout": "Temps écoulé !",
-      "position": "Position {rank} sur {total}",
-      "stats": "{wpm} MPM · précision de {accuracy} %",
+      "position": "Position {rank, number} sur {total, number}",
+      "stats": "{wpm, number} MPM · précision de {accuracy, number, percent}",
       "waiting": "{count, plural, one {# exorciste est encore} other {# exorcistes sont encore}} en course…",
       "over": "Course terminée",
       "results": "Résultats",
@@ -957,7 +957,7 @@
       "bonuses": "Bonus reçus",
       "accuracy": "Précision",
       "detail": "{status} · précision de {accuracy}",
-      "wpmValue": "{value} MPM",
+      "wpmValue": "{value, number} MPM",
       "state": "État",
       "you": "(vous)",
       "backToLobby": "Retour au lobby",

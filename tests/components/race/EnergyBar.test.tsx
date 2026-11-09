@@ -10,7 +10,7 @@ describe('EnergyBar (BON-1)', () => {
     const meter = screen.getByRole('meter', { name: 'Energy' });
     expect(meter).toHaveAttribute('aria-valuenow', '850');
     expect(meter).toHaveAttribute('aria-valuemax', '1500');
-    expect(screen.getByText('850 / 1500 EP')).toBeInTheDocument();
+    expect(screen.getByText('850 / 1,500 EP')).toBeInTheDocument();
   });
 
   it('splits the bar into 15 sections of 100 EP', () => {

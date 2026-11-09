@@ -38,7 +38,6 @@ const HEADING: Record<Exclude<RacerStatus, 'racing' | 'stopped'>, 'finished' | '
   summoned: 'summoned',
 };
 
-const percent = (accuracy: number) => Math.round(accuracy * 100);
 
 // Écran d'attente de qui a fini avant les autres (RACE-11), puis classement complet à la fin (RACE-14) :
 // panneau cramoisi, podium et tableau dans le style du classement général.
@@ -60,7 +59,7 @@ export default function RaceSummary({ rows, you, over, lobbyCode }: { rows: Summ
                 <Pointer className="text-primary-text" />
                 {t('position', { rank: me.rank, total: rows.length })}
               </p>
-              <p className="font-label-code text-[15px] text-on-surface-variant">{t('stats', { wpm: me.wpm, accuracy: percent(me.accuracy) })}</p>
+              <p className="font-label-code text-[15px] text-on-surface-variant">{t('stats', { wpm: me.wpm, accuracy: me.accuracy })}</p>
             </div>
           )}
 
