@@ -13,6 +13,21 @@ const RUNNERS: TrackRunner[] = [
   { seat: seat('1', 'bot'), x: 1, rank: 3, wpm: 70, status: 'finished', leader: false, you: false, big: false, lane: 2, character: 'todo', running: false, marks: [] },
 ];
 
+describe('RaceTrack nameplates (COURSE-05)', () => {
+  it('shows each racer name, avatar and live WPM on the track, not only in a title', () => {
+    renderWithIntl(<RaceTrack runners={RUNNERS} banner="" nameOf={(s) => (s.kind === 'bot' ? `Bot ${s.name}` : s.name)} />);
+
+    const plates = screen.getAllByTestId('runner-plate');
+    expect(plates).toHaveLength(3);
+    expect(plates.map((plate) => plate.textContent)).toEqual(expect.arrayContaining([expect.stringContaining('Megumi'), expect.stringContaining('Yuji'), expect.stringContaining('Bot 1')]));
+    const yuji = plates.find((plate) => plate.textContent?.includes('Yuji'))!;
+    expect(yuji).toHaveTextContent('80 WPM');
+    expect(yuji.querySelector('img, [data-avatar]')).not.toBeNull();
+    // Visible: the plate is not hidden from sighted users (the screen-reader list stays separate).
+    expect(yuji).not.toHaveClass('sr-only');
+  });
+});
+
 describe('RaceTrack (RACE-2, RACE-3)', () => {
   it('lists every racer in rank order for screen readers', () => {
     renderWithIntl(<RaceTrack runners={RUNNERS} banner="Yuji leads the race" nameOf={(s) => (s.kind === 'bot' ? `Bot ${s.name}` : s.name)} />);

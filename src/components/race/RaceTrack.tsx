@@ -1,5 +1,6 @@
 import { useTranslations } from 'next-intl';
 import type { CSSProperties } from 'react';
+import { FramedAvatar } from '@/components/leaderboard/Podium';
 import { ABILITY_SPRITES, shikigamiStyle } from '@/components/characters/abilitySprites';
 import { spriteStyle } from '@/components/characters/characterSprites';
 import BevelPanel from '@/components/shared/BevelPanel';
@@ -118,6 +119,16 @@ export default function RaceTrack({
                   // Plusieurs coups peuvent tomber dans le même tick, même deux fois la même technique.
                   return style && <span key={`${hit.at}:${index}`} aria-hidden="true" data-testid="runner-hit" className="absolute left-1/2 z-20 block -translate-x-1/2 motion-reduce:hidden" style={{ ...style, left: '50%', bottom: 0 }} />;
                 })}
+              </span>
+              {/* Plaque du coureur (COURSE-05) : avatar, nom et MPM en direct, lisibles sans survol. */}
+              <span
+                aria-hidden="true"
+                data-testid="runner-plate"
+                className="font-label-code relative z-10 flex max-w-[132px] items-center gap-1.5 bg-black/60 px-1.5 py-0.5 text-[11px] whitespace-nowrap text-on-surface"
+              >
+                <FramedAvatar player={{ username: name, avatar: runner.seat.avatar ?? runner.character, photo: runner.seat.photo ?? null }} size={16} frame={runner.you ? 'bg-primary-container' : 'bg-[#8f1022]'} />
+                <span className="min-w-0 truncate">{name}</span>
+                <span className="shrink-0 tabular-nums text-on-surface-variant">{t('wpm', { value: Math.round(runner.wpm) })}</span>
               </span>
               {runner.you && (
                 <span aria-hidden="true" className="hx-cut font-label-code relative z-10 bg-primary-container px-2.5 py-0.5 text-[10px] font-bold tracking-[0.12em] text-on-primary-container uppercase [--h:6px]">

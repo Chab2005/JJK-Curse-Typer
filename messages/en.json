@@ -888,6 +888,7 @@
       "finish": "Finish line",
       "standings": "Live standings",
       "row": "{rank}. {name}{you, select, true { (you)} other {}}: {percent}% · {wpm} WPM · {status}",
+      "wpm": "{value} WPM",
       "leader": "Leader",
       "you": "You"
     },

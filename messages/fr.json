@@ -888,6 +888,7 @@
       "finish": "Ligne d'arrivée",
       "standings": "Classement en direct",
       "row": "{rank}. {name}{you, select, true { (vous)} other {}} : {percent} % · {wpm} MPM · {status}",
+      "wpm": "{value} MPM",
       "leader": "Meneur",
       "you": "Vous"
     },
