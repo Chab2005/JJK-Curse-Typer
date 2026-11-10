@@ -1,10 +1,41 @@
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { COUNTDOWN_MS } from '@/game/race';
 import { SAMPLE_CURRENT_USER } from '@/lib/sampleUser';
 import { clearLobbies, createLobby, storedLobby, updateLobby } from '@/lib/lobbies';
 import { authSecret } from '@/lib/auth/secret';
 import { seatTicket } from '@/realtime/ticket';
 import { raceFromLobby } from '@/realtime/seed';
+
+const passages = vi.hoisted(() => ({ cached: undefined as unknown[] | undefined, load: vi.fn(async () => []) }));
+vi.mock('@/lib/passages', () => ({ cachedPassages: () => passages.cached, loadPassages: passages.load }));
+
+beforeEach(() => {
+  passages.cached = undefined;
+  passages.load.mockClear();
+});
+
+describe('raceFromLobby passages (CONF-03)', () => {
+  const lobby = () => {
+    clearLobbies();
+    const room = createLobby((host) => host, { id: 'Gojo', name: 'Gojo', avatar: null }, Date.now());
+    updateLobby(room.code, { type: 'addBot', by: 'Gojo', level: 'grade_1' });
+    updateLobby(room.code, { type: 'updateSettings', by: 'Gojo', patch: { content: 'sentences', languages: ['en'], chars: ['uppercase', 'punctuation'], words: 6 } });
+    updateLobby(room.code, { type: 'start', by: 'Gojo' });
+    return room.code;
+  };
+
+  it('builds the text from the cached database passages', () => {
+    passages.cached = [{ id: 1, language: 'en', complexity: 1, text: 'Zebras gallop quietly across the frozen savannah.', source: 'Test, One (1900)' }];
+    expect(raceFromLobby(lobby(), 1000)!.race.text).toMatch(/^Zebras gallop/);
+  });
+
+  it('starts at once without them, falls back to the bundled corpus and asks to load them for the next race', () => {
+    const { race } = raceFromLobby(lobby(), 1000)!;
+    expect(race.text.length).toBeGreaterThan(0);
+    expect(race.text).not.toMatch(/Zebras/);
+    expect(passages.load).toHaveBeenCalled();
+  });
+});
 
 describe('raceFromLobby', () => {
   it('prépare la course du lobby : sièges, texte et réglages de l’hôte', () => {

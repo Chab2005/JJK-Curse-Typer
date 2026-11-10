@@ -4,17 +4,21 @@
 // Déterministe : le hasard vient du PRNG seedé du jeu, deux exécutions produisent les mêmes données
 // (seules les dates suivent le jour de l'exécution).
 //
-// Le corpus de textes n'est pas en base : il est versionné avec le code (src/game/text/corpus.ts) et lu par le
-// générateur sans requête, ce qui garde la génération pure et instantanée (TXT-4). Le seed en affiche le décompte.
+// Les passages réels du domaine public (CONF-03, src/game/text/passageSeeds.ts) vont dans la table `passages`, vidée puis
+// remplie à chaque exécution ; le serveur les lit en base et les garde en mémoire (src/lib/passages.ts), si bien que la
+// génération du texte reste pure et instantanée (TXT-4). La liste de mots et les phrases de secours (src/game/text/corpus.ts)
+// restent versionnées avec le code : le générateur s'en sert quand la base n'a pas de passage.
 import { hash } from '@node-rs/argon2';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { inArray } from 'drizzle-orm';
 import { Pool } from 'pg';
 import { CHARACTERS } from '../src/components/shared/characters';
-import { characterStats, keyStats, results, users } from '../src/db/schema';
+import { characterStats, keyStats, passages, results, users } from '../src/db/schema';
 import { levelForXp, raceXp } from '../src/game/levels';
 import { hashSeed, randomStream } from '../src/game/random';
 import { SENTENCES, WORDS } from '../src/game/text/corpus';
+import { PASSAGE_SEEDS } from '../src/game/text/passageSeeds';
+import { passageComplexity } from '../src/game/text/passages';
 
 /** Compte de démonstration documenté dans le README. */
 export const DEMO_ACCOUNT = { username: 'demo', password: 'curse-typer-demo' } as const;
@@ -161,9 +165,15 @@ async function main() {
       }
     });
 
+    await db.transaction(async (tx) => {
+      await tx.delete(passages);
+      await tx.insert(passages).values(PASSAGE_SEEDS.map((seed) => ({ ...seed, complexity: passageComplexity(seed.text) })));
+    });
+    console.log(`${PASSAGE_SEEDS.length} passages du domaine public (FR + EN) dans la table passages.`);
+
     const total = PERSONAS.reduce((sum, p) => sum + p.races, 0);
     console.log(`\n${PERSONAS.length} comptes, ${total} courses.`);
-    console.log(`Corpus (src/game/text/corpus.ts) : ${WORDS.fr.length + WORDS.en.length} mots, ${SENTENCES.fr.length + SENTENCES.en.length} phrases (FR + EN).`);
+    console.log(`Corpus de secours (src/game/text/corpus.ts) : ${WORDS.fr.length + WORDS.en.length} mots, ${SENTENCES.fr.length + SENTENCES.en.length} phrases (FR + EN).`);
     console.log(`Compte de démonstration : ${DEMO_ACCOUNT.username} / ${DEMO_ACCOUNT.password}`);
   } finally {
     await pool.end();

@@ -8,6 +8,7 @@ import { generateText } from '@/game/text/generate';
 import { SAMPLE_CURRENT_USER } from '@/lib/sampleUser';
 import { authSecret } from '@/lib/auth/secret';
 import { findLobby, storedLobby, updateLobby } from '@/lib/lobbies';
+import { cachedPassages, loadPassages } from '@/lib/passages';
 import { recordRaceResults } from './recordResults';
 import { readSeatTicket } from './ticket';
 
@@ -40,8 +41,10 @@ export function raceFromLobby(code: string, now: number): SeededRace | null {
         { id: p.id, name: String(p.number), avatar: CHARACTERS[hashSeed(`${seed}:${p.id}`) % CHARACTERS.length].id, kind: 'bot', level: p.level },
   );
   const { settings } = lobby;
+  // La course part sans attendre la base : les passages viennent du cache, rempli ici pour la suivante s'il était vide (CONF-03).
+  void loadPassages();
   const text = generateText(
-    { languages: settings.languages, content: settings.content, words: settings.words, chars: settings.chars, practice: settings.practice },
+    { languages: settings.languages, content: settings.content, words: settings.words, chars: settings.chars, practice: settings.practice, passages: cachedPassages() },
     seed,
   );
 

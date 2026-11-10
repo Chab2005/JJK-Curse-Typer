@@ -1,6 +1,7 @@
 // Génération du texte de course (TXT-1 à TXT-5, TXT-9) : même graine → même texte pour tous.
 import type { CharKind, TextLanguage } from '@/components/lobbies/lobbySearch';
 import { randomStream } from '../random';
+import { type Passage, passagesFor } from './passages';
 import { SENTENCES, WORDS } from './corpus';
 
 export interface TextOptions {
@@ -10,6 +11,8 @@ export interface TextOptions {
   chars: readonly CharKind[];
   /** Caractères à surreprésenter (TXT-5). */
   practice: string;
+  /** Passages réels du corpus (CONF-03), lus en base par le serveur. Sans passage pour une langue, le corpus fourni avec le code prend le relais. */
+  passages?: readonly Passage[];
 }
 
 type Random = ReturnType<typeof randomStream>;
@@ -59,8 +62,14 @@ function randomWords(options: TextOptions, random: Random): string[] {
   return tokens;
 }
 
+/** Phrases d'une langue : ses passages réels s'il y en a, sinon le corpus fourni avec le code. */
+function sentencesOf(options: TextOptions, language: TextLanguage): readonly string[] {
+  const real = passagesFor(options.passages ?? [], [language]);
+  return real.length > 0 ? real.map((passage) => passage.text) : SENTENCES[language];
+}
+
 function sentenceWords(options: TextOptions, random: Random): string[] {
-  const pools = options.languages.map((language) => weightedPool(SENTENCES[language], options.practice));
+  const pools = options.languages.map((language) => weightedPool(sentencesOf(options, language), options.practice));
   const tokens: string[] = [];
   while (tokens.length < options.words) {
     for (const word of random.pick(random.pick(pools)).split(' ')) {
@@ -81,8 +90,9 @@ function restrict(text: string, chars: readonly CharKind[]): string {
 }
 
 /** Caractères à pratiquer absents du corpus (« / », « # »…) : collés à la fin de certains mots. */
-function affixPractice(tokens: string[], practice: string, random: Random): string[] {
-  const corpus = Object.values(WORDS).flat().join('') + Object.values(SENTENCES).flat().join('');
+function affixPractice(tokens: string[], options: TextOptions, random: Random): string[] {
+  const { practice } = options;
+  const corpus = Object.values(WORDS).flat().join('') + Object.values(SENTENCES).flat().join('') + (options.passages ?? []).map((passage) => passage.text).join('');
   const missing = [...practice].filter((char) => !corpus.includes(char));
   if (missing.length === 0) return tokens;
   return tokens.map((token) => (random.next() < RATE.practiceAffix ? token + random.pick(missing) : token));
@@ -94,7 +104,7 @@ export function generateText(options: TextOptions, seed: number): string {
   let tokens = restrict(raw.join(' '), options.chars).split(' ');
 
   // Les traits d'union retirés ont pu ajouter des mots : on revient à la longueur demandée (TXT-4).
-  tokens = affixPractice(tokens.slice(0, options.words), options.practice, random);
+  tokens = affixPractice(tokens.slice(0, options.words), options, random);
   // Un texte en vraies phrases finit par un point, même coupé au milieu d'une phrase.
   if (options.content === 'sentences' && options.chars.includes('punctuation')) {
     const last = tokens.length - 1;

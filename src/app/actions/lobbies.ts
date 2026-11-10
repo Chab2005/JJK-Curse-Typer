@@ -10,6 +10,7 @@ import { getViewer, getViewerId, type Viewer } from '@/lib/currentUser';
 import { claimInvite, createInvites, deleteInvite, deleteInvites, listInvites, revokeInvites } from '@/lib/invites';
 import { createLobby, findQuickLobby, parseLobbyAction, storedLobby, updateLobby } from '@/lib/lobbies';
 import { expectViewer } from '@/lib/lobbyPresence';
+import { loadPassages } from '@/lib/passages';
 import { currentLobby, setMembership } from '@/lib/roomMembers';
 import { inviteCountSchema, inviteTokenSchema, joinOptionsSchema, lobbyCodeSchema } from '@/lib/schemas';
 
@@ -101,6 +102,8 @@ export async function updateLobbyAction(code: string, input: unknown): Promise<L
   const action = parseLobbyAction(input, viewerId);
   const parsedCode = lobbyCodeSchema.safeParse(code);
   if (!parsedCode.success || !action) return null;
+  // Le départ remplit le cache des passages réels : la course, lancée de façon synchrone, les trouve en mémoire (CONF-03).
+  if (action.type === 'start') await loadPassages();
   const before = storedLobby(parsedCode.data);
   const after = updateLobby(parsedCode.data, action);
   // Une expulsion révoque aussi le lien d'invitation de l'expulsé (LOB-8).

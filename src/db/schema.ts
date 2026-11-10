@@ -144,3 +144,20 @@ export const roomMembers = pgTable(
   },
   (table) => [index("room_members_lobby_code_idx").on(table.lobbyCode)],
 );
+
+// Passages réels du domaine public pour le texte « cohérent » (CONF-03), remplis par `npm run db:seed`. Le serveur les lit
+// une fois et les garde en mémoire (src/lib/passages.ts) : la génération du texte reste pure et ne touche jamais la base.
+export const passages = pgTable(
+  "passages",
+  {
+    id: serial("id").primaryKey(),
+    /** `TextLanguage` : 'en', 'fr'. */
+    language: text("language").notNull(),
+    /** 1 facile, 2 moyen, 3 difficile (`passageComplexity`). */
+    complexity: integer("complexity").notNull(),
+    text: text("text").notNull(),
+    /** Auteur, œuvre et année. */
+    source: text("source").notNull(),
+  },
+  (table) => [index("passages_language_idx").on(table.language)],
+);

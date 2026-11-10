@@ -93,3 +93,33 @@ describe('corpus', () => {
     }
   });
 });
+
+describe('generateText with database passages (CONF-03)', () => {
+  const passages = [
+    { id: 1, language: 'en' as const, complexity: 1 as const, text: 'Zebras gallop quietly across the frozen savannah while owls watch.', source: 'Test, One (1900)' },
+    { id: 2, language: 'fr' as const, complexity: 1 as const, text: 'Les hirondelles reviennent chaque printemps vers le vieux clocher.', source: 'Test, Deux (1900)' },
+  ];
+  const sentences: TextOptions = { ...base, content: 'sentences', words: 8, chars: ['uppercase', 'punctuation'] };
+
+  it('builds the coherent text from the passages of the chosen language only', () => {
+    const text = generateText({ ...sentences, passages }, 1);
+    expect(text.startsWith('Zebras gallop quietly across the frozen savannah')).toBe(true);
+    expect(text).not.toMatch(/hirondelles/);
+    expect(generateText({ ...sentences, languages: ['fr'], passages }, 1)).toMatch(/^Les hirondelles/);
+  });
+
+  it('stays pure: same passages and seed give the same text', () => {
+    expect(generateText({ ...sentences, words: 40, passages }, 9)).toBe(generateText({ ...sentences, words: 40, passages }, 9));
+  });
+
+  it('falls back to the bundled sentences when a language has no passage', () => {
+    const text = generateText({ ...sentences, languages: ['fr'], passages: [passages[0]] }, 3);
+    expect(text).not.toMatch(/Zebras/);
+    expect(text.length).toBeGreaterThan(0);
+  });
+
+  it('leaves random words alone', () => {
+    expect(generateText({ ...base, passages }, 4)).toBe(generateText(base, 4));
+  });
+});
+
