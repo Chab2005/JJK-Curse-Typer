@@ -9,6 +9,7 @@ import { startKeyTally, tallyKey, type KeyTally } from './keyStats';
 import { BLACK_FLASH_CHANCE, BOOST_RATE, LAG_MS, hasCursedEnergy, racerMarks, startPowers, stunnedAt, type RacerMark, type RacerPowers } from './powers';
 import { hashSeed, nextRandom, randomStream, type Seed } from './random';
 import { rawWpm, typingScore } from './scoring';
+import { sampleRacers } from './series';
 import { correctChars, isValidKey, startTyping, typeKey, type ErrorMode, type Keystroke, type TypingState } from './typing';
 
 /** Décompte visible avant le départ (COURSE-03). */
@@ -69,6 +70,8 @@ export interface Racer {
   nextCastAt: number;
   /** Effets d'une technique reçus de quelqu'un d'autre (colonne « bonus reçus » des résultats, RES-02). */
   received: number;
+  /** MPM net à chaque seconde de course (RES-03) ; voir `src/game/series.ts`. */
+  samples: number[];
 }
 
 /** Ce qu'il faut annoncer à tous (BONUS-03) : vidé à chaque tick. */
@@ -140,6 +143,7 @@ export function createRace({ seats, text, mode, timerMs, bonus, gameMode = bonus
       flashes: 0,
       nextCastAt: nextBotCast(0, randomStream(botSeed)),
       received: 0,
+      samples: [],
     };
   });
   return { phase: 'countdown', startAt: now + COUNTDOWN_MS, timerMs, bonus: modeHasBonus(gameMode), gameMode, text, mode, racers, lastActivityAt: now, rng: hashSeed(`${seed}:rng`), notices: [] };
@@ -264,7 +268,7 @@ function tick(race: RaceState, now: number): RaceState {
 
   const played = runBots(runDomains(resolveFlashes({ ...race, racers }, limit), limit), limit);
   const phase = played.racers.every((racer) => racer.status !== 'racing') ? 'finished' : 'racing';
-  return { ...played, phase };
+  return { ...played, racers: sampleRacers(played.racers, limit), phase };
 }
 
 export function raceReducer(race: RaceState, event: RaceEvent): RaceState {

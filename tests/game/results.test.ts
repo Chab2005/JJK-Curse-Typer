@@ -35,6 +35,20 @@ describe('raceResults', () => {
     expect(ann.rank).toBeLessThan(results.find((r) => r.seat === 'bob')!.rank);
   });
 
+  it('garde le MPM brut, les bonus reçus, la série du MPM et les touches ratées (RES-05)', () => {
+    const race = reduce(
+      claimed(0, 'ann', 'bob'),
+      { type: 'keys', id: 'ann', strokes: keys('abx def'), now: START + 800 },
+      { type: 'keys', id: 'bob', strokes: keys('abc def', 1000), now: START + 1800 },
+      { type: 'tick', now: START + 600_000 },
+    );
+    const ann = raceResults(race, START + 600_000).find((r) => r.seat === 'ann')!;
+    expect(ann.rawWpm).toBeGreaterThanOrEqual(ann.wpm);
+    expect(ann.received).toBe(0);
+    expect(ann.series.at(-1)).toBe(ann.wpm);
+    expect(ann.missedKeys).toEqual({ c: 1 });
+  });
+
   it('compte les autres comptes qui ont tapé, sans invités, bots ni simulation', () => {
     const race = reduce(
       claimed(0, 'ann', 'bob', 'guest:cid'),

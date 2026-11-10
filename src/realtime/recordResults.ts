@@ -47,7 +47,11 @@ export async function recordRaceResults(list: readonly RaceResult[], at: Date): 
     });
     const rows = saved.map(({ userId, result }) => {
       const { wpm, accuracy, rank, players, rivals, errors, keystrokes } = toGuestGame(result, at);
-      return { userId, wpm, accuracy, durationSeconds: Math.max(1, Math.round(result.durationMs / 1000)), rank, players, rivals, errors, keystrokes, createdAt: at };
+      return {
+        userId, wpm, accuracy, durationSeconds: Math.max(1, Math.round(result.durationMs / 1000)), rank, players, rivals, errors, keystrokes, createdAt: at,
+        // Détail de la course (RES-05) : de quoi réafficher la courbe du MPM et les touches ratées.
+        rawWpm: result.rawWpm, status: result.status, received: result.received, series: result.series, missedKeys: result.missedKeys,
+      };
     });
     if (rows.length > 0) await db.insert(results).values(rows);
 

@@ -3,6 +3,7 @@
 import type { CharacterId } from '@/components/shared/characters';
 import { raceKeyStats, type KeyStat } from './keyStats';
 import { standings, type RaceState } from './race';
+import { missedKeys, raceSeries } from './series';
 
 /** Siège d'un invité : `guest:<pseudo>` ; les autres sièges humains sont des comptes. */
 export const GUEST_SEAT_PREFIX = 'guest:';
@@ -29,6 +30,14 @@ export interface RaceResult {
   character: CharacterId | null;
   /** Meilleur rang parmi les joueurs humains de la course, bots ignorés. */
   won: boolean;
+  /** MPM brut : toutes les frappes, erreurs comprises (RES-05). */
+  rawWpm: number;
+  /** Effets de techniques reçus de quelqu'un d'autre. */
+  received: number;
+  /** MPM net à chaque seconde, terminé par la valeur finale (RES-03). */
+  series: number[];
+  /** Fautes par touche attendue (RES-03). */
+  missedKeys: Record<string, number>;
 }
 
 /** Résultats des joueurs humains d'une course finie ; vide tant qu'elle court. */
@@ -60,7 +69,13 @@ export function raceResults(race: RaceState, now: number): RaceResult[] {
         keys: raceKeyStats(keys),
         character: race.bonus ? seat.avatar : null,
         won: row.rank === bestHumanRank,
+        rawWpm: row.rawWpm,
+        received: row.received,
+        series: seriesOf(race, seat.id, now),
+        missedKeys: Object.fromEntries(missedKeys(racer.keys).map(({ char, errors }) => [char, errors])),
       },
     ];
   });
 }
+
+const seriesOf = (race: RaceState, id: string, now: number): number[] => raceSeries(race, now).find((entry) => entry.id === id)?.samples ?? [];

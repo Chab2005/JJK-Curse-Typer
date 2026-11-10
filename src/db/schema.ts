@@ -1,4 +1,4 @@
-import { customType, index, integer, pgTable, primaryKey, real, serial, text, timestamp } from "drizzle-orm/pg-core";
+import { customType, index, integer, jsonb, pgTable, primaryKey, real, serial, text, timestamp } from "drizzle-orm/pg-core";
 import type { Level } from "../game/levels";
 
 const bytea = customType<{ data: Buffer }>({ dataType: () => "bytea" });
@@ -76,6 +76,16 @@ export const results = pgTable(
     rivals: integer("rivals"),
     errors: integer("errors").default(0).notNull(),
     keystrokes: integer("keystrokes").default(0).notNull(),
+    /** Détail de la course (RES-05), `null` pour une course enregistrée avant leur ajout. MPM brut, toutes frappes comprises. */
+    rawWpm: real("raw_wpm"),
+    /** `finished` ou `timeout`. */
+    status: text("status"),
+    /** Effets de techniques reçus. */
+    received: integer("received"),
+    /** MPM net à chaque seconde de course : de quoi redessiner la courbe. */
+    series: jsonb("series").$type<number[]>(),
+    /** Fautes par touche attendue : de quoi redessiner les touches ratées. */
+    missedKeys: jsonb("missed_keys").$type<Record<string, number>>(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
   (table) => [index("results_user_id_idx").on(table.userId)],
