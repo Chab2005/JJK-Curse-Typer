@@ -11,6 +11,7 @@ import {
   isSpectating,
   joinRefusal,
   lobbyReducer,
+  normalizeExclusion,
   normalizePractice,
   readyCount,
   startBlocker,
@@ -23,6 +24,7 @@ const SETTINGS: LobbySettings = {
   words: 60,
   chars: ['uppercase'],
   practice: '',
+  exclude: '',
   timer: 0,
   errorMode: 'accumulate',
   gameMode: 'normal',
@@ -130,6 +132,19 @@ describe('updateSettings (LOB-5)', () => {
   it('nettoie les caractères à pratiquer (TXT-5)', () => {
     const next = lobbyReducer(room(), { type: 'updateSettings', by: 'Gojo', patch: { practice: ' z,z / .' } });
     expect(next.settings.practice).toBe('z,/.');
+  });
+});
+
+describe('exclusion (CONF-07)', () => {
+  it('nettoie les caractères exclus : sans espaces, ni doublons de casse, 10 au plus', () => {
+    expect(normalizeExclusion(' q Q,q z')).toBe('q,z');
+    expect(normalizeExclusion('abcdefghijklmnop')).toBe('abcdefghij');
+  });
+
+  it('se change dans les réglages et reste vide par défaut', () => {
+    expect(room().settings.exclude).toBe('');
+    const next = lobbyReducer(room(), { type: 'updateSettings', by: 'Gojo', patch: { exclude: 'q Q' } });
+    expect(next.settings.exclude).toBe('q');
   });
 });
 

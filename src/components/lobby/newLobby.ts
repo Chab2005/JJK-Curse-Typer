@@ -11,6 +11,7 @@ export const DEFAULT_LOBBY_SETTINGS: LobbySettings = {
   words: 50,
   chars: ['uppercase', 'punctuation'],
   practice: '',
+  exclude: '',
   timer: 0,
   errorMode: 'accumulate',
   gameMode: 'normal',

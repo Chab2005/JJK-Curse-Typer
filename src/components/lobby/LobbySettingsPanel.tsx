@@ -118,6 +118,7 @@ function SettingsSummary({ settings }: { settings: LobbySettings }) {
     [t('words'), t('wordsValue', { count: settings.words })],
     [t('chars'), textCharsLabel(settings.chars)],
     [t('practice'), settings.practice || t('practiceNone')],
+    [t('exclude'), settings.exclude || t('practiceNone')],
     [t('timer'), timerLabel(settings.timer)],
     [t('errorMode'), t(`errorModes.${settings.errorMode}`)],
     [t('gameMode'), t(`gameModes.${settings.gameMode}`)],
@@ -191,6 +192,22 @@ function SettingsForm({ settings, participantCount, onChange }: { settings: Lobb
           />
         </span>
         <p id="settings-practice-hint" className="text-[13px] text-outline">{t('practiceHint')}</p>
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <Label htmlFor="settings-exclude">{t('exclude')}</Label>
+        <span className="hx-cut flex bg-[#8f1022] p-px transition-colors [--h:14px] focus-within:bg-primary-container">
+          <input
+            id="settings-exclude"
+            value={settings.exclude}
+            onChange={(e) => onChange({ exclude: e.target.value })}
+            aria-describedby="settings-exclude-hint"
+            autoComplete="off"
+            spellCheck={false}
+            className="hx-cut font-label-code min-h-[42px] w-full bg-[radial-gradient(120%_160%_at_50%_0%,#2a0b10_0%,#170608_55%,#0c0304_100%)] px-7 text-[16px] tracking-[0.2em] text-on-primary-container [--h:13.5px] focus:outline-none"
+          />
+        </span>
+        <p id="settings-exclude-hint" className="text-[13px] text-outline">{t('excludeHint')}</p>
       </div>
 
       <div className="flex flex-col gap-2">

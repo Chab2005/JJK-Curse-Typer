@@ -24,6 +24,7 @@ const SETTINGS: LobbySettings = {
   words: 60,
   chars: ['uppercase'],
   practice: '',
+  exclude: '',
   timer: 0,
   errorMode: 'accumulate',
   gameMode: 'normal',

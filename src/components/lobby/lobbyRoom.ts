@@ -36,6 +36,8 @@ export interface LobbySettings {
   chars: CharKind[];
   /** Caractères à pratiquer, surreprésentés dans le texte (TXT-5). */
   practice: string;
+  /** Caractères à ne jamais écrire dans le texte (CONF-07) ; ils l'emportent sur `practice`. */
+  exclude: string;
   timer: number;
   errorMode: ErrorMode;
   /** Règles des capacités ; `bonus` en découle, toujours tenu à jour par le réducteur. */
@@ -148,6 +150,12 @@ export function normalizePractice(text: string): string {
   return [...new Set(text.replace(/\s/g, ''))].slice(0, PRACTICE_MAX).join('');
 }
 
+/** Caractères à exclure (CONF-07) sans espaces, ni doublons (majuscule et minuscule comptent pour une), 10 au plus. */
+export function normalizeExclusion(text: string): string {
+  const seen = new Set<string>();
+  return [...text.replace(/\s/g, '')].filter((char) => !seen.has(char.toLowerCase()) && seen.add(char.toLowerCase())).slice(0, PRACTICE_MAX).join('');
+}
+
 function updateSettings(room: LobbyRoom, patch: Partial<LobbySettings>): LobbySettings {
   const next = { ...room.settings, ...patch };
   const gameMode = (GAME_MODES as readonly string[]).includes(next.gameMode) ? next.gameMode : room.settings.gameMode;
@@ -160,6 +168,7 @@ function updateSettings(room: LobbyRoom, patch: Partial<LobbySettings>): LobbySe
     capacity: clamp(next.capacity, Math.max(MIN_PARTICIPANTS, room.participants.length), MAX_CAPACITY),
     timer: (TIMER_OPTIONS as readonly number[]).includes(next.timer) ? next.timer : room.settings.timer,
     practice: normalizePractice(next.practice),
+    exclude: normalizeExclusion(next.exclude),
     visibility: (LOBBY_VISIBILITIES as readonly string[]).includes(next.visibility) ? next.visibility : room.settings.visibility,
   };
 }

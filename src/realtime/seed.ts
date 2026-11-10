@@ -44,7 +44,7 @@ export function raceFromLobby(code: string, now: number): SeededRace | null {
   // La course part sans attendre la base : les passages viennent du cache, rempli ici pour la suivante s'il était vide (CONF-03).
   void loadPassages();
   const text = generateText(
-    { languages: settings.languages, content: settings.content, words: settings.words, chars: settings.chars, practice: settings.practice, passages: cachedPassages() },
+    { languages: settings.languages, content: settings.content, words: settings.words, chars: settings.chars, practice: settings.practice, exclude: settings.exclude, passages: cachedPassages() },
     seed,
   );
 

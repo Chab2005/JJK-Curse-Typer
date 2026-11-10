@@ -10,6 +10,7 @@ const SETTINGS: LobbySettings = {
   words: 60,
   chars: ['uppercase', 'digits'],
   practice: ',.',
+  exclude: 'q',
   timer: 90,
   errorMode: 'block',
   gameMode: 'heavenly',
@@ -61,6 +62,26 @@ describe('LobbySettingsPanel (LOB-5)', () => {
     expect(onChange).toHaveBeenCalledOnce();
     expect(onChange).toHaveBeenCalledWith({ content: 'sentences', gameMode: 'unlimitedCe', chars: ['uppercase'], timer: 180, visibility: 'private' });
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  it('lets the host exclude characters and shows them to everyone (CONF-07)', async () => {
+    renderWithIntl(<LobbySettingsPanel settings={SETTINGS} participantCount={3} editable={false} onChange={() => {}} />);
+    expect(screen.getByText('Characters to exclude')).toBeInTheDocument();
+    expect(screen.getByText('q')).toBeInTheDocument();
+  });
+
+  it('sends the excluded characters when saved (CONF-07)', async () => {
+    const onChange = vi.fn();
+    const { user } = renderWithIntl(<LobbySettingsPanel settings={SETTINGS} participantCount={3} editable onChange={onChange} />);
+
+    await user.click(screen.getByRole('button', { name: 'Edit settings' }));
+    const field = screen.getByRole('textbox', { name: 'Characters to exclude' });
+    expect(field).toHaveValue('q');
+    expect(field).toHaveAccessibleDescription(/Never written in the text/);
+    await user.type(field, 'zx');
+    await user.click(screen.getByRole('button', { name: 'Save' }));
+
+    expect(onChange).toHaveBeenCalledWith({ exclude: 'qzx' });
   });
 
   it('drops the changes on cancel and starts from the current settings next time', async () => {

@@ -158,6 +158,7 @@ const settingsPatchSchema = z
     words: z.number().finite(),
     chars: z.array(z.enum(CHAR_KINDS)),
     practice: z.string().max(40),
+    exclude: z.string().max(40),
     timer: z.union([z.literal(0), z.number().int().min(TIMER_MIN).max(TIMER_MAX)]),
     errorMode: z.enum(ERROR_MODES),
     gameMode: z.enum(GAME_MODES),

@@ -683,6 +683,8 @@
       "practice": "Characters to practise",
       "practiceHint": "Shown more often in the text, e.g. , . / z",
       "practiceNone": "None",
+      "exclude": "Characters to exclude",
+      "excludeHint": "Never written in the text, even in real passages (those that contain them are skipped, random words are used if none fits).",
       "timer": "Race timer",
       "timerOff": "No timer",
       "errorMode": "Errors",

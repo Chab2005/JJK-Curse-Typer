@@ -683,6 +683,8 @@
       "practice": "Caractères à pratiquer",
       "practiceHint": "Plus fréquents dans le texte, ex. , . / z",
       "practiceNone": "Aucun",
+      "exclude": "Caractères à exclure",
+      "excludeHint": "Jamais écrits dans le texte, même en passages réels (ceux qui en contiennent sont écartés, des mots aléatoires prennent le relais si aucun ne convient).",
       "timer": "Timer de course",
       "timerOff": "Sans timer",
       "errorMode": "Erreurs",
