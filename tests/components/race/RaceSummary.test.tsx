@@ -50,3 +50,40 @@ describe('RaceSummary', () => {
     expect(screen.getByRole('heading', { name: 'You abandoned the race' })).toBeInTheDocument();
   });
 });
+
+describe('RaceSummary charts (RES-03)', () => {
+  const series = [
+    { id: 'yuji', samples: [0, 40, 81], missed: [{ char: 'q', errors: 2, hits: 8 }] },
+    { id: 'me', samples: [0, 30, 64], missed: [{ char: 'd', errors: 3, hits: 7 }] },
+    { id: 'bot-1', samples: [0, 20, 30], missed: [] },
+  ];
+  const done: SummaryRow[] = ROWS.map((r) => ({ ...r, status: 'finished' as const }));
+
+  it('draws the WPM of every participant over time with a legend, once the series arrived', () => {
+    renderWithIntl(<RaceSummary rows={done} you="me" over series={series} lobbyCode="TKY-HGH" />);
+
+    const chart = screen.getByRole('img', { name: /WPM over time/ });
+    expect(chart.querySelectorAll('polyline')).toHaveLength(3);
+    const legend = within(screen.getByRole('list', { name: 'Participants' }));
+    expect(legend.getAllByRole('listitem')).toHaveLength(3);
+    expect(legend.getByText('Megumi')).toBeInTheDocument();
+  });
+
+  it('shows the missed keys of the viewer first, and of any other participant on request', async () => {
+    const { user } = renderWithIntl(<RaceSummary rows={done} you="me" over series={series} lobbyCode="TKY-HGH" />);
+
+    const keyboard = screen.getByRole('region', { name: 'Missed keys' });
+    expect(within(keyboard).getByText('d · 30%')).toBeInTheDocument();
+    expect(within(keyboard).queryByRole('button', { name: 'Speed' })).not.toBeInTheDocument();
+
+    await user.click(within(keyboard).getByRole('combobox', { name: 'Player' }));
+    await user.click(screen.getByRole('option', { name: 'Yuji' }));
+    expect(within(keyboard).getByText('q · 20%')).toBeInTheDocument();
+  });
+
+  it('shows no chart while the race runs or when the series are missing', () => {
+    renderWithIntl(<RaceSummary rows={done} you="me" over={false} series={series} lobbyCode="TKY-HGH" />);
+    expect(screen.queryByRole('img', { name: /WPM over time/ })).not.toBeInTheDocument();
+  });
+});
+

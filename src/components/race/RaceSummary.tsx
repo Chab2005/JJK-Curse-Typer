@@ -5,7 +5,10 @@ import BevelPanel from '@/components/shared/BevelPanel';
 import ChevronButton, { Chevrons } from '@/components/shared/ChevronButton';
 import Pointer from '@/components/shared/Pointer';
 import { Link } from '@/i18n/navigation';
+import type { SeriesEntry } from '@/game/series';
+import RaceMissedKeys from './RaceMissedKeys';
 import RacePodium from './RacePodium';
+import RaceSeriesChart from './RaceSeriesChart';
 import RaceResultsTable from './RaceResultsTable';
 
 export interface SummaryRow {
@@ -41,7 +44,7 @@ const HEADING: Record<Exclude<RacerStatus, 'racing' | 'stopped'>, 'finished' | '
 
 // Écran d'attente de qui a fini avant les autres (RACE-11), puis classement complet à la fin (RACE-14) :
 // panneau cramoisi, podium et tableau dans le style du classement général.
-export default function RaceSummary({ rows, you, over, lobbyCode }: { rows: SummaryRow[]; you: string | null; over: boolean; lobbyCode: string }) {
+export default function RaceSummary({ rows, you, over, lobbyCode, series = [] }: { rows: SummaryRow[]; you: string | null; over: boolean; lobbyCode: string; /** MPM de chacun dans le temps et touches ratées, envoyés une fois la course finie (RES-03). */ series?: SeriesEntry[] }) {
   const t = useTranslations('Race.summary');
   const me = rows.find((row) => row.id === you);
   const racing = rows.filter((row) => row.status === 'racing').length;
@@ -86,6 +89,13 @@ export default function RaceSummary({ rows, you, over, lobbyCode }: { rows: Summ
             <span aria-hidden="true" className="material-symbols-outlined text-[18px]">arrow_back</span>
             {t('backToLobby')}
           </ChevronButton>
+          {/* Après le bouton : les séries arrivent après la fin de course et ne doivent rien déplacer de ce qui est déjà affiché. */}
+          {series.length > 0 && (
+            <>
+              <RaceSeriesChart series={series} rows={rows} />
+              <RaceMissedKeys series={series} rows={rows} you={you} />
+            </>
+          )}
         </section>
       )}
     </div>

@@ -18,10 +18,10 @@ const INDENTS = [0, 0.5, 0.75, 1.25, 3];
 const MODES = ['errors', 'speed'] as const;
 
 // Carte de chaleur du clavier (STAT-3) : chaque touche affiche sa valeur, la couleur la situe par rapport au joueur (UI-8).
-export default function KeyboardHeatmap({ stats }: { stats: KeyStat[] }) {
+export default function KeyboardHeatmap({ stats, modes = MODES, title, headerExtra }: { stats: KeyStat[]; /** Valeurs proposées : les deux par défaut. */ modes?: readonly HeatmapMode[]; /** Titre de la carte, « Carte de chaleur du clavier » par défaut. */ title?: string; /** Contrôle ajouté à côté du titre (choix du joueur, dans les résultats d'une course). */ headerExtra?: React.ReactNode }) {
   const t = useTranslations('Profile.heatmap');
   const format = useFormatter();
-  const [mode, setMode] = useState<HeatmapMode>('errors');
+  const [mode, setMode] = useState<HeatmapMode>(modes[0]);
   const [shift, setShift] = useState(false);
 
   const rows = heatmap(stats, mode, shift);
@@ -36,10 +36,11 @@ export default function KeyboardHeatmap({ stats }: { stats: KeyStat[] }) {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 id="heatmap-title" className="flex items-center gap-2.5 text-[20px] uppercase tracking-[0.1em] text-on-surface">
           <span aria-hidden="true" className="material-symbols-outlined text-[20px] text-primary-text">keyboard</span>
-          {t('title')}
+          {title ?? t('title')}
         </h2>
         <div className="flex flex-wrap items-center gap-2">
-          <Segmented label={t('mode')} options={MODES} value={mode} onChange={setMode} optionLabel={(m) => t(`modes.${m}`)} />
+          {headerExtra}
+          {modes.length > 1 && <Segmented label={t('mode')} options={modes} value={mode} onChange={setMode} optionLabel={(m) => t(`modes.${m}`)} />}
           <BevelCheck checked={shift} onChange={setShift}>
             <span className="font-label-code text-[12px] uppercase">{t('shift')}</span>
           </BevelCheck>

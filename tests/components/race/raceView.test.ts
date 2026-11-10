@@ -215,3 +215,15 @@ describe('laggedInput', () => {
     expect(trimTrail(trail, 1100 + 2 * LAG_MS)).toEqual([]);
   });
 });
+
+describe('raceViewReducer series (RES-03)', () => {
+  it('keeps the series sent once at the end, and forgets them on a new welcome', () => {
+    const series = [{ id: 'me', samples: [10, 30, 45], missed: [{ char: 'd', errors: 2, hits: 4 }] }];
+    let view = raceViewReducer(initialRaceView, welcome, 1000);
+    expect(view.series).toEqual([]);
+    view = raceViewReducer(view, { type: 'series', series }, 2000);
+    expect(view.series).toEqual(series);
+    expect(raceViewReducer(view, welcome, 3000).series).toEqual([]);
+  });
+});
+

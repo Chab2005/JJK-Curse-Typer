@@ -4,6 +4,7 @@ import type { RaceSnapshot, ServerMessage } from '@/game/protocol';
 import type { CharacterId } from '@/components/shared/characters';
 import { racerCharacter, type DomainOwner, type TechniqueId } from '@/game/abilities';
 import { LAG_MS, type RacerMark } from '@/game/powers';
+import type { SeriesEntry } from '@/game/series';
 import { overtakes, type RaceNotice, type RacePhase, type RacerSeat, type RacerStatus, type Standing } from '@/game/race';
 
 /** Annonce affichée dans la zone d'animation (RACE-3, RACE-5). */
@@ -26,11 +27,13 @@ export interface RaceView {
   /** Dernière capacité annoncée (BONUS-03) et heure locale de l'annonce. */
   notice: { notice: RaceNotice; at: number } | null;
   hits: RaceHit[];
+  /** Séries du MPM et touches ratées de tous, reçues une fois la course finie (RES-03). */
+  series: SeriesEntry[];
   /** Territoires ouverts, par lanceur. */
   domains: Record<string, DomainOwner>;
 }
 
-export const initialRaceView: RaceView = { you: null, race: null, startAt: null, phase: null, standings: [], banner: null, movedAt: {}, notice: null, hits: [], domains: {} };
+export const initialRaceView: RaceView = { you: null, race: null, startAt: null, phase: null, standings: [], banner: null, movedAt: {}, notice: null, hits: [], series: [], domains: {} };
 
 /** Un coup reste dessiné sur la piste 900 ms. */
 export const HIT_MS = 900;
@@ -90,6 +93,8 @@ export function raceViewReducer(view: RaceView, message: ServerMessage, received
         movedAt: nextMovedAt(view, message.standings, receivedAt),
       };
     }
+    case 'series':
+      return { ...view, series: message.series };
     case 'seats':
       return view.race ? { ...view, race: { ...view.race, seats: message.seats } } : view;
     case 'resync':

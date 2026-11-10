@@ -5,6 +5,7 @@ import { CAST_ABILITIES, type CastAbility, type GameMode } from './abilities';
 import type { CastRefusal } from './effects';
 import type { RacerPowers } from './powers';
 import type { RaceNotice, RacePhase, RacerSeat, Standing } from './race';
+import type { SeriesEntry } from './series';
 import type { ErrorMode, TypingState } from './typing';
 
 /** Frappes envoyées par lot (toutes les ~150 ms) : un lot plus gros est forcément suspect. */
@@ -60,6 +61,8 @@ export type ServerMessage =
   | { type: 'welcome'; you: string | null; race: RaceSnapshot; typing: TypingState | null; acked?: number; powers?: RacerPowers }
   /** Diffusé 5 fois par seconde (TECH-7) : classement agrégé de tous les participants, et ce qu'il faut annoncer (BONUS-03). */
   | { type: 'tick'; phase: RacePhase; elapsed: number; standings: Standing[]; notices?: RaceNotice[] }
+  /** Envoyé une seule fois, quand la course est finie (PERF-02) : le MPM de chacun seconde par seconde et ses touches ratées (RES-03). */
+  | { type: 'series'; series: SeriesEntry[] }
   /** Lot de frappes refusé : la saisie validée par le serveur remplace celle du client. */
   | ({ type: 'resync' } & PlayerSync)
   /** Une capacité a changé le joueur : sa saisie, ses états. */

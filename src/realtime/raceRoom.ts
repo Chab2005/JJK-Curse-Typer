@@ -4,6 +4,7 @@ import { castAbility } from '@/game/effects';
 import { parseClientMessage, type PlayerSync, type RaceSnapshot, type ServerMessage } from '@/game/protocol';
 import { applyKeys, elapsedAt, raceReducer, standings, type RaceEvent, type Racer, type RaceState } from '@/game/race';
 import { raceResults, type RaceResult } from '@/game/results';
+import { raceSeries } from '@/game/series';
 
 /** Une connexion WebSocket, réduite à ce dont la room a besoin. */
 export interface Connection {
@@ -25,6 +26,8 @@ export class RaceRoom {
   private readonly seatsByGuest = new Map<string, string>();
   /** Sièges connus de tous : une invocation s'annonce au tick suivant. */
   private announcedSeats: number;
+  /** Les séries du MPM partent une seule fois, à la fin de la course (PERF-02). */
+  private seriesSent = false;
 
   /**
    * `ticketSeat` (lobby créé) : chacun reçoit le siège de son ticket, sans ticket il regarde. Sans lui (lobby de
@@ -107,7 +110,15 @@ export class RaceRoom {
       this.broadcast({ type: 'seats', seats: this.race.racers.map((r) => r.seat) });
     }
     this.broadcast({ type: 'tick', phase: this.race.phase, elapsed: elapsedAt(this.race, now), standings: standings(this.race, now), ...(notices.length > 0 && { notices }) });
+    if (this.race.phase === 'finished' && !this.seriesSent) {
+      this.seriesSent = true;
+      this.broadcast(this.seriesMessage(now));
+    }
     this.syncPlayers();
+  }
+
+  private seriesMessage(now: number): ServerMessage {
+    return { type: 'series', series: raceSeries(this.race, now) };
   }
 
   private join(conn: Connection, client: Client, guest: string, ticket: string | undefined) {
@@ -121,6 +132,8 @@ export class RaceRoom {
     const racer = seat ? this.racer(seat) : undefined;
     client.revision = racer?.revision ?? 0;
     this.send(conn, { type: 'welcome', you: seat, race: this.snapshot(), typing: racer?.typing ?? null, ...(racer && { acked: racer.acked, powers: racer.powers }) });
+    // Arrivé après la fin : les séries ont déjà été diffusées, il les reçoit à part.
+    if (this.seriesSent) this.send(conn, this.seriesMessage(this.now()));
   }
 
   /** Siège humain du ticket, s'il n'est pas déjà tenu par une autre connexion. */

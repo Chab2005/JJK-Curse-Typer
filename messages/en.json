@@ -969,7 +969,18 @@
       "state": "Status",
       "you": "(you)",
       "backToLobby": "Back to the lobby",
-      "summoned": "Mahoraga takes your place"
+      "summoned": "Mahoraga takes your place",
+      "chart": {
+        "title": "WPM over time",
+        "label": "WPM over time for {count, number} participants, {seconds, number} seconds of race",
+        "legend": "Participants",
+        "seconds": "Seconds",
+        "wpm": "WPM"
+      },
+      "missed": {
+        "title": "Missed keys",
+        "player": "Player"
+      }
     },
     "leave": {
       "title": "Leave the race?",

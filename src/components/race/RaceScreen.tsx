@@ -385,7 +385,7 @@ export default function RaceScreen({
                 </section>
               )}
 
-              {(phase === 'finished' || (you !== null && done)) && <RaceSummary rows={rows} you={you} over={phase === 'finished'} lobbyCode={code} />}
+              {(phase === 'finished' || (you !== null && done)) && <RaceSummary rows={rows} you={you} over={phase === 'finished'} series={view.series} lobbyCode={code} />}
 
               {you !== null && typing && !done && phase !== 'finished' && (
                 <div className="relative pt-4">

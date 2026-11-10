@@ -969,7 +969,18 @@
       "state": "État",
       "you": "(vous)",
       "backToLobby": "Retour au lobby",
-      "summoned": "Mahoraga prend votre place"
+      "summoned": "Mahoraga prend votre place",
+      "chart": {
+        "title": "MPM dans le temps",
+        "label": "MPM dans le temps de {count, number} participants, {seconds, number} secondes de course",
+        "legend": "Participants",
+        "seconds": "Secondes",
+        "wpm": "MPM"
+      },
+      "missed": {
+        "title": "Touches ratées",
+        "player": "Joueur"
+      }
     },
     "leave": {
       "title": "Quitter la course ?",
