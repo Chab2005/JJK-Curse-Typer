@@ -12,6 +12,7 @@ import { paginate } from '@/lib/pagination';
 import CreateLobbyButton from './CreateLobbyButton';
 import LobbyFilters from './LobbyFilters';
 import LobbyTable from './LobbyTable';
+import { useAutoRefresh } from './useAutoRefresh';
 import { DEFAULT_LOBBY_FILTERS, type LobbyFilters as Filters, type LobbySummary, filterLobbies, lobbySearchQuery, parseLobbySearch } from './lobbySearch';
 
 const PER_PAGE = 8;
@@ -20,6 +21,7 @@ const PER_PAGE = 8;
 // Le bouton de création s'aligne sur le compteur, ou passe au-dessus de « Effacer » quand rien ne correspond.
 export default function LobbyBrowser({ lobbies, signedIn }: { lobbies: LobbySummary[]; signedIn: boolean }) {
   const t = useTranslations('Lobbies');
+  useAutoRefresh();
   const { filters, page } = parseLobbySearch(useSearchParams());
 
   // Le champ garde sa propre valeur pour ne pas sauter pendant la frappe ;
