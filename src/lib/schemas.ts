@@ -42,8 +42,8 @@ export const lobbyCodeSchema = z
 
 export const inviteTokenSchema = z.string().regex(/^[A-Za-z0-9_-]{22}$/);
 
-/** Options de `joinLobbyAction` : rien d'autre que `spectate` et `invite`. Un jeton mal formé n'est pas une erreur (il vient de l'URL) : il est simplement ignoré plus loin. */
-export const joinOptionsSchema = z.object({ spectate: z.boolean().optional(), invite: z.string().max(128).optional() }).strict().default({});
+/** Options de `joinLobbyAction` : rien d'autre que `spectate`, `invite` et `leaveOther` (quitter l'autre lobby, SALLE-06). Un jeton mal formé n'est pas une erreur (il vient de l'URL) : il est simplement ignoré plus loin. */
+export const joinOptionsSchema = z.object({ spectate: z.boolean().optional(), invite: z.string().max(128).optional(), leaveOther: z.boolean().optional() }).strict().default({});
 
 /** Nombre de liens à créer d'un coup. */
 export const inviteCountSchema = z.number().int().min(1).max(MAX_INVITES);

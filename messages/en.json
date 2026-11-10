@@ -732,6 +732,12 @@
       "change": "Change",
       "modalTitle": "Choose your exorcist",
       "close": "Close"
+    },
+    "conflict": {
+      "title": "You are already in a lobby",
+      "text": "You are in lobby {code}. A player can only be in one lobby at a time.",
+      "leave": "Leave it and join this lobby",
+      "stay": "Stay in my current lobby"
     }
   },
   "Leaderboard": {

@@ -283,6 +283,31 @@ describe('WaitingRoom of a created lobby (realtime)', () => {
     expect(FakeEventSource.instances).toHaveLength(0);
   });
 
+  it('offers to leave the current lobby when the user is already in another one (SALLE-06)', async () => {
+    lobbyActionsMock.joinLobbyAction.mockResolvedValueOnce({ conflict: 'OLD-LBY' });
+    const { user } = renderWithIntl(<WaitingRoom initialRoom={joined} viewerId="Nobara" live />);
+
+    const dialog = await screen.findByRole('dialog', { name: 'You are already in a lobby' });
+    expect(within(dialog).getByText(/OLD-LBY/)).toBeInTheDocument();
+    expect(FakeEventSource.instances).toHaveLength(0);
+
+    lobbyActionsMock.joinLobbyAction.mockResolvedValue(joined);
+    await user.click(within(dialog).getByRole('button', { name: 'Leave it and join this lobby' }));
+
+    expect(lobbyActionsMock.joinLobbyAction).toHaveBeenLastCalledWith('ABC-DEF', { spectate: false, invite: undefined, leaveOther: true });
+    await waitFor(() => expect(FakeEventSource.instances).toHaveLength(1));
+  });
+
+  it('goes back to the current lobby when the user stays in it (SALLE-06)', async () => {
+    lobbyActionsMock.joinLobbyAction.mockResolvedValue({ conflict: 'OLD-LBY' });
+    const { user } = renderWithIntl(<WaitingRoom initialRoom={joined} viewerId="Nobara" live />);
+
+    await user.click(await screen.findByRole('button', { name: 'Stay in my current lobby' }));
+
+    expect(routerMock.replace).toHaveBeenCalledWith('/lobby/OLD-LBY');
+    expect(lobbyActionsMock.joinLobbyAction).toHaveBeenCalledTimes(1);
+  });
+
   it('starts the race on the server and waits for it before leaving', async () => {
     const ready = { ...LIVE, participants: LIVE.participants.map((p) => (p.kind === 'human' ? { ...p, ready: true } : p)) };
     lobbyActionsMock.joinLobbyAction.mockResolvedValue(ready);

@@ -71,6 +71,13 @@
       "when": 1793623936715,
       "tag": "0009_character_stats",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1794337110129,
+      "tag": "0010_room_members",
+      "breakpoints": true
     }
   ]
 }

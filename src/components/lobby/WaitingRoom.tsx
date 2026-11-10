@@ -10,12 +10,14 @@ import { useRouter } from '@/i18n/navigation';
 import CharacterPicker from './CharacterPicker';
 import GuestJoinCard from './GuestJoinCard';
 import InviteCard from './InviteCard';
+import LeaveCurrentLobbyDialog from './LeaveCurrentLobbyDialog';
 import LeaveLobbyLink from './LeaveLobbyLink';
 import LobbySettingsPanel from './LobbySettingsPanel';
 import ParticipantList, { useParticipantName } from './ParticipantList';
 import ReadyPanel from './ReadyPanel';
 import SpectatorList from './SpectatorList';
 import { isInside } from './lobbyAccess';
+import { isConflict } from './membership';
 import { type LobbyAction, type LobbyRoom, type Participant, isSpectating, lobbyReducer, startBlocker, viewerRole } from './lobbyRoom';
 import { useLobbyEvents } from './useLobbyEvents';
 
@@ -44,6 +46,9 @@ export default function WaitingRoom({
   const [room, setRoom] = useState(initialRoom);
   const [joined, setJoined] = useState(false);
   const [announcement, setAnnouncement] = useState('');
+  // Lobby où le visiteur est déjà (SALLE-06) : une fenêtre propose de le quitter ; `retry` rejoue l'entrée une fois accepté.
+  const [conflict, setConflict] = useState<string | null>(null);
+  const [leaveOther, setLeaveOther] = useState(false);
 
   const role = viewerRole(room, viewerId);
   const isHost = role === 'host';
@@ -58,9 +63,13 @@ export default function WaitingRoom({
   useEffect(() => {
     if (!live || !viewerId) return;
     let cancelled = false;
-    joinLobbyAction(initialRoom.code, { spectate, invite })
+    joinLobbyAction(initialRoom.code, { spectate, invite, ...(leaveOther && { leaveOther }) })
       .then((next) => {
         if (cancelled) return;
+        if (next && isConflict(next)) {
+          setConflict(next.conflict);
+          return;
+        }
         if (!next || !isInside(next, viewerId)) {
           router.replace('/lobbies');
           return;
@@ -76,7 +85,7 @@ export default function WaitingRoom({
     return () => {
       cancelled = true;
     };
-  }, [live, viewerId, initialRoom.code, spectate, invite, character, router]);
+  }, [live, viewerId, initialRoom.code, spectate, invite, character, router, leaveOther]);
 
   useLobbyEvents(live && joined ? room.code : null, setRoom, () => router.push('/lobbies'));
 
@@ -111,7 +120,18 @@ export default function WaitingRoom({
   };
 
   return (
-    <div className="relative mx-auto flex max-w-[1152px] flex-col gap-10 px-6 pt-14 pb-24">
+    <>
+      {conflict && (
+        <LeaveCurrentLobbyDialog
+          current={conflict}
+          onLeave={() => {
+            setConflict(null);
+            setLeaveOther(true);
+          }}
+          onStay={() => router.replace(`/lobby/${conflict}`)}
+        />
+      )}
+      <div className="relative mx-auto flex max-w-[1152px] flex-col gap-10 px-6 pt-14 pb-24">
       <div className="flex flex-wrap items-end justify-between gap-8">
         <div className="min-w-0 flex-1 basis-[420px]">
           <PageIntro
@@ -185,6 +205,7 @@ export default function WaitingRoom({
           <LeaveLobbyLink onLeave={live && inside ? () => leaveLobbyAction(room.code) : undefined} />
         </aside>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

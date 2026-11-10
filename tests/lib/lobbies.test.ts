@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { viewerRole } from '@/components/lobby/lobbyRoom';
-import { LOBBY_TTL_MS, clearLobbies, createLobby, findLobby, findQuickLobby, listPublicLobbies, onLobbyClosed, parseLobbyAction, storedLobby, subscribeLobby, updateLobby } from '@/lib/lobbies';
+import { LOBBY_TTL_MS, clearLobbies, createLobby, findLobby, findQuickLobby, listPublicLobbies, onLobbyClosed, onMemberLeft, parseLobbyAction, storedLobby, subscribeLobby, updateLobby } from '@/lib/lobbies';
 
 const HOST = { id: 'Megumi_Shadows', name: 'Megumi_Shadows', avatar: 'megumi' as const };
 const name = (host: string) => `Lobby de ${host}`;
@@ -221,5 +221,23 @@ describe('fermeture des lobbies (SALLE-04)', () => {
     updateLobby(room.code, { type: 'addBot', by: HOST.id, level: 'grade_4' });
     expect(closed).not.toHaveBeenCalled();
     stop();
+  });
+});
+
+describe('onMemberLeft (SALLE-06)', () => {
+  it('annonce chaque humain qui quitte le lobby, jamais un bot', () => {
+    const left = vi.fn();
+    onMemberLeft(left);
+    const room = createLobby(name, HOST, Date.now());
+    updateLobby(room.code, { type: 'updateSettings', by: HOST.id, patch: { visibility: 'public' } });
+    updateLobby(room.code, { type: 'addBot', by: HOST.id, level: 'grade_1' });
+    updateLobby(room.code, { type: 'join', person: { id: 'Yuji', name: 'Yuji', avatar: null }, spectate: false });
+    const bot = storedLobby(room.code)!.participants.find((p) => p.kind === 'bot')!;
+    updateLobby(room.code, { type: 'kick', by: HOST.id, id: bot.id });
+    expect(left).not.toHaveBeenCalled();
+    updateLobby(room.code, { type: 'kick', by: HOST.id, id: 'Yuji' });
+    expect(left).toHaveBeenCalledWith(room.code, 'Yuji');
+    updateLobby(room.code, { type: 'leave', id: HOST.id });
+    expect(left).toHaveBeenCalledWith(room.code, HOST.id);
   });
 });

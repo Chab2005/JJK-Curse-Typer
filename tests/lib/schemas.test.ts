@@ -66,6 +66,8 @@ describe('joinOptionsSchema', () => {
   });
 
   it('refuses unknown keys and malformed values', () => {
+    expect(joinOptionsSchema.parse({ leaveOther: true })).toEqual({ leaveOther: true });
+    expect(joinOptionsSchema.safeParse({ leaveOther: 'yes' }).success).toBe(false);
     expect(joinOptionsSchema.safeParse({ admin: true }).success).toBe(false);
     expect(joinOptionsSchema.safeParse({ spectate: 'yes' }).success).toBe(false);
     expect(joinOptionsSchema.safeParse({ invite: 'x'.repeat(129) }).success).toBe(false);

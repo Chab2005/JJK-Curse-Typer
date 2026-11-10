@@ -3,12 +3,14 @@
 import { headers } from 'next/headers';
 import { getTranslations } from 'next-intl/server';
 import type { QuickPlayResult } from '@/components/home/quickPlay';
-import { canInvite, clientIp, type InviteLink, inviteToClaim, needsInvite } from '@/components/lobby/lobbyAccess';
+import { canInvite, clientIp, type InviteLink, inviteToClaim, isInside, needsInvite } from '@/components/lobby/lobbyAccess';
 import { joinRefusal, type LobbyRoom } from '@/components/lobby/lobbyRoom';
+import { type JoinResult, membershipDecision } from '@/components/lobby/membership';
 import { getViewer, getViewerId, type Viewer } from '@/lib/currentUser';
 import { claimInvite, createInvites, deleteInvite, deleteInvites, listInvites, revokeInvites } from '@/lib/invites';
 import { createLobby, findQuickLobby, parseLobbyAction, storedLobby, updateLobby } from '@/lib/lobbies';
 import { expectViewer } from '@/lib/lobbyPresence';
+import { currentLobby, setMembership } from '@/lib/roomMembers';
 import { inviteCountSchema, inviteTokenSchema, joinOptionsSchema, lobbyCodeSchema } from '@/lib/schemas';
 
 // Actions serveur des lobbies créés depuis l'accueil. L'auteur est toujours l'utilisateur courant,
@@ -57,7 +59,7 @@ async function hostLobby(viewer: Viewer): Promise<string> {
  * Un lobby privé demande un lien d'invitation, attribué ici à l'IP du visiteur (LOB-4) ; un lien présenté ailleurs est aussi
  * consommé, pour que l'hôte voie qui l'a utilisé. Renvoie le lobby, ou `null` si l'entrée est refusée.
  */
-export async function joinLobbyAction(code: string, options: { spectate?: boolean; invite?: string } = {}): Promise<LobbyRoom | null> {
+export async function joinLobbyAction(code: string, options: { spectate?: boolean; invite?: string; leaveOther?: boolean } = {}): Promise<JoinResult> {
   const viewer = await getViewer();
   const parsedCode = lobbyCodeSchema.safeParse(code);
   const parsedOptions = joinOptionsSchema.safeParse(options);
@@ -67,12 +69,22 @@ export async function joinLobbyAction(code: string, options: { spectate?: boolea
   if (!viewer || !room) return null;
   // Expulsé (SALLE-07) ou course lancée (SALLE-09) : refusé avant de consommer le lien.
   if (joinRefusal(room, viewer.id)) return null;
+  // Un seul lobby à la fois (SALLE-06) : celui où la table le place, s'il le compte encore, doit d'abord être quitté.
+  const current = await currentLobby(viewer.id);
+  const other = current ? storedLobby(current) : null;
+  if (current && membershipDecision(current, room.code, other !== null && isInside(other, viewer.id)) === 'elsewhere') {
+    if (!options.leaveOther) return { conflict: current };
+    updateLobby(current, { type: 'leave', id: viewer.id });
+  }
   const token = inviteToClaim(room, viewer.id, options?.invite);
   const claimed = token !== null && (await claimInvite(token, room.code, clientIp(await headers()), viewer));
   if (needsInvite(room, viewer.id) && !claimed) return null;
   const joined = updateLobby(room.code, { type: 'join', person: { id: viewer.id, name: viewer.name, avatar: null, photo: viewer.photo }, spectate: options?.spectate === true });
   // Sans page du lobby ouverte dans le délai de grâce, le visiteur en ressort (src/lib/lobbyPresence.ts).
-  if (joined) expectViewer(room.code, viewer.id);
+  if (joined) {
+    await setMembership(viewer.id, room.code);
+    expectViewer(room.code, viewer.id);
+  }
   return storedLobby(room.code);
 }
 

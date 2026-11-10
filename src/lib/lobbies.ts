@@ -27,7 +27,11 @@ export type LobbyListener = (room: LobbyRoom | null) => void;
 /** Reçoit le code d'un lobby qui vient de sortir du registre (vidé ou expiré). */
 export type LobbyClosedListener = (code: string) => void;
 
-const shared = globalThis as { __createdLobbies?: Map<string, Entry>; __lobbyListeners?: Map<string, Set<LobbyListener>>; __lobbyClosed?: Set<LobbyClosedListener> };
+/** Reçoit le code du lobby et l'identifiant de l'humain qui vient d'en sortir (parti, expulsé ou lobby fermé). */
+export type MemberLeftListener = (code: string, viewerId: string) => void;
+
+const shared = globalThis as { __memberLeft?: Set<MemberLeftListener>; __createdLobbies?: Map<string, Entry>; __lobbyListeners?: Map<string, Set<LobbyListener>>; __lobbyClosed?: Set<LobbyClosedListener> };
+const leftListeners = (): Set<MemberLeftListener> => (shared.__memberLeft ??= new Set());
 const closedListeners = (): Set<LobbyClosedListener> => (shared.__lobbyClosed ??= new Set());
 const store = (): Map<string, Entry> => (shared.__createdLobbies ??= new Map());
 const listeners = (): Map<string, Set<LobbyListener>> => (shared.__lobbyListeners ??= new Map());
@@ -42,6 +46,18 @@ function publish(code: string, room: LobbyRoom | null) {
 export function onLobbyClosed(listener: LobbyClosedListener): () => void {
   closedListeners().add(listener);
   return () => void closedListeners().delete(listener);
+}
+
+/** Abonne `listener` aux départs d'humains (SALLE-06 : un visiteur sorti d'un lobby peut en rejoindre un autre) ; renvoie de quoi se désabonner. */
+export function onMemberLeft(listener: MemberLeftListener): () => void {
+  leftListeners().add(listener);
+  return () => void leftListeners().delete(listener);
+}
+
+function announceLeft(code: string, before: LobbyRoom, after: LobbyRoom) {
+  const humans = (room: LobbyRoom) => new Set([...room.participants.filter((p) => p.kind === 'human').map((p) => p.id), ...room.spectators.map((s) => s.id)]);
+  const still = humans(after);
+  for (const id of humans(before)) if (!still.has(id)) for (const listener of [...leftListeners()]) listener(code, id);
 }
 
 function announceClosed(code: string) {
@@ -117,10 +133,13 @@ export function updateLobby(code: string, action: LobbyAction): LobbyRoom | null
   if (isEmpty(next)) {
     store().delete(key);
     publish(key, null);
+    announceLeft(key, entry.room, next);
     announceClosed(key);
   } else {
+    const before = entry.room;
     entry.room = next;
     publish(key, next);
+    announceLeft(key, before, next);
   }
   return next;
 }

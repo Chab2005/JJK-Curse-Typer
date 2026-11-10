@@ -131,3 +131,16 @@ export const lobbyInvites = pgTable(
   },
   (table) => [index("lobby_invites_lobby_code_idx").on(table.lobbyCode)],
 );
+
+// Le lobby où se trouve chaque visiteur, compte (nom d'utilisateur) ou invité (`guest:<nom>`) : la clé primaire garantit
+// qu'il n'est que dans un seul lobby à la fois (SALLE-06). Les lobbies vivent en mémoire, d'où un code sans clé étrangère ;
+// la ligne tombe quand il quitte le lobby ou quand le lobby se ferme.
+export const roomMembers = pgTable(
+  "room_members",
+  {
+    viewerId: text("viewer_id").primaryKey(),
+    lobbyCode: text("lobby_code").notNull(),
+    joinedAt: timestamp("joined_at").defaultNow().notNull(),
+  },
+  (table) => [index("room_members_lobby_code_idx").on(table.lobbyCode)],
+);
