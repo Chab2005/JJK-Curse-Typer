@@ -30,7 +30,7 @@ export function toGuestGame(result: RaceResult, at: Date): GuestGame {
 
 export async function recordRaceResults(list: readonly RaceResult[], at: Date): Promise<void> {
   // Avant toute attente : le résultat d'un invité doit être prêt quand son écran voit la fin de course.
-  for (const result of list) if (result.seat.startsWith(GUEST_SEAT_PREFIX)) holdGuestGame(result.seat, toGuestGame(result, at), at.getTime());
+  for (const result of list) if (result.counts && result.seat.startsWith(GUEST_SEAT_PREFIX)) holdGuestGame(result.seat, toGuestGame(result, at), at.getTime());
 
   const accounts = list.filter((result) => !result.seat.startsWith(GUEST_SEAT_PREFIX));
   if (accounts.length === 0) return;
@@ -56,7 +56,9 @@ export async function recordRaceResults(list: readonly RaceResult[], at: Date): 
     if (rows.length > 0) await db.insert(results).values(rows);
 
     // Heatmap sans historique : valeur stockée = (valeur stockée + valeur de la course) / 2.
-    const keyRows = saved.flatMap(({ userId, result }) => result.keys.map(({ char, errorRate, avgMs }) => ({ userId, char, errorRate, avgMs })));
+    // Un abandon ou une course sans frappe est gardé (RES-05) mais ne compte ni pour la heatmap, ni pour le personnage, ni pour l'XP.
+    const counted = saved.filter(({ result }) => result.counts);
+    const keyRows = counted.flatMap(({ userId, result }) => result.keys.map(({ char, errorRate, avgMs }) => ({ userId, char, errorRate, avgMs })));
     if (keyRows.length > 0) {
       await db
         .insert(keyStats)
@@ -71,7 +73,7 @@ export async function recordRaceResults(list: readonly RaceResult[], at: Date): 
     }
 
     // Personnage joué (bonus activés) : une partie de plus, et une victoire si premier des humains.
-    const characterRows = saved.flatMap(({ userId, result }) =>
+    const characterRows = counted.flatMap(({ userId, result }) =>
       result.character === null ? [] : [{ userId, character: result.character, games: 1, wins: result.won ? 1 : 0 }],
     );
     if (characterRows.length > 0) {
@@ -88,7 +90,7 @@ export async function recordRaceResults(list: readonly RaceResult[], at: Date): 
     }
 
     // XP et grade (STAT-9) : seulement face à un autre compte, comme le classement.
-    for (const { userId, result } of saved) {
+    for (const { userId, result } of counted) {
       const durationSeconds = result.durationMs / 1000;
       const gain = raceXp({ wpm: result.wpm, accuracy: result.accuracy, durationSeconds, rank: result.rank, rivals: result.rivals, finished: result.status === 'finished' });
       await awardXp(db, userId, gain);

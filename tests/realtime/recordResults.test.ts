@@ -40,6 +40,7 @@ const result = (seat: string, extra: Partial<RaceResult> = {}): RaceResult => ({
   keys: [],
   character: null,
   won: true,
+  counts: true,
   rawWpm: 80,
   received: 2,
   series: [10, 40, 72],
@@ -74,6 +75,20 @@ describe('recordRaceResults', () => {
         rawWpm: 80, status: 'finished', received: 2, series: [10, 40, 72], missedKeys: { d: 3 },
       },
     ]);
+  });
+
+  it('écrit l’abandon d’un compte sans XP, heatmap, personnage ni statistiques (RES-05)', async () => {
+    where.mockResolvedValue([{ id: 7, key: 'yuji' }]);
+    await recordRaceResults([result('Yuji', { status: 'abandoned', counts: false, character: 'gojo', keys: [{ char: 'd', errorRate: 20, avgMs: 180 }] })], AT);
+    expect(insert).toHaveBeenCalledWith([expect.objectContaining({ userId: 7, status: 'abandoned' })]);
+    expect(update).not.toHaveBeenCalled();
+    expect(upsert).not.toHaveBeenCalled();
+    expect(characterUpsert).not.toHaveBeenCalled();
+  });
+
+  it('ne garde pas pour le cookie d’un invité une course qui ne compte pas', async () => {
+    await recordRaceResults([result('guest:Nobara', { status: 'abandoned', counts: false })], AT);
+    expect(takeGuestGames('guest:Nobara', AT.getTime())).toEqual([]);
   });
 
   it('fond les touches de la course dans la heatmap du compte', async () => {

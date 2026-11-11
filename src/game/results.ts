@@ -23,7 +23,10 @@ export interface RaceResult {
   errors: number;
   keystrokes: number;
   durationMs: number;
-  status: 'finished' | 'timeout';
+  /** `abandoned` : le joueur est parti en cours de course (RES-05). */
+  status: 'finished' | 'timeout' | 'abandoned';
+  /** Course comptée dans les statistiques, l'XP et la heatmap : arrivée ou temps écoulé, avec au moins une frappe. */
+  counts: boolean;
   /** Touches assez tapées pour la heatmap du clavier. */
   keys: KeyStat[];
   /** Personnage du siège, seulement si les bonus sont activés. */
@@ -51,8 +54,8 @@ export function raceResults(race: RaceState, now: number): RaceResult[] {
   const bestHumanRank = Math.min(...table.filter((r) => humans.has(r.id)).map((r) => r.rank));
   return race.racers.flatMap((racer): RaceResult[] => {
     const { seat, driver, status, typing, keys, endedAt } = racer;
-    if (seat.kind !== 'human' || driver !== 'player' || (status !== 'finished' && status !== 'timeout')) return [];
-    if (typing.keystrokes === 0 || endedAt === null || endedAt <= 0) return [];
+    // Tout humain connecté laisse un résultat (RES-05) ; seules les courses arrivées ou au temps écoulé, avec des frappes, comptent ailleurs.
+    if (seat.kind !== 'human' || driver !== 'player' || (status !== 'finished' && status !== 'timeout' && status !== 'abandoned')) return [];
     const row = table.find((r) => r.id === seat.id)!;
     return [
       {
@@ -64,8 +67,9 @@ export function raceResults(race: RaceState, now: number): RaceResult[] {
         accuracy: row.accuracy,
         errors: typing.errors,
         keystrokes: typing.keystrokes,
-        durationMs: endedAt,
+        durationMs: Math.max(0, endedAt ?? 0),
         status,
+        counts: status !== 'abandoned' && typing.keystrokes > 0 && endedAt !== null && endedAt > 0,
         keys: raceKeyStats(keys),
         character: race.bonus ? seat.avatar : null,
         won: row.rank === bestHumanRank,
