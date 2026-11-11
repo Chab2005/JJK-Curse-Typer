@@ -675,6 +675,17 @@
         "sentences": "Real text",
         "words": "Random words"
       },
+      "complexity": "Complexity",
+      "complexities": {
+        "easy": "Easy",
+        "medium": "Medium",
+        "hard": "Hard"
+      },
+      "complexityHints": {
+        "easy": "Short words, 2 to 5 letters. Real text with short words on average.",
+        "medium": "Words of 4 to 7 letters. Real text of ordinary length.",
+        "hard": "Long words, 6 letters and more. Real text with long words on average."
+      },
       "words": "Length (words)",
       "wordsValue": "{count, number} words",
       "wordsHint": "Between {min} and {max} words.",

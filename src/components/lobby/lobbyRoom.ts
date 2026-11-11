@@ -1,5 +1,6 @@
 // Logique pure du salon d'attente d'un lobby (LOB-1, LOB-5 à LOB-9, LOB-11) : état + action → nouvel état.
 // Le serveur (src/lib/lobbies.ts) le rejoue sur les lobbies créés ; la page s'en sert aussi pour un retour immédiat.
+import { COMPLEXITIES, type TextComplexity } from '@/game/text/complexity';
 import { DEFAULT_CHARACTER, type CharacterId } from '@/components/shared/characters';
 import type { CharKind, TextLanguage } from '@/components/lobbies/lobbySearch';
 import { GAME_MODES, modeHasBonus, type GameMode } from '@/game/abilities';
@@ -9,6 +10,7 @@ import { ERROR_MODES, type ErrorMode } from '@/game/typing';
 // Gestion des erreurs (RACE-7, H-22) et niveaux de bots (BOT-2) : définis par le moteur de jeu.
 export { BOT_LEVELS, ERROR_MODES, GAME_MODES, type BotLevel, type ErrorMode, type GameMode };
 
+export { COMPLEXITIES, type TextComplexity };
 export const CONTENT_MODES = ['sentences', 'words'] as const;
 export type ContentMode = (typeof CONTENT_MODES)[number];
 
@@ -32,6 +34,8 @@ const PRACTICE_MAX = 10;
 export interface LobbySettings {
   languages: TextLanguage[];
   content: ContentMode;
+  /** Complexité du texte (CONF-05) : longueur des mots, voir `src/game/text/complexity.ts`. */
+  complexity: TextComplexity;
   words: number;
   chars: CharKind[];
   /** Caractères à pratiquer, surreprésentés dans le texte (TXT-5). */
@@ -169,6 +173,7 @@ function updateSettings(room: LobbyRoom, patch: Partial<LobbySettings>): LobbySe
     timer: (TIMER_OPTIONS as readonly number[]).includes(next.timer) ? next.timer : room.settings.timer,
     practice: normalizePractice(next.practice),
     exclude: normalizeExclusion(next.exclude),
+    complexity: (COMPLEXITIES as readonly string[]).includes(next.complexity) ? next.complexity : room.settings.complexity,
     visibility: (LOBBY_VISIBILITIES as readonly string[]).includes(next.visibility) ? next.visibility : room.settings.visibility,
   };
 }

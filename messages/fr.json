@@ -675,6 +675,17 @@
         "sentences": "Vrai texte",
         "words": "Mots aléatoires"
       },
+      "complexity": "Complexité",
+      "complexities": {
+        "easy": "Facile",
+        "medium": "Moyen",
+        "hard": "Difficile"
+      },
+      "complexityHints": {
+        "easy": "Mots courts, de 2 à 5 lettres. Texte réel aux mots courts en moyenne.",
+        "medium": "Mots de 4 à 7 lettres. Texte réel de longueur ordinaire.",
+        "hard": "Mots longs, de 6 lettres et plus. Texte réel aux mots longs en moyenne."
+      },
       "words": "Longueur (mots)",
       "wordsValue": "{count, number} mots",
       "wordsHint": "Entre {min} et {max} mots.",

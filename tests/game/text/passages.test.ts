@@ -24,7 +24,7 @@ describe('passageComplexity', () => {
   it('rates short common words as easy and long words as hard', () => {
     expect(passageComplexity('the cat sat on the mat and ate a big red hat')).toBe(1);
     expect(passageComplexity('extraordinarily complicated administrative arrangements')).toBe(3);
-    expect(passageComplexity('the garden window opened onto quiet mountains')).toBe(2);
+    expect(passageComplexity('we walked along the river until the evening light faded')).toBe(2);
   });
 });
 

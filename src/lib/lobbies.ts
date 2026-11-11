@@ -8,7 +8,7 @@ import { CHAR_KINDS, type LobbySummary, TEXT_LANGUAGES } from '@/components/lobb
 import { SAMPLE_LOBBIES } from '@/components/lobbies/sampleLobbies';
 import { isListed, lobbySummary } from '@/components/lobby/lobbyAccess';
 import { CHARACTERS, type CharacterId } from '@/components/shared/characters';
-import { BOT_LEVELS, CONTENT_MODES, ERROR_MODES, GAME_MODES, LOBBY_VISIBILITIES, MAX_CAPACITY, MIN_PARTICIPANTS, TIMER_MAX, TIMER_MIN, isEmpty, lobbyReducer, type LobbyAction, type LobbyRoom, type Spectator } from '@/components/lobby/lobbyRoom';
+import { BOT_LEVELS, COMPLEXITIES, CONTENT_MODES, ERROR_MODES, GAME_MODES, LOBBY_VISIBILITIES, MAX_CAPACITY, MIN_PARTICIPANTS, TIMER_MAX, TIMER_MIN, isEmpty, lobbyReducer, type LobbyAction, type LobbyRoom, type Spectator } from '@/components/lobby/lobbyRoom';
 import { newLobbyCode, newLobbyRoom, viewLobby } from '@/components/lobby/newLobby';
 import { showSampleData } from '@/lib/sampleData';
 import { findSampleRoom } from '@/components/lobby/sampleRooms';
@@ -155,6 +155,7 @@ const settingsPatchSchema = z
   .object({
     languages: z.array(z.enum(TEXT_LANGUAGES)),
     content: z.enum(CONTENT_MODES),
+    complexity: z.enum(COMPLEXITIES),
     words: z.number().finite(),
     chars: z.array(z.enum(CHAR_KINDS)),
     practice: z.string().max(40),

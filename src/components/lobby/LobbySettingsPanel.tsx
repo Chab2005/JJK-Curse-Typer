@@ -9,7 +9,7 @@ import ChevronButton from '@/components/shared/ChevronButton';
 import BevelSelect from '@/components/shared/BevelSelect';
 import Reserve from '@/components/shared/Reserve';
 import Segmented from '@/components/shared/Segmented';
-import { CONTENT_MODES, ERROR_MODES, GAME_MODES, LOBBY_VISIBILITIES, type LobbySettings, MAX_CAPACITY, MIN_PARTICIPANTS, TIMER_OPTIONS, WORDS_MAX, WORDS_MIN } from './lobbyRoom';
+import { COMPLEXITIES, CONTENT_MODES, ERROR_MODES, GAME_MODES, LOBBY_VISIBILITIES, type LobbySettings, MAX_CAPACITY, MIN_PARTICIPANTS, TIMER_OPTIONS, WORDS_MAX, WORDS_MIN } from './lobbyRoom';
 
 type Patch = Partial<LobbySettings>;
 
@@ -115,6 +115,7 @@ function SettingsSummary({ settings }: { settings: LobbySettings }) {
   const rows = [
     [t('language'), settings.languages.map((language) => tFilters(`languages.${language}`)).join(' · ')],
     [t('content'), t(`contents.${settings.content}`)],
+    [t('complexity'), t(`complexities.${settings.complexity}`)],
     [t('words'), t('wordsValue', { count: settings.words })],
     [t('chars'), textCharsLabel(settings.chars)],
     [t('practice'), settings.practice || t('practiceNone')],
@@ -164,6 +165,11 @@ function SettingsForm({ settings, participantCount, onChange }: { settings: Lobb
 
       <Group legend={t('content')}>
         <Segmented label={t('content')} options={CONTENT_MODES} value={settings.content} onChange={(content) => onChange({ content })} optionLabel={(mode) => t(`contents.${mode}`)} />
+      </Group>
+
+      <Group legend={t('complexity')}>
+        <Segmented label={t('complexity')} options={COMPLEXITIES} value={settings.complexity} onChange={(complexity) => onChange({ complexity })} optionLabel={(level) => t(`complexities.${level}`)} />
+        <Hints active={settings.complexity} options={COMPLEXITIES} hint={(level) => t(`complexityHints.${level}`)} />
       </Group>
 
       <NumberField id="settings-words" label={t('words')} hint={t('wordsHint', { min: WORDS_MIN, max: WORDS_MAX })} value={settings.words} min={WORDS_MIN} max={WORDS_MAX} onCommit={(words) => onChange({ words })} />

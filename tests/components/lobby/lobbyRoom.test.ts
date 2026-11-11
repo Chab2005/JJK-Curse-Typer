@@ -25,6 +25,7 @@ const SETTINGS: LobbySettings = {
   chars: ['uppercase'],
   practice: '',
   exclude: '',
+  complexity: 'medium',
   timer: 0,
   errorMode: 'accumulate',
   gameMode: 'normal',
@@ -132,6 +133,19 @@ describe('updateSettings (LOB-5)', () => {
   it('nettoie les caractères à pratiquer (TXT-5)', () => {
     const next = lobbyReducer(room(), { type: 'updateSettings', by: 'Gojo', patch: { practice: ' z,z / .' } });
     expect(next.settings.practice).toBe('z,/.');
+  });
+});
+
+describe('complexity (CONF-05)', () => {
+  it('is medium by default and can be changed by the host', () => {
+    expect(room().settings.complexity).toBe('medium');
+    const next = lobbyReducer(room(), { type: 'updateSettings', by: 'Gojo', patch: { complexity: 'hard' } });
+    expect(next.settings.complexity).toBe('hard');
+  });
+
+  it('keeps the current complexity when the value is unknown', () => {
+    const next = lobbyReducer(room(), { type: 'updateSettings', by: 'Gojo', patch: { complexity: 'brutal' as never } });
+    expect(next.settings.complexity).toBe('medium');
   });
 });
 

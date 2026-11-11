@@ -1,6 +1,7 @@
 // Génération du texte de course (TXT-1 à TXT-5, TXT-9) : même graine → même texte pour tous.
 import type { CharKind, TextLanguage } from '@/components/lobbies/lobbySearch';
 import { randomStream } from '../random';
+import { type TextComplexity, passageLevel, wordInLevel } from './complexity';
 import { type Passage, passagesFor } from './passages';
 import { SENTENCES, WORDS } from './corpus';
 
@@ -15,6 +16,8 @@ export interface TextOptions {
   passages?: readonly Passage[];
   /** Caractères à ne jamais écrire (CONF-07), sans tenir compte de la casse. Ils l'emportent sur `practice`. */
   exclude?: string;
+  /** Complexité (CONF-05) ; sans elle, tous les mots et passages. Elle s'assouplit quand rien ne correspond. */
+  complexity?: TextComplexity;
 }
 
 type Random = ReturnType<typeof randomStream>;
@@ -61,9 +64,15 @@ function randomWords(options: TextOptions, random: Random): string[] {
   // Les mots sont jugés tels qu'ils seront tapés : sans accents cochés, « é » devient « e » avant la vérification.
   const typed = (word: string) => (accents ? word : stripAccents(word));
   const candidates = (language: TextLanguage) => WORDS[language].filter((word) => accents || !ACCENTED.test(word));
-  let pools = options.languages
-    .map((language) => weightedPool(candidates(language).filter((word) => allowed(typed(word), exclude)), practiceOf(options)))
-    .filter((pool) => pool.length > 0);
+  const poolsFor = (complexity: TextComplexity | undefined) =>
+    options.languages
+      .map((language) =>
+        weightedPool(candidates(language).filter((word) => allowed(typed(word), exclude) && (!complexity || wordInLevel(typed(word), complexity))), practiceOf(options)),
+      )
+      .filter((pool) => pool.length > 0);
+  // Aucun mot du niveau demandé (exclusion très stricte) : on lâche le niveau avant de lâcher l'exclusion.
+  let pools = poolsFor(options.complexity);
+  if (pools.length === 0) pools = poolsFor(undefined);
   // Aucun mot ne passe (exclure toutes les voyelles) : on retire les caractères exclus des mots eux-mêmes plutôt que de bloquer la course.
   if (pools.length === 0) {
     const scrubbed = options.languages.flatMap(candidates).map((word) => scrub(typed(word), exclude)).filter((word) => word.length > 0);
@@ -96,14 +105,19 @@ function sentencesOf(options: TextOptions, language: TextLanguage): readonly str
 }
 
 /** Phrases compatibles avec l'exclusion (CONF-07), jugées une fois les options appliquées : c'est ce texte-là que le joueur tape. */
-function compatibleSentences(options: TextOptions, language: TextLanguage): string[] {
+function compatibleSentences(options: TextOptions, language: TextLanguage, complexity: TextComplexity | undefined): string[] {
   const exclude = excludedOf(options);
-  return sentencesOf(options, language).filter((sentence) => allowed(restrict(sentence, options.chars), exclude));
+  return sentencesOf(options, language).filter(
+    (sentence) => allowed(restrict(sentence, options.chars), exclude) && (!complexity || passageLevel(sentence) === complexity),
+  );
 }
 
 /** Tirage des phrases ; `null` si aucune langue choisie n'a de phrase compatible. */
 function sentenceWords(options: TextOptions, random: Random): string[] | null {
-  const pools = options.languages.map((language) => weightedPool(compatibleSentences(options, language), practiceOf(options))).filter((pool) => pool.length > 0);
+  const poolsFor = (complexity: TextComplexity | undefined) =>
+    options.languages.map((language) => weightedPool(compatibleSentences(options, language, complexity), practiceOf(options))).filter((pool) => pool.length > 0);
+  // Pas de passage du niveau demandé : on garde ceux qui respectent l'exclusion, de n'importe quel niveau.
+  const pools = poolsFor(options.complexity).length > 0 ? poolsFor(options.complexity) : poolsFor(undefined);
   if (pools.length === 0) return null;
   const tokens: string[] = [];
   while (tokens.length < options.words) {

@@ -175,3 +175,39 @@ describe('generateText exclusion (CONF-07)', () => {
   });
 });
 
+describe('generateText complexity (CONF-05)', () => {
+  const lengths = (text: string) => text.split(' ').map((word) => word.normalize('NFD').replace(/\p{M}/gu, '').length);
+
+  it('draws easy words of 5 letters at most, hard words of 6 and more', () => {
+    for (const language of ['en', 'fr'] as const) {
+      expect(Math.max(...lengths(generateText({ ...base, languages: [language], words: 300, complexity: 'easy' }, 1)))).toBeLessThanOrEqual(5);
+      expect(Math.min(...lengths(generateText({ ...base, languages: [language], words: 300, complexity: 'hard' }, 1)))).toBeGreaterThanOrEqual(6);
+    }
+  });
+
+  it('draws medium words of 4 to 7 letters', () => {
+    const all = lengths(generateText({ ...base, words: 300, complexity: 'medium' }, 2));
+    expect(Math.min(...all)).toBeGreaterThanOrEqual(4);
+    expect(Math.max(...all)).toBeLessThanOrEqual(7);
+  });
+
+  it('keeps every word when no complexity is given', () => {
+    expect(Math.max(...lengths(generateText({ ...base, words: 300 }, 3)))).toBeGreaterThan(7);
+  });
+
+  it('picks the passages of the chosen level in coherent mode, and relaxes the level when none is left', () => {
+    const easy = { id: 1, language: 'en' as const, complexity: 1 as const, text: 'The cat sat on the old red mat and ate a big fish.', source: 'T, A (1900)' };
+    const hard = { id: 2, language: 'en' as const, complexity: 3 as const, text: 'Extraordinary architectural achievements demonstrated considerable ingenuity.', source: 'T, B (1900)' };
+    const options: TextOptions = { ...base, content: 'sentences', words: 6, chars: ['uppercase', 'punctuation'], passages: [easy, hard] };
+    expect(generateText({ ...options, complexity: 'easy' }, 1)).toMatch(/^The cat/);
+    expect(generateText({ ...options, complexity: 'hard' }, 1)).toMatch(/^Extraordinary/);
+    expect(generateText({ ...options, complexity: 'medium' }, 1).length).toBeGreaterThan(0);
+  });
+
+  it('combines with an exclusion', () => {
+    const text = generateText({ ...base, words: 200, complexity: 'easy', exclude: 'e' }, 4);
+    expect(text).not.toMatch(/e/);
+    expect(Math.max(...lengths(text))).toBeLessThanOrEqual(5);
+  });
+});
+

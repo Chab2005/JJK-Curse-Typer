@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import LobbySettingsPanel from '@/components/lobby/LobbySettingsPanel';
 import type { LobbySettings } from '@/components/lobby/lobbyRoom';
@@ -11,6 +11,7 @@ const SETTINGS: LobbySettings = {
   chars: ['uppercase', 'digits'],
   practice: ',.',
   exclude: 'q',
+  complexity: 'hard',
   timer: 90,
   errorMode: 'block',
   gameMode: 'heavenly',
@@ -62,6 +63,27 @@ describe('LobbySettingsPanel (LOB-5)', () => {
     expect(onChange).toHaveBeenCalledOnce();
     expect(onChange).toHaveBeenCalledWith({ content: 'sentences', gameMode: 'unlimitedCe', chars: ['uppercase'], timer: 180, visibility: 'private' });
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  it('shows the complexity to everyone, between the text type and the length (CONF-05)', () => {
+    renderWithIntl(<LobbySettingsPanel settings={SETTINGS} participantCount={3} editable={false} onChange={() => {}} />);
+    const labels = screen.getAllByRole('term').map((term) => term.textContent);
+    expect(labels.indexOf('Complexity')).toBe(labels.indexOf('Text type') + 1);
+    expect(labels.indexOf('Length (words)')).toBe(labels.indexOf('Complexity') + 1);
+    expect(screen.getByText('Hard')).toBeInTheDocument();
+  });
+
+  it('sends the chosen complexity when saved (CONF-05)', async () => {
+    const onChange = vi.fn();
+    const { user } = renderWithIntl(<LobbySettingsPanel settings={SETTINGS} participantCount={3} editable onChange={onChange} />);
+
+    await user.click(screen.getByRole('button', { name: 'Edit settings' }));
+    const group = screen.getAllByRole('group', { name: 'Complexity' }).find((el) => el.tagName === 'DIV')!;
+    expect(within(group).getByRole('button', { name: 'Hard' })).toHaveAttribute('aria-pressed', 'true');
+    await user.click(within(group).getByRole('button', { name: 'Easy' }));
+    await user.click(screen.getByRole('button', { name: 'Save' }));
+
+    expect(onChange).toHaveBeenCalledWith({ complexity: 'easy' });
   });
 
   it('lets the host exclude characters and shows them to everyone (CONF-07)', async () => {
