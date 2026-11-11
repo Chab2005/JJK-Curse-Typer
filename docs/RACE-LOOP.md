@@ -115,12 +115,12 @@ Persistance en BD et pages de résultats hors périmètre ; la boucle doit seule
 |---|---|---|---|
 | COURSE-01 | partiel | `race.ts` (`RacePhase`) | Seulement `countdown → racing → finished`. Il manque `EN_ATTENTE`, `FERMÉE` et la boucle de relance. Le salon d'attente n'est pas sur le serveur (`seed.ts`). |
 | COURSE-02 | partiel | `lobbyRoom.ts` (`startBlocker`) | ≥ 2 participants vérifié, **pas « ≥ 1 humain »**. Vérifié côté client seulement. |
-| COURSE-03 | partiel | `race.ts` (`COUNTDOWN_MS = 5000`) | Décompte de 5 s, l'énoncé dit 3, 2, 1. Texte envoyé dans `welcome` pendant le décompte (OK). |
+| COURSE-03 | fait | `race.ts` (`COUNTDOWN_MS = 3000`) | Décompte 3, 2, 1. Le texte n'existe côté client qu'après `welcome` (début du décompte) et s'affiche net. |
 | COURSE-04 | fait | composants de course | — |
 | COURSE-05 | fait | `raceHub.ts` (`TICK_MS = 200`, 5 Hz) | — |
 | COURSE-06 | partiel | `race.ts` (`applyKeys`, `MAX_PLAUSIBLE_WPM = 250`) | Frappes rejouées, lots refusés si trop rapides ou hors ordre. Pas de bonus à appliquer. |
 | COURSE-07 | fait | `race.ts` (`abandon`) | — |
-| COURSE-08 | partiel | `race.ts` (`RECONNECT_GRACE_MS = 60_000`) | **60 s au lieu de 30 s.** |
+| COURSE-08 | fait | `race.ts` (`RECONNECT_GRACE_MS = 30_000`) | 30 s, test de limite (30 s reprise, 30 s + 1 ms abandon). |
 | COURSE-09 | fait | `race.ts` (`tick`) | En plus : fin après 10 min d'inactivité (`INACTIVITY_MS`). |
 | COURSE-10 | fait | `race.ts` (`standings`) | `timeout` et `racing` sont dans le même groupe (OK). |
 | COURSE-11 | non fait | — | Pas de relance, pas de fermeture. La room se ferme quand elle est vide (`raceHub.ts`). |
@@ -149,11 +149,11 @@ Règle : **l'énoncé de l'enseignant l'emporte, sauf pour les bonus**. À consi
 | Sujet | Cahier v3 / code actuel | Retenu |
 |---|---|---|
 | Formule du MPM net | brut − pénalité par erreur (H-21) | **Énoncé** : caractères justes ÷ 5 ÷ min |
-| Reprise après coupure | 60 s (H-4) | **Énoncé** : 30 s |
+| Reprise après coupure | 30 s | Aligné sur l'énoncé |
 | Timer max | 3 min | **Énoncé** : aucun, ou 30 s à 10 min |
 | Capacité | 60 | **Énoncé** : 2 à 30 |
 | Niveaux de bots | 6 (grade 4 → grade calamité) | **Énoncé** : 5 (Noob, Débutant, Intermédiaire, Expert, Impossible) |
-| Décompte | 5 s | **Énoncé** : 3, 2, 1 |
+| Décompte | 3 s | Aligné sur l'énoncé : 3, 2, 1 |
 | Départ | ≥ 2 participants | **Énoncé** : ≥ 2 participants dont ≥ 1 humain |
 | Bonus | jauge d'énergie, moitié arrière (BON-*) | **Cahier v3** (voir section 6) |
 
@@ -187,3 +187,10 @@ Remplace les trois bonus génériques de la section 6 : chaque personnage a ses 
 - **Bornes** (BON-7) : une capacité ne franchit jamais la ligne, elle s'arrête au début du dernier mot.
 - **Synchronisation** : le client numérote ses frappes (`strokeLog.ts`). Quand une capacité change un coureur, la room lui envoie `sync` avec sa saisie et `acked` ; il rejoue dessus ce qu'elle n'a pas encore reçu. Une frappe pendant un étourdissement est ignorée des deux côtés.
 - **Limite connue** : la room vérifie le coût, l'état et le mode, mais pas que le nom a vraiment été tapé (la frappe du nom reste dans le client).
+
+## 12. Texte de course (CONF-03, CONF-07)
+
+- **Passages (CONF-03)** : le mode « texte cohérent » (`content: 'sentences'`) tire des passages réels du domaine public, stockés dans la table `passages` (langue, complexité 1 à 3, texte, source). `npm run db:seed` la remplit (`src/game/text/passageSeeds.ts`). Le serveur les lit une fois (`src/lib/passages.ts`) et les garde en mémoire 10 minutes : `generateText` reçoit la liste en paramètre et reste pur. Un départ de course les charge (`updateLobbyAction` avec `start`) ; si le cache est encore vide (base absente, table vide), la course part quand même avec les phrases de secours de `src/game/text/corpus.ts`.
+- **Exclusion (CONF-07)** : `settings.exclude` liste jusqu'à 10 caractères qui ne s'écrivent jamais, sans tenir compte de la casse. Elle l'emporte sur les caractères à pratiquer.
+  - Mots aléatoires : les mots qui en contiennent sont écartés (jugés tels que tapés : sans « accents » cochés, « é » vaut « e »), les nombres n'utilisent que les chiffres permis et la ponctuation exclue n'est pas ajoutée. Si plus aucun mot ne convient, les caractères exclus sont retirés des mots.
+  - Texte cohérent : seuls les passages compatibles sont gardés, jugés après application des options (majuscules, ponctuation, accents). Si aucun ne convient dans les langues choisies, le texte est tiré en mots aléatoires. Le point final n'est pas ajouté s'il est exclu.
