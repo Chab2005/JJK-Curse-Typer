@@ -4,7 +4,7 @@
 import type { CharacterId } from '@/components/shared/characters';
 import type { BotLevel } from './bots';
 import { standings, type RacerStatus, type RaceState } from './race';
-import { raceSeries, type MissedKey } from './series';
+import { raceSeries, type MissedKey, type StatSeries } from './series';
 
 export interface ArchivedParticipant {
   seat: string;
@@ -24,6 +24,8 @@ export interface ArchivedParticipant {
   status: RacerStatus;
   received: number;
   series: number[];
+  /** Les autres mesures du graphique, seconde par seconde ; `null` si la course ne les a pas. */
+  stats: StatSeries | null;
   missed: MissedKey[];
 }
 
@@ -59,6 +61,7 @@ export function raceArchive(race: RaceState, now: number): RaceArchive | null {
         status: row.status,
         received: row.received,
         series: entry?.samples ?? [],
+        stats: entry?.stats ?? null,
         missed: entry?.missed ?? [],
       },
     ];

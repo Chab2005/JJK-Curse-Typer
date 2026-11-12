@@ -3,7 +3,7 @@
 import type { CharacterId } from '@/components/shared/characters';
 import type { SummaryRow } from '@/components/race/RaceSummary';
 import type { RacerStatus } from '@/game/race';
-import type { MissedKey, SeriesEntry } from '@/game/series';
+import type { MissedKey, SeriesEntry, StatSeries } from '@/game/series';
 
 /** Participant d'une course archivée, tel que lu dans `race_participants`. */
 export interface PastParticipant {
@@ -22,6 +22,8 @@ export interface PastParticipant {
   status: RacerStatus;
   received: number;
   series: number[];
+  /** Les autres mesures du graphique ; `null` pour une course enregistrée avant leur ajout. */
+  statSeries: StatSeries | null;
   missedKeys: MissedKey[];
 }
 
@@ -70,7 +72,7 @@ export function archivedView(participants: readonly PastParticipant[], userId: n
       you: p.seatId === you,
       bot: p.isBot,
     })),
-    series: ordered.map((p) => ({ id: p.seatId, samples: p.series, missed: p.missedKeys })),
+    series: ordered.map((p) => ({ id: p.seatId, samples: p.series, ...(p.statSeries && { stats: p.statSeries }), missed: p.missedKeys })),
   };
 }
 

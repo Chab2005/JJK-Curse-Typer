@@ -984,11 +984,27 @@
       "backToLobby": "Back to the lobby",
       "summoned": "Mahoraga takes your place",
       "chart": {
-        "title": "WPM over time",
-        "label": "WPM over time for {count, number} participants, {seconds, number} seconds of race",
+        "label": "{stat} over time for {count, number} participants, {seconds, number} seconds of race",
         "legend": "Participants",
         "seconds": "Seconds",
-        "wpm": "WPM"
+        "overTime": "over time",
+        "statLabel": "Stat shown",
+        "stats": {
+          "wpm": "WPM",
+          "rawWpm": "Raw WPM",
+          "accuracy": "Accuracy",
+          "errors": "Errors",
+          "progress": "Progress"
+        },
+        "units": {
+          "wpm": "{value, number} WPM",
+          "rawWpm": "{value, number} raw WPM",
+          "accuracy": "{value} accuracy",
+          "errors": "{value, plural, one {# error} other {# errors}}",
+          "progress": "{value} of the text"
+        },
+        "tooltip": "{name} · {seconds, number} s · {value}",
+        "title": "{stat} over time"
       },
       "missed": {
         "title": "Missed keys",

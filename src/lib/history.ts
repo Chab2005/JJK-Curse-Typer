@@ -87,6 +87,7 @@ export async function pastRace(userId: number, resultId: number): Promise<PastRa
       status: raceParticipants.status,
       received: raceParticipants.received,
       series: raceParticipants.series,
+      statSeries: raceParticipants.statSeries,
       missedKeys: raceParticipants.missedKeys,
     })
     .from(raceParticipants)

@@ -3,6 +3,7 @@
 import type { KeyTally } from './keyStats';
 import type { RaceState, Racer } from './race';
 import { typingScore } from './scoring';
+import { correctChars, type TypingState } from './typing';
 
 /** Un point par seconde de course. */
 export const SAMPLE_MS = 1000;
@@ -17,10 +18,36 @@ export interface MissedKey {
   hits: number;
 }
 
+/** Mesures suivies seconde par seconde, au choix du graphique : MPM net, MPM brut, précision (%), erreurs cumulées, progression (%). */
+export const CHART_STATS = ['wpm', 'rawWpm', 'accuracy', 'errors', 'progress'] as const;
+export type ChartStat = (typeof CHART_STATS)[number];
+
+/** Mesures autres que le MPM net, qui garde son propre tableau (`samples`) : les courses d'avant n'ont que lui. */
+export type ExtraStat = Exclude<ChartStat, 'wpm'>;
+export type StatSeries = Record<ExtraStat, number[]>;
+
+export const emptyStatSeries = (): StatSeries => ({ rawWpm: [], accuracy: [], errors: [], progress: [] });
+
+const tenth = (value: number) => Math.round(value * 10) / 10;
+
+/** Valeur de chaque mesure à `ms` de course : précision et progression en pourcentage, au dixième. */
+export function statPoint(typing: TypingState, ms: number): Record<ChartStat, number> {
+  const score = typingScore(typing, ms);
+  return {
+    wpm: score.wpm,
+    rawWpm: score.rawWpm,
+    accuracy: tenth(score.accuracy * 100),
+    errors: typing.errors,
+    progress: typing.text.length === 0 ? 0 : tenth((correctChars(typing) / typing.text.length) * 100),
+  };
+}
+
 export interface SeriesEntry {
   id: string;
   /** MPM net à chaque seconde, terminé par la valeur finale du tableau. */
   samples: number[];
+  /** Les autres mesures, seconde par seconde, de même longueur ; absentes d'une course enregistrée avant leur ajout. */
+  stats?: StatSeries;
   missed: MissedKey[];
 }
 
@@ -29,8 +56,19 @@ export function sampleRacers(racers: readonly Racer[], limit: number): Racer[] {
   const due = Math.min(MAX_SAMPLES, Math.floor(limit / SAMPLE_MS));
   return racers.map((racer) => {
     if (racer.status !== 'racing' || racer.samples.length >= due) return racer;
-    const wpm = typingScore(racer.typing, limit).wpm;
-    return { ...racer, samples: [...racer.samples, ...Array<number>(due - racer.samples.length).fill(wpm)] };
+    const point = statPoint(racer.typing, limit);
+    const fill = (list: number[], value: number) => [...list, ...Array<number>(due - list.length).fill(value)];
+    const { statSamples } = racer;
+    return {
+      ...racer,
+      samples: fill(racer.samples, point.wpm),
+      statSamples: {
+        rawWpm: fill(statSamples.rawWpm, point.rawWpm),
+        accuracy: fill(statSamples.accuracy, point.accuracy),
+        errors: fill(statSamples.errors, point.errors),
+        progress: fill(statSamples.progress, point.progress),
+      },
+    };
   });
 }
 
@@ -45,9 +83,20 @@ export function missedKeys(tally: KeyTally): MissedKey[] {
 /** Séries de tous les participants à `now`, chacune close par son MPM final. */
 export function raceSeries(race: RaceState, now: number): SeriesEntry[] {
   const limit = Math.max(0, (race.timerMs > 0 ? Math.min(now - race.startAt, race.timerMs) : now - race.startAt));
-  return race.racers.map((racer) => ({
-    id: racer.seat.id,
-    samples: [...racer.samples, typingScore(racer.typing, racer.endedAt ?? limit).wpm].slice(0, MAX_SAMPLES + 1),
-    missed: missedKeys(racer.keys),
-  }));
+  return race.racers.map((racer) => {
+    const final = statPoint(racer.typing, racer.endedAt ?? limit);
+    const close = (list: number[], value: number) => [...list, value].slice(0, MAX_SAMPLES + 1);
+    const { statSamples } = racer;
+    return {
+      id: racer.seat.id,
+      samples: close(racer.samples, final.wpm),
+      stats: {
+        rawWpm: close(statSamples.rawWpm, final.rawWpm),
+        accuracy: close(statSamples.accuracy, final.accuracy),
+        errors: close(statSamples.errors, final.errors),
+        progress: close(statSamples.progress, final.progress),
+      },
+      missed: missedKeys(racer.keys),
+    };
+  });
 }

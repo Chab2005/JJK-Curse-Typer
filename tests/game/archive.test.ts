@@ -46,6 +46,11 @@ describe('raceArchive (HIST-02)', () => {
     expect(ann).toMatchObject({ name: 'Ann', avatar: 'gojo', bot: false, botLevel: null, status: 'finished', errors: 1, endedAt: 700, received: 0 });
     expect(ann.accuracy).toBeCloseTo(6 / 7);
     expect(ann.series.at(-1)).toBe(ann.wpm);
+    // Les autres mesures du graphique, de même longueur que le MPM net.
+    // Mode libre : la faute reste dans la saisie, 6 caractères justes sur 7.
+    expect(ann.stats?.progress.at(-1)).toBeCloseTo((6 / 7) * 100, 0);
+    expect(ann.stats?.errors.at(-1)).toBe(1);
+    expect(ann.stats?.accuracy).toHaveLength(ann.series.length);
     expect(ann.missed).toEqual(expect.arrayContaining([expect.objectContaining({ char: 'c', errors: 1 })]));
 
     expect(archive.participants.find((p) => p.seat === 'bot-1')).toMatchObject({ bot: true, botLevel: 'grade_4', name: '1' });

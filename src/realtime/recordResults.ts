@@ -58,6 +58,7 @@ export function participantRows(archive: RaceArchive, raceId: number, userOf: (s
     status: p.status,
     received: p.received,
     series: p.series,
+    statSeries: p.stats,
     missedKeys: p.missed,
   }));
 }

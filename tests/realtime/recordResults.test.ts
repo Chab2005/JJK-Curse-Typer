@@ -201,9 +201,9 @@ describe('recordRaceResults', () => {
       text: 'abc def',
       startedAt: AT.getTime() - 45_000,
       participants: [
-        { seat: 'Yuji', name: 'Yuji', avatar: 'yuji', bot: false, botLevel: null, rank: 1, wpm: 72, rawWpm: 80, accuracy: 0.955, errors: 3, endedAt: 41_600.4, status: 'finished', received: 2, series: [10, 72], missed: [{ char: 'd', errors: 3, hits: 9 }] },
-        { seat: 'bot-1', name: '1', avatar: 'sukuna', bot: true, botLevel: 'grade_4', rank: 2, wpm: 15, rawWpm: 17, accuracy: 0.88, errors: 4, endedAt: null, status: 'stopped', received: 0, series: [8, 15], missed: [] },
-        { seat: 'guest:Nobara', name: 'Nobara', avatar: null, bot: false, botLevel: null, rank: 3, wpm: 0, rawWpm: 0, accuracy: 1, errors: 0, endedAt: null, status: 'abandoned', received: 0, series: [0], missed: [] },
+        { seat: 'Yuji', name: 'Yuji', avatar: 'yuji', bot: false, botLevel: null, rank: 1, wpm: 72, rawWpm: 80, accuracy: 0.955, errors: 3, endedAt: 41_600.4, status: 'finished', received: 2, series: [10, 72], stats: { rawWpm: [12, 80], accuracy: [100, 95.5], errors: [0, 3], progress: [20, 100] }, missed: [{ char: 'd', errors: 3, hits: 9 }] },
+        { seat: 'bot-1', name: '1', avatar: 'sukuna', bot: true, botLevel: 'grade_4', rank: 2, wpm: 15, rawWpm: 17, accuracy: 0.88, errors: 4, endedAt: null, status: 'stopped', received: 0, series: [8, 15], stats: null, missed: [] },
+        { seat: 'guest:Nobara', name: 'Nobara', avatar: null, bot: false, botLevel: null, rank: 3, wpm: 0, rawWpm: 0, accuracy: 1, errors: 0, endedAt: null, status: 'abandoned', received: 0, series: [0], stats: null, missed: [] },
       ],
     };
     const race = { code: 'ABC-DEF', settings: { words: 30, timer: 0 }, archive };
@@ -215,7 +215,8 @@ describe('recordRaceResults', () => {
       expect(raceInsert).toHaveBeenCalledWith(expect.objectContaining({ lobbyCode: 'ABC-DEF', text: 'abc def', settings: { words: 30, timer: 0 }, startedAt: new Date(archive.startedAt), finishedAt: AT, players: 3 }));
       const rows = participantInsert.mock.calls[0][0];
       expect(rows).toHaveLength(3);
-      expect(rows[0]).toMatchObject({ raceId: 41, userId: 7, seatId: 'Yuji', isBot: false, accuracy: 95.5, endedAtMs: 41_600, missedKeys: [{ char: 'd', errors: 3, hits: 9 }] });
+      expect(rows[0]).toMatchObject({ raceId: 41, userId: 7, seatId: 'Yuji', isBot: false, accuracy: 95.5, endedAtMs: 41_600, missedKeys: [{ char: 'd', errors: 3, hits: 9 }], statSeries: { progress: [20, 100] } });
+      expect(rows[1].statSeries).toBeNull();
       expect(rows[1]).toMatchObject({ raceId: 41, userId: null, isBot: true, botLevel: 'grade_4', name: '1' });
       expect(rows[2]).toMatchObject({ raceId: 41, userId: null, isBot: false, seatId: 'guest:Nobara' });
       expect(insert).toHaveBeenCalledWith([expect.objectContaining({ userId: 7, raceId: 41 })]);

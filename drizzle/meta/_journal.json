@@ -99,6 +99,13 @@
       "when": 1794443084707,
       "tag": "0013_race_history",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1794448067314,
+      "tag": "0014_chart_stats",
+      "breakpoints": true
     }
   ]
 }

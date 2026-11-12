@@ -134,6 +134,7 @@ erDiagram
     text status
     int received
     jsonb series "MPM par seconde"
+    jsonb stat_series "MPM brut, précision, erreurs, progression par seconde (0014)"
     jsonb missed_keys "fautes et frappes par touche"
   }
   key_stats {

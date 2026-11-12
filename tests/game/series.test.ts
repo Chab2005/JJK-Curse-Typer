@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { COUNTDOWN_MS, applyKeys, createRace, raceReducer, type RaceState, type RacerSeat } from '@/game/race';
-import { MAX_SAMPLES, SAMPLE_MS, missedKeys, raceSeries } from '@/game/series';
+import { CHART_STATS, MAX_SAMPLES, SAMPLE_MS, missedKeys, raceSeries, statPoint } from '@/game/series';
 
 const T0 = 1_000_000;
 const START = T0 + COUNTDOWN_MS;
@@ -54,6 +54,46 @@ describe('series (RES-03)', () => {
     const ann = raceSeries(race, START + 5 * SAMPLE_MS).find((entry) => entry.id === 'ann')!;
     expect(ann.samples.at(-1)).toBeGreaterThan(0);
     expect(ann.samples.length).toBe(racer(race, 'ann').samples.length + 1);
+  });
+});
+
+describe('stats over time (RES-03)', () => {
+  it('offers net WPM, raw WPM, accuracy, errors and progress', () => {
+    expect(CHART_STATS).toEqual(['wpm', 'rawWpm', 'accuracy', 'errors', 'progress']);
+  });
+
+  it('samples every stat each second, next to the net WPM', () => {
+    let race = started();
+    race = raceReducer(race, { type: 'tick', now: START + SAMPLE_MS });
+    race = applyKeys(race, 'ann', [...'abx def'].map((key, i) => ({ key, t: 1000 + i * 80 })), START + 1600).race;
+    race = raceReducer(race, { type: 'tick', now: START + 2 * SAMPLE_MS });
+    const { samples, statSamples } = racer(race, 'ann');
+    expect(samples).toHaveLength(2);
+    for (const stat of ['rawWpm', 'accuracy', 'errors', 'progress'] as const) expect(statSamples[stat], stat).toHaveLength(2);
+    expect(statSamples.errors).toEqual([0, 1]);
+    // Avant toute frappe, la précision vaut 100 %.
+    expect(statSamples.accuracy[0]).toBe(100);
+    expect(statSamples.accuracy[1]).toBeCloseTo((6 / 7) * 100, 0);
+    expect(statSamples.progress[0]).toBe(0);
+    expect(statSamples.progress[1]).toBeGreaterThan(0);
+    expect(statSamples.rawWpm[1]).toBeGreaterThanOrEqual(samples[1]);
+  });
+
+  it('ends every stat series with the final value, like the net WPM', () => {
+    let race = started();
+    race = typeAt(race, 'abc def ghi jkl mno pqr stu', 100, 50);
+    race = raceReducer(race, { type: 'tick', now: START + 5 * SAMPLE_MS });
+    const ann = raceSeries(race, START + 5 * SAMPLE_MS).find((entry) => entry.id === 'ann')!;
+    expect(ann.stats?.progress.at(-1)).toBe(100);
+    expect(ann.stats?.errors.at(-1)).toBe(0);
+    for (const stat of ['rawWpm', 'accuracy', 'errors', 'progress'] as const) expect(ann.stats?.[stat]).toHaveLength(ann.samples.length);
+  });
+
+  it('rounds accuracy and progress to a tenth of a percent', () => {
+    const point = statPoint({ text: 'abc', mode: 'accumulate', input: 'ab', keystrokes: 3, errors: 1, streak: 0, peak: 0, lastT: 0, finishedAt: null }, 60_000);
+    expect(point.accuracy).toBe(66.7);
+    expect(point.progress).toBe(66.7);
+    expect(point.errors).toBe(1);
   });
 });
 

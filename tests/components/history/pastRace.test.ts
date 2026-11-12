@@ -16,6 +16,7 @@ const participant = (overrides: Partial<PastParticipant>): PastParticipant => ({
   status: 'finished',
   received: 2,
   series: [10, 72],
+  statSeries: null,
   missedKeys: [{ char: 'd', errors: 3, hits: 9 }],
   ...overrides,
 });
@@ -77,5 +78,14 @@ describe('views of another player’s race', () => {
     const view = legacyView({ rank: 2, wpm: 60, rawWpm: null, accuracy: 90, errors: 4, durationSeconds: 42, status: null, received: null, series: null }, { username: 'yuji', name: 'Yuji' }, false);
     expect(view.you).toBeNull();
     expect(view.rows[0]).toMatchObject({ id: 'yuji', name: 'Yuji', you: false });
+  });
+});
+
+describe('stats over time of a past race', () => {
+  it('passes the other recorded stats to the chart, and none for a race saved before them', () => {
+    const stats = { rawWpm: [12, 80], accuracy: [100, 95.5], errors: [0, 3], progress: [20, 100] };
+    const view = archivedView([participant({ statSeries: stats }), participant({ seatId: 'old', userId: null, rank: 2 })], 7, botName);
+    expect(view.series[0]).toMatchObject({ id: 'yuji', samples: [10, 72], stats });
+    expect(view.series[1].stats).toBeUndefined();
   });
 });

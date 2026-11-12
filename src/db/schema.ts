@@ -1,7 +1,7 @@
 import { boolean, customType, index, integer, jsonb, pgTable, primaryKey, real, serial, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
 import type { BotLevel } from "../game/bots";
 import type { RacerStatus } from "../game/race";
-import type { MissedKey } from "../game/series";
+import type { MissedKey, StatSeries } from "../game/series";
 import type { Level } from "../game/levels";
 
 const bytea = customType<{ data: Buffer }>({ dataType: () => "bytea" });
@@ -107,6 +107,8 @@ export const raceParticipants = pgTable(
     received: integer("received").notNull(),
     /** MPM net à chaque seconde (RES-03). */
     series: jsonb("series").$type<number[]>().notNull(),
+    /** MPM brut, précision, erreurs et progression à chaque seconde (choix du graphique) ; `null` avant leur ajout. */
+    statSeries: jsonb("stat_series").$type<StatSeries>(),
     /** Fautes et frappes par touche attendue (RES-03). */
     missedKeys: jsonb("missed_keys").$type<MissedKey[]>().notNull(),
   },

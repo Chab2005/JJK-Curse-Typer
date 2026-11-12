@@ -984,11 +984,27 @@
       "backToLobby": "Retour au lobby",
       "summoned": "Mahoraga prend votre place",
       "chart": {
-        "title": "MPM dans le temps",
-        "label": "MPM dans le temps de {count, number} participants, {seconds, number} secondes de course",
+        "label": "{stat} dans le temps de {count, number} participants, {seconds, number} secondes de course",
         "legend": "Participants",
         "seconds": "Secondes",
-        "wpm": "MPM"
+        "overTime": "dans le temps",
+        "statLabel": "Mesure affichée",
+        "stats": {
+          "wpm": "MPM",
+          "rawWpm": "MPM brut",
+          "accuracy": "Précision",
+          "errors": "Erreurs",
+          "progress": "Progression"
+        },
+        "units": {
+          "wpm": "{value, number} MPM",
+          "rawWpm": "{value, number} MPM brut",
+          "accuracy": "{value} de précision",
+          "errors": "{value, plural, one {# erreur} other {# erreurs}}",
+          "progress": "{value} du texte"
+        },
+        "tooltip": "{name} · {seconds, number} s · {value}",
+        "title": "{stat} dans le temps"
       },
       "missed": {
         "title": "Touches ratées",
