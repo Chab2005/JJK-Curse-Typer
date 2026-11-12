@@ -190,6 +190,59 @@ describe('parseLobbyAction', () => {
   });
 });
 
+describe('relance et fermeture par l’hôte (COURSE-11)', () => {
+  const YUJI = { id: 'Yuji', name: 'Yuji', avatar: null };
+
+  /** Lobby en résultats avec l’hôte et Yuji. */
+  function finished(): string {
+    const { code } = createLobby(name, HOST, Date.now());
+    updateLobby(code, { type: 'join', person: YUJI, spectate: false });
+    updateLobby(code, { type: 'addBot', by: HOST.id, level: 'grade_4' });
+    updateLobby(code, { type: 'setReady', id: YUJI.id, ready: true });
+    updateLobby(code, { type: 'start', by: HOST.id });
+    updateLobby(code, { type: 'finish' });
+    return code;
+  }
+
+  it('accepte relancer et fermer, au nom du visiteur', () => {
+    expect(parseLobbyAction({ type: 'restart' }, 'Yuji')).toEqual({ type: 'restart', by: 'Yuji' });
+    expect(parseLobbyAction({ type: 'close', by: HOST.id }, 'Yuji')).toEqual({ type: 'close', by: 'Yuji' });
+  });
+
+  it('relance : le lobby repasse en attente pour tout le salon', () => {
+    const code = finished();
+    const seen = vi.fn();
+    subscribeLobby(code, seen);
+    updateLobby(code, { type: 'restart', by: HOST.id });
+    expect(storedLobby(code)?.status).toBe('waiting');
+    expect(seen).toHaveBeenLastCalledWith(expect.objectContaining({ status: 'waiting' }));
+  });
+
+  it('ferme : le lobby quitte le registre, chacun est prévenu et sort', () => {
+    const code = finished();
+    const seen = vi.fn();
+    const left = vi.fn();
+    const closed = vi.fn();
+    subscribeLobby(code, seen);
+    const stopLeft = onMemberLeft(left);
+    const stopClosed = onLobbyClosed(closed);
+    updateLobby(code, { type: 'close', by: HOST.id });
+    expect(storedLobby(code)).toBeNull();
+    expect(seen).toHaveBeenLastCalledWith(null);
+    expect(left).toHaveBeenCalledWith(code, HOST.id);
+    expect(left).toHaveBeenCalledWith(code, 'Yuji');
+    expect(closed).toHaveBeenCalledWith(code);
+    stopLeft();
+    stopClosed();
+  });
+
+  it('refuse la fermeture demandée par un autre que l’hôte', () => {
+    const code = finished();
+    updateLobby(code, { type: 'close', by: 'Yuji' });
+    expect(storedLobby(code)?.status).toBe('results');
+  });
+});
+
 describe('fermeture des lobbies (SALLE-04)', () => {
   it('prévient les écouteurs de fermeture quand le dernier humain part', () => {
     const closed = vi.fn();

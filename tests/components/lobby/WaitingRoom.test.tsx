@@ -220,11 +220,11 @@ class FakeEventSource {
   readyState = 1;
   onmessage: ((event: { data: string }) => void) | null = null;
   onerror: (() => void) | null = null;
-  listeners = new Map<string, () => void>();
+  listeners = new Map<string, (event: { data: string }) => void>();
   constructor(public url: string) {
     FakeEventSource.instances.push(this);
   }
-  addEventListener(type: string, listener: () => void) {
+  addEventListener(type: string, listener: (event: { data: string }) => void) {
     this.listeners.set(type, listener);
   }
   close() {
@@ -271,8 +271,24 @@ describe('WaitingRoom of a created lobby (realtime)', () => {
     renderWithIntl(<WaitingRoom initialRoom={joined} viewerId="Nobara" live />);
     await waitFor(() => expect(FakeEventSource.instances).toHaveLength(1));
 
-    act(() => FakeEventSource.instances[0].listeners.get('gone')!());
+    act(() => FakeEventSource.instances[0].listeners.get('gone')!({ data: 'left' }));
     expect(routerMock.push).toHaveBeenCalledWith('/lobbies');
+  });
+
+  it('tells everyone the lobby was closed when the host closes it (COURSE-11)', async () => {
+    lobbyActionsMock.joinLobbyAction.mockResolvedValue(joined);
+    renderWithIntl(<WaitingRoom initialRoom={joined} viewerId="Nobara" live />);
+    await waitFor(() => expect(FakeEventSource.instances).toHaveLength(1));
+
+    act(() => FakeEventSource.instances[0].listeners.get('gone')!({ data: 'closed' }));
+    expect(routerMock.push).toHaveBeenCalledWith('/lobbies?closed=1');
+  });
+
+  it('sends someone who arrives during the results to the results screen (COURSE-11)', async () => {
+    lobbyActionsMock.joinLobbyAction.mockResolvedValue({ ...joined, status: 'results' });
+    renderWithIntl(<WaitingRoom initialRoom={joined} viewerId="Nobara" live />);
+
+    await waitFor(() => expect(routerMock.push).toHaveBeenCalledWith('/lobby/ABC-DEF/race'));
   });
 
   it('goes back to the lobby list when the server refuses the entry', async () => {

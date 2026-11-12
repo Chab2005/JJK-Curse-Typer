@@ -25,6 +25,20 @@ EN_ATTENTE ──start (hôte, COURSE-02)──▶ DÉCOMPTE ──3, 2, 1──
 - **COURSE-11** — Sur l'écran des résultats, l'hôte peut **relancer** avec les mêmes participants (configuration modifiable) ou **fermer la salle**. Les autres peuvent rester ou partir.
 - **SALLE-09** — On ne rejoint une salle qu'en `EN_ATTENTE` ou `RÉSULTATS`, jamais pendant une course.
 
+**Décision (2026-11-11) : le choix de l'hôte remplace le retour automatique en attente (COURSE-11).**
+
+- À la fin de la course (`finish`), le salon passe en `RÉSULTATS` et **y reste** : il ne repasse plus en `EN_ATTENTE`
+  quand quelqu'un revient au salon. Seul l'hôte décide, depuis l'écran des résultats (la page de course).
+- **Relancer** (`restart`, hôte seul, depuis `RÉSULTATS`) : retour en `EN_ATTENTE` avec les mêmes participants (humains
+  restés, bots), spectateurs et réglages ; chaque joueur redit qu'il est prêt (l'hôte l'est d'office). Le flux du salon
+  ramène tout le monde au salon d'attente, où l'hôte modifie la configuration au besoin puis relance.
+- **Fermer** (`close`, hôte seul, depuis `RÉSULTATS`, avec confirmation) : `FERMÉE`, tout le monde sort, la salle quitte
+  le registre (liens d'invitation supprimés, `room_members` libéré). Le flux dit `gone: closed` : chacun arrive sur la
+  liste des lobbies avec le message « Le salon a été fermé ».
+- **Les autres** voient « En attente de l'hôte » (place réservée) et un bouton pour quitter. Qui arrive pendant les
+  résultats (SALLE-09) est envoyé sur l'écran des résultats. Si l'hôte part, le rôle passe (SALLE-08) avec les boutons.
+- Refusé par le réducteur (salon inchangé) : action d'un non-hôte, ou `restart` / `close` hors de `RÉSULTATS`.
+
 ## 2. Frappe et serveur autoritaire
 
 - **CONF-08** — Mode d'erreur : *correction obligatoire* (on n'avance pas tant que l'erreur n'est pas corrigée) ou *libre* (on continue, l'erreur est comptée).
@@ -123,7 +137,7 @@ Persistance en BD et pages de résultats hors périmètre ; la boucle doit seule
 | COURSE-08 | fait | `race.ts` (`RECONNECT_GRACE_MS = 30_000`) | 30 s, test de limite (30 s reprise, 30 s + 1 ms abandon). |
 | COURSE-09 | fait | `race.ts` (`tick`) | En plus : fin après 10 min d'inactivité (`INACTIVITY_MS`). |
 | COURSE-10 | fait | `race.ts` (`standings`) | `timeout` et `racing` sont dans le même groupe (OK). |
-| COURSE-11 | non fait | — | Pas de relance, pas de fermeture. La room se ferme quand elle est vide (`raceHub.ts`). |
+| COURSE-11 | fait | `lobbyRoom.ts` (`restart`, `close`), `ResultsHostControls.tsx` | Relance et fermeture par l'hôte sur l'écran des résultats (voir la décision du §1). |
 | CONF-01 | partiel | `lobbyRoom.ts` (`TIMER_OPTIONS`) | **Max 3 min, l'énoncé va jusqu'à 10 min.** |
 | CONF-08 | fait | `typing.ts` (`accumulate` / `block`) | — |
 | Annexe A, MPM net | fait | `scoring.ts` (`netWpm`) | Frappes justes ÷ 5 ÷ min, comme l'énoncé. |

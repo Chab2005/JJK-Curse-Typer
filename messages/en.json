@@ -555,7 +555,8 @@
       "joinLabel": "Join {name}",
       "spectate": "Watch",
       "spectateLabel": "Watch {name} as a spectator"
-    }
+    },
+    "closedNotice": "The lobby was closed. Join another one below, or create your own."
   },
   "Lobby": {
     "metaTitle": "{name} · Waiting room",
@@ -1051,6 +1052,17 @@
       "blackFlash": "Black Flash! {name} strikes {target}",
       "vow": "{name} makes a Binding Vow",
       "summon": "{name} summons Mahoraga!"
+    },
+    "hostControls": {
+      "label": "What next",
+      "restart": "Restart the race",
+      "close": "Close the lobby",
+      "waiting": "Waiting for the host to restart the race or close the lobby…",
+      "leave": "Leave the lobby",
+      "confirmTitle": "Close the lobby?",
+      "confirmBody": "Everyone is sent out and the lobby code stops working.",
+      "confirmClose": "Close the lobby",
+      "cancel": "Keep it open"
     }
   },
   "Auth": {

@@ -112,8 +112,10 @@ describe('raceFromLobby', () => {
 
     seeded.onEnd?.();
     expect(storedLobby(lobby.code)?.status).toBe('results');
-    // Revenir au salon le rouvre.
+    // Revenir au salon ne le rouvre plus : seul l’hôte relance (COURSE-11).
     updateLobby(lobby.code, { type: 'join', person: { id: 'chab', name: 'Chab', avatar: null }, spectate: false });
+    expect(storedLobby(lobby.code)?.status).toBe('results');
+    updateLobby(lobby.code, { type: 'restart', by: 'chab' });
     expect(storedLobby(lobby.code)?.status).toBe('waiting');
   });
 

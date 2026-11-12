@@ -5,7 +5,7 @@ import type { ClientMessage, RaceSnapshot, ServerMessage } from '@/game/protocol
 import { startPowers } from '@/game/powers';
 import { COUNTDOWN_MS, type RacerSeat, type Standing } from '@/game/race';
 import { startTyping } from '@/game/typing';
-import { raceActionsMock } from '../../actions';
+import { lobbyActionsMock, raceActionsMock } from '../../actions';
 import { renderWithIntl } from '../../render';
 import { routerMock } from '../../router';
 
@@ -240,6 +240,84 @@ describe('RaceScreen', () => {
     socket.receive({ type: 'welcome', you: 'Megumi_Shadows', race: race(), typing: null });
     finish();
     expect(raceActionsMock.claimRaceResultsAction).not.toHaveBeenCalled();
+  });
+
+  describe('results screen of a created lobby (COURSE-11)', () => {
+    class FakeEventSource {
+      static CLOSED = 2;
+      static instances: FakeEventSource[] = [];
+      readyState = 1;
+      onmessage: ((event: { data: string }) => void) | null = null;
+      onerror: (() => void) | null = null;
+      listeners = new Map<string, (event: { data: string }) => void>();
+      constructor(public url: string) {
+        FakeEventSource.instances.push(this);
+      }
+      addEventListener(type: string, listener: (event: { data: string }) => void) {
+        this.listeners.set(type, listener);
+      }
+      close() {
+        this.readyState = FakeEventSource.CLOSED;
+      }
+    }
+    const lobby = (status: string, hostId = 'Megumi_Shadows') => ({ data: JSON.stringify({ code: 'ABC-DEF', status, hostId, participants: [], spectators: [], banned: [], settings: {} }) });
+
+    function finishedLive(viewerId: string) {
+      FakeEventSource.instances = [];
+      vi.stubGlobal('EventSource', FakeEventSource);
+      const view = renderWithIntl(<RaceScreen code="ABC-DEF" lobbyName="Lobby" live ticket="t" viewerId={viewerId} hostId="Megumi_Shadows" />);
+      socket = FakeWebSocket.instances.at(-1)!;
+      socket.open();
+      socket.receive({ type: 'welcome', you: viewerId, race: race(), typing: null });
+      finish();
+      const stream = FakeEventSource.instances[0];
+      act(() => stream.onmessage!(lobby('results')));
+      return { ...view, stream };
+    }
+
+    it('passes the seat ticket in the socket URL (SALLE-10)', () => {
+      finishedLive('Megumi_Shadows');
+      expect(socket.url).toBe('ws://localhost:3000/ws/race/ABC-DEF?ticket=t');
+    });
+
+    it('lets the host restart: everyone goes back to the waiting room', async () => {
+      lobbyActionsMock.updateLobbyAction.mockResolvedValue(null);
+      const { user, stream } = finishedLive('Megumi_Shadows');
+
+      expect(screen.queryByRole('link', { name: 'Back to the lobby' })).not.toBeInTheDocument();
+      await user.click(screen.getByRole('button', { name: 'Restart the race' }));
+      expect(lobbyActionsMock.updateLobbyAction).toHaveBeenCalledWith('ABC-DEF', { type: 'restart' });
+
+      act(() => stream.onmessage!(lobby('waiting')));
+      expect(routerMock.push).toHaveBeenCalledWith('/lobby/ABC-DEF');
+    });
+
+    it('lets the host close the lobby after a confirmation', async () => {
+      lobbyActionsMock.updateLobbyAction.mockResolvedValue(null);
+      const { user } = finishedLive('Megumi_Shadows');
+
+      await user.click(screen.getByRole('button', { name: 'Close the lobby' }));
+      await user.click(within(screen.getByRole('dialog', { name: 'Close the lobby?' })).getByRole('button', { name: 'Close the lobby' }));
+      expect(lobbyActionsMock.updateLobbyAction).toHaveBeenCalledWith('ABC-DEF', { type: 'close' });
+      await waitFor(() => expect(routerMock.push).toHaveBeenCalledWith('/lobbies?closed=1'));
+    });
+
+    it('shows the other players a waiting line, and sends them out with a message when the host closes', async () => {
+      lobbyActionsMock.leaveLobbyAction.mockResolvedValue();
+      const { stream } = finishedLive('Yuji_BlackFlash');
+
+      expect(screen.getByText('Waiting for the host to restart the race or close the lobby…')).toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: 'Restart the race' })).not.toBeInTheDocument();
+
+      act(() => stream.listeners.get('gone')!({ data: 'closed' }));
+      expect(routerMock.push).toHaveBeenCalledWith('/lobbies?closed=1');
+    });
+
+    it('gives the buttons to the new host when the host role passes', () => {
+      const { stream } = finishedLive('Yuji_BlackFlash');
+      act(() => stream.onmessage!(lobby('results', 'Yuji_BlackFlash')));
+      expect(screen.getByRole('button', { name: 'Restart the race' })).toBeInTheDocument();
+    });
   });
 
   describe('casting (BON-*)', () => {

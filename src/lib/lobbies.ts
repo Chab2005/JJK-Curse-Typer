@@ -178,6 +178,9 @@ const lobbyActionSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('transferHost'), id: z.string().max(64) }),
   z.object({ type: z.literal('setSpectating'), spectating: z.boolean() }),
   z.object({ type: z.literal('start') }),
+  // Choix de l'hôte sur l'écran des résultats (COURSE-11) ; le réducteur vérifie qu'il est bien l'hôte.
+  z.object({ type: z.literal('restart') }),
+  z.object({ type: z.literal('close') }),
 ]);
 
 /** Action reçue du navigateur, validée ; son auteur est toujours `viewer`, jamais celui qu'annonce le client. */

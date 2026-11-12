@@ -555,7 +555,8 @@
       "joinLabel": "Rejoindre {name}",
       "spectate": "Regarder",
       "spectateLabel": "Regarder {name} en spectateur"
-    }
+    },
+    "closedNotice": "Le salon a été fermé. Rejoignez-en un autre ci-dessous, ou créez le vôtre."
   },
   "Lobby": {
     "metaTitle": "{name} · Salon d'attente",
@@ -1051,6 +1052,17 @@
       "blackFlash": "Éclair noir ! {name} frappe {target}",
       "vow": "{name} scelle un pacte contraignant",
       "summon": "{name} invoque Mahoraga !"
+    },
+    "hostControls": {
+      "label": "Et maintenant",
+      "restart": "Relancer la course",
+      "close": "Fermer le salon",
+      "waiting": "En attente de l’hôte : il relance la course ou ferme le salon…",
+      "leave": "Quitter le salon",
+      "confirmTitle": "Fermer le salon ?",
+      "confirmBody": "Tout le monde en sort et le code du salon ne fonctionne plus.",
+      "confirmClose": "Fermer le salon",
+      "cancel": "Le garder ouvert"
     }
   },
   "Auth": {

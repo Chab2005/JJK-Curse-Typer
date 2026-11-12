@@ -41,6 +41,8 @@ export default async function RacePage({ params, searchParams }: PageProps<'/[lo
         lobbyName={room.name}
         live={stored !== null}
         ticket={seated ? seatTicket(room.code, viewerId, authSecret()) : undefined}
+        viewerId={viewerId}
+        hostId={stored?.hostId}
         account={user && { username: user.username, displayName: user.displayName, avatarUrl: user.hasAvatar ? `/api/avatar/${encodeURIComponent(user.username)}?v=${user.avatarVersion}` : null }}
       />
       <RaceFooter />

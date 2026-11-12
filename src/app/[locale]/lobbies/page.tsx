@@ -4,6 +4,7 @@ import { Suspense } from 'react';
 import Footer from '@/components/layout/Footer';
 import { getSessionUser } from '@/lib/auth/session';
 import SiteHeader from '@/components/layout/SiteHeader';
+import ClosedLobbyNotice from '@/components/lobbies/ClosedLobbyNotice';
 import LobbyBrowser from '@/components/lobbies/LobbyBrowser';
 import { showSampleData } from '@/lib/sampleData';
 import { SAMPLE_LOBBIES } from '@/components/lobbies/sampleLobbies';
@@ -18,8 +19,10 @@ export async function generateMetadata({ params }: PageProps<'/[locale]/lobbies'
 }
 
 // Recherche de lobbies publics (LOB-1, LOB-2).
-export default async function LobbiesPage({ params }: PageProps<'/[locale]/lobbies'>) {
+export default async function LobbiesPage({ params, searchParams }: PageProps<'/[locale]/lobbies'>) {
   const { locale } = await params;
+  // ?closed=1 : on arrive d'un salon que l'hôte vient de fermer (COURSE-11).
+  const { closed } = await searchParams;
   setRequestLocale(locale as Locale);
   const t = await getTranslations('Lobbies');
   // Les lobbies créés vivent en mémoire : la liste se calcule à chaque requête.
@@ -37,6 +40,7 @@ export default async function LobbiesPage({ params }: PageProps<'/[locale]/lobbi
         <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-[640px] bg-linear-to-b from-[#120708]/0 to-[#120708]" />
         <section aria-labelledby="lobbies-title" className="relative mx-auto flex max-w-[1152px] flex-col gap-10 px-6 pt-14 pb-24">
           <PageIntro id="lobbies-title" eyebrow={t('eyebrow')} title={t('title')} intro={t('intro')} watermark={t('watermark')} chevrons />
+          {closed === '1' && <ClosedLobbyNotice />}
           {/* Hauteur minimale : le panneau des filtres doit tenir dans <main id="main">, qui coupe ce qui dépasse,
               même avec peu de résultats (sous `sm`, le bouton passe sous la recherche). */}
           <div className="min-h-[752px] sm:min-h-[656px]">

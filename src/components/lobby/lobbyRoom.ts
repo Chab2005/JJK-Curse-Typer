@@ -80,8 +80,8 @@ export interface Spectator {
 
 /**
  * États du salon (COURSE-01) : `waiting` (EN_ATTENTE), `racing` (décompte puis course : la phase fine est dans `RaceState.phase`),
- * `results` (RÉSULTATS) et `closed` (FERMÉE). La relance et la fermeture voulues par l'hôte sont COURSE-11 ; ici le salon
- * repasse en attente quand quelqu'un y revient, et se ferme quand plus aucun humain n'y est.
+ * `results` (RÉSULTATS) et `closed` (FERMÉE). Sur l'écran des résultats, seul l'hôte décide de la suite (COURSE-11) :
+ * `restart` ramène le salon en attente, `close` le ferme. Il se ferme aussi quand plus aucun humain n'y est.
  */
 export const LOBBY_STATUSES = ['waiting', 'racing', 'results', 'closed'] as const;
 export type LobbyStatus = (typeof LOBBY_STATUSES)[number];
@@ -130,8 +130,10 @@ export type LobbyAction =
   | { type: 'start'; by: string }
   /** Fin de la course : le salon passe en résultats. */
   | { type: 'finish' }
-  /** Retour au salon depuis les résultats : il rouvre. */
-  | { type: 'reopen' };
+  /** L'hôte relance depuis les résultats : retour en attente, mêmes participants et réglages (COURSE-11). */
+  | { type: 'restart'; by: string }
+  /** L'hôte ferme la salle depuis les résultats : tout le monde en sort (COURSE-11). */
+  | { type: 'close'; by: string };
 
 export type ViewerRole = 'host' | 'player' | 'spectator';
 
@@ -220,9 +222,8 @@ function setCharacter(room: LobbyRoom, id: string, character: CharacterId): Lobb
   return { ...room, participants: room.participants.map((p) => (p.kind === 'human' && p.id === id ? { ...p, avatar: character } : p)) };
 }
 
-function join(current: LobbyRoom, person: Spectator, spectate: boolean): LobbyRoom {
-  // Revenir au salon après la course le rouvre (RÉSULTATS → EN_ATTENTE).
-  const room = current.status === 'results' && !joinRefusal(current, person.id) ? reopen(current) : current;
+function join(room: LobbyRoom, person: Spectator, spectate: boolean): LobbyRoom {
+  // Arriver pendant les résultats est permis (SALLE-09) mais ne rouvre pas le salon : seul l'hôte relance (COURSE-11).
   if (isInside(room, person.id) || joinRefusal(room, person.id)) return room;
   const { id, name, avatar, photo = null } = person;
   const joinable = !spectate && room.participants.length < room.settings.capacity;
@@ -259,11 +260,18 @@ function finish(room: LobbyRoom): LobbyRoom {
   return transition(room, 'results');
 }
 
-/** Retour au salon : RÉSULTATS → EN_ATTENTE ; chaque joueur redit qu'il est prêt pour la suivante. */
-function reopen(room: LobbyRoom): LobbyRoom {
+/** Relance par l'hôte : RÉSULTATS → EN_ATTENTE, mêmes participants et réglages ; chaque joueur redit qu'il est prêt. */
+function restart(room: LobbyRoom): LobbyRoom {
   const next = transition(room, 'waiting');
   if (next === room) return room;
   return { ...next, participants: next.participants.map((p) => (p.kind === 'human' ? { ...p, ready: p.id === next.hostId } : p)) };
+}
+
+/** Fermeture par l'hôte : RÉSULTATS → FERMÉE ; tout le monde sort, et le registre oublie la salle (`isEmpty`). */
+function close(room: LobbyRoom): LobbyRoom {
+  const next = transition(room, 'closed');
+  if (next === room) return room;
+  return { ...next, hostId: '', participants: [], spectators: [] };
 }
 
 export function lobbyReducer(room: LobbyRoom, action: LobbyAction): LobbyRoom {
@@ -272,7 +280,11 @@ export function lobbyReducer(room: LobbyRoom, action: LobbyAction): LobbyRoom {
   if (action.type === 'leave') return leave(room, action.id);
   if (room.status === 'closed') return room;
   if (action.type === 'finish') return finish(room);
-  if (action.type === 'reopen') return reopen(room);
+  // Sur l'écran des résultats, la suite est le choix de l'hôte seul (COURSE-11, SEC-01).
+  if (action.type === 'restart' || action.type === 'close') {
+    if (room.status !== 'results' || action.by !== room.hostId) return room;
+    return action.type === 'restart' ? restart(room) : close(room);
+  }
   if (room.status !== 'waiting') return room;
   if (action.type === 'setReady') return setReady(room, action.id, action.ready);
   if (action.type === 'setCharacter') return setCharacter(room, action.id, action.character);

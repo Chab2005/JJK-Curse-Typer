@@ -11,6 +11,7 @@ import { leaderGap, type RaceNotice, type RacerSeat } from '@/game/race';
 import { acknowledge, addStroke, clearPending, emptyLog, markSent, replay, rewindSent, unsent } from '@/game/strokeLog';
 import { startTyping, typeKey, type TypingState } from '@/game/typing';
 import { useRouter } from '@/i18n/navigation';
+import { leaveLobbyAction, updateLobbyAction } from '@/app/actions/lobbies';
 import { claimRaceResultsAction } from '@/app/actions/races';
 import AbilityBar from './AbilityBar';
 import CastDialog from './CastDialog';
@@ -26,6 +27,7 @@ import RaceHeader from './RaceHeader';
 import RaceHud from './RaceHud';
 import RaceSummary, { type SummaryRow } from './RaceSummary';
 import RaceTrack from './RaceTrack';
+import ResultsHostControls from './ResultsHostControls';
 import TypingArea from './TypingArea';
 import { HIT_MS, formatClock, initialRaceView, laggedInput, raceViewReducer, runningKey, runningSet, trackRunnersFor, trimTrail, type TrailEntry } from './raceView';
 import { useAbilityNames } from './useAbilityNames';
@@ -62,12 +64,18 @@ export default function RaceScreen({
   account = null,
   live = false,
   ticket,
+  viewerId = '',
+  hostId = '',
 }: {
   code: string;
   lobbyName: string;
   account?: HeaderAccount | null;
   live?: boolean;
   ticket?: string;
+  /** Visiteur (compte ou `guest:<pseudo>`) : comparé à l'hôte pour les choix de l'écran des résultats (COURSE-11). */
+  viewerId?: string;
+  /** Hôte du salon à l'ouverture de la page ; le flux du salon le tient ensuite à jour. */
+  hostId?: string;
 }) {
   const t = useTranslations('Race');
   const tLobby = useTranslations('Lobby.participants');
@@ -141,7 +149,44 @@ export default function RaceScreen({
     if (message.type === 'castRefused') setCastNote({ reason: message.reason, at: receivedAt });
   }, ticket);
 
-  useLobbyEvents(live ? code : null, () => {}, () => {});
+  // Flux du salon (lobby créé) : il garde la place du visiteur, suit l'hôte et la suite choisie sur l'écran des résultats
+  // (COURSE-11) : une relance ramène tout le monde au salon d'attente, une fermeture à la liste des lobbies, avec un message.
+  const [lobbyHost, setLobbyHost] = useState(hostId);
+  const inLobby = useRef(false);
+  useLobbyEvents(
+    live ? code : null,
+    (room) => {
+      inLobby.current = true;
+      setLobbyHost(room.hostId);
+      if (room.status === 'waiting') router.push(`/lobby/${code}`);
+    },
+    (reason) => {
+      // Qui n'a jamais été dans le salon (simple spectateur) n'a rien à quitter.
+      if (inLobby.current) router.push(reason === 'closed' ? '/lobbies?closed=1' : '/lobbies');
+    },
+  );
+  const isHost = viewerId !== '' && lobbyHost === viewerId;
+  const hostControls = live ? (
+    <ResultsHostControls
+      isHost={isHost}
+      onRestart={() =>
+        void updateLobbyAction(code, { type: 'restart' })
+          .then((next) => next?.status === 'waiting' && router.push(`/lobby/${code}`))
+          .catch(() => {})
+      }
+      // Le salon n'existe plus une fois fermé : l'action ne renvoie plus rien.
+      onClose={() =>
+        void updateLobbyAction(code, { type: 'close' })
+          .then((next) => next === null && router.push('/lobbies?closed=1'))
+          .catch(() => {})
+      }
+      onLeave={() =>
+        void leaveLobbyAction(code)
+          .then(() => router.push('/lobbies'))
+          .catch(() => {})
+      }
+    />
+  ) : undefined;
 
   const { race, you, startAt, phase, standings } = view;
   const now = useNow(100, race !== null && phase !== 'finished');
@@ -385,7 +430,7 @@ export default function RaceScreen({
                 </section>
               )}
 
-              {(phase === 'finished' || (you !== null && done)) && <RaceSummary rows={rows} you={you} over={phase === 'finished'} series={view.series} lobbyCode={code} />}
+              {(phase === 'finished' || (you !== null && done)) && <RaceSummary rows={rows} you={you} over={phase === 'finished'} series={view.series} lobbyCode={code} actions={hostControls} />}
 
               {you !== null && typing && !done && phase !== 'finished' && (
                 <div className="relative pt-4">

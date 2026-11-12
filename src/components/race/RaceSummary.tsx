@@ -1,4 +1,5 @@
 import { useTranslations } from 'next-intl';
+import type { ReactNode } from 'react';
 import type { CharacterId } from '@/components/shared/characters';
 import type { RacerStatus } from '@/game/race';
 import BevelPanel from '@/components/shared/BevelPanel';
@@ -44,7 +45,23 @@ const HEADING: Record<Exclude<RacerStatus, 'racing' | 'stopped'>, 'finished' | '
 
 // Écran d'attente de qui a fini avant les autres (RACE-11), puis classement complet à la fin (RACE-14) :
 // panneau cramoisi, podium et tableau dans le style du classement général.
-export default function RaceSummary({ rows, you, over, lobbyCode, series = [] }: { rows: SummaryRow[]; you: string | null; over: boolean; lobbyCode: string; /** MPM de chacun dans le temps et touches ratées, envoyés une fois la course finie (RES-03). */ series?: SeriesEntry[] }) {
+export default function RaceSummary({
+  rows,
+  you,
+  over,
+  lobbyCode,
+  series = [],
+  actions,
+}: {
+  rows: SummaryRow[];
+  you: string | null;
+  over: boolean;
+  lobbyCode: string;
+  /** MPM de chacun dans le temps et touches ratées, envoyés une fois la course finie (RES-03). */
+  series?: SeriesEntry[];
+  /** Suite de la course dans un salon créé (COURSE-11) : remplace le lien de retour au salon. */
+  actions?: ReactNode;
+}) {
   const t = useTranslations('Race.summary');
   const me = rows.find((row) => row.id === you);
   const racing = rows.filter((row) => row.status === 'racing').length;
@@ -85,10 +102,12 @@ export default function RaceSummary({ rows, you, over, lobbyCode, series = [] }:
           </h2>
           <RacePodium rows={rows} />
           <RaceResultsTable rows={rows} />
-          <ChevronButton as={Link} href={`/lobby/${lobbyCode}`} variant="primary" frame="self-start" className="text-[15px] uppercase tracking-[0.12em]">
-            <span aria-hidden="true" className="material-symbols-outlined text-[18px]">arrow_back</span>
-            {t('backToLobby')}
-          </ChevronButton>
+          {actions ?? (
+            <ChevronButton as={Link} href={`/lobby/${lobbyCode}`} variant="primary" frame="self-start" className="text-[15px] uppercase tracking-[0.12em]">
+              <span aria-hidden="true" className="material-symbols-outlined text-[18px]">arrow_back</span>
+              {t('backToLobby')}
+            </ChevronButton>
+          )}
           {/* Après le bouton : les séries arrivent après la fin de course et ne doivent rien déplacer de ce qui est déjà affiché. */}
           {series.length > 0 && (
             <>

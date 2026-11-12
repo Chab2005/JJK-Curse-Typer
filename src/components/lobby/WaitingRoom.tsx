@@ -92,11 +92,13 @@ export default function WaitingRoom({
     };
   }, [live, viewerId, initialRoom.code, spectate, invite, character, router, leaveOther]);
 
-  useLobbyEvents(live && joined ? room.code : null, setRoom, () => router.push('/lobbies'));
+  // Lobby fermé par l'hôte (COURSE-11) : la liste des lobbies le dit.
+  useLobbyEvents(live && joined ? room.code : null, setRoom, (reason) => router.push(reason === 'closed' ? '/lobbies?closed=1' : '/lobbies'));
 
-  // Course lancée par l'hôte : tout le salon la rejoint, les spectateurs pour la regarder.
+  // Course lancée par l'hôte : tout le salon la rejoint, les spectateurs pour la regarder. Pendant les résultats, l'écran
+  // des résultats est celui de la course : l'hôte y choisit la suite, les autres y attendent (COURSE-11).
   useEffect(() => {
-    if (live && joined && room.status === 'racing') router.push(`/lobby/${room.code}/race`);
+    if (live && joined && (room.status === 'racing' || room.status === 'results')) router.push(`/lobby/${room.code}/race`);
   }, [live, joined, room.status, room.code, router]);
 
   const apply = (action: LobbyAction) => {

@@ -27,7 +27,7 @@ vi.mock('@/lib/roomMembers', () => ({ currentLobby: async () => null, setMembers
 vi.mock('@/lib/lobbyPresence', () => ({ expectViewer: () => {} }));
 vi.mock('@/lib/passages', () => ({ loadPassages: async () => [] }));
 
-const { joinLobbyAction } = await import('@/app/actions/lobbies');
+const { joinLobbyAction, updateLobbyAction } = await import('@/app/actions/lobbies');
 
 const user = (id: string): Viewer => ({ kind: 'user', id, name: id, photo: null });
 const HOST = { id: 'gojo', name: 'gojo', avatar: null };
@@ -81,5 +81,46 @@ describe('joinLobbyAction et la force brute sur les codes (SALLE-10)', () => {
     state.ip = '10.0.0.2';
     const room = await joinLobbyAction(code);
     expect(room && 'participants' in room).toBe(true);
+  });
+});
+
+describe('updateLobbyAction sur l’écran des résultats (COURSE-11)', () => {
+  /** Lobby de `gojo` en résultats, avec `yuji` dedans. */
+  async function finished(): Promise<string> {
+    const code = codeLobby();
+    await joinLobbyAction(code);
+    updateLobby(code, { type: 'setReady', id: 'yuji', ready: true });
+    updateLobby(code, { type: 'start', by: HOST.id });
+    updateLobby(code, { type: 'finish' });
+    return code;
+  }
+
+  it('relance pour l’hôte', async () => {
+    const code = await finished();
+    state.viewer = user('gojo');
+    expect(await updateLobbyAction(code, { type: 'restart' })).toMatchObject({ status: 'waiting' });
+  });
+
+  it('ferme pour l’hôte : le lobby disparaît', async () => {
+    const code = await finished();
+    state.viewer = user('gojo');
+    expect(await updateLobbyAction(code, { type: 'close' })).toBeNull();
+    expect(storedLobby(code)).toBeNull();
+  });
+
+  it('refuse à un autre joueur, même s’il se dit hôte', async () => {
+    const code = await finished();
+    expect(await updateLobbyAction(code, { type: 'close', by: 'gojo' })).toMatchObject({ status: 'results' });
+    expect(await updateLobbyAction(code, { type: 'restart' })).toMatchObject({ status: 'results' });
+    expect(storedLobby(code)?.status).toBe('results');
+  });
+
+  it('rejette une action mal formée', async () => {
+    const code = await finished();
+    state.viewer = user('gojo');
+    expect(await updateLobbyAction('not a code', { type: 'close' })).toBeNull();
+    expect(await updateLobbyAction(code, { type: 'shutdown' })).toBeNull();
+    expect(await updateLobbyAction(code, 'close')).toBeNull();
+    expect(storedLobby(code)?.status).toBe('results');
   });
 });

@@ -153,12 +153,14 @@ stateDiagram-v2
 | `EN_ATTENTE` | `LobbyRoom.status = 'waiting'` (`src/components/lobby/lobbyRoom.ts`) | Oui |
 | `DÉCOMPTE` | `RaceState.phase = 'countdown'` (`src/game/race.ts`), texte révélé à ce moment (COURSE-03) | Non (spectateur) |
 | `EN_COURSE` | `RaceState.phase = 'racing'` | Non (spectateur) |
-| `RÉSULTATS` | `RaceState.phase = 'finished'` | Oui |
-| `FERMÉE` | Salle retirée du registre (`src/lib/lobbies.ts`) ; ses liens d'invitation deviennent invalides | — |
+| `RÉSULTATS` | `LobbyRoom.status = 'results'` (posé par `finish`), affiché sur la page de course | Oui : on arrive sur l'écran des résultats ; seul l'hôte relance (COURSE-11) |
+| `FERMÉE` | `LobbyRoom.status = 'closed'` (fermeture par l'hôte, ou dernier humain parti), puis salle retirée du registre (`src/lib/lobbies.ts`) ; ses liens d'invitation sont supprimés (SALLE-04) | — |
 
 Transitions : chaque événement passe par un réducteur pur (`lobbyReducer`, `applyKeys`, `tick`). Le serveur est seul
-à les appliquer ; le client ne fait qu'afficher. État actuel du code : la salle repasse automatiquement en
-`EN_ATTENTE` à la fin d'une course ; le choix explicite « relancer / fermer » de l'hôte est à faire (COURSE-11).
+à les appliquer ; le client ne fait qu'afficher. À la fin d'une course le salon
+passe en `RÉSULTATS` (`finish`) et y reste : seul l'hôte choisit la suite, depuis l'écran des résultats (COURSE-11).
+`restart` le ramène en `EN_ATTENTE` (mêmes participants, bots et réglages, « prêt » remis à zéro sauf pour l'hôte) ;
+`close` le passe en `FERMÉE`, en fait sortir tout le monde et le retire du registre. Détail dans `RACE-LOOP.md` §1.
 
 Statut de chaque participant pendant `EN_COURSE` : `racing → finished | timeout | abandoned`. Le classement final
 suit COURSE-10 : terminés par temps d'arrivée, puis temps écoulé par progression, puis abandons par progression.

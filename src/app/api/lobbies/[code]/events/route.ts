@@ -50,7 +50,8 @@ export async function GET(request: NextRequest, { params }: RouteContext<'/api/l
       };
       const send = (next: LobbyRoom | null) => {
         if (next && isInside(next, viewerId)) return write(`data: ${JSON.stringify(next)}\n\n`);
-        write('event: gone\ndata: \n\n');
+        // `closed` : le salon n'existe plus (fermé par l'hôte, COURSE-11, ou vidé) ; `left` : le visiteur n'y est plus.
+        write(`event: gone\ndata: ${next ? 'left' : 'closed'}\n\n`);
         cleanup();
         try {
           controller.close();

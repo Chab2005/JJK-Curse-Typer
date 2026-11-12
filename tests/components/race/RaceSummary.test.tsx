@@ -37,6 +37,12 @@ describe('RaceSummary', () => {
     expect(screen.getByRole('link', { name: 'Back to the lobby' })).toHaveAttribute('href', '/lobby/TKY-HGH');
   });
 
+  it('puts the lobby actions in place of the way back when given (COURSE-11)', () => {
+    renderWithIntl(<RaceSummary rows={ROWS} you="me" over lobbyCode="ABC-DEF" actions={<button type="button">Restart the race</button>} />);
+    expect(screen.getByRole('button', { name: 'Restart the race' })).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Back to the lobby' })).not.toBeInTheDocument();
+  });
+
   it('keeps the top 3 in the full table too (RES-02)', () => {
     renderWithIntl(<RaceSummary rows={ROWS.map((r) => ({ ...r, status: 'finished' }))} you="me" over lobbyCode="TKY-HGH" />);
 
