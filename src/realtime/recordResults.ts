@@ -3,7 +3,8 @@
 import { and, inArray, max, sql } from 'drizzle-orm';
 import { getDb } from '@/db/client';
 import { countedResult } from '@/db/counted';
-import { characterStats, keyStats, results, users } from '@/db/schema';
+import { characterStats, keyStats, raceParticipants, races, results, users } from '@/db/schema';
+import type { RaceArchive } from '@/game/archive';
 import { raceXp } from '@/game/levels';
 import { beatsPersonalBest } from '@/game/personalBest';
 import { GUEST_SEAT_PREFIX, type RaceResult } from '@/game/results';
@@ -30,12 +31,45 @@ export function toGuestGame(result: RaceResult, at: Date): GuestGame {
   };
 }
 
+/** Course d'un lobby créé à archiver pour l'historique (HIST-01, HIST-02). */
+export interface ArchivedRace {
+  code: string;
+  /** Réglages du lobby au départ. */
+  settings: object;
+  archive: RaceArchive;
+}
+
+/** Lignes `race_participants` d'une course archivée : chaque participant, bots et invités compris ; `userOf` donne le compte d'un siège. */
+export function participantRows(archive: RaceArchive, raceId: number, userOf: (seat: string) => number | null) {
+  return archive.participants.map((p) => ({
+    raceId,
+    userId: p.bot || p.seat.startsWith(GUEST_SEAT_PREFIX) ? null : userOf(p.seat),
+    seatId: p.seat,
+    name: p.name,
+    avatar: p.avatar,
+    isBot: p.bot,
+    botLevel: p.botLevel,
+    rank: p.rank,
+    wpm: p.wpm,
+    rawWpm: p.rawWpm,
+    accuracy: Math.round(p.accuracy * 1000) / 10,
+    errors: p.errors,
+    endedAtMs: p.endedAt === null ? null : Math.round(p.endedAt),
+    status: p.status,
+    received: p.received,
+    series: p.series,
+    missedKeys: p.missed,
+  }));
+}
+
 /**
  * Enregistre la course et renvoie les sièges des comptes qui ont battu leur record personnel (RES-04) : MPM net plus haut
  * que le meilleur de leurs courses précédentes qui comptent, lu avant l'écriture. Vide si la base n'a rien écrit.
  * Le record d'un invité se juge sur son cookie, quand il réclame son résultat (`claimRaceResultsAction`).
+ * Avec `race`, la course entière est archivée pour l'historique (HIST-02), dans la même transaction que les résultats,
+ * et chaque ligne de `results` pointe vers elle ; sans compte enregistré, rien n'est archivé (un invité n'a pas d'historique).
  */
-export async function recordRaceResults(list: readonly RaceResult[], at: Date): Promise<string[]> {
+export async function recordRaceResults(list: readonly RaceResult[], at: Date, race?: ArchivedRace | null): Promise<string[]> {
   // Avant toute attente : le résultat d'un invité doit être prêt quand son écran voit la fin de course.
   for (const result of list) if (result.counts && result.seat.startsWith(GUEST_SEAT_PREFIX)) holdGuestGame(result.seat, toGuestGame(result, at), at.getTime());
 
@@ -70,7 +104,21 @@ export async function recordRaceResults(list: readonly RaceResult[], at: Date): 
           .where(and(inArray(results.userId, saved.map(({ userId }) => userId)), countedResult))
           .groupBy(results.userId);
     const previous = new Map(bests.map((row) => [row.userId, row.best]));
-    if (rows.length > 0) await db.insert(results).values(rows);
+    if (rows.length > 0) {
+      await db.transaction(async (tx) => {
+        let raceId: number | null = null;
+        if (race) {
+          const { archive } = race;
+          const [row] = await tx
+            .insert(races)
+            .values({ lobbyCode: race.code, text: archive.text, settings: { ...race.settings }, startedAt: new Date(archive.startedAt), finishedAt: at, players: archive.participants.length })
+            .returning({ id: races.id });
+          raceId = row.id;
+          await tx.insert(raceParticipants).values(participantRows(archive, raceId, (seat) => ids.get(usernameKey(seat)) ?? null));
+        }
+        await tx.insert(results).values(rows.map((values) => ({ ...values, raceId })));
+      });
+    }
     records = saved.filter(({ userId, result }) => beatsPersonalBest(result.wpm, previous.get(userId) ?? null, result.counts)).map(({ result }) => result.seat);
 
     // Heatmap sans historique : valeur stockée = (valeur stockée + valeur de la course) / 2.

@@ -50,7 +50,7 @@ export class RaceHub {
       const results = room.results();
       if (results.length === 0) return;
       // L'enregistrement dit qui a battu son record personnel (RES-04) : la room l'annonce dès qu'il répond.
-      void Promise.resolve(seeded.onFinish?.(results))
+      void Promise.resolve(seeded.onFinish?.(results, room.archive()))
         .then((records) => room.announceRecords(records ?? []))
         .catch(() => {});
     };

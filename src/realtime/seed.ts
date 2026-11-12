@@ -2,6 +2,7 @@
 // viennent du lobby, jamais du client. Un lobby créé n'a de course qu'une fois lancée par son hôte.
 import { CHARACTERS } from '@/components/shared/characters';
 import { createRace, type RaceState, type RacerSeat } from '@/game/race';
+import type { RaceArchive } from '@/game/archive';
 import type { RaceResult } from '@/game/results';
 import { hashSeed } from '@/game/random';
 import { generateText } from '@/game/text/generate';
@@ -21,7 +22,7 @@ export interface SeededRace {
   /** Appelé une fois, quand la course est finie ou fermée : le lobby créé rouvre son salon. */
   onEnd?: () => void;
   /** Appelé une fois, avec les résultats des joueurs, quand la course est allée au bout (STAT-8) ; peut renvoyer les sièges qui ont battu leur record (RES-04). */
-  onFinish?: (results: RaceResult[]) => Promise<string[]> | void;
+  onFinish?: (results: RaceResult[], archive: RaceArchive | null) => Promise<string[]> | void;
 }
 
 export function raceFromLobby(code: string, now: number): SeededRace | null {
@@ -55,7 +56,9 @@ export function raceFromLobby(code: string, now: number): SeededRace | null {
       ticketSeat: (ticket: string | undefined) => readSeatTicket(ticket, stored.code, authSecret()),
       onEnd: () => void updateLobby(stored.code, { type: 'finish' }),
       // Seuls les lobbies créés enregistrent : leurs sièges viennent de tickets signés, liés à un compte ou un invité.
-      onFinish: (results: RaceResult[]) => recordRaceResults(results, new Date()),
+      // La course entière part aussi, pour l'historique (HIST-02), avec les réglages du lobby au départ.
+      onFinish: (results: RaceResult[], archive: RaceArchive | null) =>
+        recordRaceResults(results, new Date(), archive && { code: stored.code, settings: stored.settings, archive }),
     }),
   };
 }

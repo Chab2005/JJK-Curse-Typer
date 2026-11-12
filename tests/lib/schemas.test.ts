@@ -10,7 +10,7 @@ import {
   providerSchema,
   settingsFormSchema,
   usernameParamSchema,
- historyPageSchema } from '@/lib/schemas';
+ historyIdSchema, historyPageSchema } from '@/lib/schemas';
 
 const form = (entries: Record<string, string | File>) => {
   const data = new FormData();
@@ -95,6 +95,11 @@ describe('route parameters', () => {
     expect(providerSchema.safeParse('discord').success).toBe(true);
     expect(providerSchema.safeParse('github').success).toBe(true);
     expect(providerSchema.safeParse('google').success).toBe(false);
+  });
+
+  it('accepts a positive history id only (HIST-02)', () => {
+    expect(historyIdSchema.safeParse('42').data).toBe(42);
+    for (const bad of ['0', '-1', '1.5', 'abc', '42x', '01', '99999999999', '']) expect(historyIdSchema.safeParse(bad).success, bad).toBe(false);
   });
 
   it('reads the history page number, 1 when missing or invalid (HIST-01)', () => {

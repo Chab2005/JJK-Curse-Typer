@@ -56,6 +56,9 @@ erDiagram
   users ||--o{ sessions : "a"
   users ||--o{ results : "termine"
   users ||--o{ key_stats : "agrège"
+  races ||--o{ race_participants : "réunit"
+  races ||--o{ results : "détaille"
+  users ||--o{ race_participants : "court dans"
 
   users {
     serial id PK
@@ -94,6 +97,7 @@ erDiagram
   results {
     serial id PK
     int user_id FK
+    int race_id FK "course archivée (HIST-02), null avant 0013"
     real wpm "MPM net"
     real accuracy
     int duration_seconds
@@ -102,6 +106,35 @@ erDiagram
     int errors
     int keystrokes
     timestamp created_at
+  }
+  races {
+    serial id PK
+    text lobby_code
+    text text "texte de départ"
+    jsonb settings "réglages du lobby au départ"
+    timestamp started_at
+    timestamp finished_at
+    int players "bots compris"
+  }
+  race_participants {
+    serial id PK
+    int race_id FK
+    int user_id FK "null : invité ou bot"
+    text seat_id "unique par course"
+    text name
+    text avatar
+    bool is_bot
+    text bot_level
+    int rank
+    real wpm
+    real raw_wpm
+    real accuracy
+    int errors
+    int ended_at_ms
+    text status
+    int received
+    jsonb series "MPM par seconde"
+    jsonb missed_keys "fautes et frappes par touche"
   }
   key_stats {
     int user_id PK, FK
@@ -128,8 +161,7 @@ Les invités n'ont pas de ligne en base : leur session est un cookie signé (`sr
 
 | Table prévue | Rôle | Exigences |
 |---|---|---|
-| `races` | Une course jouée : code de salle, configuration (jsonb), texte, début, fin | RES-05, HIST-02 |
-| `race_results` (remplace `results`) | Résultat par participant humain : rang, MPM net et brut, précision, erreurs, temps, statut, bonus reçus, **série temporelle du MPM** (jsonb) | RES-02, RES-03, RES-05, HIST-01 |
+| `races` + `race_participants` | **Faites** (`drizzle/0013_race_history.sql`) : une course archivée en fin de course avec tous ses participants, bots et invités compris (rang, MPM net et brut, précision, erreurs, temps, statut, bonus reçus, série du MPM, touches ratées). `results` reste la source des statistiques (sans bots) et pointe vers la course par `race_id`, nullable pour les lignes d'avant. | RES-05, HIST-01, HIST-02 |
 | `passages` | Corpus de textes cohérents : langue, complexité, texte, source | CONF-03, CONF-05, TECH-04 (seed) |
 | `room_members` | Appartenance courante à une salle, clé unique sur la personne : une seule salle à la fois garantie par la base | SALLE-06 |
 

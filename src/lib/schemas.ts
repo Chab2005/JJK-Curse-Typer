@@ -64,5 +64,12 @@ export const usernameParamSchema = z
   })
   .pipe(z.string().min(USERNAME_MIN).max(USERNAME_MAX).regex(/^[A-Za-z0-9_-]+$/));
 
+/** Segment `[id]` d'une course de l'historique (HIST-02) : identifiant de ligne `results`, entier positif en chiffres seulement. */
+export const historyIdSchema = z
+  .string()
+  .regex(/^[1-9][0-9]{0,9}$/)
+  .transform(Number)
+  .pipe(z.number().int().max(2_147_483_647));
+
 /** Numéro de page de l'historique (`?page=`), 1 s'il est absent ou invalide. */
 export const historyPageSchema = z.coerce.number().int().min(1).max(100_000).catch(1);

@@ -3,6 +3,7 @@
 import { castAbility } from '@/game/effects';
 import { parseClientMessage, type PlayerSync, type RaceSnapshot, type ServerMessage } from '@/game/protocol';
 import { applyKeys, elapsedAt, raceReducer, standings, type RaceEvent, type Racer, type RaceState } from '@/game/race';
+import { raceArchive, type RaceArchive } from '@/game/archive';
 import { raceResults, type RaceResult } from '@/game/results';
 import { raceSeries } from '@/game/series';
 
@@ -56,6 +57,11 @@ export class RaceRoom {
   /** Résultats des joueurs une fois la course finie (STAT-8). */
   results(): RaceResult[] {
     return raceResults(this.race, this.now());
+  }
+
+  /** Course entière, tous participants compris, une fois finie (HIST-02) ; `null` avant. */
+  archive(): RaceArchive | null {
+    return raceArchive(this.race, this.now());
   }
 
   connect(conn: Connection) {

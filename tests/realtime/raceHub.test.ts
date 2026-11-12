@@ -108,6 +108,8 @@ describe('RaceHub', () => {
     vi.advanceTimersByTime(TICK_MS * 10);
     expect(onFinish).toHaveBeenCalledTimes(1);
     expect(onFinish.mock.calls[0][0]).toEqual([expect.objectContaining({ seat: 'me', status: 'finished', keystrokes: 2, players: 2 })]);
+    // La course entière, bot compris, pour l'historique (HIST-02).
+    expect(onFinish.mock.calls[0][1]).toMatchObject({ text: 'ab', participants: [expect.objectContaining({ seat: 'me', rank: 1 }), expect.objectContaining({ seat: 'bot-1', bot: true })] });
   });
 
   it('annonce à la room les records personnels battus que l’enregistrement renvoie (RES-04)', async () => {

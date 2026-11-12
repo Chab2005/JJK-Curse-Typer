@@ -1192,6 +1192,13 @@
       "title": "Slow down on the codes",
       "text": "Too many lobby codes were tried from your connection. Wait a minute, then enter the code again.",
       "back": "Enter a code"
+    },
+    "race": {
+      "metaTitle": "Race not found",
+      "eyebrow": "Race not found",
+      "title": "This race isn't in your history",
+      "text": "It may belong to another player, or the link is mistyped.",
+      "back": "See my history"
     }
   },
   "Layout": {
@@ -1217,6 +1224,15 @@
     "unknown": "—",
     "wpmValue": "{value, number} WPM",
     "playersValue": "{count, plural, one {# player} other {# players}}",
-    "open": "See the results of the race of {date}"
+    "open": "See the results of the race of {date}",
+    "race": {
+      "metaTitle": "Race of {date}",
+      "eyebrow": "Past race",
+      "title": "Race of {date}",
+      "intro": "{players, plural, one {# participant} other {# participants}} · lobby {code}",
+      "legacyIntro": "Saved before full results were kept",
+      "legacyNote": "This race was saved before full results were kept: only your own result is shown.",
+      "back": "Back to the history"
+    }
   }
 }

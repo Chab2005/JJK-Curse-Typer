@@ -1192,6 +1192,13 @@
       "title": "Doucement sur les codes",
       "text": "Trop de codes de salle ont été essayés depuis votre connexion. Attendez une minute, puis entrez le code de nouveau.",
       "back": "Entrer un code"
+    },
+    "race": {
+      "metaTitle": "Course introuvable",
+      "eyebrow": "Course introuvable",
+      "title": "Cette course n’est pas dans votre historique",
+      "text": "Elle appartient peut-être à un autre joueur, ou le lien est mal tapé.",
+      "back": "Voir mon historique"
     }
   },
   "Layout": {
@@ -1217,6 +1224,15 @@
     "unknown": "—",
     "wpmValue": "{value, number} MPM",
     "playersValue": "{count, plural, one {# joueur} other {# joueurs}}",
-    "open": "Voir les résultats de la course du {date}"
+    "open": "Voir les résultats de la course du {date}",
+    "race": {
+      "metaTitle": "Course du {date}",
+      "eyebrow": "Course passée",
+      "title": "Course du {date}",
+      "intro": "{players, plural, one {# participant} other {# participants}} · salon {code}",
+      "legacyIntro": "Enregistrée avant la conservation des résultats complets",
+      "legacyNote": "Cette course a été enregistrée avant que les résultats complets soient gardés : seul votre résultat est affiché.",
+      "back": "Retour à l’historique"
+    }
   }
 }
