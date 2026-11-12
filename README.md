@@ -3,18 +3,30 @@
 Course de frappe au clavier multijoueur en temps réel, inspirée de MonkeyType et de l'univers de Jujutsu Kaisen.
 Tous les participants tapent le même texte ; la progression de chacun est diffusée en direct, puis un podium et des statistiques (dont une carte de chaleur du clavier) montrent ce qu'il reste à travailler.
 
-**Production :** TODO (URL Railway)
+**Production : https://jjk-curse-typer-production.up.railway.app/
 
 ## Captures d'écran
 
 <!-- Générées par `npm run screenshots` ; copier les meilleures dans docs/images/captures/ -->
-| Accueil | Salle d'attente | Course |
-|---|---|---|
-| ![Accueil](docs/images/captures/home.png) | ![Salle](docs/images/captures/lobby.png) | ![Course](docs/images/captures/race.png) |
+| Accueil | 
+|---|
+| ![Accueil](docs/images/captures/home.png) |  
 
-| Classement | Profil |
-|---|---|
-| ![Classement](docs/images/captures/leaderboard.png) | ![Profil](docs/images/captures/profile.png) |
+| Course |
+|---|
+| ![Course](docs/images/captures/race.png) |
+
+| Salle d'attente |
+|---|
+|![Salle](docs/images/captures/lobby.png)|
+
+| Classement |
+|---|
+| ![Classement](docs/images/captures/leaderboard.png) | 
+
+| Profil |
+|---|
+| ![Profil](docs/images/captures/profile.png) |
 
 ## Compte de démonstration
 
