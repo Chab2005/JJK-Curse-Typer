@@ -24,11 +24,11 @@ describe('PlayCharacterButton', () => {
     await waitFor(() => expect(routerMock.push).toHaveBeenCalledWith('/#join'));
   });
 
-  it('tells a guest that hosting needs an account when no lobby is open', async () => {
-    lobbyActionsMock.quickPlayAction.mockResolvedValue({ error: 'account' });
+  it('shows an empty state to a guest when no lobby is open (JOIN-03)', async () => {
+    lobbyActionsMock.quickPlayAction.mockResolvedValue({ error: 'empty' });
     const { user } = render();
 
     await user.click(screen.getByRole('button', { name: /Play Satoru/ }));
-    expect(await screen.findByRole('alert')).toHaveTextContent('you need an account');
+    expect(await screen.findByRole('alert')).toHaveTextContent('No public lobby is open right now.');
   });
 });

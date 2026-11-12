@@ -19,6 +19,7 @@ import { clearGuest, countryFromHeaders, getGuest, setGuest } from '@/lib/auth/g
 import { dummyVerify, verifyPassword } from '@/lib/auth/password';
 import { createSession, destroySession, getSessionUser } from '@/lib/auth/session';
 import { validatePassword, validateUsername } from '@/lib/auth/validation';
+import { credentialsSchema, guestNameSchema, parseForm, settingsFormSchema } from '@/lib/schemas';
 
 // Actions serveur de l'authentification (AUTH-1 à AUTH-8) et du profil (PROF-3 à PROF-5).
 // Elles répondent par un code d'erreur que l'interface traduit ; en cas de succès, elles redirigent.
@@ -40,8 +41,9 @@ function checkCredentials(username: string, password: string): AuthState {
 
 /** Inscription par pseudo et mot de passe (AUTH-2). Les courses de l'invité passent au compte (STAT-7). */
 export async function registerAction(_prev: AuthState, form: FormData): Promise<AuthState> {
-  const username = text(form, 'username').trim();
-  const password = text(form, 'password');
+  const credentials = parseForm(credentialsSchema, form);
+  if (!credentials) return { error: 'invalid' };
+  const { username, password } = credentials;
   const invalid = checkCredentials(username, password);
   if (invalid) return invalid;
 
@@ -55,8 +57,9 @@ export async function registerAction(_prev: AuthState, form: FormData): Promise<
 
 /** Connexion, limitée par compte et par IP (AUTH-7). Même message pour un compte inconnu et un mauvais mot de passe. */
 export async function loginAction(_prev: AuthState, form: FormData): Promise<AuthState> {
-  const username = text(form, 'username').trim();
-  const password = text(form, 'password');
+  const credentials = parseForm(credentialsSchema, form);
+  if (!credentials) return { error: 'invalid' };
+  const { username, password } = credentials;
   const keys = await attemptKeys(username);
   if (await anyBlocked(keys)) return { error: 'blocked', username };
 
@@ -80,8 +83,9 @@ export async function logoutAction(): Promise<void> {
 
 /** Premier accès par OAuth : l'utilisateur choisit son pseudo et son mot de passe (AUTH-4). */
 export async function completeOAuthAction(_prev: AuthState, form: FormData): Promise<AuthState> {
-  const username = text(form, 'username').trim();
-  const password = text(form, 'password');
+  const credentials = parseForm(credentialsSchema, form);
+  if (!credentials) return { error: 'invalid' };
+  const { username, password } = credentials;
   const invalid = checkCredentials(username, password);
   if (invalid) return invalid;
 
@@ -112,7 +116,9 @@ export async function completeOAuthAction(_prev: AuthState, form: FormData): Pro
 /** Un invité choisit son pseudo (3 à 20 caractères) avant de rejoindre un lobby. `null` si valide, sinon le code d'erreur. */
 export async function setGuestNameAction(name: string): Promise<'length' | 'characters' | 'account' | null> {
   if (await getSessionUser()) return 'account';
-  const trimmed = typeof name === 'string' ? name.trim() : '';
+  const parsed = guestNameSchema.safeParse(name);
+  if (!parsed.success) return 'length';
+  const trimmed = parsed.data;
   const error = validateUsername(trimmed);
   if (error) return error;
   const guest = await getGuest();
@@ -130,7 +136,8 @@ export type SettingsState = { values?: Record<string, string>; errors?: Settings
 export async function saveSettingsAction(_prev: SettingsState, form: FormData): Promise<SettingsState> {
   const user = await getSessionUser();
   if (!user) return { errors: { auth: 'auth' } };
-  const values = { displayName: text(form, 'displayName').trim(), github: text(form, 'github'), discord: text(form, 'discord') };
+  const values = parseForm(settingsFormSchema, form);
+  if (!values) return { errors: { displayName: 'displayName' }, values: { displayName: text(form, 'displayName').slice(0, 200), github: '', discord: '' } };
   const file = form.get('avatar');
   // Sans fichier choisi, le navigateur envoie un fichier vide.
   const bytes = file instanceof File && file.size > 0 ? new Uint8Array(await file.arrayBuffer()) : null;

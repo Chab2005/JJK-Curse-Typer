@@ -9,7 +9,7 @@ import ChevronButton from '@/components/shared/ChevronButton';
 import BevelSelect from '@/components/shared/BevelSelect';
 import Reserve from '@/components/shared/Reserve';
 import Segmented from '@/components/shared/Segmented';
-import { CONTENT_MODES, ERROR_MODES, GAME_MODES, LOBBY_VISIBILITIES, type LobbySettings, MAX_CAPACITY, MIN_PARTICIPANTS, TIMER_OPTIONS, WORDS_MAX, WORDS_MIN } from './lobbyRoom';
+import { COMPLEXITIES, CONTENT_MODES, ERROR_MODES, GAME_MODES, LOBBY_VISIBILITIES, type LobbySettings, MAX_CAPACITY, MIN_PARTICIPANTS, TIMER_OPTIONS, WORDS_MAX, WORDS_MIN } from './lobbyRoom';
 
 type Patch = Partial<LobbySettings>;
 
@@ -115,9 +115,11 @@ function SettingsSummary({ settings }: { settings: LobbySettings }) {
   const rows = [
     [t('language'), settings.languages.map((language) => tFilters(`languages.${language}`)).join(' · ')],
     [t('content'), t(`contents.${settings.content}`)],
+    [t('complexity'), t(`complexities.${settings.complexity}`)],
     [t('words'), t('wordsValue', { count: settings.words })],
     [t('chars'), textCharsLabel(settings.chars)],
     [t('practice'), settings.practice || t('practiceNone')],
+    [t('exclude'), settings.exclude || t('practiceNone')],
     [t('timer'), timerLabel(settings.timer)],
     [t('errorMode'), t(`errorModes.${settings.errorMode}`)],
     [t('gameMode'), t(`gameModes.${settings.gameMode}`)],
@@ -165,6 +167,11 @@ function SettingsForm({ settings, participantCount, onChange }: { settings: Lobb
         <Segmented label={t('content')} options={CONTENT_MODES} value={settings.content} onChange={(content) => onChange({ content })} optionLabel={(mode) => t(`contents.${mode}`)} />
       </Group>
 
+      <Group legend={t('complexity')}>
+        <Segmented label={t('complexity')} options={COMPLEXITIES} value={settings.complexity} onChange={(complexity) => onChange({ complexity })} optionLabel={(level) => t(`complexities.${level}`)} />
+        <Hints active={settings.complexity} options={COMPLEXITIES} hint={(level) => t(`complexityHints.${level}`)} />
+      </Group>
+
       <NumberField id="settings-words" label={t('words')} hint={t('wordsHint', { min: WORDS_MIN, max: WORDS_MAX })} value={settings.words} min={WORDS_MIN} max={WORDS_MAX} onCommit={(words) => onChange({ words })} />
 
       <Group legend={t('chars')}>
@@ -191,6 +198,22 @@ function SettingsForm({ settings, participantCount, onChange }: { settings: Lobb
           />
         </span>
         <p id="settings-practice-hint" className="text-[13px] text-outline">{t('practiceHint')}</p>
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <Label htmlFor="settings-exclude">{t('exclude')}</Label>
+        <span className="hx-cut flex bg-[#8f1022] p-px transition-colors [--h:14px] focus-within:bg-primary-container">
+          <input
+            id="settings-exclude"
+            value={settings.exclude}
+            onChange={(e) => onChange({ exclude: e.target.value })}
+            aria-describedby="settings-exclude-hint"
+            autoComplete="off"
+            spellCheck={false}
+            className="hx-cut font-label-code min-h-[42px] w-full bg-[radial-gradient(120%_160%_at_50%_0%,#2a0b10_0%,#170608_55%,#0c0304_100%)] px-7 text-[16px] tracking-[0.2em] text-on-primary-container [--h:13.5px] focus:outline-none"
+          />
+        </span>
+        <p id="settings-exclude-hint" className="text-[13px] text-outline">{t('excludeHint')}</p>
       </div>
 
       <div className="flex flex-col gap-2">
@@ -238,13 +261,13 @@ function Hints<T extends string>({ active, options, hint }: { active: T; options
 }
 
 function Label({ htmlFor, id, children }: { htmlFor: string; id?: string; children: React.ReactNode }) {
-  return <label htmlFor={htmlFor} id={id} className="font-label-code text-[11px] font-bold uppercase tracking-[0.2em] text-primary-container">{children}</label>;
+  return <label htmlFor={htmlFor} id={id} className="font-label-code text-[11px] font-bold uppercase tracking-[0.2em] text-primary-text">{children}</label>;
 }
 
 function Group({ legend, children }: { legend: string; children: React.ReactNode }) {
   return (
     <fieldset className="flex flex-col gap-1">
-      <legend className="font-label-code mb-2 text-[11px] font-bold uppercase tracking-[0.2em] text-primary-container">{legend}</legend>
+      <legend className="font-label-code mb-2 text-[11px] font-bold uppercase tracking-[0.2em] text-primary-text">{legend}</legend>
       {children}
     </fieldset>
   );
@@ -311,7 +334,7 @@ function StepButton({ icon, label, disabled, onClick }: { icon: string; label: s
       aria-label={label}
       disabled={disabled}
       onClick={onClick}
-      className="grid w-10 place-items-center text-primary-container transition-colors enabled:hover:text-primary disabled:cursor-not-allowed disabled:text-outline-variant"
+      className="grid w-10 place-items-center text-primary-text transition-colors enabled:hover:text-primary disabled:cursor-not-allowed disabled:text-outline-variant"
     >
       <span aria-hidden="true" className="material-symbols-outlined text-[18px]!">{icon}</span>
     </button>

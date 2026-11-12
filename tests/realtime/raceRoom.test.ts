@@ -254,3 +254,58 @@ describe('RaceRoom capacités (BON-*)', () => {
     expect(rival.last('seats')?.seats.map((s) => s.id)).toEqual(['me', 'rival', 'mahoraga:me']);
   });
 });
+
+describe('RaceRoom series (RES-03)', () => {
+  const finish = (conn: FakeConnection) => {
+    now = START;
+    room.tick();
+    send(conn, { type: 'keys', strokes: [...'abc def'].map((key, i) => ({ key, t: 100 + i * 50 })) });
+    now = START + 3000;
+    room.tick();
+    now = START + 11 * 60_000;
+    room.tick();
+  };
+
+  it('sends the series of every participant once, when the race ends, not at every tick', () => {
+    const me = join('guest-aaaaaaaa');
+    join('guest-bbbbbbbb');
+    now = START;
+    room.tick();
+    now = START + 2000;
+    room.tick();
+    expect(me.messages.some((m) => m.type === 'series')).toBe(false);
+    finish(me);
+    const sent = me.messages.filter((m) => m.type === 'series');
+    expect(sent).toHaveLength(1);
+    const series = me.last('series')!.series;
+    expect(series.map((entry) => entry.id).sort()).toEqual(['bot-1', 'host', 'me']);
+    expect(series.find((entry) => entry.id === 'me')!.samples.length).toBeGreaterThan(1);
+    now += 1000;
+    room.tick();
+    expect(me.messages.filter((m) => m.type === 'series')).toHaveLength(1);
+  });
+
+  it('gives the series to someone who arrives after the end', () => {
+    const me = join('guest-aaaaaaaa');
+    join('guest-bbbbbbbb');
+    finish(me);
+    const late = join('guest-cccccccc');
+    expect(late.last('series')?.series).toHaveLength(3);
+  });
+});
+
+describe('RaceRoom records (RES-04)', () => {
+  it('sends the seats that beat their personal best to everyone, and to late arrivals', () => {
+    const me = join('guest-aaaaaaaa');
+    room.announceRecords(['me']);
+    expect(me.last('records')?.seats).toEqual(['me']);
+    const late = join('guest-cccccccc');
+    expect(late.last('records')?.seats).toEqual(['me']);
+  });
+
+  it('sends nothing when no one beat a record', () => {
+    const me = join('guest-aaaaaaaa');
+    room.announceRecords([]);
+    expect(me.messages.some((m) => m.type === 'records')).toBe(false);
+  });
+});

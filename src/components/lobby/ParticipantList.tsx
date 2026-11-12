@@ -150,7 +150,7 @@ function BotAdder({ full, onAdd }: { full: boolean; onAdd: (level: BotLevel) => 
 
   return (
     <div className="flex flex-wrap items-center gap-3 border-y border-[#4a1218] py-3">
-      <span id="bot-level" className="font-label-code text-[11px] font-bold uppercase tracking-[0.2em] text-primary-container">{t('level')}</span>
+      <span id="bot-level" className="font-label-code text-[11px] font-bold uppercase tracking-[0.2em] text-primary-text">{t('level')}</span>
       <BevelSelect labelId="bot-level" options={BOT_LEVELS} value={level} onChange={setLevel} optionLabel={(option) => t(`levels.${option}`)} />
       <ChevronButton type="button" size="sm" chevrons={false} frame="disabled:opacity-40" disabled={full} onClick={() => onAdd(level)} className="font-label-code text-[11px] uppercase tracking-[0.16em]">
         <span aria-hidden="true" className="material-symbols-outlined text-[16px] text-primary">smart_toy</span>

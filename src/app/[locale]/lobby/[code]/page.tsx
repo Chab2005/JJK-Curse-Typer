@@ -4,6 +4,7 @@ import Footer from '@/components/layout/Footer';
 import SiteHeader from '@/components/layout/SiteHeader';
 import { findCharacter } from '@/components/characters/characterPages';
 import WaitingRoom from '@/components/lobby/WaitingRoom';
+import NotFoundPage from '@/components/shared/NotFoundPage';
 import type { Locale } from '@/i18n/config';
 import { getViewerId } from '@/lib/currentUser';
 import { storedLobby } from '@/lib/lobbies';
@@ -12,7 +13,7 @@ import { openLobby } from '@/lib/openLobby';
 export async function generateMetadata({ params, searchParams }: PageProps<'/[locale]/lobby/[code]'>) {
   const { locale, code } = await params;
   const room = await openLobby(decodeURIComponent(code), { invite: (await searchParams).invite });
-  if (!room) return { title: (await getTranslations({ locale: locale as Locale, namespace: 'NotFound' }))('lobby.metaTitle') };
+  if (!room || room === 'blocked') return { title: (await getTranslations({ locale: locale as Locale, namespace: 'NotFound' }))(room ? 'lobbyLocked.metaTitle' : 'lobby.metaTitle') };
   const t = await getTranslations({ locale: locale as Locale, namespace: 'Lobby' });
   return { title: t('metaTitle', { name: room.name }) };
 }
@@ -25,6 +26,8 @@ export default async function LobbyPage({ params, searchParams }: PageProps<'/[l
   setRequestLocale(locale as Locale);
   const { spectate, invite, character } = await searchParams;
   const room = await openLobby(decodeURIComponent(code), { spectate: spectate === '1', invite });
+  // Trop de codes essayés depuis cette IP (SALLE-10) : message traduit au lieu du salon.
+  if (room === 'blocked') return <NotFoundPage variant="lobbyLocked" />;
   if (!room) notFound();
   const viewerId = await getViewerId();
   const live = storedLobby(room.code) !== null;
@@ -32,7 +35,7 @@ export default async function LobbyPage({ params, searchParams }: PageProps<'/[l
   return (
     <>
       <SiteHeader />
-      <main className="relative w-full flex-1 overflow-hidden bg-surface">
+      <main id="main" className="relative w-full flex-1 overflow-hidden bg-surface">
         <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-[420px] bg-[radial-gradient(ellipse_55%_70%_at_35%_0%,rgb(147_0_10/0.4),transparent_70%)]" />
         <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-[640px] bg-linear-to-b from-transparent to-[#120708]" />
         {/* La clé repart d'un salon neuf pour un autre visiteur (pseudo d'invité choisi) ou en passant par ?spectate=1. */}

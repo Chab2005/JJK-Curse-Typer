@@ -13,7 +13,7 @@ export default function Segmented<T extends string>({ label, options, value, onC
             type="button"
             aria-pressed={on}
             onClick={() => onChange(option)}
-            className={`hx-cut flex p-px transition-[filter,background-color] [--h:11px] hover:brightness-160 focus-visible:bg-tertiary focus-visible:outline-none ${on ? 'bg-primary-container' : 'bg-[#4a1218]'}`}
+            className={`hx-cut flex p-px transition-[filter,background-color] [--h:11px] hover:brightness-160 focus-visible:bg-tertiary focus-visible:brightness-150 focus-visible:outline-none ${on ? 'bg-primary-container' : 'bg-[#4a1218]'}`}
           >
             <span
               className={`hx-cut font-label-code flex min-h-[34px] items-center px-5 text-[11px] whitespace-nowrap uppercase tracking-[0.14em] [--h:10.5px] ${on ? 'bg-linear-to-b from-[#e11d48] via-[#a3102f] to-[#6e0718] text-on-primary-container' : 'bg-linear-to-b from-[#24090d] to-[#0f0405] text-[#c9aeaf]'}`}

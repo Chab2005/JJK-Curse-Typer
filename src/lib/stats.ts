@@ -1,6 +1,7 @@
 import 'server-only';
-import { asc, eq, isNotNull, sql } from 'drizzle-orm';
+import { and, asc, eq, isNotNull, sql } from 'drizzle-orm';
 import { db } from '@/db';
+import { countedResult as counted } from '@/db/counted';
 import { characterStats, keyStats, results, users } from '@/db/schema';
 import { playerFromGames, type PlayerStats } from '@/components/leaderboard/leaderboard';
 import type { KeyStat } from '@/game/keyStats';
@@ -10,6 +11,7 @@ import { avatarUrl } from '@/lib/auth/avatar';
 import { showSampleData } from '@/lib/sampleData';
 
 // Lecture des courses enregistrées (STAT-1, STAT-2, STAT-8) : la base garde la précision en pourcentage.
+
 
 const columns = {
   wpm: results.wpm,
@@ -37,7 +39,7 @@ const toRecord = (row: Row): GameRecord => ({
 
 /** Courses d'un compte, de la plus ancienne à la plus récente. */
 export async function accountGames(userId: number): Promise<GameRecord[]> {
-  const rows = await db.select(columns).from(results).where(eq(results.userId, userId)).orderBy(asc(results.createdAt), asc(results.id));
+  const rows = await db.select(columns).from(results).where(and(eq(results.userId, userId), counted)).orderBy(asc(results.createdAt), asc(results.id));
   return rows.map(toRecord);
 }
 
@@ -61,7 +63,7 @@ export async function accountPlayers(): Promise<PlayerStats[]> {
     .select({ ...columns, userId: results.userId, username: users.username, avatarVersion: users.avatarVersion, hasAvatar: sql<boolean>`${users.avatar} is not null` })
     .from(results)
     .innerJoin(users, eq(users.id, results.userId))
-    .where(isNotNull(results.userId))
+    .where(and(isNotNull(results.userId), counted))
     .orderBy(asc(results.createdAt), asc(results.id));
 
   const byUser = new Map<number, { username: string; photo: string | null; games: GameRecord[] }>();

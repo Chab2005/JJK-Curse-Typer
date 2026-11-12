@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { DOMAIN_MIN_ENERGY, racerCharacter, type Ability, type CastAbility } from '@/game/abilities';
 import { openPrompt, promptKey, type CastPrompt } from '@/game/castPrompt';
 import type { CastRefusal } from '@/game/effects';
@@ -11,12 +11,14 @@ import { leaderGap, type RaceNotice, type RacerSeat } from '@/game/race';
 import { acknowledge, addStroke, clearPending, emptyLog, markSent, replay, rewindSent, unsent } from '@/game/strokeLog';
 import { startTyping, typeKey, type TypingState } from '@/game/typing';
 import { useRouter } from '@/i18n/navigation';
+import { leaveLobbyAction, updateLobbyAction } from '@/app/actions/lobbies';
 import { claimRaceResultsAction } from '@/app/actions/races';
 import AbilityBar from './AbilityBar';
 import CastDialog from './CastDialog';
 import ChevronButton from '@/components/shared/ChevronButton';
 import ConfirmDialog from './ConfirmDialog';
 import Countdown from './Countdown';
+import RaceLiveStats from './RaceLiveStats';
 import DomainBackdrop from './DomainBackdrop';
 import EnergyBar from './EnergyBar';
 import type { HeaderAccount } from '@/components/layout/ProfileAvatar';
@@ -25,8 +27,9 @@ import RaceHeader from './RaceHeader';
 import RaceHud from './RaceHud';
 import RaceSummary, { type SummaryRow } from './RaceSummary';
 import RaceTrack from './RaceTrack';
+import ResultsHostControls from './ResultsHostControls';
 import TypingArea from './TypingArea';
-import { HIT_MS, formatClock, initialRaceView, laggedInput, raceViewReducer, trackRunners, trimTrail, type TrailEntry } from './raceView';
+import { HIT_MS, formatClock, initialRaceView, laggedInput, raceViewReducer, runningKey, runningSet, trackRunnersFor, trimTrail, type TrailEntry } from './raceView';
 import { useAbilityNames } from './useAbilityNames';
 import { useRaceSocket } from './useRaceSocket';
 
@@ -61,12 +64,18 @@ export default function RaceScreen({
   account = null,
   live = false,
   ticket,
+  viewerId = '',
+  hostId = '',
 }: {
   code: string;
   lobbyName: string;
   account?: HeaderAccount | null;
   live?: boolean;
   ticket?: string;
+  /** Visiteur (compte ou `guest:<pseudo>`) : comparé à l'hôte pour les choix de l'écran des résultats (COURSE-11). */
+  viewerId?: string;
+  /** Hôte du salon à l'ouverture de la page ; le flux du salon le tient ensuite à jour. */
+  hostId?: string;
 }) {
   const t = useTranslations('Race');
   const tLobby = useTranslations('Lobby.participants');
@@ -140,7 +149,44 @@ export default function RaceScreen({
     if (message.type === 'castRefused') setCastNote({ reason: message.reason, at: receivedAt });
   }, ticket);
 
-  useLobbyEvents(live ? code : null, () => {}, () => {});
+  // Flux du salon (lobby créé) : il garde la place du visiteur, suit l'hôte et la suite choisie sur l'écran des résultats
+  // (COURSE-11) : une relance ramène tout le monde au salon d'attente, une fermeture à la liste des lobbies, avec un message.
+  const [lobbyHost, setLobbyHost] = useState(hostId);
+  const inLobby = useRef(false);
+  useLobbyEvents(
+    live ? code : null,
+    (room) => {
+      inLobby.current = true;
+      setLobbyHost(room.hostId);
+      if (room.status === 'waiting') router.push(`/lobby/${code}`);
+    },
+    (reason) => {
+      // Qui n'a jamais été dans le salon (simple spectateur) n'a rien à quitter.
+      if (inLobby.current) router.push(reason === 'closed' ? '/lobbies?closed=1' : '/lobbies');
+    },
+  );
+  const isHost = viewerId !== '' && lobbyHost === viewerId;
+  const hostControls = live ? (
+    <ResultsHostControls
+      isHost={isHost}
+      onRestart={() =>
+        void updateLobbyAction(code, { type: 'restart' })
+          .then((next) => next?.status === 'waiting' && router.push(`/lobby/${code}`))
+          .catch(() => {})
+      }
+      // Le salon n'existe plus une fois fermé : l'action ne renvoie plus rien.
+      onClose={() =>
+        void updateLobbyAction(code, { type: 'close' })
+          .then((next) => next === null && router.push('/lobbies?closed=1'))
+          .catch(() => {})
+      }
+      onLeave={() =>
+        void leaveLobbyAction(code)
+          .then(() => router.push('/lobbies'))
+          .catch(() => {})
+      }
+    />
+  ) : undefined;
 
   const { race, you, startAt, phase, standings } = view;
   const now = useNow(100, race !== null && phase !== 'finished');
@@ -159,12 +205,16 @@ export default function RaceScreen({
 
   // Un invité assis dans un lobby créé : la room a gardé son résultat, il le réclame pour son cookie (STAT-6).
   // Un compte n'a rien à faire, la room l'a déjà écrit en base (STAT-8).
+  // Son record personnel (RES-04) se juge sur son cookie : l'action le dit en réclamant le résultat.
   const claimed = useRef(false);
+  const [guestRecord, setGuestRecord] = useState(false);
   const claimResult = live && account === null && you !== null && phase === 'finished';
   useEffect(() => {
     if (!claimResult || claimed.current) return;
     claimed.current = true;
-    void claimRaceResultsAction();
+    void claimRaceResultsAction()
+      .then((claim) => setGuestRecord(claim?.record === true))
+      .catch(() => {});
   }, [claimResult]);
 
   // Un lot ne quitte la file qu'une fois parti : pendant une coupure, les frappes attendent la reconnexion.
@@ -242,7 +292,7 @@ export default function RaceScreen({
     setPending(null);
   };
 
-  const seats = race?.seats ?? [];
+  const seats = useMemo(() => race?.seats ?? [], [race]);
   const nameOf = (seat: RacerSeat) => (seat.kind === 'bot' && !seat.summon ? tLobby('botName', { number: seat.name }) : seat.name);
   const nameById = (id: string) => {
     const seat = seats.find((s) => s.id === id);
@@ -307,6 +357,11 @@ export default function RaceScreen({
   const stunned = racing && stunnedAt(powers, elapsed);
   const shownInput = typing && powers.lagUntil > elapsed ? laggedInput(trail, now, typing.input) : typing?.input;
 
+  // La piste ne se redessine que si un classement, un siège ou qui court a changé (PERF-03) : l'horloge de 100 ms n'y suffit pas.
+  const textLength = race?.text.length ?? 0;
+  const runKey = runningKey(seats, standings, you, { now, movedAt: view.movedAt, youTypedAt: typedAt });
+  const runners = useMemo(() => trackRunnersFor(seats, standings, you, textLength, runningSet(runKey)), [seats, standings, you, textLength, runKey]);
+
   const rows: SummaryRow[] = standings.map((s) => {
     const seat = seats.find((candidate) => candidate.id === s.id);
     const isYou = s.id === you;
@@ -319,16 +374,23 @@ export default function RaceScreen({
       avatar: seat?.avatar ?? null,
       photo: seat?.photo ?? null,
       wpm: s.wpm,
+      rawWpm: s.rawWpm,
       accuracy: s.accuracy,
+      errors: s.errors,
+      endedAt: s.endedAt,
+      received: s.received,
       status,
       you: isYou,
+      bot: seat?.kind === 'bot',
+      // Record personnel (RES-04) : annoncé par la room pour les comptes, rendu par l'action pour l'invité de cet écran.
+      record: view.records.includes(s.id) || (isYou && guestRecord),
     };
   });
 
   return (
     <>
       <RaceHeader account={account} onLeave={racing ? (href) => setPending({ kind: 'leave', href }) : null} />
-      <main className="relative w-full flex-1 bg-surface">
+      <main id="main" className="relative w-full flex-1 bg-surface">
         {domainOwner && <DomainBackdrop domain={domainOwner} />}
         <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-[360px] bg-[radial-gradient(ellipse_55%_70%_at_50%_0%,rgb(147_0_10/0.32),transparent_70%)]" />
         <div className="relative mx-auto flex max-w-[1100px] flex-col gap-7 px-6 pt-6 pb-16">
@@ -344,15 +406,16 @@ export default function RaceScreen({
           {race && (
             <>
               <RaceTrack
-                runners={trackRunners(seats, standings, you, race.text.length, { now, movedAt: view.movedAt, youTypedAt: typedAt })}
+                runners={runners}
                 banner={bannerText()}
                 nameOf={nameOf}
                 hits={hits}
                 domainOpen={domainOwner !== null}
               />
 
-              {you !== null && (hasEnergy || clock) && (
+              {you !== null && (
                 <div className="flex flex-wrap items-center justify-end gap-x-6 gap-y-3">
+                  <RaceLiveStats wpm={mine?.wpm ?? 0} accuracy={mine?.accuracy ?? 1} />
                   {hasEnergy && (
                     <div className="min-w-60 flex-1">
                       <EnergyBar energy={mine?.energy ?? 0} character={character} />
@@ -373,11 +436,11 @@ export default function RaceScreen({
                 </section>
               )}
 
-              {(phase === 'finished' || (you !== null && done)) && <RaceSummary rows={rows} you={you} over={phase === 'finished'} lobbyCode={code} />}
+              {(phase === 'finished' || (you !== null && done)) && <RaceSummary rows={rows} you={you} over={phase === 'finished'} series={view.series} lobbyCode={code} actions={hostControls} />}
 
               {you !== null && typing && !done && phase !== 'finished' && (
                 <div className="relative pt-4">
-                  <div className={elapsed < 0 ? 'opacity-40 blur-[2px]' : ''}>
+                  <div>
                     <TypingArea text={typing.text} input={shownInput ?? typing.input} active={racing} casting={prompt !== null} onKey={onKey} onAbility={onAbility} />
                   </div>
                   {stunned && (

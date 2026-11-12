@@ -2,12 +2,14 @@
 // viennent du lobby, jamais du client. Un lobby créé n'a de course qu'une fois lancée par son hôte.
 import { CHARACTERS } from '@/components/shared/characters';
 import { createRace, type RaceState, type RacerSeat } from '@/game/race';
+import type { RaceArchive } from '@/game/archive';
 import type { RaceResult } from '@/game/results';
 import { hashSeed } from '@/game/random';
 import { generateText } from '@/game/text/generate';
 import { SAMPLE_CURRENT_USER } from '@/lib/sampleUser';
 import { authSecret } from '@/lib/auth/secret';
 import { findLobby, storedLobby, updateLobby } from '@/lib/lobbies';
+import { cachedPassages, loadPassages } from '@/lib/passages';
 import { recordRaceResults } from './recordResults';
 import { readSeatTicket } from './ticket';
 
@@ -19,8 +21,8 @@ export interface SeededRace {
   ticketSeat?: (ticket: string | undefined) => string | null;
   /** Appelé une fois, quand la course est finie ou fermée : le lobby créé rouvre son salon. */
   onEnd?: () => void;
-  /** Appelé une fois, avec les résultats des joueurs, quand la course est allée au bout (STAT-8). */
-  onFinish?: (results: RaceResult[]) => void;
+  /** Appelé une fois, avec les résultats des joueurs, quand la course est allée au bout (STAT-8) ; peut renvoyer les sièges qui ont battu leur record (RES-04). */
+  onFinish?: (results: RaceResult[], archive: RaceArchive | null) => Promise<string[]> | void;
 }
 
 export function raceFromLobby(code: string, now: number): SeededRace | null {
@@ -40,8 +42,10 @@ export function raceFromLobby(code: string, now: number): SeededRace | null {
         { id: p.id, name: String(p.number), avatar: CHARACTERS[hashSeed(`${seed}:${p.id}`) % CHARACTERS.length].id, kind: 'bot', level: p.level },
   );
   const { settings } = lobby;
+  // La course part sans attendre la base : les passages viennent du cache, rempli ici pour la suivante s'il était vide (CONF-03).
+  void loadPassages();
   const text = generateText(
-    { languages: settings.languages, content: settings.content, words: settings.words, chars: settings.chars, practice: settings.practice },
+    { languages: settings.languages, content: settings.content, words: settings.words, chars: settings.chars, practice: settings.practice, exclude: settings.exclude, complexity: settings.complexity, passages: cachedPassages() },
     seed,
   );
 
@@ -52,7 +56,9 @@ export function raceFromLobby(code: string, now: number): SeededRace | null {
       ticketSeat: (ticket: string | undefined) => readSeatTicket(ticket, stored.code, authSecret()),
       onEnd: () => void updateLobby(stored.code, { type: 'finish' }),
       // Seuls les lobbies créés enregistrent : leurs sièges viennent de tickets signés, liés à un compte ou un invité.
-      onFinish: (results: RaceResult[]) => void recordRaceResults(results, new Date()),
+      // La course entière part aussi, pour l'historique (HIST-02), avec les réglages du lobby au départ.
+      onFinish: (results: RaceResult[], archive: RaceArchive | null) =>
+        recordRaceResults(results, new Date(), archive && { code: stored.code, settings: stored.settings, archive }),
     }),
   };
 }

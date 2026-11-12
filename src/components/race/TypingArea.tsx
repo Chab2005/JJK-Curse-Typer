@@ -10,11 +10,14 @@ import { type CharState, charState, splitWords } from './raceView';
 /** Hauteur d'une ligne de texte (text-typing-stream) : trois lignes visibles à la fois. */
 const LINE_HEIGHT = 52;
 
+/** Saisies insérées d'un bloc, jamais tapées (COURSE-04). */
+const BLOCKED_INPUT_TYPES: ReadonlySet<string> = new Set(['insertFromPaste', 'insertFromDrop', 'insertFromYank', 'insertFromPasteAsQuotation']);
+
 const CHAR_STYLE: Record<CharState, string> = {
   correct: 'text-on-surface',
   // Une faute est soulignée et surlignée, pas seulement colorée (UI-8).
   wrong: 'text-error bg-error-container/45 underline decoration-error decoration-2 underline-offset-[10px]',
-  pending: 'text-outline/70',
+  pending: 'text-outline',
 };
 
 // Zone où le joueur tape (maquette « Course ») : le texte, l'état de chaque caractère et le curseur.
@@ -52,6 +55,17 @@ export default function TypingArea({
     const top = caretRef.current?.offsetTop ?? 0;
     if (stream) stream.style.transform = `translateY(-${Math.max(0, top - LINE_HEIGHT)}px)`;
   }, [input.length]);
+
+  // Pas de coller (COURSE-04) : `beforeinput` couvre le collage, le glisser-déposer et le « yank », quel que soit le raccourci.
+  useEffect(() => {
+    const field = fieldRef.current;
+    if (!field) return;
+    const block = (event: InputEvent) => {
+      if (BLOCKED_INPUT_TYPES.has(event.inputType)) event.preventDefault();
+    };
+    field.addEventListener('beforeinput', block);
+    return () => field.removeEventListener('beforeinput', block);
+  }, []);
 
   const sendValue = (field: HTMLInputElement) => {
     const value = field.value;
@@ -95,7 +109,14 @@ export default function TypingArea({
         spellCheck={false}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
+        onPaste={(e) => e.preventDefault()}
+        onDrop={(e) => e.preventDefault()}
         onKeyDown={(e) => {
+          // Ctrl/Cmd+V : coller reste refusé, même si le navigateur ne le signale pas autrement.
+          if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'v') {
+            e.preventDefault();
+            return;
+          }
           const ability = shortcutAbility(e);
           if (ability) {
             e.preventDefault();

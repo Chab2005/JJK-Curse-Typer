@@ -71,6 +71,41 @@
       "when": 1793623936715,
       "tag": "0009_character_stats",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1794337110129,
+      "tag": "0010_room_members",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1794337289424,
+      "tag": "0011_passages",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1794337518578,
+      "tag": "0012_race_details",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1794443084707,
+      "tag": "0013_race_history",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1794448067314,
+      "tag": "0014_chart_stats",
+      "breakpoints": true
     }
   ]
 }

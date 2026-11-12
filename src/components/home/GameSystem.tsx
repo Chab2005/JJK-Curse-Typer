@@ -35,7 +35,7 @@ export default function GameSystem() {
             <div key={key} className="flex flex-col-reverse items-center gap-1.5 border-r border-primary/10 px-5 py-8 last:border-r-0">
               <dt className="font-occult text-base text-on-surface-variant">{t(`facts.${key}.label`)}</dt>
               <dd className="font-grotesk text-[52px] font-bold leading-[1.05] text-on-primary-container">{t(`facts.${key}.value`)}</dd>
-              <span aria-hidden="true" className="material-symbols-outlined text-[26px] text-primary-container">{icon}</span>
+              <span aria-hidden="true" className="material-symbols-outlined text-[26px] text-primary-text">{icon}</span>
             </div>
           ))}
         </dl>

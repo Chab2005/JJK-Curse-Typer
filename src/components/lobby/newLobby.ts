@@ -11,6 +11,8 @@ export const DEFAULT_LOBBY_SETTINGS: LobbySettings = {
   words: 50,
   chars: ['uppercase', 'punctuation'],
   practice: '',
+  exclude: '',
+  complexity: 'medium',
   timer: 0,
   errorMode: 'accumulate',
   gameMode: 'normal',
@@ -38,6 +40,7 @@ export function newLobbyRoom(code: string, name: string, host: Spectator): Lobby
     hostId: host.id,
     participants: [{ kind: 'human', ...host, avatar: host.avatar ?? DEFAULT_CHARACTER, ready: true }],
     spectators: [],
+    banned: [],
     settings: DEFAULT_LOBBY_SETTINGS,
   };
 }

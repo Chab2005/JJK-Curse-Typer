@@ -21,9 +21,9 @@ export default function TopExorcists({ players }: { players: readonly RankedPlay
     <section aria-labelledby="top-title" className="torn-top relative bg-linear-to-b from-[#0e0e10] to-[#120708] px-6 pt-[110px] pb-25">
       <div className="mx-auto flex max-w-[860px] flex-col items-center gap-10">
         <div className="flex flex-col items-center gap-3 text-center">
-          <p className="font-label-code text-[12px] font-bold uppercase tracking-[0.32em] text-primary-container">{t('eyebrow')}</p>
+          <p className="font-label-code text-[12px] font-bold uppercase tracking-[0.32em] text-primary-text">{t('eyebrow')}</p>
           <h2 id="top-title" className="text-[clamp(34px,4.2vw,52px)] leading-tight uppercase tracking-[0.08em]">{t('title')}</h2>
-          <span aria-hidden="true" className="flex items-center gap-2.5 text-primary-container">
+          <span aria-hidden="true" className="flex items-center gap-2.5 text-primary-text">
             <SpearArrow direction="left" className="h-[30px] w-[90px]" />
             <span className="size-[9px] rotate-45 bg-primary-container" />
             <SpearArrow direction="right" className="h-[30px] w-[90px]" />
@@ -51,7 +51,7 @@ export default function TopExorcists({ players }: { players: readonly RankedPlay
                   {player.wpm}
                   <span className="ml-1 text-[11px] font-normal text-outline">{t('wpm')}</span>
                 </span>
-                <Chevrons className="hidden h-10 w-5 shrink-0 -scale-x-100 text-primary-container sm:block" />
+                <Chevrons className="hidden h-10 w-5 shrink-0 -scale-x-100 text-primary-text sm:block" />
               </Link>
             </li>
           ))}

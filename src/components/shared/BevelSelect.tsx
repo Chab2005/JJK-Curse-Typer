@@ -114,12 +114,12 @@ export default function BevelSelect<T extends string | number>({
         onClick={() => (open ? setOpen(false) : show())}
         onKeyDown={onKeyDown}
         onBlur={() => setOpen(false)}
-        className="group hx-cut flex bg-[#8f1022] p-px transition-[filter,background-color] [--h:13px] hover:brightness-140 focus-visible:bg-tertiary focus-visible:outline-none aria-expanded:bg-primary-container"
+        className="group hx-cut flex bg-[#8f1022] p-px transition-[filter,background-color] [--h:13px] hover:brightness-140 focus-visible:bg-tertiary focus-visible:brightness-150 focus-visible:outline-none aria-expanded:bg-primary-container"
       >
         <span className="hx-cut flex min-h-[42px] flex-1 items-center gap-3 bg-[radial-gradient(120%_160%_at_50%_0%,#3a0c14_0%,#170608_55%,#0c0304_100%)] pr-5 pl-6 text-[13px] text-on-primary-container [--h:12.5px]">
           {/* Largeur de l'option la plus longue : changer d'option ne redimensionne pas le bouton. */}
           <Reserve active={String(value)} variants={labels} className="font-label-code text-left uppercase tracking-[0.12em]" />
-          <span aria-hidden="true" className={`material-symbols-outlined text-[20px]! text-primary-container transition-transform ${open ? 'rotate-180' : ''}`}>expand_more</span>
+          <span aria-hidden="true" className={`material-symbols-outlined text-[20px]! text-primary-text transition-transform ${open ? 'rotate-180' : ''}`}>expand_more</span>
         </span>
       </button>
 
@@ -138,7 +138,7 @@ export default function BevelSelect<T extends string | number>({
                 className={`font-label-code flex min-h-10 cursor-pointer items-center justify-between gap-4 px-4 text-[13px] whitespace-nowrap uppercase tracking-[0.12em] transition-colors ${index === active ? 'bg-[#3a0c14]' : ''} ${option === value ? 'text-primary' : 'text-[#c9aeaf]'}`}
               >
                 {labels[String(option)]}
-      <Pointer className={`text-primary-container ${option === value ? '' : 'invisible'}`} />
+      <Pointer className={`text-primary-text ${option === value ? '' : 'invisible'}`} />
               </li>
             ))}
           </ul>

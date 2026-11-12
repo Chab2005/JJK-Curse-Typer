@@ -1,5 +1,6 @@
 import { expect, type Locator, type Page, test } from '@playwright/test';
 import { register } from './auth';
+import { allowClipboard } from './clipboard';
 
 // Carte et fenêtre d'invitation (LOB-3, LOB-4) : seul l'hôte partage un lien, et rien ne bouge ni ne change de taille
 // quand on crée ou supprime des liens ou qu'on change l'accès du lobby.
@@ -23,7 +24,7 @@ async function createLobby(page: Page) {
 }
 
 test.beforeEach(async ({ context }) => {
-  await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+  await allowClipboard(context);
 });
 
 test('the host creates, copies and deletes one-time links without the window moving or resizing', async ({ page }) => {

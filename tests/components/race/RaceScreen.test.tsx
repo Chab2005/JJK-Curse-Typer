@@ -3,9 +3,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import RaceScreen from '@/components/race/RaceScreen';
 import type { ClientMessage, RaceSnapshot, ServerMessage } from '@/game/protocol';
 import { startPowers } from '@/game/powers';
-import type { RacerSeat, Standing } from '@/game/race';
+import { COUNTDOWN_MS, type RacerSeat, type Standing } from '@/game/race';
 import { startTyping } from '@/game/typing';
-import { raceActionsMock } from '../../actions';
+import { lobbyActionsMock, raceActionsMock } from '../../actions';
 import { renderWithIntl } from '../../render';
 import { routerMock } from '../../router';
 
@@ -59,7 +59,7 @@ const race = (overrides: Partial<RaceSnapshot> = {}): RaceSnapshot => ({
   ...overrides,
 });
 
-const standing = (id: string, rank: number, status: Standing['status'] = 'racing'): Standing => ({ id, rank, progress: 0, total: 7, wpm: 40, accuracy: 1, energy: 120, status, endedAt: null, marks: [] });
+const standing = (id: string, rank: number, status: Standing['status'] = 'racing'): Standing => ({ id, rank, progress: 0, total: 7, wpm: 40, rawWpm: 42, errors: 0, received: 0, accuracy: 1, energy: 120, status, endedAt: null, marks: [] });
 
 let socket: FakeWebSocket;
 
@@ -96,6 +96,26 @@ describe('RaceScreen', () => {
     start({ race: race({ phase: 'countdown', startsIn: 2500 }) });
 
     expect(screen.getByRole('status', { name: 'Countdown' })).toHaveTextContent('3');
+  });
+
+  it('shows 3, 2, 1 and reveals the text, unblurred, once the countdown starts (COURSE-03)', () => {
+    renderWithIntl(<RaceScreen code="TKY-HGH" lobbyName="Tokyo Jujutsu High" account={{ username: 'megumi', displayName: 'Megumi', avatarUrl: null }} />);
+    expect(screen.queryByText('abc def')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Type the text')).not.toBeInTheDocument();
+
+    socket = FakeWebSocket.instances.at(-1)!;
+    socket.open();
+    socket.receive({ type: 'welcome', you: 'Megumi_Shadows', race: race({ phase: 'countdown', startsIn: COUNTDOWN_MS - 500 }), typing: null });
+    expect(screen.getByRole('status', { name: 'Countdown' })).toHaveTextContent('3');
+    expect(screen.getByLabelText('Type the text').closest('.blur-\\[2px\\]')).toBeNull();
+  });
+
+  it('shows the player live WPM and accuracy during the race (COURSE-04)', () => {
+    start({ you: 'Megumi_Shadows' });
+    socket.receive({ type: 'tick', phase: 'racing', elapsed: 5000, standings: [{ ...standing('Megumi_Shadows', 1), wpm: 64, accuracy: 0.92 }] });
+    const live = screen.getByRole('group', { name: 'Live stats' });
+    expect(live).toHaveTextContent('64');
+    expect(live).toHaveTextContent('92%');
   });
 
   it('sends the typed keys to the server, which holds the truth (RACE-14)', async () => {
@@ -213,6 +233,26 @@ describe('RaceScreen', () => {
     expect(raceActionsMock.claimRaceResultsAction).toHaveBeenCalledTimes(1);
   });
 
+  it('shows the personal-best badge the room announces once the race is saved (RES-04)', () => {
+    start();
+    finish();
+    socket.receive({ type: 'records', seats: ['Megumi_Shadows'] });
+    const table = within(screen.getByRole('table', { name: 'Results' }));
+    const row = table.getByText('Megumi_Shadows').closest('tr')!;
+    expect(within(row).getByTestId('record-badge')).not.toHaveClass('invisible');
+  });
+
+  it('shows a guest its personal best from the claimed result (RES-04)', async () => {
+    raceActionsMock.claimRaceResultsAction.mockResolvedValueOnce({ record: true });
+    renderWithIntl(<RaceScreen code="ABC-DEF" lobbyName="Lobby" live ticket="t" />);
+    socket = FakeWebSocket.instances.at(-1)!;
+    socket.open();
+    socket.receive({ type: 'welcome', you: 'Megumi_Shadows', race: race(), typing: null });
+    finish();
+    const row = within(screen.getByRole('table', { name: 'Results' })).getByText('Megumi_Shadows').closest('tr')!;
+    await waitFor(() => expect(within(row).getByTestId('record-badge')).not.toHaveClass('invisible'));
+  });
+
   it('an account claims nothing: the race server already saved its result (STAT-8)', () => {
     renderWithIntl(<RaceScreen code="ABC-DEF" lobbyName="Lobby" live ticket="t" account={{ username: 'megumi', displayName: 'Megumi', avatarUrl: null }} />);
     socket = FakeWebSocket.instances.at(-1)!;
@@ -220,6 +260,84 @@ describe('RaceScreen', () => {
     socket.receive({ type: 'welcome', you: 'Megumi_Shadows', race: race(), typing: null });
     finish();
     expect(raceActionsMock.claimRaceResultsAction).not.toHaveBeenCalled();
+  });
+
+  describe('results screen of a created lobby (COURSE-11)', () => {
+    class FakeEventSource {
+      static CLOSED = 2;
+      static instances: FakeEventSource[] = [];
+      readyState = 1;
+      onmessage: ((event: { data: string }) => void) | null = null;
+      onerror: (() => void) | null = null;
+      listeners = new Map<string, (event: { data: string }) => void>();
+      constructor(public url: string) {
+        FakeEventSource.instances.push(this);
+      }
+      addEventListener(type: string, listener: (event: { data: string }) => void) {
+        this.listeners.set(type, listener);
+      }
+      close() {
+        this.readyState = FakeEventSource.CLOSED;
+      }
+    }
+    const lobby = (status: string, hostId = 'Megumi_Shadows') => ({ data: JSON.stringify({ code: 'ABC-DEF', status, hostId, participants: [], spectators: [], banned: [], settings: {} }) });
+
+    function finishedLive(viewerId: string) {
+      FakeEventSource.instances = [];
+      vi.stubGlobal('EventSource', FakeEventSource);
+      const view = renderWithIntl(<RaceScreen code="ABC-DEF" lobbyName="Lobby" live ticket="t" viewerId={viewerId} hostId="Megumi_Shadows" />);
+      socket = FakeWebSocket.instances.at(-1)!;
+      socket.open();
+      socket.receive({ type: 'welcome', you: viewerId, race: race(), typing: null });
+      finish();
+      const stream = FakeEventSource.instances[0];
+      act(() => stream.onmessage!(lobby('results')));
+      return { ...view, stream };
+    }
+
+    it('passes the seat ticket in the socket URL (SALLE-10)', () => {
+      finishedLive('Megumi_Shadows');
+      expect(socket.url).toBe('ws://localhost:3000/ws/race/ABC-DEF?ticket=t');
+    });
+
+    it('lets the host restart: everyone goes back to the waiting room', async () => {
+      lobbyActionsMock.updateLobbyAction.mockResolvedValue(null);
+      const { user, stream } = finishedLive('Megumi_Shadows');
+
+      expect(screen.queryByRole('link', { name: 'Back to the lobby' })).not.toBeInTheDocument();
+      await user.click(screen.getByRole('button', { name: 'Restart the race' }));
+      expect(lobbyActionsMock.updateLobbyAction).toHaveBeenCalledWith('ABC-DEF', { type: 'restart' });
+
+      act(() => stream.onmessage!(lobby('waiting')));
+      expect(routerMock.push).toHaveBeenCalledWith('/lobby/ABC-DEF');
+    });
+
+    it('lets the host close the lobby after a confirmation', async () => {
+      lobbyActionsMock.updateLobbyAction.mockResolvedValue(null);
+      const { user } = finishedLive('Megumi_Shadows');
+
+      await user.click(screen.getByRole('button', { name: 'Close the lobby' }));
+      await user.click(within(screen.getByRole('dialog', { name: 'Close the lobby?' })).getByRole('button', { name: 'Close the lobby' }));
+      expect(lobbyActionsMock.updateLobbyAction).toHaveBeenCalledWith('ABC-DEF', { type: 'close' });
+      await waitFor(() => expect(routerMock.push).toHaveBeenCalledWith('/lobbies?closed=1'));
+    });
+
+    it('shows the other players a waiting line, and sends them out with a message when the host closes', async () => {
+      lobbyActionsMock.leaveLobbyAction.mockResolvedValue();
+      const { stream } = finishedLive('Yuji_BlackFlash');
+
+      expect(screen.getByText('Waiting for the host to restart the race or close the lobby…')).toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: 'Restart the race' })).not.toBeInTheDocument();
+
+      act(() => stream.listeners.get('gone')!({ data: 'closed' }));
+      expect(routerMock.push).toHaveBeenCalledWith('/lobbies?closed=1');
+    });
+
+    it('gives the buttons to the new host when the host role passes', () => {
+      const { stream } = finishedLive('Yuji_BlackFlash');
+      act(() => stream.onmessage!(lobby('results', 'Yuji_BlackFlash')));
+      expect(screen.getByRole('button', { name: 'Restart the race' })).toBeInTheDocument();
+    });
   });
 
   describe('casting (BON-*)', () => {
@@ -355,7 +473,6 @@ describe('RaceScreen', () => {
     it('shows the clock only in a timed race, and Abandon below the text', () => {
       start({ race: race({ timerMs: 60_000 }) });
       expect(screen.getByText('Time left')).toBeInTheDocument();
-      expect(screen.queryByText('WPM')).not.toBeInTheDocument();
       const text = screen.getByLabelText('Type the text');
       const abandon = screen.getByRole('button', { name: 'Abandon' });
       expect(text.compareDocumentPosition(abandon) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();

@@ -18,7 +18,7 @@ export default function ControlsIntro() {
     <>
       <p className="max-w-[720px] text-base leading-[25px] text-on-surface-variant">{t('intro', { key })}</p>
       <p role="note" className="flex max-w-[720px] items-start gap-2.5 border-l-2 border-primary-container bg-primary-container/10 px-4 py-3 text-sm leading-[22px] text-on-surface-variant">
-        <span aria-hidden="true" className="material-symbols-outlined text-lg leading-[22px] text-primary-container">warning</span>
+        <span aria-hidden="true" className="material-symbols-outlined text-lg leading-[22px] text-primary-text">warning</span>
         <span>{t('warning', { combos })}</span>
       </p>
     </>

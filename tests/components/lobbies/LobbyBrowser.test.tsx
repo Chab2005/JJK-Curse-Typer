@@ -74,12 +74,11 @@ describe('LobbyBrowser (LOB-2)', () => {
     expect(screen.getByRole('button', { name: 'Clear search and filters' }).previousElementSibling).toContainElement(screen.getByRole('button', { name: 'Create a lobby' }));
   });
 
-  it('sends a guest to the login page instead of creating a lobby', async () => {
-    const { user } = renderWithIntl(<LobbyBrowser lobbies={SAMPLE_LOBBIES} signedIn={false} />);
+  it('offers a guest a link to the login page instead of creating a lobby (A11Y-02)', () => {
+    renderWithIntl(<LobbyBrowser lobbies={SAMPLE_LOBBIES} signedIn={false} />);
 
-    await user.click(screen.getByRole('button', { name: 'Log in to create a lobby' }));
-
+    expect(screen.queryByRole('button', { name: 'Log in to create a lobby' })).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Log in to create a lobby' })).toHaveAttribute('href', '/login');
     expect(lobbyActionsMock.createLobbyAction).not.toHaveBeenCalled();
-    expect(routerMock.push).toHaveBeenCalledWith('/login');
   });
 });

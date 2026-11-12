@@ -9,12 +9,13 @@ import { startKeyTally, tallyKey, type KeyTally } from './keyStats';
 import { BLACK_FLASH_CHANCE, BOOST_RATE, LAG_MS, hasCursedEnergy, racerMarks, startPowers, stunnedAt, type RacerMark, type RacerPowers } from './powers';
 import { hashSeed, nextRandom, randomStream, type Seed } from './random';
 import { rawWpm, typingScore } from './scoring';
+import { emptyStatSeries, sampleRacers, type StatSeries } from './series';
 import { correctChars, isValidKey, startTyping, typeKey, type ErrorMode, type Keystroke, type TypingState } from './typing';
 
-/** Décompte visible avant le départ (RACE-1). */
-export const COUNTDOWN_MS = 5000;
-/** Coupure tolérée avant l'abandon (RACE-13, H-4). */
-export const RECONNECT_GRACE_MS = 60_000;
+/** Décompte visible avant le départ (COURSE-03). */
+export const COUNTDOWN_MS = 3000;
+/** Coupure tolérée avant l'abandon (COURSE-08). */
+export const RECONNECT_GRACE_MS = 30_000;
 /** Course fermée sans frappe humaine pendant 10 minutes (RACE-12). */
 export const INACTIVITY_MS = 10 * 60_000;
 /** Au-delà, les frappes ne peuvent pas venir d'un humain : le lot est refusé (RACE-14). */
@@ -67,6 +68,12 @@ export interface Racer {
   flashes: number;
   /** Prochain lancement possible, pour la simulation. */
   nextCastAt: number;
+  /** Effets d'une technique reçus de quelqu'un d'autre (colonne « bonus reçus » des résultats, RES-02). */
+  received: number;
+  /** MPM net à chaque seconde de course (RES-03) ; voir `src/game/series.ts`. */
+  samples: number[];
+  /** Les autres mesures du graphique, seconde par seconde, comme `samples`. */
+  statSamples: StatSeries;
 }
 
 /** Ce qu'il faut annoncer à tous (BONUS-03) : vidé à chaque tick. */
@@ -137,6 +144,9 @@ export function createRace({ seats, text, mode, timerMs, bonus, gameMode = bonus
       luck: botSeed,
       flashes: 0,
       nextCastAt: nextBotCast(0, randomStream(botSeed)),
+      received: 0,
+      samples: [],
+      statSamples: emptyStatSeries(),
     };
   });
   return { phase: 'countdown', startAt: now + COUNTDOWN_MS, timerMs, bonus: modeHasBonus(gameMode), gameMode, text, mode, racers, lastActivityAt: now, rng: hashSeed(`${seed}:rng`), notices: [] };
@@ -261,7 +271,7 @@ function tick(race: RaceState, now: number): RaceState {
 
   const played = runBots(runDomains(resolveFlashes({ ...race, racers }, limit), limit), limit);
   const phase = played.racers.every((racer) => racer.status !== 'racing') ? 'finished' : 'racing';
-  return { ...played, phase };
+  return { ...played, racers: sampleRacers(played.racers, limit), phase };
 }
 
 export function raceReducer(race: RaceState, event: RaceEvent): RaceState {
@@ -303,10 +313,16 @@ export interface Standing {
   /** Longueur de son texte : une capacité peut l'allonger (BONUS-04). */
   total: number;
   wpm: number;
+  /** MPM brut : toutes les frappes, erreurs comprises (annexe A). */
+  rawWpm: number;
+  /** Fautes commises (RES-02). */
+  errors: number;
   accuracy: number;
   energy: number;
   status: RacerStatus;
   endedAt: number | null;
+  /** Effets de techniques reçus (RES-02). */
+  received: number;
   /** États en cours, visibles de tous (BONUS-03). */
   marks: RacerMark[];
 }
@@ -323,6 +339,9 @@ export function standings(race: RaceState, now: number): Standing[] {
       progress: correctChars(racer.typing),
       total: racer.typing.text.length,
       wpm: score.wpm,
+      rawWpm: score.rawWpm,
+      errors: racer.typing.errors,
+      received: racer.received,
       accuracy: score.accuracy,
       energy: racer.energy,
       status: racer.status,

@@ -18,7 +18,7 @@ export default function InviteCard({ code, visibility, isHost, refreshKey = '' }
 
   return (
     <BevelPanel className="flex flex-col gap-4 px-6 pt-6 pb-7">
-      <h2 className="font-label-code text-[11px] font-bold uppercase tracking-[0.2em] text-primary-container">{t('title')}</h2>
+      <h2 className="font-label-code text-[11px] font-bold uppercase tracking-[0.2em] text-primary-text">{t('title')}</h2>
 
       <div className="flex flex-col gap-1">
         <p className="font-label-code text-[11px] uppercase tracking-[0.16em] text-outline">{t('code')}</p>

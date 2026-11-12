@@ -29,7 +29,7 @@ export default function LeaderboardTable({ players, category }: { players: Ranke
               className={`hidden items-center justify-end gap-1.5 font-medium whitespace-nowrap md:flex ${c === category ? 'text-primary' : ''}`}
             >
               {c === category && (
-                <svg aria-hidden="true" viewBox="0 0 10 10" className="size-1.5 rotate-180 text-primary-container">
+                <svg aria-hidden="true" viewBox="0 0 10 10" className="size-1.5 rotate-180 text-primary-text">
                   <path d="M5 0 10 10 5 7 0 10z" fill="currentColor" />
                 </svg>
               )}

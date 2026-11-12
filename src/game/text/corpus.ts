@@ -1,8 +1,9 @@
 // Corpus curé à la main pour un public scolaire (TXT-8) : mots courants et phrases neutres.
 // Mots en minuscules, sans apostrophe ni trait d'union ; phrases avec majuscule et ponctuation.
 import type { TextLanguage } from '@/components/lobbies/lobbySearch';
+import { MORE_WORDS } from './moreWords';
 
-export const WORDS: Record<TextLanguage, readonly string[]> = {
+const BASE_WORDS: Record<TextLanguage, readonly string[]> = {
   en: [
     'the', 'and', 'for', 'with', 'from', 'into', 'over', 'under', 'about', 'after', 'before', 'while',
     'time', 'year', 'people', 'way', 'day', 'world', 'school', 'family', 'student', 'friend', 'story', 'river',
@@ -34,6 +35,12 @@ export const WORDS: Record<TextLanguage, readonly string[]> = {
     'âme', 'bâton', 'château', 'fête', 'tête', 'forêt', 'naïf', 'noël', 'cœur', 'sœur', 'œuf', 'où',
     'boîte', 'goût', 'août', 'mûr', 'piqûre', 'déjà', 'voilà', 'leçon', 'garçon', 'français', 'reçu', 'façon',
   ].filter((word, i, words) => words.indexOf(word) === i),
+};
+
+/** Dictionnaire complet : la liste de base et les mots ajoutés pour chaque palier de complexité (CONF-05), sans doublon. */
+export const WORDS: Record<TextLanguage, readonly string[]> = {
+  en: [...BASE_WORDS.en, ...MORE_WORDS.en].filter((word, i, words) => words.indexOf(word) === i),
+  fr: [...BASE_WORDS.fr, ...MORE_WORDS.fr].filter((word, i, words) => words.indexOf(word) === i),
 };
 
 export const SENTENCES: Record<TextLanguage, readonly string[]> = {

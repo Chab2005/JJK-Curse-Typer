@@ -10,7 +10,7 @@
           },
           {
             "type": "command",
-            "command": "node '/Users/chab/Project_School/WEB_5/Projet_Type_Monkey/MonkeyTyper/.codex/hooks/new-method.mjs'"
+            "command": "node '/Users/chab/Project_School/WEB_5/Projet_Type_Monkey/MonkeyTyper/.codex/hooks/new-method.mts'"
           }
         ]
       }

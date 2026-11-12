@@ -26,7 +26,7 @@ export default function Abilities({ character }: { character: CharacterId }) {
     <section aria-labelledby="abilities-title" className="mt-9 flex flex-col gap-6">
       <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
         <div className="flex flex-col gap-2">
-          <p className="font-label-code text-[12px] font-bold uppercase tracking-[0.32em] text-primary-container">{t('eyebrow')}</p>
+          <p className="font-label-code text-[12px] font-bold uppercase tracking-[0.32em] text-primary-text">{t('eyebrow')}</p>
           <h2 id="abilities-title" className="font-grotesk text-[32px] leading-[1.1] font-bold uppercase tracking-[0.02em] text-on-primary-container">
             {techniques(character)} · <span className={CHARACTER_STYLES[character].ink}>{t(`${character}.title`)}</span>
           </h2>
@@ -42,7 +42,7 @@ export default function Abilities({ character }: { character: CharacterId }) {
           const heading = (
             <div>
               <div className="flex items-baseline gap-3">
-                <span className="font-label-code text-[12px] tracking-[0.16em] text-primary-container">{String(index + 1).padStart(2, '0')}</span>
+                <span className="font-label-code text-[12px] tracking-[0.16em] text-primary-text">{String(index + 1).padStart(2, '0')}</span>
                 <h3 className="font-grotesk text-[19px] font-semibold text-on-primary-container">{t(`${key}.name`)}</h3>
               </div>
               <p className="mt-3 text-[15px] leading-[23px] text-on-surface-variant">{t(`${key}.effect`)}</p>

@@ -35,6 +35,20 @@ describe('raceResults', () => {
     expect(ann.rank).toBeLessThan(results.find((r) => r.seat === 'bob')!.rank);
   });
 
+  it('garde le MPM brut, les bonus reçus, la série du MPM et les touches ratées (RES-05)', () => {
+    const race = reduce(
+      claimed(0, 'ann', 'bob'),
+      { type: 'keys', id: 'ann', strokes: keys('abx def'), now: START + 800 },
+      { type: 'keys', id: 'bob', strokes: keys('abc def', 1000), now: START + 1800 },
+      { type: 'tick', now: START + 600_000 },
+    );
+    const ann = raceResults(race, START + 600_000).find((r) => r.seat === 'ann')!;
+    expect(ann.rawWpm).toBeGreaterThanOrEqual(ann.wpm);
+    expect(ann.received).toBe(0);
+    expect(ann.series.at(-1)).toBe(ann.wpm);
+    expect(ann.missedKeys).toEqual({ c: 1 });
+  });
+
   it('compte les autres comptes qui ont tapé, sans invités, bots ni simulation', () => {
     const race = reduce(
       claimed(0, 'ann', 'bob', 'guest:cid'),
@@ -59,7 +73,7 @@ describe('raceResults', () => {
     expect(raceResults(race, START + 600_000).map((r) => r.seat)).toEqual(['ann']);
   });
 
-  it('écarte les abandons', () => {
+  it('garde un abandon, sans le faire compter pour les statistiques (RES-05)', () => {
     const race = reduce(
       claimed(0, 'ann', 'bob'),
       { type: 'keys', id: 'ann', strokes: keys('abc'), now: START + 400 },
@@ -67,14 +81,17 @@ describe('raceResults', () => {
       { type: 'keys', id: 'bob', strokes: keys(TEXT), now: START + 800 },
       { type: 'tick', now: START + 600_000 },
     );
-    expect(raceResults(race, START + 600_000).map((r) => r.seat)).toEqual(['bob']);
+    const results = raceResults(race, START + 600_000);
+    expect(results.map((r) => [r.seat, r.status, r.counts])).toEqual([['ann', 'abandoned', false], ['bob', 'finished', true]]);
+    expect(results[0]).toMatchObject({ keystrokes: 3, durationMs: 500 });
   });
 
-  it('garde un joueur arrêté par le timer, mais pas celui qui n’a rien tapé', () => {
+  it('garde un joueur arrêté par le timer, et celui qui n’a rien tapé sans le compter (RES-05)', () => {
     const race = reduce(claimed(1000, 'ann', 'bob'), { type: 'keys', id: 'ann', strokes: keys('abc'), now: START + 400 }, { type: 'tick', now: START + 1000 });
     const results = raceResults(race, START + 1000);
-    expect(results.map((r) => r.seat)).toEqual(['ann']);
+    expect(results.map((r) => [r.seat, r.counts])).toEqual([['ann', true], ['bob', false]]);
     expect(results[0]).toMatchObject({ status: 'timeout', durationMs: 1000, keystrokes: 3 });
+    expect(results[1]).toMatchObject({ status: 'timeout', keystrokes: 0, wpm: 0 });
   });
 
   it('joint les touches assez tapées pour la heatmap', () => {

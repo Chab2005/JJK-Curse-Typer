@@ -19,7 +19,7 @@ import { hasShowcase } from './techniqueDemo';
 import AbilityShowcase from './AbilityShowcase';
 
 /** Flèche en lance des fiches voisines. */
-const SPEAR = 'h-12 w-36 shrink-0 text-primary-container transition-[translate,filter] duration-300 group-hover:brightness-140 motion-reduce:transition-none lg:h-[70px] lg:w-[210px]';
+const SPEAR = 'h-12 w-36 shrink-0 text-primary-text transition-[translate,filter] duration-300 group-hover:brightness-140 motion-reduce:transition-none lg:h-[70px] lg:w-[210px]';
 
 /** Ligne « Alt + touche, puis tapez le nom » sous un territoire. */
 const CAST_HINT = 'mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-dashed border-surface-container-high pt-3.5 text-sm text-on-surface-variant';

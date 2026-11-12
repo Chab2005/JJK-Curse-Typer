@@ -12,6 +12,10 @@ export const PAGES = [
   { name: 'register', path: '/register' },
   { name: 'profile', path: '/profile' },
   { name: 'profile-other', path: '/profile/Satoru_Infinity' },
+  // Historique (HIST-01) : sans session, la page renvoie à la connexion ; une course inconnue répond 404 (HIST-02).
+  { name: 'history', path: '/history' },
+  { name: 'history-race', path: '/history/1' },
+  { name: 'history-player', path: '/profile/Satoru_Infinity/history' },
   { name: 'lobby', path: '/lobby/SHJ-60S' },
   { name: 'lobby-spectate', path: '/lobby/SHJ-60S?spectate=1' },
   { name: 'race', path: '/lobby/SHJ-60S/race' },

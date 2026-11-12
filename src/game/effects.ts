@@ -97,6 +97,13 @@ function swap(race: RaceState, a: string, b: string): RaceState {
 
 /** Effet d'une technique sur `target`, sans parade. */
 function strikeTarget(race: RaceState, id: TechniqueId, casterId: string, target: string, power: number, context: Context): RaceState {
+  return receive(applyEffect(race, id, casterId, target, power, context), target);
+}
+
+/** Compte un effet reçu par `id` (RES-02). */
+const receive = (race: RaceState, id: string) => change(race, id, ({ received }) => ({ received: received + 1 }));
+
+function applyEffect(race: RaceState, id: TechniqueId, casterId: string, target: string, power: number, context: Context): RaceState {
   const { t } = context;
   const effect = TECHNIQUE_EFFECTS[id];
   const ms = secondsOf(id, power);
@@ -159,7 +166,7 @@ function summon(race: RaceState, casterId: string, { t }: Context): RaceState {
   const seat: RacerSeat = { id: `mahoraga:${casterId}`, name: 'Mahoraga', avatar: null, kind: 'bot', level: null, summon: true };
   const { text, mode } = caster.typing;
   const typing = moveTo(startTyping(text, mode), caster.typing.input.length);
-  const bot = createBot({ wpm: MAHORAGA_START_WPM, errorRate: MAHORAGA_ERROR_RATE }, caster.bot.seed);
+  const bot = createBot({ wpm: MAHORAGA_START_WPM, errorRate: MAHORAGA_ERROR_RATE, steady: true }, caster.bot.seed);
   const mahoraga: Racer = {
     ...caster,
     seat,
@@ -296,7 +303,7 @@ export function resolveFlashes(race: RaceState, t: number): RaceState {
     const targets = topHalf(current, seat.id).filter(({ powers }) => powers.untouchableUntil <= t);
     if (targets.length === 0) continue;
     const target = random.pick(targets).seat.id;
-    const boosted = changePowers(stun(current, target, t, BLACK_FLASH_STUN_MS), seat.id, () => ({ boostUntil: t + BOOST_MS }));
+    const boosted = changePowers(receive(stun(current, target, t, BLACK_FLASH_STUN_MS), target), seat.id, () => ({ boostUntil: t + BOOST_MS }));
     current = notify(boosted, { kind: 'blackFlash', by: seat.id, target });
   }
   return { ...current, rng: random.seed() };

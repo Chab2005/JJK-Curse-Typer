@@ -17,7 +17,8 @@ const ROOM: LobbyRoom = {
     { kind: 'bot', id: 'bot-1', level: 'grade_1', number: 1 },
   ],
   spectators: [{ id: 'Ijichi_Driver', name: 'Ijichi_Driver', avatar: null }],
-  settings: { languages: ['fr'], content: 'sentences', words: 60, chars: ['uppercase'], practice: '', timer: 0, errorMode: 'accumulate', gameMode: 'normal', bonus: true, capacity: 4, visibility: 'public' },
+  banned: [],
+  settings: { languages: ['fr'], content: 'sentences', words: 60, chars: ['uppercase'], practice: '', exclude: '', complexity: 'medium', timer: 0, errorMode: 'accumulate', gameMode: 'normal', bonus: true, capacity: 4, visibility: 'public' },
 };
 
 const participants = () => within(screen.getByRole('list', { name: /Exorcists/ }));
@@ -52,6 +53,13 @@ describe('WaitingRoom (LOB-9)', () => {
     const bot = participants().getByText('Cursed corpse 1').closest('li')!;
     expect(within(bot).queryByText('Ready')).not.toBeInTheDocument();
     expect(participants().getAllByText(/^(Ready|Not ready)$/)).toHaveLength(2);
+  });
+
+  it('has a single level-1 heading, the lobby name (A11Y-02)', () => {
+    renderWithIntl(<WaitingRoom initialRoom={ROOM} viewerId="Yuji_BlackFlash" />);
+
+    expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(ROOM.name);
   });
 
   it('lets a player toggle their ready state', async () => {
@@ -212,11 +220,11 @@ class FakeEventSource {
   readyState = 1;
   onmessage: ((event: { data: string }) => void) | null = null;
   onerror: (() => void) | null = null;
-  listeners = new Map<string, () => void>();
+  listeners = new Map<string, (event: { data: string }) => void>();
   constructor(public url: string) {
     FakeEventSource.instances.push(this);
   }
-  addEventListener(type: string, listener: () => void) {
+  addEventListener(type: string, listener: (event: { data: string }) => void) {
     this.listeners.set(type, listener);
   }
   close() {
@@ -263,8 +271,24 @@ describe('WaitingRoom of a created lobby (realtime)', () => {
     renderWithIntl(<WaitingRoom initialRoom={joined} viewerId="Nobara" live />);
     await waitFor(() => expect(FakeEventSource.instances).toHaveLength(1));
 
-    act(() => FakeEventSource.instances[0].listeners.get('gone')!());
+    act(() => FakeEventSource.instances[0].listeners.get('gone')!({ data: 'left' }));
     expect(routerMock.push).toHaveBeenCalledWith('/lobbies');
+  });
+
+  it('tells everyone the lobby was closed when the host closes it (COURSE-11)', async () => {
+    lobbyActionsMock.joinLobbyAction.mockResolvedValue(joined);
+    renderWithIntl(<WaitingRoom initialRoom={joined} viewerId="Nobara" live />);
+    await waitFor(() => expect(FakeEventSource.instances).toHaveLength(1));
+
+    act(() => FakeEventSource.instances[0].listeners.get('gone')!({ data: 'closed' }));
+    expect(routerMock.push).toHaveBeenCalledWith('/lobbies?closed=1');
+  });
+
+  it('sends someone who arrives during the results to the results screen (COURSE-11)', async () => {
+    lobbyActionsMock.joinLobbyAction.mockResolvedValue({ ...joined, status: 'results' });
+    renderWithIntl(<WaitingRoom initialRoom={joined} viewerId="Nobara" live />);
+
+    await waitFor(() => expect(routerMock.push).toHaveBeenCalledWith('/lobby/ABC-DEF/race'));
   });
 
   it('goes back to the lobby list when the server refuses the entry', async () => {
@@ -273,6 +297,40 @@ describe('WaitingRoom of a created lobby (realtime)', () => {
 
     await waitFor(() => expect(routerMock.replace).toHaveBeenCalledWith('/lobbies'));
     expect(FakeEventSource.instances).toHaveLength(0);
+  });
+
+  it('reloads the page, which shows the lockout message, when the IP tried too many codes (SALLE-10)', async () => {
+    lobbyActionsMock.joinLobbyAction.mockResolvedValue({ blocked: true });
+    renderWithIntl(<WaitingRoom initialRoom={joined} viewerId="Nobara" live />);
+
+    await waitFor(() => expect(routerMock.refresh).toHaveBeenCalled());
+    expect(routerMock.replace).not.toHaveBeenCalled();
+    expect(FakeEventSource.instances).toHaveLength(0);
+  });
+
+  it('offers to leave the current lobby when the user is already in another one (SALLE-06)', async () => {
+    lobbyActionsMock.joinLobbyAction.mockResolvedValueOnce({ conflict: 'OLD-LBY' });
+    const { user } = renderWithIntl(<WaitingRoom initialRoom={joined} viewerId="Nobara" live />);
+
+    const dialog = await screen.findByRole('dialog', { name: 'You are already in a lobby' });
+    expect(within(dialog).getByText(/OLD-LBY/)).toBeInTheDocument();
+    expect(FakeEventSource.instances).toHaveLength(0);
+
+    lobbyActionsMock.joinLobbyAction.mockResolvedValue(joined);
+    await user.click(within(dialog).getByRole('button', { name: 'Leave it and join this lobby' }));
+
+    expect(lobbyActionsMock.joinLobbyAction).toHaveBeenLastCalledWith('ABC-DEF', { spectate: false, invite: undefined, leaveOther: true });
+    await waitFor(() => expect(FakeEventSource.instances).toHaveLength(1));
+  });
+
+  it('goes back to the current lobby when the user stays in it (SALLE-06)', async () => {
+    lobbyActionsMock.joinLobbyAction.mockResolvedValue({ conflict: 'OLD-LBY' });
+    const { user } = renderWithIntl(<WaitingRoom initialRoom={joined} viewerId="Nobara" live />);
+
+    await user.click(await screen.findByRole('button', { name: 'Stay in my current lobby' }));
+
+    expect(routerMock.replace).toHaveBeenCalledWith('/lobby/OLD-LBY');
+    expect(lobbyActionsMock.joinLobbyAction).toHaveBeenCalledTimes(1);
   });
 
   it('starts the race on the server and waits for it before leaving', async () => {

@@ -32,6 +32,8 @@
   --color-secondary-fixed-dim: #c0c1ff;
   --color-primary-fixed-dim: #ffb3b6;
   --color-primary-container: #e11d48;
+  /* Version claire du cramoisi pour le texte : primary-container (fond) n'atteint que 3,95:1 sur surface (A11Y-01). */
+  --color-primary-text: #ff5577;
   --color-on-tertiary-fixed: #001f26;
   --color-primary: #ffb3b6;
   --color-on-secondary-fixed-variant: #2f2ebe;
@@ -111,6 +113,17 @@
   --text-headline-lg-mobile: 26px;
   --text-headline-lg-mobile--line-height: 34px;
   --text-headline-lg-mobile--font-weight: 600;
+}
+
+/* Focus clavier visible partout (A11Y-04). Dans @layer base : un composant au focus particulier (Segmented, BevelSelect,
+   dont le clip-path rognerait un contour) le remplace par ses propres utilitaires. */
+@layer base {
+  a, button, input, select, textarea, summary, [tabindex]:not([tabindex="-1"]) {
+    &:focus-visible {
+      outline: 2px solid var(--color-tertiary);
+      outline-offset: 3px;
+    }
+  }
 }
 
 @layer base {

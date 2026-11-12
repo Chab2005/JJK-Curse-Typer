@@ -4,6 +4,7 @@ import { and, count, desc, eq, isNull } from 'drizzle-orm';
 import { type InviteLink, inviteDecision, invitesToCreate, inviteStatus } from '@/components/lobby/lobbyAccess';
 import { db } from '@/db';
 import { lobbyInvites } from '@/db/schema';
+import { onLobbyClosed } from '@/lib/lobbies';
 
 // Liens d'invitation à usage unique (LOB-4), gardés en base ; la décision est prise par `inviteDecision`.
 
@@ -65,3 +66,8 @@ export async function revokeInvites(code: string, viewer: string): Promise<void>
 export async function deleteInvites(code: string): Promise<void> {
   await db.delete(lobbyInvites).where(eq(lobbyInvites.lobbyCode, code));
 }
+
+// Un lobby qui quitte le registre (vidé ou expiré) emporte ses liens : ils ne doivent plus rien ouvrir (SALLE-04).
+onLobbyClosed((code) => {
+  void deleteInvites(code).catch(() => {});
+});

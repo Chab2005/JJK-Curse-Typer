@@ -119,6 +119,7 @@ export function lobbySummary(room: LobbyRoom): LobbySummary {
     languages: settings.languages,
     chars: settings.chars,
     words: settings.words,
-    status: room.status,
+    // La liste ne distingue que l'attente et la course ; les résultats comptent comme l'attente (on peut revenir).
+    status: room.status === 'racing' ? 'racing' : 'waiting',
   };
 }

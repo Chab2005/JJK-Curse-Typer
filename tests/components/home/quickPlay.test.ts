@@ -33,23 +33,29 @@ describe('isQuickPlayOpen', () => {
   });
 });
 
-describe('pickQuickLobby', () => {
+const entry = (r: LobbyRoom, createdAt = 0) => ({ room: r, createdAt });
+
+describe('pickQuickLobby (JOIN-03)', () => {
   it('renvoie null sans lobby ouvert', () => {
     expect(pickQuickLobby([])).toBeNull();
-    expect(pickQuickLobby([room('AAA-AAA', { visibility: 'private' }), room('BBB-BBB', { status: 'racing' })])).toBeNull();
+    expect(pickQuickLobby([entry(room('AAA-AAA', { visibility: 'private' })), entry(room('BBB-BBB', { status: 'racing' }))])).toBeNull();
   });
 
-  it('choisit le lobby ouvert le plus rempli', () => {
-    const rooms = [room('AAA-AAA', { players: 2 }), room('BBB-BBB', { players: 5 }), room('CCC-CCC', { players: 3 })];
-    expect(pickQuickLobby(rooms)?.code).toBe('BBB-BBB');
+  it('choisit le lobby le plus proche de sa capacité maximale, pas le plus peuplé en valeur absolue', () => {
+    // 8 joueurs sur 30 (22 places) contre 3 sur 4 (1 place) : le second est le plus proche d'être plein.
+    const big = room('AAA-AAA', { players: 8, capacity: 30 });
+    const small = room('BBB-BBB', { players: 3, capacity: 4 });
+    expect(pickQuickLobby([entry(big), entry(small)])?.code).toBe('BBB-BBB');
   });
 
   it('ignore un lobby plus rempli mais fermé', () => {
-    const rooms = [room('AAA-AAA', { players: 2 }), room('BBB-BBB', { players: 4, capacity: 4 }), room('CCC-CCC', { players: 6, visibility: 'code' })];
-    expect(pickQuickLobby(rooms)?.code).toBe('AAA-AAA');
+    const rooms = [room('AAA-AAA', { players: 2, capacity: 4 }), room('BBB-BBB', { players: 4, capacity: 4 }), room('CCC-CCC', { players: 3, capacity: 4, visibility: 'code' })];
+    expect(pickQuickLobby(rooms.map((r) => entry(r)))?.code).toBe('AAA-AAA');
   });
 
-  it('à égalité, garde le plus ancien (le premier de la liste)', () => {
-    expect(pickQuickLobby([room('AAA-AAA', { players: 2 }), room('BBB-BBB', { players: 2 })])?.code).toBe('AAA-AAA');
+  it('à égalité de places restantes, garde le lobby créé le plus tôt', () => {
+    const older = entry(room('AAA-AAA', { players: 2, capacity: 4 }), 100);
+    const newer = entry(room('BBB-BBB', { players: 2, capacity: 4 }), 500);
+    expect(pickQuickLobby([newer, older])?.code).toBe('AAA-AAA');
   });
 });

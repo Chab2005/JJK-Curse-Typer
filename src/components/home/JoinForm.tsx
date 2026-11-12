@@ -142,7 +142,7 @@ export default function JoinForm({ accountName = null }: { accountName?: string 
           onChange={(e) => setExorcistName(e.target.value)}
           aria-invalid={nameError !== null}
           aria-describedby={nameError ? 'exorcistPseudoError' : undefined}
-          placeholder="Megumi_Shadows"
+          placeholder={t('namePlaceholder')}
           className="field-cut font-grotesk w-full bg-[#0b0405] px-8 py-[13px] text-xl text-on-surface placeholder:text-surface-container-highest aria-invalid:bg-error-container/40"
         />
       </div>
@@ -174,7 +174,7 @@ export default function JoinForm({ accountName = null }: { accountName?: string 
         {isCreating ? (
           <span aria-hidden="true" className="material-symbols-outlined animate-spin text-[17px] text-primary">progress_activity</span>
         ) : (
-          <svg aria-hidden="true" viewBox="0 0 10 10" className="size-[7px] rotate-90 text-primary-container">
+          <svg aria-hidden="true" viewBox="0 0 10 10" className="size-[7px] rotate-90 text-primary-text">
             <path d="M5 0 10 10 5 7 0 10z" fill="currentColor" />
           </svg>
         )}

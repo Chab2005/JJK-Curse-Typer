@@ -12,6 +12,8 @@ export default function ConfirmDialog({
   title,
   body,
   confirmLabel,
+  cancelLabel,
+  icon = 'flag',
   onConfirm,
   onCancel,
 }: {
@@ -19,6 +21,10 @@ export default function ConfirmDialog({
   title: string;
   body: string;
   confirmLabel: string;
+  /** Libellé du bouton d'annulation ; « Continuer la course » par défaut. */
+  cancelLabel?: string;
+  /** Icône Material du bouton de confirmation. */
+  icon?: string;
   onConfirm: () => void;
   onCancel: () => void;
 }) {
@@ -49,10 +55,10 @@ export default function ConfirmDialog({
         <p id={`${id}-body`} className="text-[17px] leading-[26px] text-on-surface-variant">{body}</p>
         <div className="mt-1 flex flex-wrap justify-end gap-2.5 border-t border-[#8f1022]/60 pt-2.5">
           <ChevronButton type="button" size="sm" chevrons={false} onClick={onCancel} className="font-label-code text-[11px] uppercase tracking-[0.16em]">
-            {t('stay')}
+            {cancelLabel ?? t('stay')}
           </ChevronButton>
           <ChevronButton type="button" size="sm" chevrons={false} variant="primary" onClick={onConfirm} className="font-label-code text-[11px] uppercase tracking-[0.16em]">
-            <span aria-hidden="true" className="material-symbols-outlined text-[16px]">flag</span>
+            <span aria-hidden="true" className="material-symbols-outlined text-[16px]">{icon}</span>
             {confirmLabel}
           </ChevronButton>
         </div>

@@ -14,7 +14,7 @@ import { AVATAR_MAX_BYTES } from '@/lib/auth/avatar';
 import { DISPLAY_NAME_MAX } from '@/lib/auth/validation';
 import HexInput from './HexInput';
 
-const LABEL = 'font-label-code text-[11px] font-bold uppercase tracking-[0.2em] text-primary-container';
+const LABEL = 'font-label-code text-[11px] font-bold uppercase tracking-[0.2em] text-primary-text';
 const HINT = 'text-[14px] leading-5 text-outline';
 const ERROR = 'min-h-5 text-[14px] leading-5 text-error';
 const SMALL = 'font-label-code text-[11px] uppercase tracking-[0.16em]';
@@ -166,7 +166,7 @@ export default function SettingsForm({ username, displayName, avatarUrl, github,
       <div className="flex flex-wrap items-center justify-between gap-4">
         <Link href={`/profile/${encodeURIComponent(username)}`} className="font-label-code flex min-h-11 items-center gap-2.5 text-[12px] uppercase tracking-[0.16em] text-on-surface-variant hover:text-on-primary-container">
           {/* La pointe est tournée vers la droite après sa rotation : la retourner à la verticale la fait pointer vers la gauche. */}
-          <Pointer className="-scale-y-100 text-primary-container" />
+          <Pointer className="-scale-y-100 text-primary-text" />
           {t('backToProfile')}
         </Link>
         <div className="flex flex-wrap items-center justify-end gap-4">

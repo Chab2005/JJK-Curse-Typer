@@ -6,7 +6,7 @@ import SpearArrow from '@/components/shared/SpearArrow';
 import TechniqueExample, { type ShowcaseProps } from './TechniqueExample';
 import { SHOWCASE_ABILITIES, type ShowcaseCharacter } from './techniqueDemo';
 
-const ARROW = 'group absolute top-1/2 z-30 -translate-y-1/2 p-1 text-primary-container focus-visible:outline-2 focus-visible:outline-primary';
+const ARROW = 'group absolute top-1/2 z-30 -translate-y-1/2 p-1 text-primary-text focus-visible:outline-2 focus-visible:outline-primary';
 const SPEAR = 'block h-12 w-4 transition-[translate,filter] duration-300 group-hover:brightness-140 motion-reduce:transition-none';
 
 // Vitrine de Yuji ou Nobara : une capacité à la fois, des flèches de chaque côté pour passer à l'autre.

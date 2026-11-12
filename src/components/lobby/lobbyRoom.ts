@@ -1,5 +1,6 @@
 // Logique pure du salon d'attente d'un lobby (LOB-1, LOB-5 à LOB-9, LOB-11) : état + action → nouvel état.
 // Le serveur (src/lib/lobbies.ts) le rejoue sur les lobbies créés ; la page s'en sert aussi pour un retour immédiat.
+import { COMPLEXITIES, type TextComplexity } from '@/game/text/complexity';
 import { DEFAULT_CHARACTER, type CharacterId } from '@/components/shared/characters';
 import type { CharKind, TextLanguage } from '@/components/lobbies/lobbySearch';
 import { GAME_MODES, modeHasBonus, type GameMode } from '@/game/abilities';
@@ -9,6 +10,7 @@ import { ERROR_MODES, type ErrorMode } from '@/game/typing';
 // Gestion des erreurs (RACE-7, H-22) et niveaux de bots (BOT-2) : définis par le moteur de jeu.
 export { BOT_LEVELS, ERROR_MODES, GAME_MODES, type BotLevel, type ErrorMode, type GameMode };
 
+export { COMPLEXITIES, type TextComplexity };
 export const CONTENT_MODES = ['sentences', 'words'] as const;
 export type ContentMode = (typeof CONTENT_MODES)[number];
 
@@ -16,11 +18,13 @@ export type ContentMode = (typeof CONTENT_MODES)[number];
 export const LOBBY_VISIBILITIES = ['public', 'code', 'private'] as const;
 export type LobbyVisibility = (typeof LOBBY_VISIBILITIES)[number];
 
-/** Durées du timer de course en secondes ; 0 = sans timer, jamais plus de 3 min (RACE-9). */
-export const TIMER_OPTIONS = [0, 30, 60, 90, 120, 180] as const;
+/** Durées du timer de course en secondes ; 0 = sans timer, de 30 s à 10 min (CONF-01). */
+export const TIMER_OPTIONS = [0, 30, 60, 90, 120, 180, 240, 300, 600] as const;
 
-/** Plafond système de participants (LOB-6, H-13). */
-export const MAX_CAPACITY = 60;
+/** Plafond système de participants (SALLE-05, CONF-11). */
+export const MAX_CAPACITY = 30;
+export const TIMER_MIN = 30;
+export const TIMER_MAX = 600;
 /** Départ à partir de deux participants, bots compris (LOB-7, H-17). */
 export const MIN_PARTICIPANTS = 2;
 export const WORDS_MIN = 10;
@@ -30,10 +34,14 @@ const PRACTICE_MAX = 10;
 export interface LobbySettings {
   languages: TextLanguage[];
   content: ContentMode;
+  /** Complexité du texte (CONF-05) : longueur des mots, voir `src/game/text/complexity.ts`. */
+  complexity: TextComplexity;
   words: number;
   chars: CharKind[];
   /** Caractères à pratiquer, surreprésentés dans le texte (TXT-5). */
   practice: string;
+  /** Caractères à ne jamais écrire dans le texte (CONF-07) ; ils l'emportent sur `practice`. */
+  exclude: string;
   timer: number;
   errorMode: ErrorMode;
   /** Règles des capacités ; `bonus` en découle, toujours tenu à jour par le réducteur. */
@@ -70,14 +78,39 @@ export interface Spectator {
   photo?: string | null;
 }
 
+/**
+ * États du salon (COURSE-01) : `waiting` (EN_ATTENTE), `racing` (décompte puis course : la phase fine est dans `RaceState.phase`),
+ * `results` (RÉSULTATS) et `closed` (FERMÉE). Sur l'écran des résultats, seul l'hôte décide de la suite (COURSE-11) :
+ * `restart` ramène le salon en attente, `close` le ferme. Il se ferme aussi quand plus aucun humain n'y est.
+ */
+export const LOBBY_STATUSES = ['waiting', 'racing', 'results', 'closed'] as const;
+export type LobbyStatus = (typeof LOBBY_STATUSES)[number];
+
+const TRANSITIONS: Record<LobbyStatus, readonly LobbyStatus[]> = {
+  waiting: ['racing', 'closed'],
+  racing: ['results', 'closed'],
+  results: ['waiting', 'closed'],
+  closed: [],
+};
+
+/** Vrai si le diagramme d'états (docs/ARCHITECTURE.md §3) permet de passer de `from` à `to`. */
+export const canTransition = (from: LobbyStatus, to: LobbyStatus) => TRANSITIONS[from].includes(to);
+
+/** Nouvel état du salon, ou le salon inchangé si la transition est interdite. */
+function transition(room: LobbyRoom, to: LobbyStatus): LobbyRoom {
+  return canTransition(room.status, to) ? { ...room, status: to } : room;
+}
+
 export interface LobbyRoom {
   code: string;
   name: string;
-  status: 'waiting' | 'racing';
+  status: LobbyStatus;
   hostId: string;
   /** Dans l'ordre d'arrivée : le plus ancien humain succède à l'hôte (H-18). */
   participants: Participant[];
   spectators: Spectator[];
+  /** Humains expulsés par l'hôte : ils ne rentrent plus (SALLE-07). */
+  banned: string[];
   settings: LobbySettings;
 }
 
@@ -95,8 +128,12 @@ export type LobbyAction =
   /** Un humain (hôte compris) passe de joueur à spectateur, ou l'inverse. */
   | { type: 'setSpectating'; id: string; spectating: boolean }
   | { type: 'start'; by: string }
-  /** Fin de la course : le salon rouvre. */
-  | { type: 'finish' };
+  /** Fin de la course : le salon passe en résultats. */
+  | { type: 'finish' }
+  /** L'hôte relance depuis les résultats : retour en attente, mêmes participants et réglages (COURSE-11). */
+  | { type: 'restart'; by: string }
+  /** L'hôte ferme la salle depuis les résultats : tout le monde en sort (COURSE-11). */
+  | { type: 'close'; by: string };
 
 export type ViewerRole = 'host' | 'player' | 'spectator';
 
@@ -119,6 +156,12 @@ export function normalizePractice(text: string): string {
   return [...new Set(text.replace(/\s/g, ''))].slice(0, PRACTICE_MAX).join('');
 }
 
+/** Caractères à exclure (CONF-07) sans espaces, ni doublons (majuscule et minuscule comptent pour une), 10 au plus. */
+export function normalizeExclusion(text: string): string {
+  const seen = new Set<string>();
+  return [...text.replace(/\s/g, '')].filter((char) => !seen.has(char.toLowerCase()) && seen.add(char.toLowerCase())).slice(0, PRACTICE_MAX).join('');
+}
+
 function updateSettings(room: LobbyRoom, patch: Partial<LobbySettings>): LobbySettings {
   const next = { ...room.settings, ...patch };
   const gameMode = (GAME_MODES as readonly string[]).includes(next.gameMode) ? next.gameMode : room.settings.gameMode;
@@ -129,8 +172,10 @@ function updateSettings(room: LobbyRoom, patch: Partial<LobbySettings>): LobbySe
     languages: next.languages.length > 0 ? next.languages : room.settings.languages,
     words: clamp(next.words, WORDS_MIN, WORDS_MAX),
     capacity: clamp(next.capacity, Math.max(MIN_PARTICIPANTS, room.participants.length), MAX_CAPACITY),
-    timer: (TIMER_OPTIONS as readonly number[]).includes(next.timer) ? next.timer : 0,
+    timer: (TIMER_OPTIONS as readonly number[]).includes(next.timer) ? next.timer : room.settings.timer,
     practice: normalizePractice(next.practice),
+    exclude: normalizeExclusion(next.exclude),
+    complexity: (COMPLEXITIES as readonly string[]).includes(next.complexity) ? next.complexity : room.settings.complexity,
     visibility: (LOBBY_VISIBILITIES as readonly string[]).includes(next.visibility) ? next.visibility : room.settings.visibility,
   };
 }
@@ -141,12 +186,23 @@ function addBot(room: LobbyRoom, level: BotLevel): LobbyRoom {
   return { ...room, participants: [...room.participants, { kind: 'bot', id: `bot-${number}`, level, number }] };
 }
 
+export type JoinRefusal = 'banned' | 'racing' | 'closed';
+
+/** Raison pour laquelle `id` ne peut pas entrer : expulsé (SALLE-07) ou course lancée (SALLE-09). Quelqu'un déjà dedans n'est jamais refusé. */
+export function joinRefusal(room: LobbyRoom, id: string): JoinRefusal | null {
+  if (room.status === 'closed') return 'closed';
+  if (room.banned.includes(id)) return 'banned';
+  if (room.status === 'racing' && !isInside(room, id)) return 'racing';
+  return null;
+}
+
 function kick(room: LobbyRoom, id: string): LobbyRoom {
   if (id === room.hostId) return room;
   const participants = room.participants.filter((p) => p.id !== id);
   const spectators = room.spectators.filter((s) => s.id !== id);
   if (participants.length === room.participants.length && spectators.length === room.spectators.length) return room;
-  return { ...room, participants, spectators };
+  const human = room.participants.some((p) => p.id === id && p.kind === 'human') || room.spectators.some((s) => s.id === id);
+  return { ...room, participants, spectators, banned: human ? [...room.banned, id] : room.banned };
 }
 
 function transferHost(room: LobbyRoom, id: string): LobbyRoom {
@@ -167,9 +223,10 @@ function setCharacter(room: LobbyRoom, id: string, character: CharacterId): Lobb
 }
 
 function join(room: LobbyRoom, person: Spectator, spectate: boolean): LobbyRoom {
-  if (isInside(room, person.id)) return room;
+  // Arriver pendant les résultats est permis (SALLE-09) mais ne rouvre pas le salon : seul l'hôte relance (COURSE-11).
+  if (isInside(room, person.id) || joinRefusal(room, person.id)) return room;
   const { id, name, avatar, photo = null } = person;
-  const joinable = !spectate && room.status === 'waiting' && room.participants.length < room.settings.capacity;
+  const joinable = !spectate && room.participants.length < room.settings.capacity;
   return joinable
     ? { ...room, participants: [...room.participants, { kind: 'human', id, name, avatar: avatar ?? DEFAULT_CHARACTER, photo, ready: false }] }
     : { ...room, spectators: [...room.spectators, { id, name, avatar, photo }] };
@@ -178,6 +235,8 @@ function join(room: LobbyRoom, person: Spectator, spectate: boolean): LobbyRoom 
 function leave(room: LobbyRoom, id: string): LobbyRoom {
   if (!isInside(room, id)) return room;
   const left = { ...room, participants: room.participants.filter((p) => p.id !== id), spectators: room.spectators.filter((s) => s.id !== id) };
+  // Plus aucun humain : le salon est fermé (SALLE-08).
+  if (isEmpty(left)) return { ...transition(left, 'closed'), hostId: '' };
   if (id !== room.hostId) return left;
   // Le plus ancien joueur humain succède à l'hôte (H-18), sinon le plus ancien spectateur.
   const successor = left.participants.find((p) => p.kind === 'human') ?? left.spectators[0];
@@ -196,17 +255,36 @@ function setSpectating(room: LobbyRoom, id: string, spectating: boolean): LobbyR
   return { ...room, spectators: room.spectators.filter((s) => s.id !== id), participants: [...room.participants, { kind: 'human', ...spectator, avatar: spectator.avatar ?? DEFAULT_CHARACTER, ready: false }] };
 }
 
-/** Le salon rouvre après la course ; chaque joueur redit qu'il est prêt pour la suivante. */
+/** La course est finie : RACING → RÉSULTATS. */
 function finish(room: LobbyRoom): LobbyRoom {
-  if (room.status !== 'racing') return room;
-  return { ...room, status: 'waiting', participants: room.participants.map((p) => (p.kind === 'human' ? { ...p, ready: p.id === room.hostId } : p)) };
+  return transition(room, 'results');
+}
+
+/** Relance par l'hôte : RÉSULTATS → EN_ATTENTE, mêmes participants et réglages ; chaque joueur redit qu'il est prêt. */
+function restart(room: LobbyRoom): LobbyRoom {
+  const next = transition(room, 'waiting');
+  if (next === room) return room;
+  return { ...next, participants: next.participants.map((p) => (p.kind === 'human' ? { ...p, ready: p.id === next.hostId } : p)) };
+}
+
+/** Fermeture par l'hôte : RÉSULTATS → FERMÉE ; tout le monde sort, et le registre oublie la salle (`isEmpty`). */
+function close(room: LobbyRoom): LobbyRoom {
+  const next = transition(room, 'closed');
+  if (next === room) return room;
+  return { ...next, hostId: '', participants: [], spectators: [] };
 }
 
 export function lobbyReducer(room: LobbyRoom, action: LobbyAction): LobbyRoom {
   // Arrivées, départs et fin de course valent aussi pendant la course.
   if (action.type === 'join') return join(room, action.person, action.spectate);
   if (action.type === 'leave') return leave(room, action.id);
+  if (room.status === 'closed') return room;
   if (action.type === 'finish') return finish(room);
+  // Sur l'écran des résultats, la suite est le choix de l'hôte seul (COURSE-11, SEC-01).
+  if (action.type === 'restart' || action.type === 'close') {
+    if (room.status !== 'results' || action.by !== room.hostId) return room;
+    return action.type === 'restart' ? restart(room) : close(room);
+  }
   if (room.status !== 'waiting') return room;
   if (action.type === 'setReady') return setReady(room, action.id, action.ready);
   if (action.type === 'setCharacter') return setCharacter(room, action.id, action.character);
@@ -223,7 +301,7 @@ export function lobbyReducer(room: LobbyRoom, action: LobbyAction): LobbyRoom {
     case 'transferHost':
       return transferHost(room, action.id);
     case 'start':
-      return startBlocker(room) === null ? { ...room, status: 'racing' } : room;
+      return startBlocker(room) === null ? transition(room, 'racing') : room;
   }
 }
 

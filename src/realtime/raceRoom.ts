@@ -3,7 +3,9 @@
 import { castAbility } from '@/game/effects';
 import { parseClientMessage, type PlayerSync, type RaceSnapshot, type ServerMessage } from '@/game/protocol';
 import { applyKeys, elapsedAt, raceReducer, standings, type RaceEvent, type Racer, type RaceState } from '@/game/race';
+import { raceArchive, type RaceArchive } from '@/game/archive';
 import { raceResults, type RaceResult } from '@/game/results';
+import { raceSeries } from '@/game/series';
 
 /** Une connexion WebSocket, réduite à ce dont la room a besoin. */
 export interface Connection {
@@ -25,6 +27,10 @@ export class RaceRoom {
   private readonly seatsByGuest = new Map<string, string>();
   /** Sièges connus de tous : une invocation s'annonce au tick suivant. */
   private announcedSeats: number;
+  /** Les séries du MPM partent une seule fois, à la fin de la course (PERF-02). */
+  private seriesSent = false;
+  /** Sièges qui ont battu leur record personnel, connus une fois la course enregistrée (RES-04). */
+  private records: string[] = [];
 
   /**
    * `ticketSeat` (lobby créé) : chacun reçoit le siège de son ticket, sans ticket il regarde. Sans lui (lobby de
@@ -51,6 +57,11 @@ export class RaceRoom {
   /** Résultats des joueurs une fois la course finie (STAT-8). */
   results(): RaceResult[] {
     return raceResults(this.race, this.now());
+  }
+
+  /** Course entière, tous participants compris, une fois finie (HIST-02) ; `null` avant. */
+  archive(): RaceArchive | null {
+    return raceArchive(this.race, this.now());
   }
 
   connect(conn: Connection) {
@@ -107,7 +118,22 @@ export class RaceRoom {
       this.broadcast({ type: 'seats', seats: this.race.racers.map((r) => r.seat) });
     }
     this.broadcast({ type: 'tick', phase: this.race.phase, elapsed: elapsedAt(this.race, now), standings: standings(this.race, now), ...(notices.length > 0 && { notices }) });
+    if (this.race.phase === 'finished' && !this.seriesSent) {
+      this.seriesSent = true;
+      this.broadcast(this.seriesMessage(now));
+    }
     this.syncPlayers();
+  }
+
+  /** Annonce à tous les sièges qui ont battu leur record personnel (RES-04) ; rien s'il n'y en a aucun. */
+  announceRecords(seats: readonly string[]) {
+    if (seats.length === 0) return;
+    this.records = [...seats];
+    this.broadcast({ type: 'records', seats: this.records });
+  }
+
+  private seriesMessage(now: number): ServerMessage {
+    return { type: 'series', series: raceSeries(this.race, now) };
   }
 
   private join(conn: Connection, client: Client, guest: string, ticket: string | undefined) {
@@ -121,6 +147,9 @@ export class RaceRoom {
     const racer = seat ? this.racer(seat) : undefined;
     client.revision = racer?.revision ?? 0;
     this.send(conn, { type: 'welcome', you: seat, race: this.snapshot(), typing: racer?.typing ?? null, ...(racer && { acked: racer.acked, powers: racer.powers }) });
+    // Arrivé après la fin : les séries et les records ont déjà été diffusés, il les reçoit à part.
+    if (this.seriesSent) this.send(conn, this.seriesMessage(this.now()));
+    if (this.records.length > 0) this.send(conn, { type: 'records', seats: this.records });
   }
 
   /** Siège humain du ticket, s'il n'est pas déjà tenu par une autre connexion. */

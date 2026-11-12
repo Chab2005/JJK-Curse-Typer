@@ -10,6 +10,13 @@ const ITEMS: NavItem[] = [
 
 const menu = () => document.getElementById('mobile-menu')!;
 
+describe('MobileMenu landmark (A11Y-02)', () => {
+  it('labels its navigation landmark', () => {
+    renderWithIntl(<MobileMenu items={ITEMS} />);
+    expect(document.querySelector('#mobile-menu nav[aria-label="Mobile navigation"]')).toBeInTheDocument();
+  });
+});
+
 describe('MobileMenu', () => {
   it('starts closed and out of the tab order', () => {
     renderWithIntl(<MobileMenu items={ITEMS} />);

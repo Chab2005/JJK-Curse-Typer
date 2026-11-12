@@ -62,7 +62,7 @@ export default function MobileMenu({ items, account = null }: { items: NavItem[]
           <AccountControls account={account} />
         </div>
 
-        <nav className="flex flex-col">
+        <nav aria-label={t('nav')} className="flex flex-col">
           {items.map((item) => (
             <Link
               key={item.label}

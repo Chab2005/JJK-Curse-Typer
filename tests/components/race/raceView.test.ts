@@ -16,6 +16,9 @@ const standing = (id: string, rank: number, progress: number, status: Standing['
   total: 10,
   marks: [],
   wpm: 50,
+  rawWpm: 52,
+  errors: 0,
+  received: 0,
   accuracy: 1,
   energy: 0,
   status,
@@ -210,5 +213,28 @@ describe('laggedInput', () => {
 
   it('oublie les vieilles frappes', () => {
     expect(trimTrail(trail, 1100 + 2 * LAG_MS)).toEqual([]);
+  });
+});
+
+describe('raceViewReducer series (RES-03)', () => {
+  it('keeps the series sent once at the end, and forgets them on a new welcome', () => {
+    const series = [{ id: 'me', samples: [10, 30, 45], missed: [{ char: 'd', errors: 2, hits: 4 }] }];
+    let view = raceViewReducer(initialRaceView, welcome, 1000);
+    expect(view.series).toEqual([]);
+    view = raceViewReducer(view, { type: 'series', series }, 2000);
+    expect(view.series).toEqual(series);
+    expect(raceViewReducer(view, welcome, 3000).series).toEqual([]);
+  });
+});
+
+
+describe('raceViewReducer records (RES-04)', () => {
+  it('keeps the seats that beat their personal best, ignores an unreadable list, and forgets them on a new welcome', () => {
+    let view = raceViewReducer(initialRaceView, welcome, 1000);
+    expect(view.records).toEqual([]);
+    view = raceViewReducer(view, { type: 'records', seats: ['me'] }, 2000);
+    expect(view.records).toEqual(['me']);
+    expect(raceViewReducer(view, { type: 'records', seats: 'me' as unknown as string[] }, 2000).records).toEqual([]);
+    expect(raceViewReducer(view, welcome, 3000).records).toEqual([]);
   });
 });

@@ -21,7 +21,7 @@ export default async function CharacterPage({ params }: PageProps<'/[locale]/cha
   return (
     <>
       <SiteHeader />
-      <main className="relative w-full flex-1 overflow-hidden bg-surface-container-lowest">
+      <main id="main" className="relative w-full flex-1 overflow-hidden bg-surface-container-lowest">
         <CharacterSheet character={character} />
       </main>
       <Footer />

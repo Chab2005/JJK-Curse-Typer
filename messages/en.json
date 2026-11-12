@@ -1,7 +1,17 @@
 {
   "Metadata": {
-    "title": "JJK Type",
+    "title": "Curse Typer: multiplayer typing races",
     "description": "Multiplayer typing races in the Jujutsu Kaisen universe."
+  },
+  "Brand": {
+    "logoAlt": "Jujutsu Kaisen logo"
+  },
+  "Error": {
+    "eyebrow": "Error",
+    "title": "Something went wrong",
+    "text": "An unexpected error stopped this page. You can try again or go back home.",
+    "retry": "Try again",
+    "home": "Back to home"
   },
   "Header": {
     "home": "JJK: Curse Typer, home",
@@ -15,7 +25,8 @@
     "profileAlt": "My profile",
     "menu": {
       "open": "Open menu",
-      "close": "Close menu"
+      "close": "Close menu",
+      "nav": "Mobile navigation"
     },
     "login": "Log in",
     "logout": "Log out"
@@ -32,9 +43,11 @@
     "logoAlt": "Jujutsu Kaisen",
     "subtitle": "Multiplayer typing race",
     "arenasOpen": "Arenas open",
-    "online": "● {count} online",
+    "online": "● {count, number} online",
     "play": "Play now",
-    "needAccount": "No open lobby right now. To host one, you need an account. <login>Log in</login>",
+    "offerCreate": "No public lobby is open right now. Want to create one?",
+    "offerCreateAction": "Create a public lobby",
+    "noLobby": "No public lobby is open right now. <login>Log in</login> to host one.",
     "playFailed": "Couldn't find a lobby. Try again.",
     "joinByCode": "Join with a code",
     "sideLeft": "Tokyo Jujutsu High · Typing arena",
@@ -46,6 +59,7 @@
     "watermark": "Enter"
   },
   "JoinForm": {
+    "namePlaceholder": "Megumi_Shadows",
     "title": "Room seal",
     "serverActive": "Server online",
     "pinLabel": "PIN",
@@ -66,20 +80,20 @@
   },
   "PublicLobbies": {
     "title": "Public rooms",
-    "openCount": "{count} open",
+    "openCount": "{count, number} open",
     "join": "Join",
     "joinLabel": "Join {name}",
     "all": "All arenas",
     "mode": {
-      "sprint": "{seconds}s Sprint",
-      "words": "{count} words"
+      "sprint": "{seconds, number}s Sprint",
+      "words": "{count, number} words"
     },
     "participants": {
-      "exorcists": "{current}/{max} exorcists",
-      "ready": "{current}/{max} ready"
+      "exorcists": "{current, number}/{max, number} exorcists",
+      "ready": "{current, number}/{max, number} ready"
     },
     "status": {
-      "startsIn": "Starts in {seconds}s",
+      "startsIn": "Starts in {seconds, number}s",
       "waitingSquad": "Waiting for squad",
       "readyToLaunch": "Ready to launch"
     },
@@ -152,7 +166,7 @@
       "sukuna": "The shrine cuts into everyone’s text: every second, one more word is added to every other exorcist’s text until the domain closes."
     },
     "castHint": "then type “{name}”",
-    "domainDuration": "Lasts {seconds} s",
+    "domainDuration": "Lasts {seconds, number} s",
     "example": {
       "title": "Race example",
       "previousAbility": "Previous ability",
@@ -220,11 +234,11 @@
       "requires": "Requires",
       "durations": {
         "instant": "Instant",
-        "seconds": "{seconds} s",
-        "secondsRange": "{seconds}–{maxSeconds} s",
+        "seconds": "{seconds, number} s",
+        "secondsRange": "{seconds, number}–{maxSeconds, number} s",
         "untilUsed": "Until used",
         "nextWord": "Next word",
-        "nextWords": "Next {words} words",
+        "nextWords": "Next {words, number} words",
         "restOfRace": "Rest of race"
       },
       "yuji": {
@@ -383,7 +397,7 @@
       "max": "/ {max, number} EP",
       "status": {
         "charging": "Charging",
-        "streak": "{count} flawless in a row",
+        "streak": "{count, number} flawless in a row",
         "full": "Energy full"
       },
       "marker": "{min, number} · domain"
@@ -419,8 +433,8 @@
       },
       "vow": {
         "title": "Binding Vow",
-        "text": "Forfeit your technique for the rest of the race and get {percent}% of the race’s progress at once.",
-        "gain": "+{percent}%"
+        "text": "Forfeit your technique for the rest of the race and get {percent, number}% of the race’s progress at once.",
+        "gain": "+{percent, number}%"
       },
       "techniques": "Techniques",
       "on": "On",
@@ -435,11 +449,11 @@
       "leaders": "Leaders have one too",
       "domainMin": "From {min, number} EP",
       "drain": "Drains your energy",
-      "lock": "Technique locked {seconds} s",
+      "lock": "Technique locked {seconds, number} s",
       "none": "No technique, no domain",
       "noCe": "No CE",
       "immune": "Immune to domains",
-      "duration": "Lasts {seconds} s"
+      "duration": "Lasts {seconds, number} s"
     },
     "rulesTitle": "Shared rules",
     "controls": {
@@ -487,7 +501,7 @@
   "Pagination": {
     "previous": "Previous page",
     "next": "Next page",
-    "status": "Page {page} / {pageCount}"
+    "status": "Page {page, number} / {pageCount, number}"
   },
   "Lobbies": {
     "metaTitle": "Arenas",
@@ -531,8 +545,8 @@
       "bonus": "Techniques",
       "chars": "Text type",
       "action": "Action",
-      "words": "{count} words",
-      "count": "{players}/{capacity}",
+      "words": "{count, number} words",
+      "count": "{players, number}/{capacity, number}",
       "racing": "Racing",
       "full": "Full",
       "bonusOn": "Yes",
@@ -541,7 +555,8 @@
       "joinLabel": "Join {name}",
       "spectate": "Watch",
       "spectateLabel": "Watch {name} as a spectator"
-    }
+    },
+    "closedNotice": "The lobby was closed. Join another one below, or create your own."
   },
   "Lobby": {
     "metaTitle": "{name} · Waiting room",
@@ -549,7 +564,9 @@
     "hostedBy": "Hosted by {host}",
     "status": {
       "waiting": "Waiting for players",
-      "racing": "Race in progress"
+      "racing": "Race in progress",
+      "results": "Race over",
+      "closed": "Lobby closed"
     },
     "invite": {
       "title": "Invite exorcists",
@@ -571,7 +588,7 @@
         "batchCount": "Batch",
         "createBatch": "Create {count, plural, one {# link} other {# links}}",
         "copiedNote": "New links go straight to your clipboard.",
-        "count": "{count} / {max} links",
+        "count": "{count, number} / {max, number} links",
         "full": "Limit reached: delete links to make new ones.",
         "list": "Links",
         "empty": "No links yet.",
@@ -593,8 +610,8 @@
     },
     "participants": {
       "title": "Exorcists",
-      "count": "{count}/{capacity}",
-      "ready": "{count} ready",
+      "count": "{count, number}/{capacity, number}",
+      "ready": "{count, number} ready",
       "host": "Host",
       "you": "You",
       "bot": "Bot · {level}",
@@ -659,14 +676,27 @@
         "sentences": "Real text",
         "words": "Random words"
       },
+      "complexity": "Complexity",
+      "complexities": {
+        "easy": "Easy",
+        "medium": "Medium",
+        "hard": "Hard"
+      },
+      "complexityHints": {
+        "easy": "Short words, 2 to 5 letters. Real text with short words on average.",
+        "medium": "Words of 4 to 7 letters. Real text of ordinary length.",
+        "hard": "Long words, 6 letters and more. Real text with long words on average."
+      },
       "words": "Length (words)",
-      "wordsValue": "{count} words",
+      "wordsValue": "{count, number} words",
       "wordsHint": "Between {min} and {max} words.",
       "chars": "Characters",
       "lowercase": "Lowercase only",
       "practice": "Characters to practise",
       "practiceHint": "Shown more often in the text, e.g. , . / z",
       "practiceNone": "None",
+      "exclude": "Characters to exclude",
+      "excludeHint": "Never written in the text, even in real passages (those that contain them are skipped, random words are used if none fits).",
       "timer": "Race timer",
       "timerOff": "No timer",
       "errorMode": "Errors",
@@ -680,7 +710,7 @@
       },
       "capacity": "Capacity",
       "capacityHint": "Between {min} and {max} participants.",
-      "capacityValue": "{count} participants",
+      "capacityValue": "{count, number} participants",
       "visibility": "Access",
       "visibilities": {
         "public": "Public",
@@ -716,6 +746,12 @@
       "change": "Change",
       "modalTitle": "Choose your exorcist",
       "close": "Close"
+    },
+    "conflict": {
+      "title": "You are already in a lobby",
+      "text": "You are in lobby {code}. A player can only be in one lobby at a time.",
+      "leave": "Leave it and join this lobby",
+      "stay": "Stay in my current lobby"
     }
   },
   "Leaderboard": {
@@ -735,8 +771,8 @@
       "errors": "Errors / 100 words"
     },
     "units": {
-      "wpm": "{value} WPM",
-      "score": "{value} pts"
+      "wpm": "{value, number} WPM",
+      "score": "{value, number} pts"
     },
     "podium": "Podium",
     "tableCaption": "Overall rankings, sorted by {category}",
@@ -755,7 +791,7 @@
     "github": "github.com/{handle}",
     "discord": "Discord: {name}",
     "discordLink": "Discord profile",
-    "summary": "{games} races · {wins} wins · best: {best} WPM",
+    "summary": "{games, number} races · {wins, number} wins · best: {best, number} WPM",
     "chart": {
       "title": "{stat} over time",
       "period": "Time period",
@@ -776,11 +812,11 @@
         "wins": "Wins",
         "errors": "Error rate"
       },
-      "summary": "{stat} chart, {count} points with races, latest {last}. Use the arrow keys to read each point.",
-      "wpm": "{value} WPM",
-      "score": "{value} pts",
+      "summary": "{stat} chart, {count, number} points with races, latest {last}. Use the arrow keys to read each point.",
+      "wpm": "{value, number} WPM",
+      "score": "{value, number} pts",
       "wins": "{count, plural, one {# win} other {# wins}}",
-      "errors": "{value} errors / 100 words",
+      "errors": "{value, number} errors / 100 words",
       "noRace": "No race",
       "races": "{count, plural, one {# race} other {# races}}",
       "empty": "No race in this period.",
@@ -798,7 +834,7 @@
       "scoreUnit": "pts",
       "mostPlayed": {
         "title": "Most played character",
-        "usage": "<strong>{count, plural, one {# race} other {# races}}</strong> · {share} of {total}",
+        "usage": "<strong>{count, plural, one {# race} other {# races}}</strong> · {share} of {total, number}",
         "sheet": "Character sheet"
       }
     },
@@ -820,7 +856,7 @@
         "errors": "value = error rate",
         "speed": "value = average delay"
       },
-      "ms": "{value} ms",
+      "ms": "{value, number} ms",
       "space": "Space",
       "row": "Row {number}",
       "keyLabel": "{key}: {value}, {tone}",
@@ -856,7 +892,8 @@
       "own": "No races yet. Your stats appear here after your first race.",
       "other": "This exorcist has not raced yet.",
       "cta": "Find an arena"
-    }
+    },
+    "history": "Race history"
   },
   "Race": {
     "metaTitle": "{name} · Race",
@@ -869,11 +906,13 @@
       "label": "Countdown",
       "go": "Go!"
     },
+    "bot": "Bot",
     "track": {
       "label": "Race track",
       "finish": "Finish line",
       "standings": "Live standings",
-      "row": "{rank}. {name}{you, select, true { (you)} other {}}: {percent}% · {wpm} WPM · {status}",
+      "row": "{rank, number}. {name}{you, select, true { (you)} other {}}: {percent, number}% · {wpm, number} WPM · {status}",
+      "wpm": "{value, number} WPM",
       "leader": "Leader",
       "you": "You"
     },
@@ -891,12 +930,17 @@
     "energy": {
       "label": "Energy",
       "cursedLabel": "Cursed energy",
-      "value": "{value} / {max} EP",
+      "value": "{value, number} / {max, number} EP",
       "full": "Full energy!"
     },
     "hud": {
       "remaining": "Time left",
       "abandon": "Abandon"
+    },
+    "live": {
+      "label": "Live stats",
+      "wpm": "WPM",
+      "accuracy": "Accuracy"
     },
     "typing": {
       "label": "Type the text",
@@ -919,8 +963,8 @@
       "finished": "Finished!",
       "abandoned": "You abandoned the race",
       "timeout": "Time's up!",
-      "position": "Position {rank} of {total}",
-      "stats": "{wpm} WPM · {accuracy}% accuracy",
+      "position": "Position {rank, number} of {total, number}",
+      "stats": "{wpm, number} WPM · {accuracy, number, percent} accuracy",
       "waiting": "{count, plural, one {# exorcist is} other {# exorcists are}} still racing…",
       "over": "Race over",
       "results": "Results",
@@ -928,13 +972,45 @@
       "rank": "Rank",
       "name": "Exorcist",
       "wpm": "WPM",
+      "rawWpm": "Raw WPM",
+      "errors": "Errors",
+      "time": "Time",
+      "bonuses": "Bonuses received",
       "accuracy": "Accuracy",
       "detail": "{status} · {accuracy} accuracy",
-      "wpmValue": "{value} WPM",
+      "wpmValue": "{value, number} WPM",
       "state": "Status",
       "you": "(you)",
       "backToLobby": "Back to the lobby",
-      "summoned": "Mahoraga takes your place"
+      "summoned": "Mahoraga takes your place",
+      "chart": {
+        "label": "{stat} over time for {count, number} participants, {seconds, number} seconds of race",
+        "legend": "Participants",
+        "seconds": "Seconds",
+        "overTime": "over time",
+        "statLabel": "Stat shown",
+        "stats": {
+          "wpm": "WPM",
+          "rawWpm": "Raw WPM",
+          "accuracy": "Accuracy",
+          "errors": "Errors",
+          "progress": "Progress"
+        },
+        "units": {
+          "wpm": "{value, number} WPM",
+          "rawWpm": "{value, number} raw WPM",
+          "accuracy": "{value} accuracy",
+          "errors": "{value, plural, one {# error} other {# errors}}",
+          "progress": "{value} of the text"
+        },
+        "tooltip": "{name} · {seconds, number} s · {value}",
+        "title": "{stat} over time"
+      },
+      "missed": {
+        "title": "Missed keys",
+        "player": "Player"
+      },
+      "record": "Personal best"
     },
     "leave": {
       "title": "Leave the race?",
@@ -994,6 +1070,17 @@
       "blackFlash": "Black Flash! {name} strikes {target}",
       "vow": "{name} makes a Binding Vow",
       "summon": "{name} summons Mahoraga!"
+    },
+    "hostControls": {
+      "label": "What next",
+      "restart": "Restart the race",
+      "close": "Close the lobby",
+      "waiting": "Waiting for the host to restart the race or close the lobby…",
+      "leave": "Leave the lobby",
+      "confirmTitle": "Close the lobby?",
+      "confirmBody": "Everyone is sent out and the lobby code stops working.",
+      "confirmClose": "Close the lobby",
+      "cancel": "Keep it open"
     }
   },
   "Auth": {
@@ -1114,6 +1201,70 @@
       "title": "No file for this exorcist",
       "text": "This character isn't playable, or the link is mistyped.",
       "back": "See the characters"
+    },
+    "lobbyLocked": {
+      "metaTitle": "Too many attempts",
+      "eyebrow": "Too many attempts",
+      "title": "Slow down on the codes",
+      "text": "Too many lobby codes were tried from your connection. Wait a minute, then enter the code again.",
+      "back": "Enter a code"
+    },
+    "race": {
+      "metaTitle": "Race not found",
+      "eyebrow": "Race not found",
+      "title": "This race isn't in your history",
+      "text": "It may belong to another player, or the link is mistyped.",
+      "back": "See my history"
+    },
+    "otherRace": {
+      "metaTitle": "Race not found",
+      "eyebrow": "Race not found",
+      "title": "This race isn't in this player's history",
+      "text": "The link may be mistyped, or the race belongs to someone else.",
+      "back": "See the rankings"
+    }
+  },
+  "Layout": {
+    "skip": "Skip to main content"
+  },
+  "History": {
+    "metaTitle": "Race history",
+    "eyebrow": "Your races",
+    "title": "Race history",
+    "watermark": "LOG",
+    "intro": "Every race you ran in a lobby, newest first. Open one to see its full results again.",
+    "empty": "No race yet. Join a lobby and finish a race: it will show up here.",
+    "emptyCta": "Find a lobby",
+    "caption": "Your races",
+    "pagination": "Race history pages",
+    "date": "Date",
+    "rank": "Rank",
+    "wpm": "WPM",
+    "accuracy": "Accuracy",
+    "players": "Players",
+    "status": "Status",
+    "rankValue": "#{rank, number}",
+    "unknown": "—",
+    "wpmValue": "{value, number} WPM",
+    "playersValue": "{count, plural, one {# player} other {# players}}",
+    "open": "See the results of the race of {date}",
+    "race": {
+      "metaTitle": "Race of {date}",
+      "eyebrow": "Past race",
+      "title": "Race of {date}",
+      "intro": "{players, plural, one {# participant} other {# participants}} · lobby {code}",
+      "legacyIntro": "Saved before full results were kept",
+      "legacyNote": "This race was saved before full results were kept: only your own result is shown.",
+      "back": "Back to the history"
+    },
+    "other": {
+      "metaTitle": "{name}'s race history",
+      "eyebrow": "Player history",
+      "title": "{name}'s races",
+      "intro": "Every race {name} ran in a lobby, newest first. Open one to see its full results.",
+      "empty": "{name} hasn't run a race in a lobby yet.",
+      "raceEyebrow": "{name}'s race",
+      "back": "Back to {name}'s history"
     }
   }
 }

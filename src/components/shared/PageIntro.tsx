@@ -8,7 +8,7 @@ export default function PageIntro({ id, eyebrow, title, intro, watermark, chevro
       <p aria-hidden="true" className="text-stroke-ghost pointer-events-none absolute -top-10 -left-3 hidden whitespace-nowrap text-[160px] uppercase leading-none lg:block">
         {watermark}
       </p>
-      <p className="font-label-code relative flex items-center gap-2.5 text-[12px] font-bold uppercase tracking-[0.32em] text-primary-container">
+      <p className="font-label-code relative flex items-center gap-2.5 text-[12px] font-bold uppercase tracking-[0.32em] text-primary-text">
         {chevrons && (
           <span aria-hidden="true" className="flex h-[22px] w-3 -scale-x-100">
             <Chevrons order="decreasing" className="size-full" />

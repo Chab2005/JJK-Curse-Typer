@@ -13,6 +13,29 @@ const RUNNERS: TrackRunner[] = [
   { seat: seat('1', 'bot'), x: 1, rank: 3, wpm: 70, status: 'finished', leader: false, you: false, big: false, lane: 2, character: 'todo', running: false, marks: [] },
 ];
 
+describe('RaceTrack bot badge (BOT-04)', () => {
+  it('shows a Bot badge on bot plates only', () => {
+    renderWithIntl(<RaceTrack runners={RUNNERS} banner="" nameOf={(s) => s.name} />);
+    const plates = screen.getAllByTestId('runner-plate');
+    expect(plates.map((plate) => within(plate).queryAllByTestId('bot-badge').length)).toEqual([0, 0, 1]);
+  });
+});
+
+describe('RaceTrack nameplates (COURSE-05)', () => {
+  it('shows each racer name, avatar and live WPM on the track, not only in a title', () => {
+    renderWithIntl(<RaceTrack runners={RUNNERS} banner="" nameOf={(s) => (s.kind === 'bot' ? `Bot ${s.name}` : s.name)} />);
+
+    const plates = screen.getAllByTestId('runner-plate');
+    expect(plates).toHaveLength(3);
+    expect(plates.map((plate) => plate.textContent)).toEqual(expect.arrayContaining([expect.stringContaining('Megumi'), expect.stringContaining('Yuji'), expect.stringContaining('Bot 1')]));
+    const yuji = plates.find((plate) => plate.textContent?.includes('Yuji'))!;
+    expect(yuji).toHaveTextContent('80 WPM');
+    expect(yuji.querySelector('img, [data-avatar]')).not.toBeNull();
+    // Visible: the plate is not hidden from sighted users (the screen-reader list stays separate).
+    expect(yuji).not.toHaveClass('sr-only');
+  });
+});
+
 describe('RaceTrack (RACE-2, RACE-3)', () => {
   it('lists every racer in rank order for screen readers', () => {
     renderWithIntl(<RaceTrack runners={RUNNERS} banner="Yuji leads the race" nameOf={(s) => (s.kind === 'bot' ? `Bot ${s.name}` : s.name)} />);
@@ -54,5 +77,35 @@ describe('RaceTrack (RACE-2, RACE-3)', () => {
     expect(screen.getAllByTestId('runner-hit')).toHaveLength(3);
     expect(error).not.toHaveBeenCalled();
     error.mockRestore();
+  });
+});
+
+describe('RaceTrack performance (PERF-03)', () => {
+  const crowd = (count: number): TrackRunner[] =>
+    Array.from({ length: count }, (_, i) => ({ seat: seat(`p${i}`), x: i / count, rank: i + 1, wpm: 40 + i, status: 'racing' as const, leader: i === 0, you: i === 3, big: i === 0 || i === 3, lane: i % 4, character: 'yuji' as const, running: i % 2 === 0, marks: [] }));
+
+  it('renders 30 runners, moved with transform and not left', () => {
+    renderWithIntl(<RaceTrack runners={crowd(30)} banner="" nameOf={(s) => s.name} />);
+
+    const plates = screen.getAllByTestId('runner-plate');
+    expect(plates).toHaveLength(30);
+    const runner = plates[5].parentElement!;
+    expect(runner.style.transform).toContain('translateX(');
+    expect(runner.style.left).toBe('');
+    expect(runner.className).toContain('transition-transform');
+  });
+
+  it('does not redraw when its inputs keep the same references', () => {
+    const runners = crowd(30);
+    const hits: never[] = [];
+    const nameOf = vi.fn((s: RacerSeat) => s.name);
+    const { rerender } = renderWithIntl(<RaceTrack runners={runners} banner="b" nameOf={nameOf} hits={hits} />);
+    const calls = nameOf.mock.calls.length;
+    // A new nameOf closure each render (as in RaceScreen) must not defeat the memo.
+    rerender(<RaceTrack runners={runners} banner="b" nameOf={(s) => nameOf(s)} hits={[]} />);
+    expect(nameOf.mock.calls.length).toBe(calls);
+
+    rerender(<RaceTrack runners={crowd(30)} banner="b" nameOf={nameOf} hits={hits} />);
+    expect(nameOf.mock.calls.length).toBeGreaterThan(calls);
   });
 });

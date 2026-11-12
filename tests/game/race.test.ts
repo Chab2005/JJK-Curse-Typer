@@ -70,8 +70,21 @@ describe('claim / release', () => {
     expect(racer(race, 'ann').driver).toBe('sim');
   });
 
-  it('abandonne le joueur coupé depuis plus de 60 s', () => {
-    const race = reduce(racing(), { type: 'release', id: 'ann', now: START + 1000 }, { type: 'tick', now: START + 1000 + RECONNECT_GRACE_MS + 1 });
+  it('fixe le décompte à 3 secondes (COURSE-03)', () => {
+    expect(COUNTDOWN_MS).toBe(3000);
+  });
+
+  it('fixe le délai de reprise à 30 s (COURSE-08)', () => {
+    expect(RECONNECT_GRACE_MS).toBe(30_000);
+  });
+
+  it('accepte la reprise à exactement 30 s (COURSE-08)', () => {
+    const race = reduce(racing(), { type: 'release', id: 'ann', now: START + 1000 }, { type: 'tick', now: START + 1000 + 30_000 });
+    expect(racer(race, 'ann').status).toBe('racing');
+  });
+
+  it('abandonne le joueur coupé depuis plus de 30 s', () => {
+    const race = reduce(racing(), { type: 'release', id: 'ann', now: START + 1000 }, { type: 'tick', now: START + 1000 + 30_000 + 1 });
     expect(racer(race, 'ann')).toMatchObject({ status: 'abandoned' });
   });
 });
@@ -239,6 +252,16 @@ describe('standings (RACE-3, RACE-14)', () => {
     const table = standings(race, START + 1000);
     expect(table.map((s) => s.id)).toEqual(['bob', 'ann']);
     expect(table[1]).toMatchObject({ progress: 3, status: 'racing' });
+  });
+});
+
+describe('standings detail columns (RES-02)', () => {
+  it('reports raw WPM, errors and bonuses received for each racer', () => {
+    const race = applyKeys(racing({ seats: SEATS.slice(0, 2) }), 'ann', keys('abx'), START + 6000).race;
+    const [ann] = standings(race, START + 6000).filter((s) => s.id === 'ann');
+    expect(ann).toMatchObject({ errors: 1, received: 0 });
+    expect(ann.rawWpm).toBeGreaterThanOrEqual(ann.wpm);
+    expect(ann.rawWpm).toBeGreaterThan(0);
   });
 });
 

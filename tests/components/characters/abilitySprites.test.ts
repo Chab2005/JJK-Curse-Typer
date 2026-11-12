@@ -130,7 +130,9 @@ describe('abilitySprites', () => {
     for (const key of ['height', 'bottom', 'transform'] as const) {
       expect(runningStyle[key]).toBe(idleStyle[key]);
     }
-    expect(runningStyle.left).toBe(idleStyle.left);
+    // Facing left, the mirrored strip keeps the same right edge, as facing right kept the left one.
+    expect(sprite.flip).toBe(true);
+    expect(Number(runningStyle.left) + Number(runningStyle.width)).toBe(Number(idleStyle.left) + Number(idleStyle.width));
     expect(runningStyle.animation).toContain('640ms steps(8)');
     const { data, info } = await sharp(path.join('public', running.file)).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
     expect([info.width, info.height]).toEqual([running.w * 8, 160]);

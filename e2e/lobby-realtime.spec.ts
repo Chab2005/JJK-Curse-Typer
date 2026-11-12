@@ -1,5 +1,6 @@
 import { type Browser, expect, type Page, test } from '@playwright/test';
 import { register } from './auth';
+import { allowClipboard } from './clipboard';
 
 // Salon d'attente temps réel avec deux vrais joueurs, chacun dans son propre navigateur (contexte) :
 // arrivées, bots, réglages, passage en spectateur et départ de la course se voient chez l'autre sans recharger.
@@ -14,7 +15,7 @@ test.describe.configure({ timeout: 90_000 });
 
 async function newPage(browser: Browser) {
   const context = await browser.newContext();
-  await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+  await allowClipboard(context);
   return context.newPage();
 }
 

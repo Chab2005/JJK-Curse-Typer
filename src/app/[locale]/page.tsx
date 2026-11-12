@@ -32,7 +32,7 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
   return (
     <>
       <SiteHeader />
-      <main className="w-full flex-1 bg-surface-container-lowest">
+      <main id="main" className="w-full flex-1 bg-surface-container-lowest">
         <Hero onlineCount={showSampleData() ? ONLINE_EXORCISTS : null} />
         <JoinSection showSamples={showSampleData()} publicLobbies={listPublicLobbies()} accountName={user?.displayName ?? null} />
         <GameSystem />
