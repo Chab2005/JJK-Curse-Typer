@@ -115,7 +115,11 @@ test('Play on a character page lands in a public lobby with that character', asy
   await register(page, 'play');
   await page.goto('/characters/gojo');
   await page.getByRole('button', { name: /Play Satoru/ }).click();
-  await page.waitForURL(/\/lobby\/[A-Z0-9]{3}-[A-Z0-9]{3}$/);
+  // Sans lobby public ouvert, « Jouer » propose d'en créer un (JOIN-03) ; sinon il entre dans le plus rempli.
+  const offer = page.getByRole('button', { name: 'Create a public lobby' });
+  await expect(offer.or(page.getByRole('region', { name: 'Your exorcist' }))).toBeVisible();
+  if (await offer.isVisible()) await offer.click();
+  await page.waitForURL(/\/lobby\/[A-Z0-9]{3}-[A-Z0-9]{3}(\?.*)?$/);
 
   await expect(page.getByRole('region', { name: 'Your exorcist' }).getByText('Satoru Gojo')).toBeVisible();
   await expect(page.getByRole('definition').filter({ hasText: /^Public$/ })).toBeVisible();
