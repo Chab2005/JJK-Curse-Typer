@@ -48,4 +48,23 @@ En-dessous, il y a le graphique d'évolution de l'utilisateur avec la ligne du t
 
 Personnellement, je trouve que le mettre un style clair serait significativement moins beau. Aussi, l'effet d'éclair serait essentiellement ruiné.
 
+## Planches de design
 
+| Thème sombre | Thème clair | Système de design |
+|---|---|---|
+| ![Planche du thème sombre](images/design/jjk-curse-typer-dark.png) | ![Planche du thème clair](images/design/jjk-curse-typer-light.png) | ![Carte du système de design](images/design/design-system-card.png) |
+
+## Maquettes (Miro)
+
+| Page | Maquette |
+|---|---|
+| Recherche de lobby | ![Maquette du menu de recherche de lobby](images/maquettes/recherche-lobby.jpg) |
+| Lobby, participant | ![Maquette du lobby vu par un participant](images/maquettes/lobby-participant.jpg) |
+| Lobby, sélection du personnage | ![Maquette de la sélection du personnage dans le lobby](images/maquettes/lobby-selection-personnage.jpg) |
+| Lobby, paramétrage (participant ou spectateur) | ![Maquette du paramétrage de la course vu par un participant ou un spectateur](images/maquettes/lobby-participant-spectateur-parametrage.jpg) |
+| Lobby, paramétrage de la course suivante (hôte) | ![Maquette du paramétrage de la course suivante par l'hôte](images/maquettes/lobby-hote-parametrage-course-suivante.jpg) |
+| Course | ![Maquette de la course](images/maquettes/course.jpg) |
+| Fin de course | ![Maquette de la fin de course](images/maquettes/fin-de-course.jpg) |
+| Classement | ![Maquette du classement](images/maquettes/classement.jpg) |
+| Page de profil | ![Maquette de la page de profil](images/maquettes/page-profil.jpg) |
+| Modification du profil | ![Maquette du dialogue de modification du profil](images/maquettes/dialogue-modification-profil.jpg) |
