@@ -233,6 +233,26 @@ describe('RaceScreen', () => {
     expect(raceActionsMock.claimRaceResultsAction).toHaveBeenCalledTimes(1);
   });
 
+  it('shows the personal-best badge the room announces once the race is saved (RES-04)', () => {
+    start();
+    finish();
+    socket.receive({ type: 'records', seats: ['Megumi_Shadows'] });
+    const table = within(screen.getByRole('table', { name: 'Results' }));
+    const row = table.getByText('Megumi_Shadows').closest('tr')!;
+    expect(within(row).getByTestId('record-badge')).not.toHaveClass('invisible');
+  });
+
+  it('shows a guest its personal best from the claimed result (RES-04)', async () => {
+    raceActionsMock.claimRaceResultsAction.mockResolvedValueOnce({ record: true });
+    renderWithIntl(<RaceScreen code="ABC-DEF" lobbyName="Lobby" live ticket="t" />);
+    socket = FakeWebSocket.instances.at(-1)!;
+    socket.open();
+    socket.receive({ type: 'welcome', you: 'Megumi_Shadows', race: race(), typing: null });
+    finish();
+    const row = within(screen.getByRole('table', { name: 'Results' })).getByText('Megumi_Shadows').closest('tr')!;
+    await waitFor(() => expect(within(row).getByTestId('record-badge')).not.toHaveClass('invisible'));
+  });
+
   it('an account claims nothing: the race server already saved its result (STAT-8)', () => {
     renderWithIntl(<RaceScreen code="ABC-DEF" lobbyName="Lobby" live ticket="t" account={{ username: 'megumi', displayName: 'Megumi', avatarUrl: null }} />);
     socket = FakeWebSocket.instances.at(-1)!;

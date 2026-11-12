@@ -294,3 +294,18 @@ describe('RaceRoom series (RES-03)', () => {
   });
 });
 
+describe('RaceRoom records (RES-04)', () => {
+  it('sends the seats that beat their personal best to everyone, and to late arrivals', () => {
+    const me = join('guest-aaaaaaaa');
+    room.announceRecords(['me']);
+    expect(me.last('records')?.seats).toEqual(['me']);
+    const late = join('guest-cccccccc');
+    expect(late.last('records')?.seats).toEqual(['me']);
+  });
+
+  it('sends nothing when no one beat a record', () => {
+    const me = join('guest-aaaaaaaa');
+    room.announceRecords([]);
+    expect(me.messages.some((m) => m.type === 'records')).toBe(false);
+  });
+});

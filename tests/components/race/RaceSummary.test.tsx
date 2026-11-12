@@ -43,6 +43,21 @@ describe('RaceSummary', () => {
     expect(screen.queryByRole('link', { name: 'Back to the lobby' })).not.toBeInTheDocument();
   });
 
+  it('marks a beaten personal best in the player’s row and in the Finished panel (RES-04)', () => {
+    const rows = ROWS.map((r) => (r.id === 'me' ? { ...r, record: true } : r.id === 'bot-1' ? { ...r, bot: true } : r));
+    renderWithIntl(<RaceSummary rows={rows} you="me" over lobbyCode="TKY-HGH" />);
+
+    const panel = screen.getByRole('heading', { name: 'Finished!' }).parentElement!;
+    expect(within(panel).getByTestId('record-badge')).not.toHaveClass('invisible');
+    const table = within(screen.getByRole('table', { name: 'Results' }));
+    const mine = table.getByText('Megumi').closest('tr')!;
+    expect(within(mine).getByTestId('record-badge')).not.toHaveClass('invisible');
+    const yuji = table.getByText('Yuji').closest('tr')!;
+    expect(within(yuji).getByTestId('record-badge')).toHaveClass('invisible');
+    // Un bot ne bat jamais de record : aucune place gardée.
+    expect(within(table.getByText('Cursed corpse 1').closest('tr')!).queryByTestId('record-badge')).toBeNull();
+  });
+
   it('keeps the top 3 in the full table too (RES-02)', () => {
     renderWithIntl(<RaceSummary rows={ROWS.map((r) => ({ ...r, status: 'finished' }))} you="me" over lobbyCode="TKY-HGH" />);
 

@@ -205,12 +205,16 @@ export default function RaceScreen({
 
   // Un invité assis dans un lobby créé : la room a gardé son résultat, il le réclame pour son cookie (STAT-6).
   // Un compte n'a rien à faire, la room l'a déjà écrit en base (STAT-8).
+  // Son record personnel (RES-04) se juge sur son cookie : l'action le dit en réclamant le résultat.
   const claimed = useRef(false);
+  const [guestRecord, setGuestRecord] = useState(false);
   const claimResult = live && account === null && you !== null && phase === 'finished';
   useEffect(() => {
     if (!claimResult || claimed.current) return;
     claimed.current = true;
-    void claimRaceResultsAction();
+    void claimRaceResultsAction()
+      .then((claim) => setGuestRecord(claim?.record === true))
+      .catch(() => {});
   }, [claimResult]);
 
   // Un lot ne quitte la file qu'une fois parti : pendant une coupure, les frappes attendent la reconnexion.
@@ -378,6 +382,8 @@ export default function RaceScreen({
       status,
       you: isYou,
       bot: seat?.kind === 'bot',
+      // Record personnel (RES-04) : annoncé par la room pour les comptes, rendu par l'action pour l'invité de cet écran.
+      record: view.records.includes(s.id) || (isYou && guestRecord),
     };
   });
 

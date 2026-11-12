@@ -1,6 +1,7 @@
 import 'server-only';
-import { and, asc, eq, gt, inArray, isNotNull, isNull, or, sql } from 'drizzle-orm';
+import { and, asc, eq, isNotNull, sql } from 'drizzle-orm';
 import { db } from '@/db';
+import { countedResult as counted } from '@/db/counted';
 import { characterStats, keyStats, results, users } from '@/db/schema';
 import { playerFromGames, type PlayerStats } from '@/components/leaderboard/leaderboard';
 import type { KeyStat } from '@/game/keyStats';
@@ -11,8 +12,6 @@ import { showSampleData } from '@/lib/sampleData';
 
 // Lecture des courses enregistrées (STAT-1, STAT-2, STAT-8) : la base garde la précision en pourcentage.
 
-/** Courses qui comptent : arrivées ou au temps écoulé, avec des frappes ; les abandons et les courses sans frappe (RES-05) en sont exclus. Les anciennes lignes, sans statut, comptent. */
-const counted = or(isNull(results.status), and(inArray(results.status, ['finished', 'timeout']), gt(results.keystrokes, 0)));
 
 const columns = {
   wpm: results.wpm,

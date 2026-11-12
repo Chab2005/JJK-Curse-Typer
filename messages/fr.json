@@ -992,7 +992,8 @@
       "missed": {
         "title": "Touches ratées",
         "player": "Joueur"
-      }
+      },
+      "record": "Record personnel"
     },
     "leave": {
       "title": "Quitter la course ?",

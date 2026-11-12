@@ -1,9 +1,11 @@
 // Écrit les résultats d'une course finie (STAT-6, STAT-8) : en base pour un compte, en attente pour un invité, dont
 // l'écran de course réclame ensuite le résultat pour son cookie. Une erreur de base n'arrête jamais la room.
-import { inArray, sql } from 'drizzle-orm';
+import { and, inArray, max, sql } from 'drizzle-orm';
 import { getDb } from '@/db/client';
+import { countedResult } from '@/db/counted';
 import { characterStats, keyStats, results, users } from '@/db/schema';
 import { raceXp } from '@/game/levels';
+import { beatsPersonalBest } from '@/game/personalBest';
 import { GUEST_SEAT_PREFIX, type RaceResult } from '@/game/results';
 import type { GuestGame } from '@/lib/auth/guest';
 import { usernameKey } from '@/lib/auth/validation';
@@ -28,12 +30,18 @@ export function toGuestGame(result: RaceResult, at: Date): GuestGame {
   };
 }
 
-export async function recordRaceResults(list: readonly RaceResult[], at: Date): Promise<void> {
+/**
+ * Enregistre la course et renvoie les sièges des comptes qui ont battu leur record personnel (RES-04) : MPM net plus haut
+ * que le meilleur de leurs courses précédentes qui comptent, lu avant l'écriture. Vide si la base n'a rien écrit.
+ * Le record d'un invité se juge sur son cookie, quand il réclame son résultat (`claimRaceResultsAction`).
+ */
+export async function recordRaceResults(list: readonly RaceResult[], at: Date): Promise<string[]> {
   // Avant toute attente : le résultat d'un invité doit être prêt quand son écran voit la fin de course.
   for (const result of list) if (result.counts && result.seat.startsWith(GUEST_SEAT_PREFIX)) holdGuestGame(result.seat, toGuestGame(result, at), at.getTime());
 
   const accounts = list.filter((result) => !result.seat.startsWith(GUEST_SEAT_PREFIX));
-  if (accounts.length === 0) return;
+  if (accounts.length === 0) return [];
+  let records: string[] = [];
   try {
     const db = getDb();
     const found = await db
@@ -53,7 +61,17 @@ export async function recordRaceResults(list: readonly RaceResult[], at: Date): 
         rawWpm: result.rawWpm, status: result.status, received: result.received, series: result.series, missedKeys: result.missedKeys,
       };
     });
+    // Meilleur MPM de chaque compte avant cette course, seulement sur les courses qui comptent.
+    const bests = saved.length === 0
+      ? []
+      : await db
+          .select({ userId: results.userId, best: max(results.wpm) })
+          .from(results)
+          .where(and(inArray(results.userId, saved.map(({ userId }) => userId)), countedResult))
+          .groupBy(results.userId);
+    const previous = new Map(bests.map((row) => [row.userId, row.best]));
     if (rows.length > 0) await db.insert(results).values(rows);
+    records = saved.filter(({ userId, result }) => beatsPersonalBest(result.wpm, previous.get(userId) ?? null, result.counts)).map(({ result }) => result.seat);
 
     // Heatmap sans historique : valeur stockée = (valeur stockée + valeur de la course) / 2.
     // Un abandon ou une course sans frappe est gardé (RES-05) mais ne compte ni pour la heatmap, ni pour le personnage, ni pour l'XP.
@@ -98,4 +116,5 @@ export async function recordRaceResults(list: readonly RaceResult[], at: Date): 
   } catch (error) {
     console.error('[race] results not saved', error);
   }
+  return records;
 }

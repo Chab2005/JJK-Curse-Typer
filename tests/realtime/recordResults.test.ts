@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { characterStats, keyStats } from '@/db/schema';
+import { characterStats, keyStats, results } from '@/db/schema';
 import type { RaceResult } from '@/game/results';
 import { clearGuestResults, takeGuestGames } from '@/lib/guestResults';
 
@@ -8,11 +8,15 @@ const upsert = vi.fn();
 const characterUpsert = vi.fn();
 const where = vi.fn();
 const update = vi.fn();
+/** Meilleur MPM de chaque compte avant la course (RES-04). */
+const bests = vi.fn();
 
 vi.mock('@/db/client', () => ({
   getDb: () => ({
     update: () => ({ set: () => ({ where: () => update() }) }),
-    select: () => ({ from: () => ({ where: (...args: unknown[]) => where(...args) }) }),
+    select: () => ({
+      from: (table: unknown) => (table === results ? { where: () => ({ groupBy: () => bests() }) } : { where: (...args: unknown[]) => where(...args) }),
+    }),
     insert: (table: unknown) => ({
       values: (rows: unknown) =>
         table === keyStats
@@ -57,6 +61,7 @@ beforeEach(() => {
   characterUpsert.mockReset();
   where.mockReset();
   update.mockReset();
+  bests.mockReset().mockResolvedValue([]);
 });
 
 describe('recordRaceResults', () => {
@@ -136,8 +141,46 @@ describe('recordRaceResults', () => {
 
     const error = vi.spyOn(console, 'error').mockImplementation(() => {});
     where.mockRejectedValue(new Error('down'));
-    await expect(recordRaceResults([result('Yuji')], AT)).resolves.toBeUndefined();
+    await expect(recordRaceResults([result('Yuji')], AT)).resolves.toEqual([]);
     expect(error).toHaveBeenCalled();
     error.mockRestore();
+  });
+
+  describe('record personnel (RES-04)', () => {
+    it('renvoie les comptes qui battent leur meilleur MPM des courses précédentes', async () => {
+      where.mockResolvedValue([{ id: 7, key: 'yuji' }, { id: 8, key: 'maki' }]);
+      bests.mockResolvedValue([{ userId: 7, best: 70 }, { userId: 8, best: 90 }]);
+      expect(await recordRaceResults([result('Yuji', { wpm: 72 }), result('Maki', { wpm: 85 })], AT)).toEqual(['Yuji']);
+    });
+
+    it('ne signale ni la toute première course, ni un MPM égal', async () => {
+      where.mockResolvedValue([{ id: 7, key: 'yuji' }, { id: 8, key: 'maki' }]);
+      bests.mockResolvedValue([{ userId: 8, best: 72 }]);
+      expect(await recordRaceResults([result('Yuji'), result('Maki')], AT)).toEqual([]);
+    });
+
+    it('ne signale pas un abandon, même rapide', async () => {
+      where.mockResolvedValue([{ id: 7, key: 'yuji' }]);
+      bests.mockResolvedValue([{ userId: 7, best: 10 }]);
+      expect(await recordRaceResults([result('Yuji', { status: 'abandoned', counts: false })], AT)).toEqual([]);
+    });
+
+    it('lit le record avant d’écrire la course', async () => {
+      const order: string[] = [];
+      where.mockResolvedValue([{ id: 7, key: 'yuji' }]);
+      bests.mockImplementation(async () => {
+        order.push('bests');
+        return [];
+      });
+      insert.mockImplementation(async () => {
+        order.push('insert');
+      });
+      await recordRaceResults([result('Yuji')], AT);
+      expect(order).toEqual(['bests', 'insert']);
+    });
+
+    it('ne renvoie rien pour un invité : son record se juge sur son cookie', async () => {
+      expect(await recordRaceResults([result('guest:Nobara')], AT)).toEqual([]);
+    });
   });
 });

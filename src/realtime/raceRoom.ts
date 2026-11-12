@@ -28,6 +28,8 @@ export class RaceRoom {
   private announcedSeats: number;
   /** Les séries du MPM partent une seule fois, à la fin de la course (PERF-02). */
   private seriesSent = false;
+  /** Sièges qui ont battu leur record personnel, connus une fois la course enregistrée (RES-04). */
+  private records: string[] = [];
 
   /**
    * `ticketSeat` (lobby créé) : chacun reçoit le siège de son ticket, sans ticket il regarde. Sans lui (lobby de
@@ -117,6 +119,13 @@ export class RaceRoom {
     this.syncPlayers();
   }
 
+  /** Annonce à tous les sièges qui ont battu leur record personnel (RES-04) ; rien s'il n'y en a aucun. */
+  announceRecords(seats: readonly string[]) {
+    if (seats.length === 0) return;
+    this.records = [...seats];
+    this.broadcast({ type: 'records', seats: this.records });
+  }
+
   private seriesMessage(now: number): ServerMessage {
     return { type: 'series', series: raceSeries(this.race, now) };
   }
@@ -132,8 +141,9 @@ export class RaceRoom {
     const racer = seat ? this.racer(seat) : undefined;
     client.revision = racer?.revision ?? 0;
     this.send(conn, { type: 'welcome', you: seat, race: this.snapshot(), typing: racer?.typing ?? null, ...(racer && { acked: racer.acked, powers: racer.powers }) });
-    // Arrivé après la fin : les séries ont déjà été diffusées, il les reçoit à part.
+    // Arrivé après la fin : les séries et les records ont déjà été diffusés, il les reçoit à part.
     if (this.seriesSent) this.send(conn, this.seriesMessage(this.now()));
+    if (this.records.length > 0) this.send(conn, { type: 'records', seats: this.records });
   }
 
   /** Siège humain du ticket, s'il n'est pas déjà tenu par une autre connexion. */

@@ -992,7 +992,8 @@
       "missed": {
         "title": "Missed keys",
         "player": "Player"
-      }
+      },
+      "record": "Personal best"
     },
     "leave": {
       "title": "Leave the race?",

@@ -227,3 +227,14 @@ describe('raceViewReducer series (RES-03)', () => {
   });
 });
 
+
+describe('raceViewReducer records (RES-04)', () => {
+  it('keeps the seats that beat their personal best, ignores an unreadable list, and forgets them on a new welcome', () => {
+    let view = raceViewReducer(initialRaceView, welcome, 1000);
+    expect(view.records).toEqual([]);
+    view = raceViewReducer(view, { type: 'records', seats: ['me'] }, 2000);
+    expect(view.records).toEqual(['me']);
+    expect(raceViewReducer(view, { type: 'records', seats: 'me' as unknown as string[] }, 2000).records).toEqual([]);
+    expect(raceViewReducer(view, welcome, 3000).records).toEqual([]);
+  });
+});

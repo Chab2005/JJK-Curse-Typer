@@ -1,6 +1,7 @@
 import { useFormatter, useTranslations } from 'next-intl';
 import { FramedAvatar } from '@/components/leaderboard/Podium';
 import BotBadge from './BotBadge';
+import PersonalBestBadge from './PersonalBestBadge';
 import type { SummaryRow } from './RaceSummary';
 
 /** Colonnes partagées par l'en-tête et les rangées : rang, joueur, MPM sur téléphone ; le détail apparaît avec la largeur (RES-02). */
@@ -56,6 +57,8 @@ export default function RaceResultsTable({ rows }: { rows: SummaryRow[] }) {
                 <span className="font-grotesk truncate text-[17px]">{row.name}</span>
                 {row.you && <span className="font-label-code shrink-0 text-[12px] text-primary">{t('you')}</span>}
                 {row.bot && <BotBadge />}
+                {/* Place gardée pour chaque humain : le record arrive après l'enregistrement de la course (RES-04). */}
+                {!row.bot && <PersonalBestBadge shown={row.record === true} />}
               </span>
             </td>
             <td role="cell" className="font-label-code text-right text-[15px] font-bold whitespace-nowrap text-on-surface">{t('wpmValue', { value: row.wpm })}</td>

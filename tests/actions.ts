@@ -19,7 +19,7 @@ export const lobbyActionsMock = {
 
 // Race screen actions (@/app/actions/races).
 export const raceActionsMock = {
-  claimRaceResultsAction: vi.fn(async () => {}),
+  claimRaceResultsAction: vi.fn(async (): Promise<{ record: boolean }> => ({ record: false })),
 };
 
 // Auth actions (@/app/actions/auth): the pieces components call directly.

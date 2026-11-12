@@ -9,6 +9,7 @@ import { Link } from '@/i18n/navigation';
 import type { SeriesEntry } from '@/game/series';
 import RaceMissedKeys from './RaceMissedKeys';
 import RacePodium from './RacePodium';
+import PersonalBestBadge from './PersonalBestBadge';
 import RaceSeriesChart from './RaceSeriesChart';
 import RaceResultsTable from './RaceResultsTable';
 
@@ -32,6 +33,8 @@ export interface SummaryRow {
   you: boolean;
   /** Participant simulé (BOT-04) : repéré par une pastille. */
   bot?: boolean;
+  /** Record personnel battu (RES-04), calculé par le serveur. */
+  record?: boolean;
 }
 
 // Seuls les bots sont arrêtés (`stopped`) : un joueur n'a jamais cet en-tête.
@@ -78,6 +81,8 @@ export default function RaceSummary({
               <p className="font-label-code flex items-center gap-2.5 text-[13px] uppercase tracking-[0.16em] text-primary">
                 <Pointer className="text-primary-text" />
                 {t('position', { rank: me.rank, total: rows.length })}
+                {/* Le record n'est connu qu'après l'enregistrement : sa place est gardée dès l'arrivée. */}
+                {!me.bot && <PersonalBestBadge shown={me.record === true} className="ml-1" />}
               </p>
               <p className="font-label-code text-[15px] text-on-surface-variant">{t('stats', { wpm: me.wpm, accuracy: me.accuracy })}</p>
             </div>

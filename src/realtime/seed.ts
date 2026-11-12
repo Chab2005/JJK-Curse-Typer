@@ -20,8 +20,8 @@ export interface SeededRace {
   ticketSeat?: (ticket: string | undefined) => string | null;
   /** Appelé une fois, quand la course est finie ou fermée : le lobby créé rouvre son salon. */
   onEnd?: () => void;
-  /** Appelé une fois, avec les résultats des joueurs, quand la course est allée au bout (STAT-8). */
-  onFinish?: (results: RaceResult[]) => void;
+  /** Appelé une fois, avec les résultats des joueurs, quand la course est allée au bout (STAT-8) ; peut renvoyer les sièges qui ont battu leur record (RES-04). */
+  onFinish?: (results: RaceResult[]) => Promise<string[]> | void;
 }
 
 export function raceFromLobby(code: string, now: number): SeededRace | null {
@@ -55,7 +55,7 @@ export function raceFromLobby(code: string, now: number): SeededRace | null {
       ticketSeat: (ticket: string | undefined) => readSeatTicket(ticket, stored.code, authSecret()),
       onEnd: () => void updateLobby(stored.code, { type: 'finish' }),
       // Seuls les lobbies créés enregistrent : leurs sièges viennent de tickets signés, liés à un compte ou un invité.
-      onFinish: (results: RaceResult[]) => void recordRaceResults(results, new Date()),
+      onFinish: (results: RaceResult[]) => recordRaceResults(results, new Date()),
     }),
   };
 }

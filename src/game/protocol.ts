@@ -63,6 +63,8 @@ export type ServerMessage =
   | { type: 'tick'; phase: RacePhase; elapsed: number; standings: Standing[]; notices?: RaceNotice[] }
   /** Envoyé une seule fois, quand la course est finie (PERF-02) : le MPM de chacun seconde par seconde et ses touches ratées (RES-03). */
   | { type: 'series'; series: SeriesEntry[] }
+  /** Après l'enregistrement de la course : sièges qui ont battu leur record personnel (RES-04), validés à la réception. */
+  | { type: 'records'; seats: string[] }
   /** Lot de frappes refusé : la saisie validée par le serveur remplace celle du client. */
   | ({ type: 'resync' } & PlayerSync)
   /** Une capacité a changé le joueur : sa saisie, ses états. */

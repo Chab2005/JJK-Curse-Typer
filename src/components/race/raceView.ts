@@ -4,6 +4,7 @@ import type { RaceSnapshot, ServerMessage } from '@/game/protocol';
 import type { CharacterId } from '@/components/shared/characters';
 import { racerCharacter, type DomainOwner, type TechniqueId } from '@/game/abilities';
 import { LAG_MS, type RacerMark } from '@/game/powers';
+import { parseRecordSeats } from '@/game/personalBest';
 import type { SeriesEntry } from '@/game/series';
 import { overtakes, type RaceNotice, type RacePhase, type RacerSeat, type RacerStatus, type Standing } from '@/game/race';
 
@@ -29,11 +30,13 @@ export interface RaceView {
   hits: RaceHit[];
   /** Séries du MPM et touches ratées de tous, reçues une fois la course finie (RES-03). */
   series: SeriesEntry[];
+  /** Sièges qui ont battu leur record personnel, annoncés après l'enregistrement de la course (RES-04). */
+  records: string[];
   /** Territoires ouverts, par lanceur. */
   domains: Record<string, DomainOwner>;
 }
 
-export const initialRaceView: RaceView = { you: null, race: null, startAt: null, phase: null, standings: [], banner: null, movedAt: {}, notice: null, hits: [], series: [], domains: {} };
+export const initialRaceView: RaceView = { you: null, race: null, startAt: null, phase: null, standings: [], banner: null, movedAt: {}, notice: null, hits: [], series: [], records: [], domains: {} };
 
 /** Un coup reste dessiné sur la piste 900 ms. */
 export const HIT_MS = 900;
@@ -95,6 +98,8 @@ export function raceViewReducer(view: RaceView, message: ServerMessage, received
     }
     case 'series':
       return { ...view, series: message.series };
+    case 'records':
+      return { ...view, records: parseRecordSeats(message.seats) };
     case 'seats':
       return view.race ? { ...view, race: { ...view.race, seats: message.seats } } : view;
     case 'resync':

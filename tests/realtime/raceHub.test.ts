@@ -110,6 +110,18 @@ describe('RaceHub', () => {
     expect(onFinish.mock.calls[0][0]).toEqual([expect.objectContaining({ seat: 'me', status: 'finished', keystrokes: 2, players: 2 })]);
   });
 
+  it('annonce à la room les records personnels battus que l’enregistrement renvoie (RES-04)', async () => {
+    onFinish.mockResolvedValue(['me']);
+    const room = hub.open('ABC-DEF')!;
+    const c = conn();
+    room.connect(c);
+    room.receive(c, JSON.stringify({ type: 'join', guest: 'guest-aaaaaaaa' }));
+    vi.advanceTimersByTime(COUNTDOWN_MS + TICK_MS);
+    room.receive(c, JSON.stringify({ type: 'keys', strokes: [{ key: 'a', t: 100 }, { key: 'b', t: 200 }] }));
+    vi.advanceTimersByTime(TICK_MS * 3);
+    await vi.waitFor(() => expect(c.send).toHaveBeenCalledWith(JSON.stringify({ type: 'records', seats: ['me'] })));
+  });
+
   it('remplace une course terminée quand le lobby en relance une', () => {
     const old = finishedRoom();
     expect(hub.size).toBe(1);
