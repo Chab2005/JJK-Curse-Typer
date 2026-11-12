@@ -45,7 +45,7 @@ Playwright (`playwright.config.ts`, projects `desktop`, `mobile` and `firefox`) 
 - **Next.js 16 App Router, React 19, React Compiler on** (`reactCompiler: true`), Tailwind CSS 4 (CSS-first config via `@theme` in `src/app/globals.css`, no `tailwind.config`). Next 16 has breaking changes from older versions (e.g. global `LayoutProps<"/">` / `PageProps` types). The docs matching the installed version are in `node_modules/next/dist/docs/`, so check there rather than relying on memory.
 - Path alias `@/*` → `src/*`.
 - **DB**: Drizzle ORM + `pg`. `src/db/index.ts` is `server-only`; the `Pool` lives in `src/db/client.ts` on `globalThis`, created lazily (server.ts loads the race room before Next reads `.env`) and shared with the race server, which imports `getDb` from `@/db/client`. Import `db` from `@/db` only in server code (route handlers, server components, server actions). Schema in `src/db/schema.ts`; the current `users`/`results` tables are a placeholder to be replaced by the model in PLAN.md §2. Commit generated migrations in `drizzle/`.
-- Deployed on Railway as one long-running Node service: `npm run build`, then `npm start` (listens on `PORT`). Postgres on Neon in prod.
+- Deployed on Railway as one long-running Node service: `npm run build`, then `npm start` (listens on `PORT`). Postgres hosted on Railway in prod (same project, `DATABASE_URL` set by Railway).
 
 ## Architecture
 
