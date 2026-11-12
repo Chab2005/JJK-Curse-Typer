@@ -283,6 +283,15 @@ describe('WaitingRoom of a created lobby (realtime)', () => {
     expect(FakeEventSource.instances).toHaveLength(0);
   });
 
+  it('reloads the page, which shows the lockout message, when the IP tried too many codes (SALLE-10)', async () => {
+    lobbyActionsMock.joinLobbyAction.mockResolvedValue({ blocked: true });
+    renderWithIntl(<WaitingRoom initialRoom={joined} viewerId="Nobara" live />);
+
+    await waitFor(() => expect(routerMock.refresh).toHaveBeenCalled());
+    expect(routerMock.replace).not.toHaveBeenCalled();
+    expect(FakeEventSource.instances).toHaveLength(0);
+  });
+
   it('offers to leave the current lobby when the user is already in another one (SALLE-06)', async () => {
     lobbyActionsMock.joinLobbyAction.mockResolvedValueOnce({ conflict: 'OLD-LBY' });
     const { user } = renderWithIntl(<WaitingRoom initialRoom={joined} viewerId="Nobara" live />);

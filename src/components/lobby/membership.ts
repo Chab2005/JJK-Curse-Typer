@@ -12,7 +12,12 @@ export function membershipDecision(current: string | null, target: string, still
   return stillInside ? 'elsewhere' : 'free';
 }
 
-/** Réponse de `joinLobbyAction` : le lobby, `null` si l'entrée est refusée, ou le lobby où le visiteur est déjà (SALLE-06). */
-export type JoinResult = LobbyRoom | { conflict: string } | null;
+/**
+ * Réponse de `joinLobbyAction` : le lobby, `null` si l'entrée est refusée, le lobby où le visiteur est déjà (SALLE-06),
+ * ou `blocked` quand son IP a essayé trop de codes (SALLE-10).
+ */
+export type JoinResult = LobbyRoom | { conflict: string } | { blocked: true } | null;
 
 export const isConflict = (result: JoinResult): result is { conflict: string } => result !== null && 'conflict' in result;
+
+export const isJoinBlocked = (result: JoinResult): result is { blocked: true } => result !== null && 'blocked' in result;

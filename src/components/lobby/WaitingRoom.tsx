@@ -17,7 +17,7 @@ import ParticipantList, { useParticipantName } from './ParticipantList';
 import ReadyPanel from './ReadyPanel';
 import SpectatorList from './SpectatorList';
 import { isInside } from './lobbyAccess';
-import { isConflict } from './membership';
+import { isConflict, isJoinBlocked } from './membership';
 import { type LobbyAction, type LobbyRoom, type Participant, isSpectating, lobbyReducer, startBlocker, viewerRole } from './lobbyRoom';
 import { useLobbyEvents } from './useLobbyEvents';
 
@@ -68,6 +68,11 @@ export default function WaitingRoom({
         if (cancelled) return;
         if (next && isConflict(next)) {
           setConflict(next.conflict);
+          return;
+        }
+        // Trop de codes essayés depuis cette IP (SALLE-10) : la page, rechargée, affiche le message de blocage.
+        if (isJoinBlocked(next)) {
+          router.refresh();
           return;
         }
         if (!next || !isInside(next, viewerId)) {

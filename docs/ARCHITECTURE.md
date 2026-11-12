@@ -28,6 +28,20 @@ flowchart LR
   plusieurs fois par seconde. Seuls les comptes, les sessions, les résultats et les liens d'invitation vont en base.
 - **Logique de jeu pure** dans `src/game/` (réducteurs `état + événement → nouvel état`, sans I/O), importée par le
   client pour l'affichage instantané et par la room pour la vérité serveur (COURSE-06). Testée sans mock.
+- **Limite de tentatives sur les codes (SALLE-10)** : au plus **10 échecs par IP sur une minute glissante**
+  (`src/lib/codeAttempts.ts`, logique pure ; registre `src/lib/codeGuard.ts`). Un échec : un code qui ne mène à aucune
+  salle ou dont l'accès est refusé (privée sans lien, expulsé, course en cours). Une entrée réussie ne compte pas.
+  Les quatre portes d'entrée passent par la même règle : la page du salon et celle de la course (`openLobby`, mémorisé
+  par requête pour que métadonnées et page ne comptent qu'une fois), `joinLobbyAction`, le flux
+  `GET /api/lobbies/<code>/events` et l'upgrade WebSocket `/ws/race/<code>`. Une IP bloquée est refusée **même avec un
+  bon code** (sinon le blocage dirait quels codes existent), et chaque tentative pendant le blocage compte encore :
+  insister prolonge le blocage. Réponse : HTTP 429 avec `Retry-After` sur les routes (SSE, WebSocket), page traduite
+  « Trop de tentatives » sur les pages, `{ blocked: true }` pour l'action. Exemptés : qui est déjà dans le salon
+  (rechargement, reconnexion du flux) et le joueur dont le ticket de siège signé est passé dans l'URL du WebSocket.
+  IP : `X-Real-IP`, sinon `X-Forwarded-For`, sinon l'adresse de la socket (WebSocket). **Compteurs en mémoire** sur
+  `globalThis`, comme le registre des salles : la production tourne en une seule instance, aucune écriture en base à
+  chaque tentative, et un redémarrage, qui efface les salles, efface aussi les compteurs. Plusieurs instances
+  demanderaient une table (comme `login_attempts`) ou un magasin partagé.
 - **Déploiement** : Railway (`railway.json`) construit avec `npm run build`, applique les migrations
   (`preDeployCommand: npm run db:migrate`), puis lance `npm start`. HTTPS fourni par Railway.
   Base PostgreSQL sur Neon (forfait gratuit, TECH-08).

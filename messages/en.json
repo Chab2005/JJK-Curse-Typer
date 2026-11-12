@@ -1171,6 +1171,13 @@
       "title": "No file for this exorcist",
       "text": "This character isn't playable, or the link is mistyped.",
       "back": "See the characters"
+    },
+    "lobbyLocked": {
+      "metaTitle": "Too many attempts",
+      "eyebrow": "Too many attempts",
+      "title": "Slow down on the codes",
+      "text": "Too many lobby codes were tried from your connection. Wait a minute, then enter the code again.",
+      "back": "Enter a code"
     }
   },
   "Layout": {

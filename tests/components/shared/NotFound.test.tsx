@@ -9,6 +9,7 @@ describe('NotFound', () => {
     ['profile', "This player doesn't exist", 'See the rankings', '/leaderboard'],
     ['settings', 'There are no secret settings', 'Back to settings', '/settings'],
     ['lobby', "This lobby doesn't exist", 'Enter a code', '/#join'],
+    ['lobbyLocked', 'Slow down on the codes', 'Enter a code', '/#join'],
   ] as const)('%s: says what is missing and links back', (variant, title, back, href) => {
     renderWithIntl(<NotFound variant={variant} />);
 

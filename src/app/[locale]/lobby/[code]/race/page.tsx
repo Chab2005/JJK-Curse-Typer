@@ -2,6 +2,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import RaceFooter from '@/components/race/RaceFooter';
 import RaceScreen from '@/components/race/RaceScreen';
+import NotFoundPage from '@/components/shared/NotFoundPage';
 import type { Locale } from '@/i18n/config';
 import { authSecret } from '@/lib/auth/config';
 import { getSessionUser } from '@/lib/auth/session';
@@ -13,7 +14,7 @@ import { seatTicket } from '@/realtime/ticket';
 export async function generateMetadata({ params, searchParams }: PageProps<'/[locale]/lobby/[code]/race'>) {
   const { locale, code } = await params;
   const room = await openLobby(decodeURIComponent(code), { invite: (await searchParams).invite });
-  if (!room) return { title: (await getTranslations({ locale: locale as Locale, namespace: 'NotFound' }))('lobby.metaTitle') };
+  if (!room || room === 'blocked') return { title: (await getTranslations({ locale: locale as Locale, namespace: 'NotFound' }))(room ? 'lobbyLocked.metaTitle' : 'lobby.metaTitle') };
   const t = await getTranslations({ locale: locale as Locale, namespace: 'Race' });
   return { title: t('metaTitle', { name: room.name }) };
 }
@@ -25,6 +26,8 @@ export default async function RacePage({ params, searchParams }: PageProps<'/[lo
   const { locale, code } = await params;
   setRequestLocale(locale as Locale);
   const room = await openLobby(decodeURIComponent(code), { invite: (await searchParams).invite });
+  // Trop de codes essayés depuis cette IP (SALLE-10) : message traduit au lieu du salon.
+  if (room === 'blocked') return <NotFoundPage variant="lobbyLocked" />;
   if (!room) notFound();
   const user = await getSessionUser();
   const stored = storedLobby(room.code);

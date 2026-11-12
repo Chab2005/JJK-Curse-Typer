@@ -1,6 +1,7 @@
 import type { NextRequest } from 'next/server';
-import { isInside } from '@/components/lobby/lobbyAccess';
+import { clientIp, isInside } from '@/components/lobby/lobbyAccess';
 import type { LobbyRoom } from '@/components/lobby/lobbyRoom';
+import { checkCode, codeRetryAfterSeconds } from '@/lib/codeGuard';
 import { getViewerId } from '@/lib/currentUser';
 import { storedLobby, subscribeLobby } from '@/lib/lobbies';
 import { connectViewer } from '@/lib/lobbyPresence';
@@ -22,13 +23,18 @@ const HEARTBEAT_MS = 25_000;
 
 // Flux temps réel d'un lobby créé (Server-Sent Events) : le lobby entier à chaque changement, puis `gone`
 // quand le visiteur n'y est plus (expulsé, parti) ou que le lobby ferme. Tenir ce flux ouvert compte comme
-// présence dans le lobby (src/lib/lobbyPresence.ts). Réservé à qui est dans le salon.
+// présence dans le lobby (src/lib/lobbyPresence.ts). Réservé à qui est dans le salon ; un refus compte dans la limite
+// de tentatives par IP (SALLE-10), et une IP bloquée reçoit 429.
 export async function GET(request: NextRequest, { params }: RouteContext<'/api/lobbies/[code]/events'>) {
   const code = lobbyCodeSchema.safeParse(decodeURIComponentSafe((await params).code));
-  if (!code.success) return new Response(null, { status: 404 });
   const viewerId = await getViewerId();
-  const room = storedLobby(code.data);
-  if (!room || !viewerId || !isInside(room, viewerId)) return new Response(null, { status: 404 });
+  const room = code.success ? storedLobby(code.data) : null;
+  if (!room || !viewerId || !isInside(room, viewerId)) {
+    // Hors du salon, le flux est toujours refusé : chaque refus compte comme un code essayé (SALLE-10).
+    const ip = clientIp(request.headers);
+    if (checkCode(ip, 'missing') === 'blocked') return new Response(null, { status: 429, headers: { 'Retry-After': String(codeRetryAfterSeconds(ip)) } });
+    return new Response(null, { status: 404 });
+  }
 
   const encoder = new TextEncoder();
   let cleanup = () => {};

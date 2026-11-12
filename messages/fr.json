@@ -1171,6 +1171,13 @@
       "title": "Aucune fiche pour cet exorciste",
       "text": "Ce personnage n'est pas jouable, ou le lien est mal tapé.",
       "back": "Voir les personnages"
+    },
+    "lobbyLocked": {
+      "metaTitle": "Trop de tentatives",
+      "eyebrow": "Trop de tentatives",
+      "title": "Doucement sur les codes",
+      "text": "Trop de codes de salle ont été essayés depuis votre connexion. Attendez une minute, puis entrez le code de nouveau.",
+      "back": "Entrer un code"
     }
   },
   "Layout": {

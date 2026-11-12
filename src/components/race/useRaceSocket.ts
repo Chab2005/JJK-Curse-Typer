@@ -41,7 +41,9 @@ export function useRaceSocket(code: string, onMessage: (message: ServerMessage) 
 
     const connect = () => {
       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-      const socket = new WebSocket(`${protocol}//${window.location.host}${raceSocketPath(code)}`);
+      // Le ticket va aussi dans l'URL : il exempte le joueur de la limite de tentatives sur les codes (SALLE-10).
+      const query = ticket ? `?ticket=${encodeURIComponent(ticket)}` : '';
+      const socket = new WebSocket(`${protocol}//${window.location.host}${raceSocketPath(code)}${query}`);
       socketRef.current = socket;
       socket.onopen = () => {
         retries = 0;

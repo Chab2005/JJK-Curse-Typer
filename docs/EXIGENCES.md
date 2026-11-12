@@ -4,7 +4,7 @@ Version finale (2026-11-09). Source : `Web-V-Travail-de-session.pdf`.
 Statuts : **Complet**, **Partiel**, **Non fait**. Un statut « Partiel » dit ce qui manque dans les notes.
 Les tests unitaires sont dans `tests/` (Vitest), les tests de bout en bout dans `e2e/` (Playwright).
 
-Résumé : 69 complètes · 14 partielles · 6 non faites (90 exigences).
+Résumé : 70 complètes · 15 partielles · 5 non faites (90 exigences).
 
 ## 3. Contraintes techniques
 
@@ -56,7 +56,7 @@ Résumé : 69 complètes · 14 partielles · 6 non faites (90 exigences).
 | SALLE-07 | Complet | `src/components/lobby/lobbyRoom.ts`, `src/app/actions/lobbies.ts`, `src/lib/openLobby.ts`, `src/lib/invites.ts` | `tests/components/lobby/lobbyRoom.test.ts`, `tests/components/lobby/WaitingRoom.test.tsx` | `LobbyRoom.banned` rempli par `kick` (humains, jamais les bots), refusé par `join` (joueur ou spectateur), `joinLobbyAction` et `openLobby` (`joinRefusal`) ; révocation du lien d'invitation conservée. Aucun e2e. |
 | SALLE-08 | Complet | `src/components/lobby/lobbyRoom.ts`, `src/lib/lobbyPresence.ts` | `tests/lib/lobbyPresence.test.ts`, `tests/components/lobby/lobbyRoom.test.ts` | Le rôle passe à l'humain présent depuis le plus longtemps ; salle fermée s'il n'en reste aucun. |
 | SALLE-09 | Complet | `src/components/lobby/lobbyRoom.ts`, `src/app/actions/lobbies.ts`, `src/lib/openLobby.ts` | `tests/components/lobby/lobbyRoom.test.ts` | Aucune arrivée pendant le décompte ni la course, joueur ou spectateur (`joinRefusal` = `racing`) ; ceux déjà dans le salon ne sont pas touchés. `openLobby` répond 404, y compris pour `?spectate=1`. Aucun e2e. |
-| SALLE-10 | Non fait | — | — | Aucune limite de tentatives sur la résolution d'un code (page, `joinLobbyAction`, SSE, WebSocket). `src/lib/auth/rateLimit.ts` (5 échecs / 15 min) ne sert qu'à la connexion ; `clientIp` est réutilisable. |
+| SALLE-10 | Complet | `src/lib/codeAttempts.ts`, `src/lib/codeGuard.ts`, `src/lib/openLobby.ts`, `src/app/actions/lobbies.ts`, `src/app/api/lobbies/[code]/events/route.ts`, `src/realtime/attach.ts`, `src/components/shared/NotFound.tsx` | `tests/lib/codeAttempts.test.ts`, `tests/lib/codeGuard.test.ts`, `tests/lib/openLobby.test.ts`, `tests/app/actions/lobbies.test.ts`, `tests/app/api/lobbies/events.test.ts`, `tests/realtime/attach.test.ts`, `tests/components/lobby/WaitingRoom.test.tsx` | 10 échecs par IP sur une minute glissante (valeur de l’énoncé). Échec : code sans salle, ou accès refusé (privée sans lien, expulsé, course en cours) ; une entrée réussie ne compte pas. Même règle sur la page du salon et de la course (`openLobby`, mémorisé par requête), `joinLobbyAction`, le flux SSE et l’upgrade WebSocket. Bloquée, l’IP est refusée même avec un bon code (pas d’oracle) et insister prolonge le blocage. 429 + `Retry-After` sur les routes, page traduite « Trop de tentatives » sur les pages. Exemptés : qui est déjà dans le salon, et le joueur dont le ticket de siège est dans l’URL du WebSocket. Compteurs en mémoire sur `globalThis` (instance unique, voir `ARCHITECTURE.md` §1). Limite : derrière une même IP (NAT d’un collège), 10 fautes de frappe en une minute bloquent tout le monde une minute. Page bloquée non vérifiée en navigateur. |
 
 ## 5.4 Rejoindre une course
 

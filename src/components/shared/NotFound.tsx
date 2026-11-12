@@ -2,7 +2,7 @@ import { useTranslations } from 'next-intl';
 import BevelFrame, { goldFrame } from '@/components/shared/BevelFrame';
 import { Link } from '@/i18n/navigation';
 
-export type NotFoundVariant = 'page' | 'profile' | 'settings' | 'lobby' | 'character';
+export type NotFoundVariant = 'page' | 'profile' | 'settings' | 'lobby' | 'lobbyLocked' | 'character';
 
 // Où renvoyer le visiteur selon ce qui manque : l'accueil, le classement, les paramètres, le formulaire de code ou les personnages.
 const BACK: Record<NotFoundVariant, { href: string; icon: string }> = {
@@ -10,18 +10,20 @@ const BACK: Record<NotFoundVariant, { href: string; icon: string }> = {
   profile: { href: '/leaderboard', icon: 'leaderboard' },
   settings: { href: '/settings', icon: 'settings' },
   lobby: { href: '/#join', icon: 'keyboard' },
+  lobbyLocked: { href: '/#join', icon: 'keyboard' },
   character: { href: '/characters', icon: 'groups' },
 };
 
 // Contenu des pages 404 : URL inconnue, joueur inexistant, sous-page de paramètres inconnue,
 // code de lobby inconnu (faute de frappe, lobby fermé ou lien privé invalidé, LOB-4), personnage inconnu.
+// `lobbyLocked` : trop de codes essayés depuis la même IP (SALLE-10), d'où le 429 en filigrane.
 export default function NotFound({ variant }: { variant: NotFoundVariant }) {
   const t = useTranslations('NotFound');
   const back = BACK[variant];
 
   return (
     <section aria-labelledby="not-found-title" className="relative mx-auto flex max-w-[720px] flex-col items-center gap-5 px-6 pt-24 pb-32 text-center">
-      <p aria-hidden="true" className="text-stroke-ghost pointer-events-none absolute top-8 text-[180px] leading-none sm:text-[220px]">404</p>
+      <p aria-hidden="true" className="text-stroke-ghost pointer-events-none absolute top-8 text-[180px] leading-none sm:text-[220px]">{variant === 'lobbyLocked' ? '429' : '404'}</p>
       <p className="font-label-code relative text-[12px] font-bold uppercase tracking-[0.32em] text-primary-text">{t(`${variant}.eyebrow`)}</p>
       <h1 id="not-found-title" className="relative text-[clamp(34px,4.5vw,56px)] leading-tight uppercase tracking-[0.08em]">{t(`${variant}.title`)}</h1>
       <p className="relative max-w-[520px] text-lg leading-7 text-on-surface-variant">{t(`${variant}.text`)}</p>

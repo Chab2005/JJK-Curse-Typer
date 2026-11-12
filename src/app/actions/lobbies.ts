@@ -6,6 +6,7 @@ import type { QuickPlayResult } from '@/components/home/quickPlay';
 import { canInvite, clientIp, type InviteLink, inviteToClaim, isInside, needsInvite } from '@/components/lobby/lobbyAccess';
 import { joinRefusal, type LobbyRoom } from '@/components/lobby/lobbyRoom';
 import { type JoinResult, membershipDecision } from '@/components/lobby/membership';
+import { checkCode } from '@/lib/codeGuard';
 import { getViewer, getViewerId, type Viewer } from '@/lib/currentUser';
 import { claimInvite, createInvites, deleteInvite, deleteInvites, listInvites, revokeInvites } from '@/lib/invites';
 import { createLobby, findQuickLobby, parseLobbyAction, storedLobby, updateLobby } from '@/lib/lobbies';
@@ -58,18 +59,27 @@ async function hostLobby(viewer: Viewer): Promise<string> {
 /**
  * Fait entrer l'utilisateur dans le lobby créé `code` : participant s'il reste de la place, spectateur sinon ou avec `spectate`.
  * Un lobby privé demande un lien d'invitation, attribué ici à l'IP du visiteur (LOB-4) ; un lien présenté ailleurs est aussi
- * consommé, pour que l'hôte voie qui l'a utilisé. Renvoie le lobby, ou `null` si l'entrée est refusée.
+ * consommé, pour que l'hôte voie qui l'a utilisé. Renvoie le lobby, `null` si l'entrée est refusée, ou `{ blocked }`
+ * si l'IP a essayé trop de codes (SALLE-10).
  */
 export async function joinLobbyAction(code: string, options: { spectate?: boolean; invite?: string; leaveOther?: boolean } = {}): Promise<JoinResult> {
   const viewer = await getViewer();
   const parsedCode = lobbyCodeSchema.safeParse(code);
   const parsedOptions = joinOptionsSchema.safeParse(options);
-  if (!parsedCode.success || !parsedOptions.success) return null;
+  if (!parsedOptions.success || !viewer) return null;
   options = parsedOptions.data;
-  const room = storedLobby(parsedCode.data);
-  if (!viewer || !room) return null;
+  const room = parsedCode.success ? storedLobby(parsedCode.data) : null;
+  const ip = clientIp(await headers());
+  // Force brute sur les codes (SALLE-10) : qui est déjà dans le salon n'est ni bloqué ni compté ; sinon une IP bloquée
+  // est refusée avant tout, et chaque refus ci-dessous compte comme un code essayé. Une entrée réussie ne compte pas.
+  if (!(room && isInside(room, viewer.id)) && checkCode(ip, 'found') === 'blocked') return { blocked: true };
+  const refuse = () => {
+    checkCode(ip, 'missing');
+    return null;
+  };
+  if (!room) return refuse();
   // Expulsé (SALLE-07) ou course lancée (SALLE-09) : refusé avant de consommer le lien.
-  if (joinRefusal(room, viewer.id)) return null;
+  if (joinRefusal(room, viewer.id)) return refuse();
   // Un seul lobby à la fois (SALLE-06) : celui où la table le place, s'il le compte encore, doit d'abord être quitté.
   const current = await currentLobby(viewer.id);
   const other = current ? storedLobby(current) : null;
@@ -78,8 +88,8 @@ export async function joinLobbyAction(code: string, options: { spectate?: boolea
     updateLobby(current, { type: 'leave', id: viewer.id });
   }
   const token = inviteToClaim(room, viewer.id, options?.invite);
-  const claimed = token !== null && (await claimInvite(token, room.code, clientIp(await headers()), viewer));
-  if (needsInvite(room, viewer.id) && !claimed) return null;
+  const claimed = token !== null && (await claimInvite(token, room.code, ip, viewer));
+  if (needsInvite(room, viewer.id) && !claimed) return refuse();
   const joined = updateLobby(room.code, { type: 'join', person: { id: viewer.id, name: viewer.name, avatar: null, photo: viewer.photo }, spectate: options?.spectate === true });
   // Sans page du lobby ouverte dans le délai de grâce, le visiteur en ressort (src/lib/lobbyPresence.ts).
   if (joined) {
