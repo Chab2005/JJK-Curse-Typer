@@ -104,3 +104,7 @@ La CI (`.github/workflows/test.yml`) exécute lint, typecheck et tests unitaires
 - [Matrice des exigences](docs/EXIGENCES.md)
 - [Démarche créative](docs/DEMARCHE-CREATIVE.md)
 - [Utilisation de l'IA](docs/IA.md)
+
+## Droits d'auteur
+
+Ce projet est un **projet scolaire**, réalisé dans le cadre d'un cours. Je (l'auteur) ne détiens **aucun droit** sur ce projet : il n'est ni destiné à un usage commercial, ni distribué sous une licence. Les univers, personnages, noms et images évoqués (notamment *Jujutsu Kaisen*) appartiennent à leurs propriétaires respectifs.
