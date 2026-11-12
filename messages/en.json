@@ -892,7 +892,8 @@
       "own": "No races yet. Your stats appear here after your first race.",
       "other": "This exorcist has not raced yet.",
       "cta": "Find an arena"
-    }
+    },
+    "history": "Race history"
   },
   "Race": {
     "metaTitle": "{name} · Race",
@@ -1195,5 +1196,27 @@
   },
   "Layout": {
     "skip": "Skip to main content"
+  },
+  "History": {
+    "metaTitle": "Race history",
+    "eyebrow": "Your races",
+    "title": "Race history",
+    "watermark": "LOG",
+    "intro": "Every race you ran in a lobby, newest first. Open one to see its full results again.",
+    "empty": "No race yet. Join a lobby and finish a race: it will show up here.",
+    "emptyCta": "Find a lobby",
+    "caption": "Your races",
+    "pagination": "Race history pages",
+    "date": "Date",
+    "rank": "Rank",
+    "wpm": "WPM",
+    "accuracy": "Accuracy",
+    "players": "Players",
+    "status": "Status",
+    "rankValue": "#{rank, number}",
+    "unknown": "—",
+    "wpmValue": "{value, number} WPM",
+    "playersValue": "{count, plural, one {# player} other {# players}}",
+    "open": "See the results of the race of {date}"
   }
 }

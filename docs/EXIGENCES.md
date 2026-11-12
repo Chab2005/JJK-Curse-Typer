@@ -4,7 +4,7 @@ Version finale (2026-11-09). Source : `Web-V-Travail-de-session.pdf`.
 Statuts : **Complet**, **Partiel**, **Non fait**. Un statut « Partiel » dit ce qui manque dans les notes.
 Les tests unitaires sont dans `tests/` (Vitest), les tests de bout en bout dans `e2e/` (Playwright).
 
-Résumé : 72 complètes · 15 partielles · 3 non faites (90 exigences).
+Résumé : 72 complètes · 16 partielles · 2 non faites (90 exigences).
 
 ## 3. Contraintes techniques
 
@@ -132,7 +132,7 @@ Résumé : 72 complètes · 15 partielles · 3 non faites (90 exigences).
 
 | ID | Statut | Fichiers principaux | Tests associés | Notes et choix |
 |---|---|---|---|---|
-| HIST-01 | Non fait | — | — | Aucune page ni composant d'historique ; le profil n'affiche que des agrégats. `src/lib/pagination.ts` découpe en mémoire et ne sert qu'à l'explorateur et au classement. |
+| HIST-01 | Partiel | `src/app/[locale]/history/page.tsx`, `src/components/history/RaceHistoryList.tsx`, `src/lib/history.ts`, `src/lib/pagination.ts` (`pageWindow`), `src/lib/schemas.ts` (`historyPageSchema`), `src/app/[locale]/profile/[username]/page.tsx` | `tests/components/history/RaceHistoryList.test.tsx`, `tests/lib/history.test.ts`, `tests/lib/pagination.test.ts`, `tests/lib/schemas.test.ts`, `e2e/history.spec.ts` (écrit, non exécuté : pas de PostgreSQL) | Page `/history` du compte connecté (lien « Historique des courses » sur son profil) ; sans session, renvoi à la connexion (un invité n’a pas d’historique, AUTH-03). Une rangée par ligne `results` du compte, la plus récente d’abord : date, rang, MPM, précision, nombre de joueurs, statut (abandons compris), la date menant à la page de la course. Pagination en base (`limit` / `offset`, 15 par page, `?page=` validé par zod) plutôt que `paginate` en mémoire : l’historique grandit sans fin, on ne lit que la page affichée. État vide traduit. Manque pour « Complet » : la migration `0013_race_history.sql` et `e2e/history.spec.ts` n’ont jamais tourné sur un vrai PostgreSQL ; requêtes testées avec une base simulée seulement. |
 | HIST-02 | Non fait | — | — | Aucune route de résultats persistés ; `results` n'est pas lié à une course (ni table `races`, ni série MPM). Les composants de résultats existants seraient réutilisables. |
 
 ## 5.11 Internationalisation

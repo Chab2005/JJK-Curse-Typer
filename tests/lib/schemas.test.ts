@@ -10,7 +10,7 @@ import {
   providerSchema,
   settingsFormSchema,
   usernameParamSchema,
-} from '@/lib/schemas';
+ historyPageSchema } from '@/lib/schemas';
 
 const form = (entries: Record<string, string | File>) => {
   const data = new FormData();
@@ -95,6 +95,11 @@ describe('route parameters', () => {
     expect(providerSchema.safeParse('discord').success).toBe(true);
     expect(providerSchema.safeParse('github').success).toBe(true);
     expect(providerSchema.safeParse('google').success).toBe(false);
+  });
+
+  it('reads the history page number, 1 when missing or invalid (HIST-01)', () => {
+    expect(historyPageSchema.parse('3')).toBe(3);
+    for (const bad of [undefined, 'x', '0', '-2', ['2', '3']]) expect(historyPageSchema.parse(bad)).toBe(1);
   });
 
   it('decodes and validates the avatar username', () => {

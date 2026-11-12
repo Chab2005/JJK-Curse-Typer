@@ -15,3 +15,13 @@ export function parsePage(value: string | null): number {
   if (!value || !/^\d+$/.test(value)) return 1;
   return Math.max(1, Number(value));
 }
+
+/**
+ * Page `page` d'une liste de `total` éléments lue en base (`limit` / `offset`) : la page ramenée entre 1 et la dernière,
+ * le nombre de pages et le décalage à passer à la requête. Pour les listes qui grandissent sans fin (historique, HIST-01).
+ */
+export function pageWindow(total: number, page: number, perPage: number): { page: number; pageCount: number; offset: number } {
+  const pageCount = Math.max(1, Math.ceil(total / perPage));
+  const current = Math.min(Math.max(1, page), pageCount);
+  return { page: current, pageCount, offset: (current - 1) * perPage };
+}

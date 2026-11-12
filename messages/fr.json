@@ -892,7 +892,8 @@
       "own": "Aucune course pour l'instant. Tes statistiques apparaîtront ici après ta première course.",
       "other": "Cet exorciste n'a pas encore couru.",
       "cta": "Trouver une arène"
-    }
+    },
+    "history": "Historique des courses"
   },
   "Race": {
     "metaTitle": "{name} · Course",
@@ -1195,5 +1196,27 @@
   },
   "Layout": {
     "skip": "Aller au contenu principal"
+  },
+  "History": {
+    "metaTitle": "Historique des courses",
+    "eyebrow": "Vos courses",
+    "title": "Historique des courses",
+    "watermark": "JOURNAL",
+    "intro": "Chaque course courue dans un salon, la plus récente d’abord. Ouvrez-en une pour revoir ses résultats complets.",
+    "empty": "Aucune course pour l’instant. Rejoignez un salon et terminez une course : elle apparaîtra ici.",
+    "emptyCta": "Trouver un salon",
+    "caption": "Vos courses",
+    "pagination": "Pages de l’historique",
+    "date": "Date",
+    "rank": "Rang",
+    "wpm": "MPM",
+    "accuracy": "Précision",
+    "players": "Joueurs",
+    "status": "État",
+    "rankValue": "#{rank, number}",
+    "unknown": "—",
+    "wpmValue": "{value, number} MPM",
+    "playersValue": "{count, plural, one {# joueur} other {# joueurs}}",
+    "open": "Voir les résultats de la course du {date}"
   }
 }

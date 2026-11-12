@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { paginate, parsePage } from '@/lib/pagination';
+import { pageWindow, paginate, parsePage } from '@/lib/pagination';
 
 describe('paginate', () => {
   const items = Array.from({ length: 12 }, (_, i) => i + 1);
@@ -33,5 +33,20 @@ describe('parsePage', () => {
 
   it('renvoie 1 pour une valeur absente, nulle ou invalide', () => {
     for (const value of [null, '', '0', '-2', 'abc', '2.5']) expect(parsePage(value)).toBe(1);
+  });
+});
+
+describe('pageWindow (HIST-01)', () => {
+  it('donne le décalage de la page demandée', () => {
+    expect(pageWindow(45, 2, 20)).toEqual({ page: 2, pageCount: 3, offset: 20 });
+  });
+
+  it('ramène une page trop grande sur la dernière, et une page trop petite sur la première', () => {
+    expect(pageWindow(45, 9, 20)).toEqual({ page: 3, pageCount: 3, offset: 40 });
+    expect(pageWindow(45, 0, 20)).toEqual({ page: 1, pageCount: 3, offset: 0 });
+  });
+
+  it('garde une page vide quand il n’y a rien', () => {
+    expect(pageWindow(0, 4, 20)).toEqual({ page: 1, pageCount: 1, offset: 0 });
   });
 });

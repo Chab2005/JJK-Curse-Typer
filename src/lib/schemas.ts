@@ -63,3 +63,6 @@ export const usernameParamSchema = z
     }
   })
   .pipe(z.string().min(USERNAME_MIN).max(USERNAME_MAX).regex(/^[A-Za-z0-9_-]+$/));
+
+/** Numéro de page de l'historique (`?page=`), 1 s'il est absent ou invalide. */
+export const historyPageSchema = z.coerce.number().int().min(1).max(100_000).catch(1);
