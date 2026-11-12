@@ -1199,6 +1199,13 @@
       "title": "This race isn't in your history",
       "text": "It may belong to another player, or the link is mistyped.",
       "back": "See my history"
+    },
+    "otherRace": {
+      "metaTitle": "Race not found",
+      "eyebrow": "Race not found",
+      "title": "This race isn't in this player's history",
+      "text": "The link may be mistyped, or the race belongs to someone else.",
+      "back": "See the rankings"
     }
   },
   "Layout": {
@@ -1233,6 +1240,15 @@
       "legacyIntro": "Saved before full results were kept",
       "legacyNote": "This race was saved before full results were kept: only your own result is shown.",
       "back": "Back to the history"
+    },
+    "other": {
+      "metaTitle": "{name}'s race history",
+      "eyebrow": "Player history",
+      "title": "{name}'s races",
+      "intro": "Every race {name} ran in a lobby, newest first. Open one to see its full results.",
+      "empty": "{name} hasn't run a race in a lobby yet.",
+      "raceEyebrow": "{name}'s race",
+      "back": "Back to {name}'s history"
     }
   }
 }

@@ -2,7 +2,7 @@ import { useTranslations } from 'next-intl';
 import BevelFrame, { goldFrame } from '@/components/shared/BevelFrame';
 import { Link } from '@/i18n/navigation';
 
-export type NotFoundVariant = 'page' | 'profile' | 'settings' | 'lobby' | 'lobbyLocked' | 'character' | 'race';
+export type NotFoundVariant = 'page' | 'profile' | 'settings' | 'lobby' | 'lobbyLocked' | 'character' | 'race' | 'otherRace';
 
 // Où renvoyer le visiteur selon ce qui manque : l'accueil, le classement, les paramètres, le formulaire de code ou les personnages.
 const BACK: Record<NotFoundVariant, { href: string; icon: string }> = {
@@ -13,11 +13,12 @@ const BACK: Record<NotFoundVariant, { href: string; icon: string }> = {
   lobbyLocked: { href: '/#join', icon: 'keyboard' },
   character: { href: '/characters', icon: 'groups' },
   race: { href: '/history', icon: 'history' },
+  otherRace: { href: '/leaderboard', icon: 'leaderboard' },
 };
 
 // Contenu des pages 404 : URL inconnue, joueur inexistant, sous-page de paramètres inconnue,
 // code de lobby inconnu (faute de frappe, lobby fermé ou lien privé invalidé, LOB-4), personnage inconnu.
-// `race` : course absente de l'historique du joueur (HIST-02).
+// `race` : course absente de son historique ; `otherRace` : absente de l'historique d'un autre joueur (HIST-02).
 // `lobbyLocked` : trop de codes essayés depuis la même IP (SALLE-10), d'où le 429 en filigrane.
 export default function NotFound({ variant }: { variant: NotFoundVariant }) {
   const t = useTranslations('NotFound');

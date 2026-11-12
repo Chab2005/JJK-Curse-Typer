@@ -21,8 +21,8 @@ test.describe('after a race', () => {
   test.skip(({ isMobile }) => isMobile, 'typing a whole race: the desktop run covers it');
   test.describe.configure({ timeout: 90_000 });
 
-  test('the race shows in the history and reopens its full results; another account gets a 404', async ({ page, browser }) => {
-    await register(page, 'hist');
+  test('the race shows in the history and reopens its full results; another account reaches it from the profile only', async ({ page, browser }) => {
+    const { username } = await register(page, 'hist');
     await page.getByRole('button', { name: 'Create a new lobby' }).click();
     await page.waitForURL(/\/lobby\/[A-Z0-9]{3}-[A-Z0-9]{3}$/);
     await page.getByRole('button', { name: 'Edit settings' }).click();
@@ -59,12 +59,21 @@ test.describe('after a race', () => {
     await expect(page.getByText('Cursed corpse 1').first()).toBeVisible();
     await expect(page.getByRole('heading', { name: 'WPM over time' })).toBeVisible();
 
-    // Un autre compte n'ouvre pas la course : 404.
+    // Un autre compte : /history/<id> reste réservé au joueur (404), mais l'historique de son profil s'ouvre.
     const other = await browser.newContext();
     const otherPage = await other.newPage();
     await register(otherPage, 'peek');
     await otherPage.goto(new URL(url).pathname);
     await expect(otherPage.getByRole('heading', { name: "This race isn't in your history" })).toBeVisible();
+    await otherPage.goto(`/profile/${username}`);
+    await otherPage.getByRole('link', { name: 'Race history' }).click();
+    await otherPage.waitForURL(new RegExp(`/profile/${username}/history$`));
+    await expect(otherPage.getByRole('heading', { name: `${username}'s races` })).toBeVisible();
+    await otherPage.getByRole('table', { name: 'Your races' }).getByRole('link', { name: /^See the results of the race of/ }).click();
+    await otherPage.waitForURL(new RegExp(`/profile/${username}/history/\\d+$`));
+    await expect(otherPage.getByRole('region', { name: 'Race podium' })).toBeVisible();
+    await expect(otherPage.getByRole('table', { name: 'Results' }).getByRole('row')).toHaveCount(3);
+    await expect(otherPage.getByText('(you)')).toHaveCount(0);
     await other.close();
   });
 });

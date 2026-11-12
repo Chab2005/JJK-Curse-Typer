@@ -23,14 +23,28 @@ const STATUSES: readonly RacerStatus[] = ['racing', 'finished', 'abandoned', 'ti
 /** Colonnes partagées par l'en-tête et les rangées : date, rang et MPM sur téléphone ; le détail apparaît avec la largeur. */
 const COLUMNS = 'grid grid-cols-[minmax(0,1fr)_56px_auto] items-center gap-x-3 md:grid-cols-[minmax(0,1fr)_64px_96px_96px_120px] lg:grid-cols-[minmax(0,1fr)_64px_96px_96px_120px_120px]';
 
-// Historique des courses du compte connecté (HIST-01) : un vrai tableau, une rangée par course, la plus récente d'abord.
-// La date mène à la page de résultats de la course (HIST-02). Pages numérotées dans l'URL (`?page=`), lues en base.
-export default function RaceHistoryList({ items, page, pageCount }: { items: HistoryItem[]; page: number; pageCount: number }) {
+// Historique des courses (HIST-01) : un vrai tableau, une rangée par course, la plus récente d'abord. La date mène à la page
+// de résultats de la course (HIST-02). Pages numérotées dans l'URL (`?page=`), lues en base. `basePath` : `/history` pour
+// le sien, `/profile/<nom>/history` pour celui d'un autre joueur ; `empty` remplace alors l'état vide (sans appel au jeu).
+export default function RaceHistoryList({
+  items,
+  page,
+  pageCount,
+  basePath = '/history',
+  empty,
+}: {
+  items: HistoryItem[];
+  page: number;
+  pageCount: number;
+  basePath?: string;
+  empty?: string;
+}) {
   const t = useTranslations('History');
   const tStatus = useTranslations('Race.status');
   const format = useFormatter();
   const router = useRouter();
 
+  if (items.length === 0 && empty) return <p className="text-lg text-on-surface-variant">{empty}</p>;
   if (items.length === 0) {
     return (
       <div className="flex flex-col items-start gap-5">
@@ -65,7 +79,7 @@ export default function RaceHistoryList({ items, page, pageCount }: { items: His
             return (
               <tr role="row" key={item.id} className={`hx-row ${COLUMNS} min-h-14 px-[34px] [--h:18px]`}>
                 <td role="cell" className="min-w-0">
-                  <Link href={`/history/${item.id}`} aria-label={t('open', { date })} className="font-grotesk block truncate text-[17px] text-on-primary-container underline-offset-4 hover:underline">
+                  <Link href={`${basePath}/${item.id}`} aria-label={t('open', { date })} className="font-grotesk block truncate text-[17px] text-on-primary-container underline-offset-4 hover:underline">
                     {date}
                   </Link>
                 </td>
@@ -79,7 +93,7 @@ export default function RaceHistoryList({ items, page, pageCount }: { items: His
           })}
         </tbody>
       </table>
-      {pageCount > 1 && <Pagination label={t('pagination')} page={page} pageCount={pageCount} onChange={(next) => router.push(`/history?page=${next}`)} />}
+      {pageCount > 1 && <Pagination label={t('pagination')} page={page} pageCount={pageCount} onChange={(next) => router.push(`${basePath}?page=${next}`)} />}
     </div>
   );
 }

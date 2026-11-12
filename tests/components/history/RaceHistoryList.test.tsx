@@ -49,3 +49,19 @@ describe('RaceHistoryList (HIST-01)', () => {
     expect(screen.getByRole('link', { name: 'Find a lobby' })).toHaveAttribute('href', '/lobbies');
   });
 });
+
+describe('RaceHistoryList of another player', () => {
+  it('links the races and pages under that player’s profile', async () => {
+    const { user } = renderWithIntl(<RaceHistoryList items={ITEMS} page={1} pageCount={2} basePath="/profile/Yuji/history" empty="Yuji hasn't finished a race yet." />);
+    const links = screen.getAllByRole('link', { name: /^See the results of the race of/ });
+    expect(links.map((link) => link.getAttribute('href'))).toEqual(['/profile/Yuji/history/12', '/profile/Yuji/history/9']);
+    await user.click(screen.getByRole('button', { name: 'Next page' }));
+    expect(routerMock.push).toHaveBeenCalledWith('/profile/Yuji/history?page=2');
+  });
+
+  it('shows the given empty message, without the call to join a lobby', () => {
+    renderWithIntl(<RaceHistoryList items={[]} page={1} pageCount={1} basePath="/profile/Yuji/history" empty="Yuji hasn't finished a race yet." />);
+    expect(screen.getByText("Yuji hasn't finished a race yet.")).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Find a lobby' })).not.toBeInTheDocument();
+  });
+});

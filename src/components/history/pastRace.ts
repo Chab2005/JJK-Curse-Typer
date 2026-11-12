@@ -74,11 +74,14 @@ export function archivedView(participants: readonly PastParticipant[], userId: n
   };
 }
 
-/** Course d'avant l'archivage : la seule rangée du joueur, et sa courbe si elle a été gardée (les touches ratées, sans le nombre de frappes justes, ne se redessinent pas). */
-export function legacyView(own: OwnResult, player: { username: string; name: string }): PastRaceView {
+/**
+ * Course d'avant l'archivage : la seule rangée du joueur, et sa courbe si elle a été gardée (les touches ratées, sans le
+ * nombre de frappes justes, ne se redessinent pas). `viewer` à faux : un autre joueur regarde, la rangée n'est pas la sienne.
+ */
+export function legacyView(own: OwnResult, player: { username: string; name: string }, viewer = true): PastRaceView {
   const status: RacerStatus = STATUSES.includes(own.status as RacerStatus) ? (own.status as RacerStatus) : 'finished';
   return {
-    you: player.username,
+    you: viewer ? player.username : null,
     rows: [
       {
         id: player.username,
@@ -92,7 +95,7 @@ export function legacyView(own: OwnResult, player: { username: string; name: str
         endedAt: status === 'finished' ? own.durationSeconds * 1000 : null,
         received: own.received ?? 0,
         status,
-        you: true,
+        you: viewer,
       },
     ],
     series: own.series && own.series.length > 0 ? [{ id: player.username, samples: own.series, missed: [] }] : [],

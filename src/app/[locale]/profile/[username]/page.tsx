@@ -52,17 +52,25 @@ export default async function ProfilePage({ params }: PageProps<'/[locale]/profi
               photo={account.avatarUrl}
               summary={stats ? t('summary', { games: stats.games, wins: stats.wins, best: stats.bestWpm }) : t('games', { games: 0 })}
               action={
-                viewer?.id === account.id && (
+                viewer && (
                   <div className="flex flex-wrap gap-3">
-                    {/* Historique des courses (HIST-01) : le sien seulement. */}
-                    <ChevronButton as={Link} href="/history" size="sm" className="font-label-code text-[11px] uppercase tracking-[0.16em]">
+                    {/* Historique des courses (HIST-01) : le sien sur /history, celui d'un autre joueur sous son profil, pour tout compte connecté. */}
+                    <ChevronButton
+                      as={Link}
+                      href={viewer.id === account.id ? '/history' : `/profile/${encodeURIComponent(account.username)}/history`}
+                      size="sm"
+                      chevrons={false}
+                      className="font-label-code text-[11px] uppercase tracking-[0.16em]"
+                    >
                       <span aria-hidden="true" className="material-symbols-outlined text-[16px] text-primary">history</span>
                       {t('history')}
                     </ChevronButton>
-                    <ChevronButton as={Link} href="/settings" size="sm" className="font-label-code text-[11px] uppercase tracking-[0.16em]">
-                      <span aria-hidden="true" className="material-symbols-outlined text-[16px] text-primary">settings</span>
-                      {t('editSettings')}
-                    </ChevronButton>
+                    {viewer.id === account.id && (
+                      <ChevronButton as={Link} href="/settings" size="sm" className="font-label-code text-[11px] uppercase tracking-[0.16em]">
+                        <span aria-hidden="true" className="material-symbols-outlined text-[16px] text-primary">settings</span>
+                        {t('editSettings')}
+                      </ChevronButton>
+                    )}
                   </div>
                 )
               }

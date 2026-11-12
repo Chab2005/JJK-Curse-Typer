@@ -1199,6 +1199,13 @@
       "title": "Cette course n’est pas dans votre historique",
       "text": "Elle appartient peut-être à un autre joueur, ou le lien est mal tapé.",
       "back": "Voir mon historique"
+    },
+    "otherRace": {
+      "metaTitle": "Course introuvable",
+      "eyebrow": "Course introuvable",
+      "title": "Cette course n’est pas dans l’historique de ce joueur",
+      "text": "Le lien est peut-être mal tapé, ou la course appartient à quelqu’un d’autre.",
+      "back": "Voir le classement"
     }
   },
   "Layout": {
@@ -1233,6 +1240,15 @@
       "legacyIntro": "Enregistrée avant la conservation des résultats complets",
       "legacyNote": "Cette course a été enregistrée avant que les résultats complets soient gardés : seul votre résultat est affiché.",
       "back": "Retour à l’historique"
+    },
+    "other": {
+      "metaTitle": "Historique des courses de {name}",
+      "eyebrow": "Historique d’un joueur",
+      "title": "Les courses de {name}",
+      "intro": "Chaque course de {name} dans un salon, la plus récente d’abord. Ouvrez-en une pour revoir ses résultats complets.",
+      "empty": "{name} n’a encore couru aucune course dans un salon.",
+      "raceEyebrow": "Course de {name}",
+      "back": "Retour à l’historique de {name}"
     }
   }
 }

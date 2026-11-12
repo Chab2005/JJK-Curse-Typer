@@ -65,3 +65,17 @@ describe('legacyView (HIST-02, course d’avant l’archivage)', () => {
     expect(view.series).toEqual([]);
   });
 });
+
+describe('views of another player’s race', () => {
+  it('marks no row as the viewer’s when the viewer was not in the race', () => {
+    const view = archivedView([participant({})], 99, botName);
+    expect(view.you).toBeNull();
+    expect(view.rows[0].you).toBe(false);
+  });
+
+  it('shows the owner’s legacy row without calling it the viewer’s', () => {
+    const view = legacyView({ rank: 2, wpm: 60, rawWpm: null, accuracy: 90, errors: 4, durationSeconds: 42, status: null, received: null, series: null }, { username: 'yuji', name: 'Yuji' }, false);
+    expect(view.you).toBeNull();
+    expect(view.rows[0]).toMatchObject({ id: 'yuji', name: 'Yuji', you: false });
+  });
+});
